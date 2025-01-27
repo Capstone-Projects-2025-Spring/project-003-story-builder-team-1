@@ -23,7 +23,7 @@ sidebar_position: 4
   - The User will be able to suggest their own critiques
 
 - Agent writing progress will be saved incrementally as a linked list
-  -  Users will be able to revert to a previous progress point or quickly train another agent with existing data
+  - Users will be able to revert to a previous progress point or quickly train another agent with existing data
 
 - Users will be able to directly edit drafts
 
