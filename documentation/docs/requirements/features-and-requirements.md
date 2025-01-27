@@ -11,6 +11,7 @@ sidebar_position: 4
     
 - Users will be able to create Agents, which will create story drafts in a specific writing style
   - Users will be able to give details for a story proposal and ask Agents to generate a story draft based on these details
+  - Users will also be able to delete Agents at any point
     
 - Agents will vote amongst themselves to decide which draft is the "best"
   - The User will be able to override the vote
@@ -20,11 +21,13 @@ sidebar_position: 4
   - The User will be able to override the list of critiques to focus on
   - The User will be able to suggest their own critiques
 
-- Agent progress will be saved incrementally as a linked list to allow the user to revert to a previous progress point or quickly train another agent with existing data
+- Agent writing progress will be saved incrementally as a linked list
+  -  Users will be able to revert to a previous progress point or quickly train another agent with existing data
 
 - Users will be able to directly edit drafts
 
-- User account data, Agent Progress, and writing drafts will all be stored in a database
+- User account data, Agent writing progress, and writing drafts will all be stored in a database
+  - Users can decide which writing drafts to save, and which to discard  
 
 ## Nonfunctional Requirements
 
