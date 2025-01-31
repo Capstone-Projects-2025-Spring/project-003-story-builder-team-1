@@ -34,3 +34,9 @@ As a user, I should be able to edit the story created by agents to fit my needs.
 2. The user reads the results of the agent.
 3. The user clicks the edit button.
 4. The user makes any desired changes.
+
+## Use Case 6: Viewing Chat History
+As a user, I should be able to access the history of the conversations I've had with the story generator.
+1. The user clicks on the history button.
+2. The user chooses a story to view and clicks it.
+3. The user reads the story.
