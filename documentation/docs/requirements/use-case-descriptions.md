@@ -36,7 +36,20 @@ As a user, I should be able to edit the story created by agents to fit my needs.
 4. The user makes any desired changes.
 
 ## Use Case 6: Viewing Chat History
-As a user, I should be able to access the history of the conversations I've had with the story generator.
+As a user, I should be able to access the history of the conversations I've had with the agents, being able to view each agent's contributions.
 1. The user clicks on the "History" button.
 2. The user chooses a story to view and clicks it.
 3. The user reads the story.
+
+## Use Case 7: Voting for Stories
+As a user, after each chapter by various agents are presented, I can vote for which one is the best by certain predefined standards of what optimal storytelling is.
+1. Once stories are generates, the user can click on a selection for an agent's story to account for their vote.
+
+## Use Case 8: Vetoing Stories
+As a user, I should be able to veto the final vote of the agents on any chapter version, edit, or critique.
+1. After viewing the votes of the agents, the user can click an option to veto the decision made by the agents.
+2. The user can select a different option that the agents did not vote the highest instead.
+
+## Use Case 9: Critiquing the Stories
+As a user, at any breakpoint in the story editing process, I should be able to offer a critique of either the story or the critique produced by the agents.
+1. After a breakpoint in the agent's writing process, the user can input a critique of the agent's work.
