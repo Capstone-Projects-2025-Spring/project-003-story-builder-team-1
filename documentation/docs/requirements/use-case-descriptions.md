@@ -62,9 +62,9 @@ As a user, I should be able to veto the final vote of the agents on any chapter 
 
 ## Use Case 10: Critiquing the Stories
 As a user, at any breakpoint in the story editing process, I should be able to offer a critique of either the story or the critique produced by the agents.
-1. After a breakpoint in the agent's writing process, the user can click and start a critique
+1. After a breakpoint in the agent's writing process, the user can click "Start a Critique"
 2. The user writes their critique of the agent's work. 
-3. The user clicks enter to submit the critique.
+3. The user clicks "Enter" to submit the critique.
 
 ## Use Case Diagram
 ![Use Case Diagram](https://github.com/user-attachments/assets/034281ac-9e7c-4f28-9019-b26aaeb3db4f)
