@@ -10,7 +10,7 @@ As a user, it is crucial that I have an account that stores my stories, agents, 
 2. The user enters their information: email, password, username, etc. If the information is invalid, the user will be prompted to try again.
 3. The user clicks "Register". 
 4. The user enters their email/username and password and clicks "Sign In".
-5. To delete or update the user goes to setting and selects the desired option from the menu.
+5. To delete the account or update account settings, the user goes to the Settings menu and selects the desired option from the menu.
 
 ## Use Case 2: Agent Creation
 As a user, I want to create an agent, and or specify who the agent should try to mimic, to help beginning the story writing process.
