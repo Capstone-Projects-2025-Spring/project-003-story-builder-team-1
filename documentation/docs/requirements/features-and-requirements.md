@@ -27,7 +27,7 @@ sidebar_position: 4
 
 - Users will be able to directly edit drafts
 
-- User account data, Agent writing progress, and writing drafts will all be stored in a database
+- User account data and Agent writing progress will all be stored in a database
   - Users can decide which writing drafts to save, and which to discard  
 
 ## Nonfunctional Requirements
