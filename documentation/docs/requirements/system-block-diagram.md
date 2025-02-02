@@ -3,7 +3,7 @@ sidebar_position: 2
 ---
 
 # System Block Diagram
-![System Block Diagram](../documentation/static/img/System_Block_Diagram.png)
+![System Block Diagram](../../documentation/static/img/System_Block_Diagram.png)
 
 # Description
 This image represents a high-level architecture for an AI-powered storytelling web application. 
