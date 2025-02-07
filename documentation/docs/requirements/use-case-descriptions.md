@@ -22,7 +22,7 @@ As a user, I want to create an Agent, and or specify who the Agent should try to
 As a user, I should be able to locate an Agent and delete it.
 1. The user selects the story the Agent is involved in.
 2. The user selects the Agent.
-3. The user clicks "Delete Agent"
+3. The user clicks "Delete Agent".
 
  ## Use Case 4: Human Input vs Agents Only
  As a user, I want to be able to choose whether or not I want to be an active part of the writing process, or if the Agents should handle everything.
@@ -62,7 +62,7 @@ As a user, I should be able to veto the final vote of the Agents on any chapter 
 
 ## Use Case 10: Critiquing the Stories
 As a user, at any breakpoint in the story editing process, I should be able to offer a critique of either the story or the critique produced by the Agents.
-1. After a breakpoint in the Agent's writing process, the user can click "Start a Critique"
+1. After a breakpoint in the Agent's writing process, the user can click "Start a Critique".
 2. The user writes their critique of the Agent's work. 
 3. The user clicks "Enter" to submit the critique.
 
