@@ -8,16 +8,20 @@ This project will utilize Large Language Models (LLMs) to dynamically create sto
 
 This project was tested and developed using the following tools:
 
-Google Chrome 134.0.6998.3
+  - Github
 
-Javascript ES2024
-
-Frontend: 
-  - React.js 19.0.0
-  - HTML5
-
-Backend: 
-  - Express.js 5.0.1
-  - Node.js 23.7.0
-  - Deepseek-V3
-  - SQL 16.0.4175.1
+  - Visual Studio Code 1.97
+    
+  - Google Chrome 134.0.6998.3
+    
+  - Javascript ES2024
+    
+  - Frontend: 
+    - React.js 19.0.0
+    - HTML5
+      
+  - Backend: 
+    - Express.js 5.0.1
+    - Node.js 23.7.0
+    - Deepseek-V3
+    - SQL 16.0.4175.1
