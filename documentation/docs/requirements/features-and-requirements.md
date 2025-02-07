@@ -38,3 +38,5 @@ sidebar_position: 4
 - User can give both story details and response feedback by writing text, attaching documents, or giving voice messages
 - Agents will be able to ask questions to better understand user input, and the user can also ask questions to the Agents
 - The user will be able to track the amount of occurences of characters or specified keywords within an Agent's draft
+- The Agents will use objective measures, such as grammar, punctuation, and story continuity validation in order to determine which story to vote for
+- 
