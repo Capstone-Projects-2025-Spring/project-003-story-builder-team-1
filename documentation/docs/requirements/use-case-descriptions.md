@@ -20,9 +20,10 @@ As a user, I want to create an Agent, and or specify who the Agent should try to
 
 ## Use Case 3: Agent Deletion
 As a user, I should be able to locate an Agent and delete it.
-1. The user selects the story the Agent is involved in.
-2. The user selects the Agent.
-3. The user clicks "Delete Agent".
+1. The user selects the options button.
+2. The user selects the agent button.
+3. The user clicks on the desired agent.
+4. The user selects "Delete Agent".
 
  ## Use Case 4: Human Input vs Agents Only
  As a user, I want to be able to choose whether or not I want to be an active part of the writing process, or if the Agents should handle everything.
