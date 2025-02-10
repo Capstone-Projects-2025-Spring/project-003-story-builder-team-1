@@ -28,6 +28,7 @@ sidebar_position: 4
   - Users will be able to revert to a previous progress point or quickly train another agent with existing data.
 
 - Users will be able to directly edit drafts.
+  - Users can also edit previous drafts from an earlier point in the drafting process
 
 - User account data and Agent writing progress will all be stored in a database.
   - Users can decide which writing drafts to save, and which to discard.
