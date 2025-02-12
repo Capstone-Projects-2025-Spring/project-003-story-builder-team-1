@@ -24,7 +24,7 @@ stateDiagram-v2
          Vote: Agents Vote on which story they believe to be the best
 
          Vote --> Critique
-         Critique: Agents give critiques of other Agents' drafts
+         Critique: Agents give critiques of Winning Draft
 
          Critique --> Critique_Vote
          Critique_Vote: Agents vote on which Critiques to focus on
