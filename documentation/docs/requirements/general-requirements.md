@@ -24,4 +24,4 @@ This project was tested and developed using the following tools:
     - Express.js 5.0.1
     - Node.js 23.7.0
     - Deepseek-V3
-    - SQL 16.0.4175.1
+    - MongoDB 8.0.4
