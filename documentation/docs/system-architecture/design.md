@@ -1,7 +1,7 @@
 ---
 sidebar_position: 1
 ---
-## State Diagram
+## Agent Writing Process State Diagram
  ```mermaid
 stateDiagram-v2
     [*] --> Story_Drafting: Agents Receives User Story Prompt
