@@ -1,6 +1,7 @@
 ---
 sidebar_position: 1
 ---
+## State Diagram
  ```mermaid
 stateDiagram-v2
     [*] --> Story_Drafting: Agents Receives User Story Prompt
@@ -43,6 +44,19 @@ stateDiagram-v2
    Story_Drafting --> [*]: Story is Saved
 
 ```
+## Sequence Diagrams
+
+### Account Creation
+![Account Creation Sequence Diagram drawio](https://github.com/user-attachments/assets/a3726231-ee86-45f3-a440-ff35f56d238e)
+
+### Account Deletion
+Please refer to the Account Creation Diagram before looking at the Account Deletion.
+
+![Account Deletion Sequence Diagram drawio](https://github.com/user-attachments/assets/7baae06e-798d-4996-b338-453ffe22a7e1)
+
+### Agent Creation
+![Agent Creation Sequence Diagram drawio](https://github.com/user-attachments/assets/8089b7f3-8ea1-4931-b2a4-8f71baebd486)
+
 **Purpose**
 
 The Design Document - Part I Architecture describes the software architecture and how the requirements are mapped into the design. This document will be a combination of diagrams and text that describes what the diagrams are showing.
