@@ -30,10 +30,10 @@ As a user, I should be able to locate an Agent and delete it.
  1. The user provides the initial prompt for the Agents to beginning the story creation process.
  2. The user chooses between two options, Manual Mode (Agents stop and wait for further user input) or Automatic Mode (Agents complete all steps of the creation process including voting, critiquing and editing).
 
-## Use Case 5: Manual Mode Inputs
+## Use Case 5: Choosing Involvement
 As a user, it is crucial that I control which parts of the story writing process I want to be directly involved in. 
 1. The user provides the inital prompt for the Agents to beginning the story creation process.
-2. The user clicks "Manual Mode".
+2. The user clicks "Options".
 3. The user checks off all the parts of the story writing process they wish to be a part of, forcing the Agents to stop their processes and wait for user input at these parts.
 
 ## Use Case 6: Editing Agent Work
