@@ -1,4 +1,3 @@
----
 sidebar_position: 1
 ---
 ## Agent Drafting Process State Diagram
