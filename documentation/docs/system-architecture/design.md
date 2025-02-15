@@ -1,3 +1,4 @@
+![Editing Agent Work Sequence Diagram drawio](https://github.com/user-attachments/assets/cc73ef1a-232b-4ed3-a991-729c3152155b)
 ---
 sidebar_position: 1
 ---
@@ -66,7 +67,7 @@ Please refer to the Selecting Writing Mode sequence diagram as this is a continu
 ![Involvement Options Sequence Diagram drawio](https://github.com/user-attachments/assets/bf2543e1-3738-4a96-b3f6-413b2aa71735)
 
 ### Editing Agent Work
-![Editing Agent Work drawio](https://github.com/user-attachments/assets/f6da6116-688b-4b3a-8a62-4a07e9b26941)
+![Editing Agent Work Sequence Diagram drawio](https://github.com/user-attachments/assets/905326e6-947b-49ac-8291-d5352aa3f13b)
 
 
 **Purpose**
