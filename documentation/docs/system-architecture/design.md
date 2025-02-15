@@ -65,6 +65,10 @@ Please refer to the Selecting Writing Mode sequence diagram as this is a continu
 
 ![Involvement Options Sequence Diagram drawio](https://github.com/user-attachments/assets/bf2543e1-3738-4a96-b3f6-413b2aa71735)
 
+### Editing Agent Work
+![Editing Agent Work drawio](https://github.com/user-attachments/assets/f6da6116-688b-4b3a-8a62-4a07e9b26941)
+
+
 **Purpose**
 
 The Design Document - Part I Architecture describes the software architecture and how the requirements are mapped into the design. This document will be a combination of diagrams and text that describes what the diagrams are showing.
