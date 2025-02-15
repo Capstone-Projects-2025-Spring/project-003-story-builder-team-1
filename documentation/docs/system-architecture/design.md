@@ -1,4 +1,3 @@
-![Editing Agent Work Sequence Diagram drawio](https://github.com/user-attachments/assets/cc73ef1a-232b-4ed3-a991-729c3152155b)
 ---
 sidebar_position: 1
 ---
