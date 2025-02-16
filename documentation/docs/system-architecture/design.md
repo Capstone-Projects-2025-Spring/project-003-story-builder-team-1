@@ -1,6 +1,101 @@
 ---
 sidebar_position: 1
 ---
+## Frontend Class Diagram
+```mermaid
+classDiagram
+    class App {
+        -currentPage: string
+        -userSession: User
+        +render()
+        +navigateTo(page: string) void
+        +setUserSession(user: User) void
+    }
+
+    class LoginPage {
+        -username: string
+        -password: string
+        +handleLogin() void
+        +validateInput() boolean
+        +displayErrorMessage() void
+        +redirectToHomePage()void
+    }
+
+    class HomePage {
+        -userStories: Story[]
+        +showStoryList() void
+        +createNewStory() void
+        +navigateToAgentCreationPage() void
+    }
+
+    class AgentCreationPage {
+        -agentName: string
+        +createAgent() void
+        +validateAgentDetails() boolean
+        +confirmAgentCreation() void
+        +showSuccessMessage() void
+        +redirectToHomePage() void
+    }
+
+    class AgentSelectionPage {
+        -availableAgents: Agent[]
+        -selectedAgents: Agent[]
+        +displayAvailableAgents() void
+        +selectAgent() void
+        +removeAgent() void
+        +displaySelectedAgents() void
+        +navigateToStoryWritingPage() void
+        +redirectToHomePage() void
+    }
+
+    class StoryWritingPage {
+        -currentChapter: int
+        -storyPrompt: string
+        -agentVersions: string[]
+        -critique: string
+        +displayStory() void
+        +collectVotes() void
+        +showAgentChapters() void
+        +displayVotingResults() void
+        +submitCritique() void
+        +selectChapterToCritique() void
+        +displayRevisedChapter() void
+    }
+
+    class Story {
+        -storyTitle: string
+        -chapters: Chapter[]
+    }
+
+    class Chapter {
+        -chapterNumber: int
+        -chapterTitle: string
+        -chapterContent: string
+    }
+
+    class User {
+        -username: string
+        -authToken: string
+    }
+
+    class Agent {
+        -agentName: string
+    }
+
+    App --> User : uses
+    App --> LoginPage
+    LoginPage --> HomePage : navigates to
+    HomePage --> Story : uses
+    Story --> Chapter : uses
+    HomePage --> AgentCreationPage : navigates to
+    HomePage --> AgentSelectionPage : navigates to
+    AgentSelectionPage --> Agent : uses
+    AgentSelectionPage --> StoryWritingPage : navigates to
+    AgentCreationPage --> HomePage : navigates to
+    AgentSelectionPage --> HomePage : navigates to
+    StoryWritingPage --> HomePage : navigates to
+```
+
 ## Agent Drafting Process State Diagram
  ```mermaid
 stateDiagram-v2
