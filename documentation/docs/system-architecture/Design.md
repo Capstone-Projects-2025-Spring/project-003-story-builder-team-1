@@ -183,8 +183,8 @@ Please refer to the Initial Writing Process sequence diagram as this is a contin
 
 ### Critiquing Stories
 Please refer to the Initial Writing Process sequence diagram as this is a continuation.
+![Critiquing Stories Sequence Diagram drawio](https://github.com/user-attachments/assets/f7a3d559-95c9-45b5-a69c-094d10144f6d)
 
-![Critiquing Stories Sequence Diagram drawio](https://github.com/user-attachments/assets/1ff25e8e-60a7-4f6e-8470-8c6ba5545ebc)
 
 ### AI Agent Ecosystem
 Please refer to the Initial Writing Process sequence diagram as this is a continuation.
