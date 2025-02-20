@@ -19,8 +19,8 @@ app.get('/', (req, res) => {
 app.post('/post', (req, res) => {
     const input = req.body;
     datum = input.data;
-    console.log("POST Input: " + datum);
-    res.send("Input Received: " + datum);
+    console.log("POST Input: " + JSON.stringify(input));
+    res.send("Input Received: " + JSON.stringify(input));
 })
 
 app.get('/post', (req, res) => {
