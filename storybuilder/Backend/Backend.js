@@ -7,18 +7,23 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, "../Frontend/public")));
 
-//Rendering React.js Server
+//Redirects Any Other Page to the Home Page
 app.get('/*', (req, res) => {
+    res.redirect('/');
+  });
+
+//Rendering React.js Server
+app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, "../Frontend/public/index.html"));
 });
 
-//Receiving and (For Now) Displaying Input from Text Box
-app.post('/*', (req, res) => {
+//Receiving and (For Now) Displaying Input from Text Box in Console
+app.post('/', (req, res) => {
     const input = JSON.stringify(req.body);
     console.log("POST Input: " + input);
 });
 
-// Start the server
+//Start the Server
 app.listen(3000, () => {
     console.log('Local Host: http://localhost:3000');
 });

@@ -13,6 +13,7 @@ function App() {
   const handleConfirmClick = () => {
     setConfirmedString(inputString);
 
+    //Converts String to JSON data
     const data = {'Content': inputString}
 
     //POSTing data to Backend
@@ -20,7 +21,7 @@ function App() {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify(data)
-    })
+    });
   };
 
   return (
