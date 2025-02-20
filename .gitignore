@@ -11,3 +11,8 @@
 #Express Config Files
 node_modules
 *.json
+
+#React Config Files
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
