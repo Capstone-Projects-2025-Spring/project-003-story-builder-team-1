@@ -1,14 +1,35 @@
 const express = require('express');
 const app = express();
 
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+var datum = null;
+
 app.get('/', (req, res) => {
     const query = req.query;
-    console.log('Received GET data:', query.data);
-    var output = query.data.replace("Input", "Output");
-    res.send(output);
-  })
+    console.log('Raw GET data:' + query.data);
+    console.log('Raw GET message:' + query.message);
+
+    var data_output = query.data.replace("Input", "Output");
+    var message_output = query.message.replace("Input", "Output");
+    res.send(data_output + " " + message_output);
+})
+
+app.post('/post', (req, res) => {
+    const input = req.body;
+    datum = input.data;
+    console.log("POST Input: " + datum);
+    res.send("Input Received: " + datum);
+})
+
+app.get('/post', (req, res) => {
+    res.send("POST Data: " + datum);
+    res.send();
+})
 
 // Start the server
 app.listen(3000, () => {
-    console.log('Server: http://localhost:3000?data=This_Is_Input');
+    console.log('GET: http://localhost:3000');
+    console.log('POST: http://localhost:3000/post');
 });
