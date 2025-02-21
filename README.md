@@ -35,10 +35,10 @@ Many AI clients and web applications exist in order to make it easier for non-te
 <table>
 <tr>
     <td align="center">
-        <a href="https://github.com/ApplebaumIan">
-            <img src="https://avatars.githubusercontent.com/u/9451941?v=4" width="100;" alt="ApplebaumIan"/>
+        <a href="https://github.com/JawnnyD">
+            <img src="https://media.licdn.com/dms/image/v2/D5603AQFm7qBiz7RFJw/profile-displayphoto-shrink_800_800/profile-displayphoto-shrink_800_800/0/1677198760248?e=1745452800&v=beta&t=G1zs2Syy5fzCnQ5KwwJpphi0q95V1fuWplLmwP2-Nt4" width="100;" alt="DangJohn"/>
             <br />
-            <sub><b>Ian Tyler Applebaum</b></sub>
+            <sub><b>John Dang</b></sub>
         </a>
     </td>
     <td align="center">
