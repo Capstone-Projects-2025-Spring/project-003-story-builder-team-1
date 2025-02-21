@@ -2,6 +2,9 @@ import React, {useState} from 'react';
 import ReactDOM from 'react-dom/client';
 import './App.css';
 
+const backend = 'http://localhost:8080/';
+const text_box = backend + 'api/text_box/'; 
+
 function App() {
   const [inputString, setInputString] = useState('');
   const [confirmedString, setConfirmedString] = useState('');
@@ -17,7 +20,7 @@ function App() {
     const data = {'Content': inputString}
 
     //POSTing data to Backend
-    fetch('http://localhost:3000', {
+    fetch(text_box, {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify(data)
