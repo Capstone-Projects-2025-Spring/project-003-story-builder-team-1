@@ -130,6 +130,8 @@ This group developed their API documentation by hand ([Design Document Part 2 AP
     Home_Page --> Story_Writing : contains
 ```
 
+# API Design Document
+
 ## App Class
 **Purpose:** Manages the user session and controls page rendering based on the session state (login or logged out).
 
@@ -356,3 +358,38 @@ This group developed their API documentation by hand ([Design Document Part 2 AP
 - **Post-conditions:** The revised chapter is displayed.
 - **Parameters:** None
 - **Return value:** None
+
+---
+
+## Story Class
+**Purpose:** Represents a story created by the user, which consists of multiple chapters.
+
+### Data Fields:
+- `story_title: string`: The title of the story.
+- `chapters: Chapter[]`: A list of `Chapter` objects that make up the story.
+
+---
+
+## Chapter Class
+**Purpose:** Represents a single chapter in a story.
+
+### Data Fields:
+- `chapter_number: int`: The chapter number.
+- `chapter_title: string`: The title of the chapter.
+- `chapter_content: string`: The content of the chapter.
+
+---
+
+## Agent Class
+**Purpose:** Represents an agent that contributes to writing a story chapter or provides critique.
+
+### Data Fields:
+- `agent_name: string`: The name of the agent.
+
+---
+
+## User Class
+**Purpose:** Represents the user of the application, typically the one logged in.
+
+### Data Fields:
+- `username: string`: The username
