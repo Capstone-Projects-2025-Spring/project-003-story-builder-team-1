@@ -92,8 +92,6 @@ sidebar_position: 2
     Home_Page --> Story_Writing : contains
 ```
 
-# API Design Document
-
 ## App Class
 **Purpose:** Manages the user session and controls page rendering based on the session state (login or logged out).
 
