@@ -25,6 +25,13 @@ function App() {
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify(data)
     })
+    // handle response
+    .then((response) => {
+      if (!response.ok) throw new Error(`Server error: ${response.status}`);
+      return response.json();
+    })
+    .then((data) => console.log('Success:', data))
+    .catch((error) => console.error('Fetch Error:', error));
   };
 
   return (
