@@ -5,95 +5,88 @@ sidebar_position: 1
 ```mermaid
 classDiagram
     class App {
-        -currentPage: string
-        -userSession: User
+        -user_session: User
         +render()
-        +navigateTo(page: string) void
-        +setUserSession(user: User) void
+        +set_user_session(user: User) void
     }
 
-    class LoginPage {
+    class Login_Page {
         -username: string
         -password: string
-        +handleLogin() void
-        +validateInput() boolean
-        +displayErrorMessage() void
-        +redirectToHomePage()void
+        +handle_login() void
+        +validate_input() boolean
+        +display_error_message() void
+        +redirect_to_home_page() void
     }
 
-    class HomePage {
-        -userStories: Story[]
-        +showStoryList() void
-        +createNewStory() void
-        +navigateToAgentCreationPage() void
+    class Home_Page {
+        -user_stories: Story[]
+        +show_story_list() void
+        +create_new_story() void
+        +open_agent_creation_modal() void
+        +open_agent_selection_modal() void
     }
 
-    class AgentCreationPage {
-        -agentName: string
-        +createAgent() void
-        +validateAgentDetails() boolean
-        +confirmAgentCreation() void
-        +showSuccessMessage() void
-        +redirectToHomePage() void
+    class Agent_Creation {
+        -agent_name: string
+        +create_agent() void
+        +confirm_agent_creation() void
+        +show_success_message() void
     }
 
-    class AgentSelectionPage {
-        -availableAgents: Agent[]
-        -selectedAgents: Agent[]
-        +displayAvailableAgents() void
-        +selectAgent() void
-        +removeAgent() void
-        +displaySelectedAgents() void
-        +navigateToStoryWritingPage() void
-        +redirectToHomePage() void
+    class Agent_Selection {
+        -available_agents: Agent[]
+        -selected_agents: Agent[]
+        +display_available_agents() void
+        +select_agent() void
+        +remove_agent() void
+        +display_selected_agents() void
     }
 
-    class StoryWritingPage {
-        -currentChapter: int
-        -storyPrompt: string
-        -agentVersions: string[]
+    class Story_Writing {
+        -current_chapter: int
+        -story_prompt: string
+        -agent_versions: string[]
         -critique: string
-        +displayStory() void
-        +collectVotes() void
-        +showAgentChapters() void
-        +displayVotingResults() void
-        +submitCritique() void
-        +selectChapterToCritique() void
-        +displayRevisedChapter() void
+        +display_story() void
+        +collect_votes() void
+        +show_agent_chapters() void
+        +display_voting_results() void
+        +submit_critique() void
+        +select_chapter_to_critique() void
+        +display_revised_chapter() void
     }
 
     class Story {
-        -storyTitle: string
+        -story_title: string
         -chapters: Chapter[]
     }
 
     class Chapter {
-        -chapterNumber: int
-        -chapterTitle: string
-        -chapterContent: string
+        -chapter_number: int
+        -chapter_title: string
+        -chapter_content: string
     }
 
     class User {
         -username: string
-        -authToken: string
+        -auth_token: string
     }
 
     class Agent {
-        -agentName: string
+        -agent_name: string
     }
 
     App --> User : uses
-    App --> LoginPage
-    LoginPage --> HomePage : navigates to
-    HomePage --> Story : uses
+    App --> Login_Page : renders
+    App --> Home_Page : renders
+    Login_Page --> Home_Page : navigates to
+    Home_Page --> Story : uses
     Story --> Chapter : uses
-    HomePage --> AgentCreationPage : navigates to
-    HomePage --> AgentSelectionPage : navigates to
-    AgentSelectionPage --> Agent : uses
-    AgentSelectionPage --> StoryWritingPage : navigates to
-    AgentCreationPage --> HomePage : navigates to
-    AgentSelectionPage --> HomePage : navigates to
-    StoryWritingPage --> HomePage : navigates to
+    Home_Page --> Agent_Creation : contains
+    Home_Page --> Agent_Selection : contains
+    Agent_Selection --> Agent : uses
+    Home_Page --> Story_Writing : contains
 ```
 
 ## Agent Drafting Process State Diagram
