@@ -6,18 +6,18 @@ const backend = 'http://localhost:8080/';
 const text_box = backend + 'api/text_box/'; 
 
 function App() {
-  const [inputString, setInputString] = useState('');
-  const [confirmedString, setConfirmedString] = useState('');
+  const [input_string, set_input_string] = useState('');
+  const [confirmed_string, set_confirmed_string] = useState('');
 
-  const handleInputChange = (event) => {
-    setInputString(event.target.value);
+  const handle_input_change = (event) => {
+    set_input_string(event.target.value);
   };
 
-  const handleConfirmClick = () => {
-    setConfirmedString(inputString);
+  const handle_confirm_click = () => {
+    set_confirmed_string(input_string);
 
     //Converts String to JSON data
-    const data = {'Content': inputString}
+    const data = {'Content': input_string}
 
     //POSTing data to Backend
     fetch(text_box, {
@@ -43,12 +43,12 @@ function App() {
       <div className="textbox">
         <input
           type="text"
-          value={inputString}
-          onChange={handleInputChange}
+          value={input_string}
+          onChange={handle_input_change}
           placeholder="Enter text"
         />
-        <button onClick={handleConfirmClick}>Confirm</button>
-        {confirmedString && <p>String inputted: {confirmedString}</p>}
+        <button onClick={handle_confirm_click}>Confirm</button>
+        {confirmed_string && <p>String inputted: {confirmed_string}</p>}
       </div>
     </div>
   );
