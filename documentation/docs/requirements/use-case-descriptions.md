@@ -3,14 +3,12 @@ sidebar_position: 5
 ---
 
 # Use-case descriptions
-## Use Case 1: Account Management
-As a user, it is crucial that I have an account that stores my stories, Agents, and their history, and it is crucial that I can update and delete this account.
-
+## Use Case 1: Account Creation
+As a user, it is crucial that I have an account that stores my stories, Agents, and their history.
 1. The user accesses the resource and is prompted to sign in or make an account.
 2. The user enters their information: email, password, username, etc. If the information is invalid, the user will be prompted to try again.
 3. The user clicks "Register". 
 4. The user enters their email/username and password and clicks "Sign In".
-5. To delete the account or update account settings, the user clicks the "Settings" menu and selects the desired option from the menu.
 
 ## Use Case 2: Agent Creation
 As a user, I want to create an Agent, and or specify who the Agent should try to mimic, to help beginning the story writing process.
