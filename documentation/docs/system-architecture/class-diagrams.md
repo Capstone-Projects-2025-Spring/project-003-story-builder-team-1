@@ -353,3 +353,53 @@ sidebar_position: 2
 
 ### Data Fields:
 - `username: string`: The username
+
+```mermaid
+classDiagram
+direction RL
+
+Translator <.. Frontend
+DB_Tracker <.. Translator
+Database <.. DB_Tracker
+Courier <.. Translator
+Translator <|-- Courier
+Translator <.. Courier
+LLM <.. Courier
+Prompt_Admin <.. Courier
+
+class Translator {
+   +story_bank: LinkedList
+   +agent_instances: int
+
+   +rank_format() void
+   +make_courier() int
+   get_story_bank() LinkedList
+}
+
+class DB_Tracker {
+   +DB_key: String
+
+   +DB_grab() JSON
+   +newstyle() JSON
+
+}
+
+class Courier {
+   +style: String
+   +prompt_info: JSON
+   +JUDGING: int
+   +INSTANCENUM: int
+   +API_KEY: String
+   +local_story: String
+
+   +story_call(int key, String prompt) String
+   +story_push(String local_story) void
+}
+
+class Prompt_Admin {
+   +refine_prompt: String
+   +generate_prompt: String
+
+   +get_prompt(String prompt_info) String
+}
+```
