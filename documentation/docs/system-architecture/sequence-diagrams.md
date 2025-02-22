@@ -44,3 +44,8 @@ This diagram assumes the sequence of events in [Initial Writing Story](#initial-
 
 ![Vetoing Stories Sequence Diagram drawio](https://github.com/user-attachments/assets/7a2d077a-2737-4b9a-936f-c27da21faf0d)
 
+## Use Case 10: Critiquing Stories
+This diagram assumes the sequence of events in [Initial Writing Story](#initial-writing-story-process-sequence-diagram) Process Sequence Diagram.
+
+![Critiquing Stories Sequence Diagram drawio](https://github.com/user-attachments/assets/78bec6d2-943e-4429-b429-d87205cb8348)
+
