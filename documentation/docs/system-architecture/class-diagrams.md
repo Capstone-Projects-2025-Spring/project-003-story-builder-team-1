@@ -354,6 +354,8 @@ sidebar_position: 2
 ### Data Fields:
 - `username: string`: The username
 
+
+
 ## Backend Class Diagram
 ```mermaid
 classDiagram
