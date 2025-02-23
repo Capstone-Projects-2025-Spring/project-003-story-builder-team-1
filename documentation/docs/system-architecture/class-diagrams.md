@@ -383,8 +383,11 @@ class DB_Tracker {
    +DB_key: String
 
    +DB_grab() JSON
-   +newstyle() JSON
-
+   +accountgrab(JSON info) JSON
+   +agent_grab() JSON
+   +new_account() JSON
+   +new_agent() JSON
+   +agent_dropdown() JSON
 }
 
 class Courier {
@@ -406,11 +409,6 @@ class Prompt_Admin {
    +rank_prompt: String
 
    +get_prompt(String prompt_info) String
-   +accountgrab(JSON info) JSON
-   +agent_grab() JSON
-   +new_account() JSON
-   +new_agent() JSON
-   +agent_dropdown() JSON
 }
 ```
 
@@ -428,7 +426,7 @@ class Prompt_Admin {
 
 #### `write_chapter(input: JSON): JSON` - Takes input from the frontend and sends it to the Courier instances. The courier instances will return their chapters to chapterbank.
 
-#### `get_chapter_bank(): Map` - Returns the entire chapter bank.
+#### `get_story_bank(): Map` - Returns the entire chapter bank.
 
 ## Courier Class:
 **Purpose**: The only class which will have several instances of itself running. It’s also the only class which directly accesses the LLM. Its main goal is to send prompts assembled by PromptAdmin from information sent by Translator in order to get input to further refine.
