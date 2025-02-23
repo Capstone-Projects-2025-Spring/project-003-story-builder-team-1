@@ -466,10 +466,10 @@ Prompt_Admin Class:
 ### Methods:
 #### `accountgrab(JSON info): JSON` -  Checks to see if account info is in the database. Used for login/signup.
 
-#### `agent_grab() JSON` - Checks if an agent is in the database and grabs all style and prompt info from its entry. This will be returned to the frontend.
+#### `agent_grab(): JSON` - Checks if an agent is in the database and grabs all style and prompt info from its entry. This will be returned to the frontend.
 
-#### `new_account() JSON` - Creates a new account in the database. Returns necessary login info.
+#### `new_account(): JSON` - Creates a new account in the database. Returns necessary login info.
 
-#### `new_agent() JSON` - Creates a new agent based on information entered in the frontend. This will be formatted and posted to one of the tables as a new entry that can be cited.
+#### `new_agent(): JSON` - Creates a new agent based on information entered in the frontend. This will be formatted and posted to one of the tables as a new entry that can be cited.
 
-#### `agent_dropdown() JSON` - Returns all agents in the database for user selection. 
+#### `agent_dropdown(): JSON` - Returns all agents in the database for user selection. 
