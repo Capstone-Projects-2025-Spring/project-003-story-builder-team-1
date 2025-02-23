@@ -402,7 +402,7 @@ class Courier {
 
    +story_call(int PLACEHOLDER, String key, String prompt) String
    +story_push(String local_story) void
-   +judge() Map
+   +judge() LinkedList
 }
 
 class Prompt_Admin {
@@ -430,7 +430,7 @@ class Prompt_Admin {
 
 #### `make_courier(): int` - Creates an instance of the Courier class. Returns the instance’s assigned number and key in the chapterbank.
 
-#### `get_story_bank(): Map` - Returns the entire chapter bank.
+#### `get_story_bank(): LinkedList` - Returns the entire chapter bank.
 
 ## Courier Class:
 **Purpose**: The only class which will have several instances of itself running. It’s also the only class which directly accesses the LLM. Its main goal is to send prompts assembled by PromptAdmin from information sent by Translator in order to get input to further refine.
@@ -438,7 +438,7 @@ class Prompt_Admin {
 ### Data Fields:
 - `style: String`: PLACEHOLDER
 - `prompt_info: JSON`: Information stored as a JSON var grabbed directly from the database and sent here from Translator. This will be cited constantly by the Courier instance to remind itself which agent it’s representing.
-- `INSTANCENUM: int `: The order an instance has in relation to the rest of the instances (4 indicates it’s the fourth instance, 3 if it’s third).
+- `INSTANCENUM: int`: The order an instance has in relation to the rest of the instances (4 indicates it’s the fourth instance, 3 if it’s third).
 - `API_KEY: String`: Points to the key which accesses the LLM (will NOT be stored here)
 - `local_story: String`: A copy of the original generated story the instance made in its first API call. Can be used for refinement and comparison.
 - `JUDGING: int`: PLACEHOLDER
@@ -448,7 +448,7 @@ class Prompt_Admin {
 
 #### `story_push(String local_story) : void` - PLACEHOLDER
 
-#### `judge(): Map` - Replaces the chapterbank structure in Translator with a new, ranked version no longer corresponding to instance numbers but to quality. The LLM will rank the chapters for us and this function will format the output to be presentable for React.
+#### `judge(): LinkedList` - Replaces the chapterbank structure in Translator with a new, ranked version no longer corresponding to instance numbers but to quality. The LLM will rank the chapters for us and this function will format the output to be presentable for React.
 
 ## Prompt_Admin Class:
 **Purpose**: The final step in the pipeline between accessing database agent info and communicating with the LLM. It assembles a prompt based on some templates which serve different purposes (i.e., generation, critique, and judgement). Only Courier will access this class, and it will send it information it’s sent by Translator.
