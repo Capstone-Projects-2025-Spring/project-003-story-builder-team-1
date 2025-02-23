@@ -444,6 +444,8 @@ class Prompt_Admin {
 ### Methods:
 #### `story_call(int PLACEHOLDER, String key, String prompt): JSON` - Sends the finished prompt over to the LLM, places the output locally (if it’s the first time) and in the shared data structure. 
 
+## `story_push(String local_story) : void` - PLACEHOLDER
+
 #### `judge(): Map` - Replaces the chapterbank structure in Translator with a new, ranked version no longer corresponding to instance numbers but to quality. The LLM will rank the chapters for us and this function will format the output to be presentable for React.
 
 ## Prompt_Admin Class:
