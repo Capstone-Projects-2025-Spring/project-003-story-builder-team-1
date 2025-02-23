@@ -418,8 +418,8 @@ class Prompt_Admin {
 **Purpose**: Superclass which is responsible for handling the output of the Courier instances and communicating with the frontend web pages. It is the only class those pages will communicate with directly in the backend besides DB_Tracker. Inside of it is a shared data structure where the instances store their chapters, as well as functions to rank, format and return a chapter.
 
 ### Data Fields:
-- `story_bank : Map` - Holds keys indicating which instance the  content belongs to, and values containing JSON objects grabbed from the LLM. This will be used to store final chapters as well as being a hub from which instances can judge each other’s products.
-- `agent_instances : int` - Keeps track of the number of Courier instances accessing the LLM. In case this can be set by the user later (or in case we want to return ALL of the chapters at once) the user can cite this field.
+- `story_bank: Map` - Holds keys indicating which instance the  content belongs to, and values containing JSON objects grabbed from the LLM. This will be used to store final chapters as well as being a hub from which instances can judge each other’s products.
+- `agent_instances: int` - Keeps track of the number of Courier instances accessing the LLM. In case this can be set by the user later (or in case we want to return ALL of the chapters at once) the user can cite this field.
 
 ### Methods:
 #### `writing_session(): void` - Creates all couriers, has them write and refine stories, and picks one to be the final judge.
@@ -446,13 +446,13 @@ class Prompt_Admin {
 
 #### `judge(): Map` - Replaces the chapterbank structure in Translator with a new, ranked version no longer corresponding to instance numbers but to quality. The LLM will rank the chapters for us and this function will format the output to be presentable for React.
 
-Prompt_Admin Class:
+## Prompt_Admin Class:
 **Purpose**: The final step in the pipeline between accessing database agent info and communicating with the LLM. It assembles a prompt based on some templates which serve different purposes (i.e., generation, critique, and judgement). Only Courier will access this class, and it will send it information it’s sent by Translator.
 
 ### Data Fields:
-- `refineprompt : String`: Template for chapter refinement. Relevant information will be added to this and the rest of these fields in getprompt.
-- `generateprompt : String`: Template for chapter generation.
-- `rankprompt : String`: Template for ranking ALL chapters after refinement is done.
+- `refineprompt: String`: Template for chapter refinement. Relevant information will be added to this and the rest of these fields in getprompt.
+- `generateprompt: String`: Template for chapter generation.
+- `rankprompt: String`: Template for ranking ALL chapters after refinement is done.
 
 ### Methods:
 #### `get_prompt(String promptinfo, String type): String` - Assembles a prompt by placing keywords in the promptinfo JSON object into one of the templates above, with ‘type’ deciding which to use.
@@ -461,7 +461,7 @@ Prompt_Admin Class:
 **Purpose**: The class that handles all database access. It is a CRUD API can grab any information from any table in the database for other classes to use, be it for login verification or prompt history.
 
 ### Data Fields:
-- `DB_key : String`: Field which links to the DB (obviously the key itself will not be stored here).
+- `DB_key: String`: Field which links to the DB (obviously the key itself will not be stored here).
 
 ### Methods:
 #### `accountgrab(JSON info): JSON` -  Checks to see if account info is in the database. Used for login/signup.
