@@ -391,18 +391,85 @@ class Courier {
    +style: String
    +prompt_info: JSON
    +JUDGING: int
-   +INSTANCENUM: int
+   +INSTANCE_NUM: int
    +API_KEY: String
    +local_story: String
 
-   +story_call(int key, String prompt) String
+   +story_call(int PLACEHOLDER, String key, String prompt) String
    +story_push(String local_story) void
+   +judge() Map
 }
 
 class Prompt_Admin {
    +refine_prompt: String
    +generate_prompt: String
+   +rank_prompt: String
 
    +get_prompt(String prompt_info) String
+   +accountgrab(JSON info) JSON
+   +agent_grab() JSON
+   +new_account() JSON
+   +new_agent() JSON
+   +agent_dropdown() JSON
 }
 ```
+
+## Translator Class:
+**Purpose**: Superclass which is responsible for handling the output of the Courier instances and communicating with the frontend web pages. It is the only class those pages will communicate with directly in the backend besides DB_Tracker. Inside of it is a shared data structure where the instances store their chapters, as well as functions to rank, format and return a chapter.
+
+### Data Fields:
+- `story_bank : Map` - Holds keys indicating which instance the  content belongs to, and values containing JSON objects grabbed from the LLM. This will be used to store final chapters as well as being a hub from which instances can judge each other’s products.
+- `agent_instances : int` - Keeps track of the number of Courier instances accessing the LLM. In case this can be set by the user later (or in case we want to return ALL of the chapters at once) the user can cite this field.
+
+### Methods:
+#### `writing_session(): void` - Creates all couriers, has them write and refine stories, and picks one to be the final judge.
+
+#### `make_courier(): int` - Creates an instance of the Courier class. Returns the instance’s assigned number and key in the chapterbank.
+
+#### `write_chapter(input: JSON): JSON` - Takes input from the frontend and sends it to the Courier instances. The courier instances will return their chapters to chapterbank.
+
+#### `get_chapter_bank(): Map` - Returns the entire chapter bank.
+
+## Courier Class:
+**Purpose**: The only class which will have several instances of itself running. It’s also the only class which directly accesses the LLM. Its main goal is to send prompts assembled by PromptAdmin from information sent by Translator in order to get input to further refine.
+
+### Data Fields:
+- `style: String`: PLACEHOLDER
+- `prompt_info: JSON`: Information stored as a JSON var grabbed directly from the database and sent here from Translator. This will be cited constantly by the Courier instance to remind itself which agent it’s representing.
+- `INSTANCENUM: int `: The order an instance has in relation to the rest of the instances (4 indicates it’s the fourth instance, 3 if it’s third).
+- `API_KEY: String`: Points to the key which accesses the LLM (will NOT be stored here)
+- `local_story: String`: A copy of the original generated story the instance made in its first API call. Can be used for refinement and comparison.
+- `JUDGING: int`: PLACEHOLDER
+
+### Methods:
+#### `story_call(int PLACEHOLDER, String key, String prompt): JSON` - Sends the finished prompt over to the LLM, places the output locally (if it’s the first time) and in the shared data structure. 
+
+#### `judge(): Map` - Replaces the chapterbank structure in Translator with a new, ranked version no longer corresponding to instance numbers but to quality. The LLM will rank the chapters for us and this function will format the output to be presentable for React.
+
+Prompt_Admin Class:
+**Purpose**: The final step in the pipeline between accessing database agent info and communicating with the LLM. It assembles a prompt based on some templates which serve different purposes (i.e., generation, critique, and judgement). Only Courier will access this class, and it will send it information it’s sent by Translator.
+
+### Data Fields:
+- `refineprompt : String`: Template for chapter refinement. Relevant information will be added to this and the rest of these fields in getprompt.
+- `generateprompt : String`: Template for chapter generation.
+- `rankprompt : String`: Template for ranking ALL chapters after refinement is done.
+
+### Methods:
+#### `get_prompt(String promptinfo, String type): String` - Assembles a prompt by placing keywords in the promptinfo JSON object into one of the templates above, with ‘type’ deciding which to use.
+
+## DB_Tracker.js:
+**Purpose**: The class that handles all database access. It is a CRUD API can grab any information from any table in the database for other classes to use, be it for login verification or prompt history.
+
+### Data Fields:
+- `DB_key : String`: Field which links to the DB (obviously the key itself will not be stored here).
+
+### Methods:
+#### `accountgrab(JSON info): JSON` -  Checks to see if account info is in the database. Used for login/signup.
+
+#### `agent_grab() JSON` - Checks if an agent is in the database and grabs all style and prompt info from its entry. This will be returned to the frontend.
+
+#### `new_account() JSON` - Creates a new account in the database. Returns necessary login info.
+
+#### `new_agent() JSON` - Creates a new agent based on information entered in the frontend. This will be formatted and posted to one of the tables as a new entry that can be cited.
+
+#### `agent_dropdown() JSON` - Returns all agents in the database for user selection. 
