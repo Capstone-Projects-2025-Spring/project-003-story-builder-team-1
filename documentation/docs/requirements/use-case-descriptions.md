@@ -64,7 +64,3 @@ As a user, at any breakpoint in the story editing process, I should be able to o
 1. After a breakpoint in the Agent's writing process, the user can click "Start a Critique".
 2. The user writes their critique of the Agent's work. 
 3. The user clicks "Enter" to submit the critique.
-
-## Use Case Diagram
-![Use Case Diagram](https://github.com/user-attachments/assets/034281ac-9e7c-4f28-9019-b26aaeb3db4f)
-
