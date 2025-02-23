@@ -438,10 +438,11 @@ class Prompt_Admin {
 ### Data Fields:
 - `style: String`: PLACEHOLDER
 - `prompt_info: JSON`: Information stored as a JSON var grabbed directly from the database and sent here from Translator. This will be cited constantly by the Courier instance to remind itself which agent it’s representing.
+- `JUDGING: int`: PLACEHOLDER
 - `INSTANCENUM: int`: The order an instance has in relation to the rest of the instances (4 indicates it’s the fourth instance, 3 if it’s third).
 - `API_KEY: String`: Points to the key which accesses the LLM (will NOT be stored here)
 - `local_story: String`: A copy of the original generated story the instance made in its first API call. Can be used for refinement and comparison.
-- `JUDGING: int`: PLACEHOLDER
+
 
 ### Methods:
 #### `story_call(int PLACEHOLDER, String key, String prompt): JSON` - Sends the finished prompt over to the LLM, places the output locally (if it’s the first time) and in the shared data structure. 
@@ -468,6 +469,8 @@ class Prompt_Admin {
 - `DB_key: String`: Field which links to the DB (obviously the key itself will not be stored here).
 
 ### Methods:
+#### `DB_grab(): JSON` - PLACEHOLDER
+
 #### `accountgrab(JSON info): JSON` -  Checks to see if account info is in the database. Used for login/signup.
 
 #### `agent_grab(): JSON` - Checks if an agent is in the database and grabs all style and prompt info from its entry. This will be returned to the frontend.
