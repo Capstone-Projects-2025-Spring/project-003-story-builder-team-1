@@ -375,6 +375,8 @@ class Translator {
    +agent_instances: int
 
    +rank_format() void
+   +writing_session() void`
+   +write_chapter(input: JSON) JSON
    +make_courier() int
    get_story_bank() LinkedList
 }
@@ -420,11 +422,13 @@ class Prompt_Admin {
 - `agent_instances: int` - Keeps track of the number of Courier instances accessing the LLM. In case this can be set by the user later (or in case we want to return ALL of the chapters at once) the user can cite this field.
 
 ### Methods:
+#### `rank_format(): void` - PLACEHOLDER
+
 #### `writing_session(): void` - Creates all couriers, has them write and refine stories, and picks one to be the final judge.
 
-#### `make_courier(): int` - Creates an instance of the Courier class. Returns the instance’s assigned number and key in the chapterbank.
-
 #### `write_chapter(input: JSON): JSON` - Takes input from the frontend and sends it to the Courier instances. The courier instances will return their chapters to chapterbank.
+
+#### `make_courier(): int` - Creates an instance of the Courier class. Returns the instance’s assigned number and key in the chapterbank.
 
 #### `get_story_bank(): Map` - Returns the entire chapter bank.
 
@@ -442,7 +446,7 @@ class Prompt_Admin {
 ### Methods:
 #### `story_call(int PLACEHOLDER, String key, String prompt): JSON` - Sends the finished prompt over to the LLM, places the output locally (if it’s the first time) and in the shared data structure. 
 
-## `story_push(String local_story) : void` - PLACEHOLDER
+#### `story_push(String local_story) : void` - PLACEHOLDER
 
 #### `judge(): Map` - Replaces the chapterbank structure in Translator with a new, ranked version no longer corresponding to instance numbers but to quality. The LLM will rank the chapters for us and this function will format the output to be presentable for React.
 
