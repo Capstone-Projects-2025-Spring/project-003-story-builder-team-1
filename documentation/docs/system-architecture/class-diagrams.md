@@ -457,7 +457,7 @@ Prompt_Admin Class:
 ### Methods:
 #### `get_prompt(String promptinfo, String type): String` - Assembles a prompt by placing keywords in the promptinfo JSON object into one of the templates above, with ‘type’ deciding which to use.
 
-## DB_Tracker.js:
+## DB_Tracker Class:
 **Purpose**: The class that handles all database access. It is a CRUD API can grab any information from any table in the database for other classes to use, be it for login verification or prompt history.
 
 ### Data Fields:
