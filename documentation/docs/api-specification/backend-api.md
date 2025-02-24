@@ -5,7 +5,7 @@ sidebar_position: 1
 # Backend API
 
 ## /courier
-### POST /courier/story_call
+### <Highlight color="#1c70a4">POST</Highlight> /courier/story_call
 **Description**: Calls the LLM with a given prompt and returns text.
 
 #### Request Body/Params:
