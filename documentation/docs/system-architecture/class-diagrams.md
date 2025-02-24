@@ -432,6 +432,8 @@ class Prompt_Admin {
 
 #### `get_story_bank(): LinkedList` - Returns the entire chapter bank.
 
+---
+
 ## Courier Class:
 **Purpose**: The only class which will have several instances of itself running. It’s also the only class which directly accesses the LLM. Its main goal is to send prompts assembled by PromptAdmin from information sent by Translator in order to get input to further refine.
 
@@ -443,13 +445,14 @@ class Prompt_Admin {
 - `API_KEY: String`: Points to the key which accesses the LLM (will NOT be stored here)
 - `local_story: String`: A copy of the original generated story the instance made in its first API call. Can be used for refinement and comparison.
 
-
 ### Methods:
 #### `story_call(int PLACEHOLDER, String key, String prompt): JSON` - Sends the finished prompt over to the LLM, places the output locally (if it’s the first time) and in the shared data structure. 
 
 #### `story_push(String local_story) : void` - PLACEHOLDER
 
 #### `judge(): LinkedList` - Replaces the chapterbank structure in Translator with a new, ranked version no longer corresponding to instance numbers but to quality. The LLM will rank the chapters for us and this function will format the output to be presentable for React.
+
+---
 
 ## Prompt_Admin Class:
 **Purpose**: The final step in the pipeline between accessing database agent info and communicating with the LLM. It assembles a prompt based on some templates which serve different purposes (i.e., generation, critique, and judgement). Only Courier will access this class, and it will send it information it’s sent by Translator.
@@ -461,6 +464,8 @@ class Prompt_Admin {
 
 ### Methods:
 #### `get_prompt(String promptinfo, String type): String` - Assembles a prompt by placing keywords in the promptinfo JSON object into one of the templates above, with ‘type’ deciding which to use.
+
+---
 
 ## DB_Tracker Class:
 **Purpose**: The class that handles all database access. It is a CRUD API can grab any information from any table in the database for other classes to use, be it for login verification or prompt history.
