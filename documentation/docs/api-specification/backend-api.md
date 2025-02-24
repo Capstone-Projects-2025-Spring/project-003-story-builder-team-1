@@ -163,6 +163,7 @@ JSON chapter_data
 ### GET /translator/story_bank
 **Description**: Retrieves the entire story bank as a list.
 
+
 #### Request Body/Params:
 - None
 
