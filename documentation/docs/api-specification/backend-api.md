@@ -47,7 +47,7 @@ JSON list_of_judgements
 String prompt
 
 ### GET /prompt_admin/refine_prompt
-**Description**: Retrieves the refine_prompt property (or a refined prompt).
+**Description**: Retrieves the refine_prompt property.
 
 #### Request Body/Params:
 - None
@@ -65,16 +65,7 @@ String refine_prompt
 String generate_prompt
 
 ### GET /prompt_admin/rank
-**Description**: Retrieves the refine_prompt property (or a refined prompt).
-
-#### Request Body/Params:
-- None
-
-#### Returns:
-String refine_prompt
-
-### GET /prompt_admin/generate
-**Description**: Retrieves the rank_prompt property
+**Description**: Retrieves the rank_prompt property.
 
 #### Request Body/Params:
 - None
