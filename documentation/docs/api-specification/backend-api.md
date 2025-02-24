@@ -33,3 +33,52 @@ String story_snippet
 
 #### Returns
 JSON list_of_judgements
+
+---
+## /prompt_admin
+### /prompt_admin/prompt
+**Description**: Calls prompt(prompt_info) to fetch a prompt string.
+
+#### Request Body/Params
+- String prompt_info
+
+#### Returns
+String prompt
+
+### /prompt_admin/refine_prompt
+**Description**: Retrieves the refine_prompt property (or a refined prompt).
+
+#### Request Body/Params
+- None
+
+#### Returns
+String refine_prompt
+
+## /prompt_admin/generate
+**Description**: Retrieves the generate_prompt property.
+
+#### Request Body/Params
+- None
+
+#### Returns
+String generate_prompt
+
+### /prompt_admin/rank
+**Description**: Retrieves the refine_prompt property (or a refined prompt).
+
+#### Request Body/Params
+- None
+
+#### Returns
+String refine_prompt
+
+## /prompt_admin/generate
+**Description**: Retrieves the rank_prompt property
+
+#### Request Body/Params
+- None
+
+#### Returns
+String rank_prompt
+
+---
