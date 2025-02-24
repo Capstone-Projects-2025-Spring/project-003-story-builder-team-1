@@ -36,8 +36,8 @@ JSON list_of_judgements
 
 ---
 
-## GET /prompt_admin
-### /prompt_admin/prompt
+## /prompt_admin
+### GET /prompt_admin/prompt
 **Description**: Calls prompt(prompt_info) to fetch a prompt string.
 
 #### Request Body/Params:
