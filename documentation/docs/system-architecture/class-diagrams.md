@@ -7,6 +7,7 @@ sidebar_position: 1
 ## Frontend Class Diagram
 ```mermaid
   classDiagram
+  direction TB
     class App {
         -user_session: User
         +render()
