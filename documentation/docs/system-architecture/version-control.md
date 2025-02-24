@@ -13,7 +13,7 @@ Branches are created from the main branch, and are created through Jira issues. 
 
 The following branch protection rules are in effect:
 - A pull request is required before merging.
-- 1 pull request approval is needed to merge.
+- One pull request approval is needed to merge.
 
 ## Deployment
 
