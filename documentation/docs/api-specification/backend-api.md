@@ -140,7 +140,7 @@ JSON list_of_agents
 - None
 
 #### Returns:
-**200 OK* on success
+**200 OK** on success
 
 ### POST /translator/writing_session
 **Description**: Starts or updates a writing session.
@@ -149,7 +149,7 @@ JSON list_of_agents
 - None
 
 #### Returns:
-**200 OK* on success
+**200 OK** on success
 
 ### POST /translator/write_chapter
 **Description**: Writes a new chapter based on the input JSON.
