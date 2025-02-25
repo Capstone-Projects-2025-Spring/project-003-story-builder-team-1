@@ -23,5 +23,5 @@ This project was tested and developed using the following tools:
 - Backend: 
   - Express.js 5.0.1
   - Node.js 23.7.0
-  - Deepseek-V3
+  - Llama 3.3
   - MongoDB 8.0.4
