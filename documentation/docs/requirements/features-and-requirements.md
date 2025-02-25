@@ -10,7 +10,7 @@ sidebar_position: 4
   - User accounts will be authenticated upon login.
     
 - Users will be able to create Agents, which will create story drafts in a specific writing style.
-  - Agents will be created using data from DeepSeek in conjunction with user input pertaining to how the Agent should write stylistically.
+  - Agents will be created using data from Llama in conjunction with user input pertaining to how the Agent should write stylistically.
   - Users will be able to give details for a story proposal and ask Agents to generate a story draft based on these details.
   - Users will also be able to delete Agents at any point.
  
