@@ -13,21 +13,16 @@ app.use(function(req, res, next) {
     next();
   });
 
+// Import the routes
+const textBoxRoute = require('./routes/api_text_box');
+
+// Use the imported routes
+app.use(textBoxRoute);
+
 //Status Message to Home Page of Server
 app.get('/', (req, res) => {
     res.send("Backend Server Active");
 })
 
-//Receiving and (For Now) Displaying Input from Text Box in Console
-app.post('/api/text_box/', (req, res) => {
-    const input = JSON.stringify(req.body);
-    console.log("POST Input: " + input);
-
-    //Send Successful Response Back to Frontend
-    res.status(200).json({message: "Data Received Successfully", data: req.body});
-});
-
-//Start the Server
-app.listen(8080, () => {
-    console.log('Local Host: http://localhost:8080/');
-});
+// Export the app to be used in the server.js
+module.exports = app;
