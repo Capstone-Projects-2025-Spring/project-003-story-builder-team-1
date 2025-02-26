@@ -14,10 +14,10 @@ app.use(function(req, res, next) {
   });
 
 // Import the routes
-const textBoxRoute = require('./routes/api_text_box');
+const api_text_box = require('./routes/api_text_box');
 
 // Use the imported routes
-app.use(textBoxRoute);
+app.use(api_text_box);
 
 //Status Message to Home Page of Server
 app.get('/', (req, res) => {
