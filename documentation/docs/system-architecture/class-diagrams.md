@@ -415,26 +415,6 @@ class Prompt_Admin {
 }
 ```
 
-## Translator Class:
-**Purpose**: Superclass which is responsible for handling the output of the Courier instances and communicating with the frontend web pages. It is the only class those pages will communicate with directly in the backend besides DB_Tracker. Inside of it is a shared data structure where the instances store their chapters, as well as functions to rank, format and return a chapter.
-
-### Data Fields:
-- `story_bank: Map` - Holds keys indicating which instance the  content belongs to, and values containing JSON objects grabbed from the LLM. This will be used to store final chapters as well as being a hub from which instances can judge each other’s products.
-- `agent_instances: int` - Keeps track of the number of Courier instances accessing the LLM. In case this can be set by the user later (or in case we want to return ALL of the chapters at once) the user can cite this field.
-
-### Methods:
-#### `rank_format(): void` - PLACEHOLDER
-
-#### `writing_session(): void` - Creates all couriers, has them write and refine stories, and picks one to be the final judge.
-
-#### `write_chapter(input: JSON): JSON` - Takes input from the frontend and sends it to the Courier instances. The courier instances will return their chapters to chapterbank.
-
-#### `make_courier(): int` - Creates an instance of the Courier class. Returns the instance’s assigned number and key in the chapterbank.
-
-#### `get_story_bank(): LinkedList` - Returns the entire chapter bank.
-
----
-
 ## Courier Class:
 **Purpose**: The only class which will have several instances of itself running. It’s also the only class which directly accesses the LLM. Its main goal is to send prompts assembled by PromptAdmin from information sent by Translator in order to get input to further refine.
 
@@ -486,3 +466,23 @@ class Prompt_Admin {
 #### `new_agent(): JSON` - Creates a new agent based on information entered in the frontend. This will be formatted and posted to one of the tables as a new entry that can be cited.
 
 #### `agent_dropdown(): JSON` - Returns all agents in the database for user selection. 
+
+---
+
+## Translator Class:
+**Purpose**: Superclass which is responsible for handling the output of the Courier instances and communicating with the frontend web pages. It is the only class those pages will communicate with directly in the backend besides DB_Tracker. Inside of it is a shared data structure where the instances store their chapters, as well as functions to rank, format and return a chapter.
+
+### Data Fields:
+- `story_bank: Map` - Holds keys indicating which instance the  content belongs to, and values containing JSON objects grabbed from the LLM. This will be used to store final chapters as well as being a hub from which instances can judge each other’s products.
+- `agent_instances: int` - Keeps track of the number of Courier instances accessing the LLM. In case this can be set by the user later (or in case we want to return ALL of the chapters at once) the user can cite this field.
+
+### Methods:
+#### `rank_format(): void` - PLACEHOLDER
+
+#### `writing_session(): void` - Creates all couriers, has them write and refine stories, and picks one to be the final judge.
+
+#### `write_chapter(input: JSON): JSON` - Takes input from the frontend and sends it to the Courier instances. The courier instances will return their chapters to chapterbank.
+
+#### `make_courier(): int` - Creates an instance of the Courier class. Returns the instance’s assigned number and key in the chapterbank.
+
+#### `get_story_bank(): LinkedList` - Returns the entire chapter bank.
