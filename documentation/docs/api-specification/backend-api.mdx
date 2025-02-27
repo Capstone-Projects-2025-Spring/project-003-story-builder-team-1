@@ -3,7 +3,312 @@ sidebar_position: 1
 ---
 
 # Backend API
+```
+openapi: 3.0.0
 
-import ApiSchema from '@theme/ApiSchema';
+info:
+  title: Story Builder API
+  version: 0.0.0
+  description: API for communication between frontend user interface, LLM Agents, and MongoDB Database.
 
-<ApiSchema pointer="../docs/api-specification/backend.yaml" />;
+tags:
+  - name: courier
+    description: Courier 
+  - name: prompt_admin
+    description: Prompt Admin 
+  - name: db
+    description: Database
+  - name: translator
+    description: Translator
+
+paths:
+
+  /courier/story_call:
+    post:
+      tags:
+        - courier
+      summary: Calls the LLM with a given prompt and returns text.
+      operationId: story_call
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                PLACEHOLDER:
+                  type: integer
+                key:
+                  type: string
+                prompt:
+                  type: string
+      responses:
+        '200':
+          description: A story snippet
+          content:
+            application/json:
+              schema:
+                type: string
+                
+  /courier/story_push:
+    post:
+      tags:
+        - courier
+      summary: Pushes local story content to the system.
+      operationId: story_push
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                local_story:
+                  type: string
+      responses:
+        '200':
+          description: Success
+          
+  /courier/judge:
+    get:
+      tags:
+        - courier
+      summary: Invokes the judge() method to get a list of judgments/results
+      operationId: judge
+      responses:
+        '200':
+          description: A list of judgments
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+
+  /prompt_admin/prompt:
+    get:
+      tags:
+        - prompt_admin
+      summary: Calls prompt(prompt_info) to fetch a prompt string.
+      operationId: prompt
+      parameters:
+        - name: prompt_info
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: A prompt string
+          content:
+            application/json:
+              schema:
+                type: string
+
+  /promot_admin/refine_prompt:
+    get:
+      tags:
+        - prompt_admin
+      summary: Retrieves the refine_prompt property.
+      operationId: refine_prompt
+      responses:
+        '200':
+          description: A refine prompt string
+          content:
+            application/json:
+              schema:
+                type: string
+                
+  /prompt_admin/generate_prompt:
+    get:
+      tags:
+        - prompt_admin
+      summary: Retrieves the generate_prompt property.
+      operationId: generate_prompt
+      responses:
+        '200':
+          description: A generate prompt string
+          content:
+            application/json:
+              schema:
+                type: string
+
+  /prompt_admin/rank_prompt:
+    get:
+      tags:
+        - prompt_admin
+      summary: Retrieves the rank_prompt property.
+      operationId: rank_prompt
+      responses:
+        '200':
+          description: A rank prompt string
+          content:
+            application/json:
+              schema:
+                type: string
+
+  /db/grab:
+    get:
+      tags:
+        - db
+      summary: Calls DB_grab() to retrieve some global data.
+      operationId: grab
+      responses:
+        '200':
+          description: JSON data
+          content:
+            application/json:
+              schema:
+                type: object
+                
+  /db/account:
+    get:
+      tags:
+        - db
+      summary: Retrieves account info given some input JSON.
+      operationId: account
+      parameters:
+        - in: query
+          name: account_query_info
+          required: true
+          schema:
+            type: object
+            description: JSON containing account query details.
+      responses:
+        '200':
+          description: JSON account data
+          content:
+            application/json:
+              schema:
+                type: object
+  /db/agent:
+    get:
+      tags:
+        - db
+      summary: Retrieves agent info.
+      operationId: agent
+      responses:
+        '200':
+          description: JSON agent data
+          content:
+            application/json:
+              schema:
+                type: object
+                
+  /db/new_account:
+    post:
+      tags:
+        - db
+      summary: Creates a new account.
+      operationId: new_account
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              description: JSON containing new account details.
+      responses:
+        '200':
+          description: JSON status information
+          content:
+            application/json:
+              schema:
+                type: object
+                
+  /db/new_agent:
+    post:
+      tags:
+        - db
+      summary: Creates a new agent.
+      operationId: new_agent
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              description: JSON containing new agent details.
+      responses:
+        '200':
+          description: JSON status information
+          content:
+            application/json:
+              schema:
+                type: object
+                
+  /db/agent_dropdown:
+    get:
+      tags:
+        - db
+      summary: Returns a list of agents for a dropdown.
+      operationId: agent_dropdown
+      responses:
+        '200':
+          description: JSON list of agents
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+
+  /translator/rank_format:
+    post:
+      tags:
+        - translator
+      summary: Triggers the rank_format() method.
+      operationId: rank_format
+      responses:
+        '200':
+          description: Success
+
+  /translator/writing_session:
+    post:
+      tags:
+        - translator
+      summary: Starts or updates a writing session.
+      operationId: writing_session
+      responses:
+        '200':
+          description: Success
+          
+  /translator/write_chapter:
+    post:
+      tags:
+        - translator
+      summary: Writes a new chapter based on the input JSON.
+      operationId: write_chapter
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                chapter_info:
+                  type: object
+      responses:
+        '200':
+          description: Chapter data
+          content:
+            application/json:
+              schema:
+                type: object
+                
+  /translator/story_bank:
+    get:
+      tags:
+        - translator
+      summary: Retrieves the entire story bank as a list.
+      operationId: story_bank
+      responses:
+        '200':
+          description: A list of stories
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+```
