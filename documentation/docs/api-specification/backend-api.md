@@ -288,73 +288,100 @@ paths:
 ```
   /db:
  ``` 
+  /db/grab:
     get:
       summary: Calls DB_grab() to retrieve some global data.
-      operationId: grab
+      description: Retrieves global data.
       responses:
         '200':
-          description: Global data
+          description: JSON data
           content:
             application/json:
               schema:
                 type: object
 
+  /db/account:
     get:
       summary: Retrieves account info given some input JSON.
-      operationId: account
+      description: Retrieves account information based on a query input.
       parameters:
-        - name: account_query_info
-          in: query
+        - in: query
+          name: account_query_info
           required: true
           schema:
             type: object
+            description: JSON containing account query details.
       responses:
         '200':
-          description: Account data
+          description: JSON account data
           content:
             application/json:
               schema:
                 type: object
 
+  /db/agent:
+    get:
+      summary: Retrieves agent info.
+      description: Retrieves agent information.
+      responses:
+        '200':
+          description: JSON agent data
+          content:
+            application/json:
+              schema:
+                type: object
+
+  /db/new_account:
     post:
       summary: Creates a new account.
-      operationId: new_account
+      description: Creates a new account in the database.
       requestBody:
         required: true
         content:
           application/json:
             schema:
               type: object
-              properties:
-                new_account_info:
-                  type: object
+              description: JSON containing new account details.
       responses:
         '200':
-          description: Status info
+          description: JSON status information
           content:
             application/json:
               schema:
                 type: object
 
+  /db/new_agent:
     post:
       summary: Creates a new agent.
-      operationId: new_agent
+      description: Creates a new agent in the database.
       requestBody:
         required: true
         content:
           application/json:
             schema:
               type: object
-              properties:
-                new_agent_info:
-                  type: object
+              description: JSON containing new agent details.
       responses:
         '200':
-          description: Status info
+          description: JSON status information
           content:
             application/json:
               schema:
                 type: object
+
+  /db/agent_dropdown:
+    get:
+      summary: Returns a list of agents for a dropdown.
+      description: Retrieves a list of agents suitable for use in a dropdown menu.
+      responses:
+        '200':
+          description: JSON list of agents
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
 ```
   /translator:
   ```
