@@ -175,12 +175,12 @@ openapi: 3.0.0
 ```
 info:
   title: Story Builder API
-  version: 1.0.0
+  version: 0.0.0
   description: API for communication between frontend user interface, LLM Agents, and MongoDB Database.
 ```
 paths:
   /courier:
-  
+```  
     post:
       summary: Calls the LLM with a given prompt and returns text.
       operationId: story_call
@@ -233,9 +233,9 @@ paths:
                 type: array
                 items:
                   type: string
-
+```
   /prompt_admin:
-  
+```  
     get:
       summary: Calls prompt(prompt_info) to fetch a prompt string.
       operationId: prompt
@@ -285,9 +285,9 @@ paths:
             application/json:
               schema:
                 type: string
-
+```
   /db:
-  
+ ``` 
     get:
       summary: Calls DB_grab() to retrieve some global data.
       operationId: grab
@@ -355,9 +355,9 @@ paths:
             application/json:
               schema:
                 type: object
-
+```
   /translator:
-  
+  ```
     post:
       summary: Triggers the rank_format() method.
       operationId: rank_format
