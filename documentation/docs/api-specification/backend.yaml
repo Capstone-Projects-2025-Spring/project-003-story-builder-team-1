@@ -6,8 +6,8 @@ info:
   description: API for communication between frontend user interface, LLM Agents, and MongoDB Database.
 
 paths:
-  /courier:
- 
+
+  /courier/story_call:
     post:
       summary: Calls the LLM with a given prompt and returns text.
       operationId: story_call
@@ -31,7 +31,8 @@ paths:
             application/json:
               schema:
                 type: string
-
+                
+  /courier/story_push:
     post:
       summary: Pushes local story content to the system.
       operationId: story_push
@@ -47,7 +48,8 @@ paths:
       responses:
         '200':
           description: Success
-
+          
+  /courier/judge:
     get:
       summary: Invokes the judge() method to get a list of judgments/results
       operationId: judge
@@ -61,8 +63,7 @@ paths:
                 items:
                   type: string
 
-  /prompt_admin:
-  
+  /prompt_admin/prompt:
     get:
       summary: Calls prompt(prompt_info) to fetch a prompt string.
       operationId: prompt
@@ -80,6 +81,7 @@ paths:
               schema:
                 type: string
 
+  /promot_admin/refine_prompt:
     get:
       summary: Retrieves the refine_prompt property.
       operationId: refine_prompt
@@ -90,7 +92,8 @@ paths:
             application/json:
               schema:
                 type: string
-
+                
+  /prompt_admin/generate_prompt:
     get:
       summary: Retrieves the generate_prompt property.
       operationId: generate_prompt
@@ -102,6 +105,7 @@ paths:
               schema:
                 type: string
 
+  /prompt_admin/rank_prompt:
     get:
       summary: Retrieves the rank_prompt property.
       operationId: rank_prompt
@@ -113,8 +117,7 @@ paths:
               schema:
                 type: string
 
-  /db:
-  
+  /db/grab:
     get:
       summary: Calls DB_grab() to retrieve some global data.
       operationId: grab
@@ -125,7 +128,8 @@ paths:
             application/json:
               schema:
                 type: object
-
+                
+  /db/account:
     get:
       summary: Retrieves account info given some input JSON.
       operationId: account
@@ -143,7 +147,7 @@ paths:
             application/json:
               schema:
                 type: object
-
+  /db/agent:
     get:
       summary: Retrieves agent info.
       operationId: agent
@@ -154,7 +158,8 @@ paths:
             application/json:
               schema:
                 type: object
-
+                
+  /db/new_account:
     post:
       summary: Creates a new account.
       operationId: new_account
@@ -172,7 +177,8 @@ paths:
             application/json:
               schema:
                 type: object
-
+                
+  /db/new_agent:
     post:
       summary: Creates a new agent.
       operationId: new_agent
@@ -191,6 +197,7 @@ paths:
               schema:
                 type: object
                 
+  /db/agent_dropdown:
     get:
       summary: Returns a list of agents for a dropdown.
       operationId: agent_dropdown
@@ -204,8 +211,7 @@ paths:
                 items:
                   type: object
 
-  /translator:
-  
+  /translator/rank_format:
     post:
       summary: Triggers the rank_format() method.
       operationId: rank_format
@@ -213,13 +219,15 @@ paths:
         '200':
           description: Success
 
+  /translator/writing_session:
     post:
       summary: Starts or updates a writing session.
       operationId: writing_session
       responses:
         '200':
           description: Success
-
+          
+  /translator/write_chapter:
     post:
       summary: Writes a new chapter based on the input JSON.
       operationId: write_chapter
@@ -239,7 +247,8 @@ paths:
             application/json:
               schema:
                 type: object
-
+                
+  /translator/story_bank:
     get:
       summary: Retrieves the entire story bank as a list.
       operationId: story_bank
