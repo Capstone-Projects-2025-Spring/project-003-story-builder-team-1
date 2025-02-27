@@ -7,13 +7,16 @@ info:
     MongoDB Database.
 tags:
   - name: courier
-    description: Courier
+    description: >-
+      Courier directly interacts the LLM and Agents using prompts assembled by
+      PromptAdmin from information sent by Translator in order to get input to
+      further refine.
   - name: prompt_admin
-    description: Prompt Admin
+    description: Prompt Admin generates prompts used for various purposes
   - name: db
-    description: Database
+    description: Database retreives and stores data from the MongoDB database
   - name: translator
-    description: Translator
+    description: Translator sends data from Courier to the frontend
 paths:
   /courier/story_call:
     post:
