@@ -16,18 +16,12 @@ jobs:
       GIT_USER: ${{secrets.USER}}
       GIT_PASS: ${{secrets.TOKEN}}
     
-    strategy:
-      matrix:
-        node-version: [22.x]
-        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
-
     steps:
       - uses: actions/checkout@v4
-      - name: Use Node.js ${{ matrix.node-version }}
+      - name: Use Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: ${{ matrix.node-version }}
-          cache: 'npm'
+          node-version: '22.x'
       - run: | 
             export ORG_NAME=$(echo ${GITHUB_REPOSITORY%/*})
             export PROJECT_NAME=$(echo ${GITHUB_REPOSITORY#*/})
