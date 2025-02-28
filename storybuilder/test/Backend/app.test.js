@@ -22,7 +22,7 @@ describe('POST /api/text_box/', () => {
         //The route provides this message if successful
         expect(response.body).toEqual({
             //message to check
-            message: "Data Received Successfuly",
+            message: "Data Received Successfully",
             //data to check
             data: input_data
         });
