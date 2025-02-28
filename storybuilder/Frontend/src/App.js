@@ -8,6 +8,8 @@ const text_box = backend + 'api/text_box/';
 function App() {
   // Hook to keep track of end of messages
   const message_end = useRef(null);
+  // State for error handling
+  const [error, setError] = useState(null);
   // State for string in input text box
   const [input_string, set_input_string] = useState('');
   // State array of message objects, holds the message and if the message is from the ai or not
@@ -42,7 +44,10 @@ function App() {
       })
 
       // Check if response status is an error, if yes throw an error
-      if (!response.ok) throw new Error(`Server error: ${response.status}`);
+      if (!response.ok) {
+        const errorData = await response.json(); // Read the response body
+        throw new Error(errorData.message || `Server error: ${response.status}`);
+      }
 
       // Parse the response
       const res_data = await response.json();
@@ -55,9 +60,15 @@ function App() {
         {text: res_data.message, is_ai: true}
       ]);
 
+      // Clear any previous error if the request is successful
+      setError(null);
+
     // Catch errors
     } catch (error) {
-      console.error("Fetch Error: ", error)
+      console.error("Fetch Error: ", error?.message || error);
+
+      // Set the error message state to display the error
+      setError(error.message || 'An error occurred');
     }
   };
 
@@ -73,6 +84,13 @@ function App() {
 
       {/* Main Chat Area */}
       <div className="main">
+        {/* Error Message Display */}
+        {error && (
+          <div className="error-message">
+            <p>{error}</p>
+          </div>
+        )}
+
         {/* Chat Messages */}
         <div className="chats">
           {messages.map((message, i) => 
