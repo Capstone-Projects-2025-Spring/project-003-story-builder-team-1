@@ -1,8 +1,5 @@
 const request = require('supertest');
 const app = require('../../Backend/app')
-const api_text_box_route = require('../../Backend/routes/api_text_box');
-
-app.use('api_text_box', api_text_box_route)
 
 //api_test_block route tests
 describe('POST /api/text_box/', () => {
