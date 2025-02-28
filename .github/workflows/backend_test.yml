@@ -28,5 +28,4 @@ jobs:
             git config --global user.name "$(git --no-pager log --format=format:'%an' -n 1)"
             git config --global user.email "$(git --no-pager log --format=format:'%ae' -n 1)"
       - run: cd storybuilder/Backend && npm install
-      - run: cd ../test && npm install
-      - run: npm test
+      - run: cd storybuilder/test && npm install && npm test
