@@ -14,7 +14,7 @@ This project was tested and developed using the following tools:
     
 - Google Chrome 134.0.6998.3
     
-- Javascript ES2024
+- JavaScript ES2024
     
 - Frontend: 
   - React.js 19.0.0
