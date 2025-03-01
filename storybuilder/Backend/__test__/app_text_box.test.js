@@ -5,8 +5,10 @@ const app = require('../app');
 describe('POST /app/text_box/', () => {
   //test case 1: should receive input and return success message
   it('should return 200 and a success message with the input data', async () => {
+    
     //Define input data
     const inputData = { text: 'Sample text' };
+    
     //Post Request
     const response = await request(app)
       .post('/app/text_box/')
