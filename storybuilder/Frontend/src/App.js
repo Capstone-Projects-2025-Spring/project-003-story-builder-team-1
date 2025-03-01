@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom/client';
 import './App.css';
 
 const backend = 'http://localhost:8080/';
-const text_box = backend + 'api/text_box/'; 
+const text_box = backend + 'app/text_box/'; 
 
 function App() {
   // Hook to keep track of end of messages

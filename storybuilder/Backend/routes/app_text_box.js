@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 
 //Receiving and (For Now) Displaying Input from Text Box in Console
-router.post('/api/text_box/', (req, res) => {
+router.post('/app/text_box/', (req, res) => {
     const input = JSON.stringify(req.body);
     console.log("POST Input: " + input);
 
