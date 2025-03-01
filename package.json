@@ -1,0 +1,11 @@
+{
+  "name": "project-003-story-builder-team-1",
+  "scripts": {
+    "setup": "cd storybuilder/backend && npm install && cd ../frontend && npm install",
+    "start": "npm run start:b & npm run start:f",
+    "start:b": "node storybuilder/backend/server.js",
+    "start:f": "cd storybuilder/frontend && npm start",
+    "test:b": "cd storybuilder/backend && npm test",
+    "test:bc": "cd storybuilder/backend && npm run Ctest"
+  }
+}
