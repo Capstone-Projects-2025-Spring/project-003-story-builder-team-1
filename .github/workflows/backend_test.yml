@@ -30,7 +30,8 @@ jobs:
         with:
          name: backend-coverage-report
          path: ./storybuilder/Backend/coverage/lcov-report
-
+      
+      - uses: actions/checkout@v4
       - name: 'Download Backend Coverage Report'
         uses: actions/download-artifact@v4
         with:
