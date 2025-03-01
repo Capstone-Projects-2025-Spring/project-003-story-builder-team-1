@@ -23,6 +23,5 @@ jobs:
         with:
           node-version: '22.x'
       - run: npm run setup
-      - run: npm run test:b
-      - run: mv ./storybuilder/Backend/coverage/lcov-report ./documentation/docs/testing/lcov-report
-      
+      - run: npm run test:bc && mv ./storybuilder/Backend/coverage/lcov-report ./documentation/docs/testing/lcov-report
+
