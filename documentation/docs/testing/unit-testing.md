@@ -27,3 +27,5 @@ npm run test:bc
 ```
 ## Automatic Testing
 The above commands are run, and node is installed each time a pull request is created to main and when code is pushed to main. If the tests all pass, then the pull request will be created successfully and the push will go through. 
+
+[View Test Coverage Report](./lcov-report/index.html)
