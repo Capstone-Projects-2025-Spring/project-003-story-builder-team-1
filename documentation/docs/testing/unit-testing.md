@@ -13,7 +13,7 @@ Supertest is also used to for testing. It simulates HTTP requests. This allows f
 ## Running the test cases
 Copy the following commands from 2-7 in order to run the tests.
 Note: The following npm installs only need to be run once each.
-1. Have node installed on your machine
+1. Have Node installed on your machine
 2. Run the following Command
 ```bash
 npm run setup
