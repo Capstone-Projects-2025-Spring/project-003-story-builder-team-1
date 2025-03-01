@@ -22,5 +22,5 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '22.x'
-      - run: cd storybuilder/Backend && npm install
-      - run: cd storybuilder/test && npm install && npm test
+      - run: npm run setup
+      - run: npm run test:b
