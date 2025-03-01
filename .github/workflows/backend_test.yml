@@ -11,7 +11,7 @@ on:
 
 permissions:
   contents: write  
-  
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -36,7 +36,7 @@ jobs:
           git config --global user.email "$(git --no-pager log --format=format:'%ae' -n 1)"
           git add -f ./documentation/docs/testing/lcov-report
           git commit -m "Updated coverage report"
-          git push origin main
+          git push origin main --force
 
       
 
