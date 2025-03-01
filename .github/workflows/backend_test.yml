@@ -27,8 +27,8 @@ jobs:
 
       - name: Commit and push the changes
         run: |
-          git config --global user.name "Your Name"
-          git config --global user.email "your-email@example.com"
+          git config --global user.name "$(git --no-pager log --format=format:'%an' -n 1)"
+          git config --global user.email "$(git --no-pager log --format=format:'%ae' -n 1)"
           git add -f ./documentation/docs/testing/lcov-report
           git commit -m "Updated coverage report"
           git push origin main
