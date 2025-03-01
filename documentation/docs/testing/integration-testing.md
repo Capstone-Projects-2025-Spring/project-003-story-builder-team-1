@@ -1,18 +1,18 @@
 ---
 sidebar_position: 2
 ---
-# Integration tests
+# Integration Tests
 
 ## Component Connection Logistics
 
-### There are four major components, three of which (Backend, Frontend, LLM) connect to create an input-output pipeline. The pipleine would be as follows:
+#### There are four major components, three of which (Backend, Frontend, LLM) connect to create an input-output pipeline. The pipleine would be as follows:
 1. Frontend receives user input
 1. User input is sent to the Backend
 1. Backend Receives input, and sends the input to the LLM
 1. Depending on the user input, the LLM would generate the chapter draft, critique, or edits
 1. The generated data from the LLM would then be sent to the Backend, and then the Frontend
 
-### The fourth major component, the Database, will also interact with the Backend, Frontend, and LLM, as follows:
+#### The fourth major component, the Database, will also interact with the Backend, Frontend, and LLM, as follows:
 - The Database interacts with the Frontend when user story prompts are sent to the Backend, and then stored in the Database
 - Any edits to agent-generated drafts would then be sent to the Backend to be updated in the Database
 - Each step of agent-generated drafts would be send to the Backend to be stored in the Database
