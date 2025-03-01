@@ -2,6 +2,14 @@
 sidebar_position: 1
 ---
 # Unit tests
+## Test Library
+
+### Jest
+The test Library in use is Jest. Jest is compatible with javascript, react, node, and express, making it the testing library for the frontend and backend. 
+
+### Supertest
+Supertest is also used to for testing. It simulates HTTP requests. This allows for testing the backend without starting the server each time.
+
 ## Running the test cases
 Copy the following commands from 2-7 in order to run the tests.
 Note: The following npm installs only need to be run once each.
