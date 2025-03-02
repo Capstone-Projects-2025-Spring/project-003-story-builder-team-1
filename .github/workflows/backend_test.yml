@@ -9,16 +9,18 @@ on:
   pull_request:
     branches: [ "main" ]
 
+permissions:
+  contents: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
     env:
+      GIT_USER: ${{secrets.USER}}
       GIT_PASS: ${{secrets.TOKEN}}
     
     steps:
       - uses: actions/checkout@v4
-        with:
-          ref: ${{ github.ref_name }}
       - name: Use Node.js
         uses: actions/setup-node@v4
         with:
@@ -26,14 +28,13 @@ jobs:
       - run: npm run setup
       - run: npm run test:bc && mv ./storybuilder/Backend/coverage/lcov-report ./documentation/docs/testing/lcov-report
 
-      - name: Configure Git
+      
+      - name: Update Coverage Report
         run: |
           git config --global user.name "$(git --no-pager log --format=format:'%an' -n 1)"
           git config --global user.email "$(git --no-pager log --format=format:'%ae' -n 1)"
-
-      - name: Commit and push changes
-        if: github.ref_name != 'main'
-        run: |
-          git add -f ./documentation/docs/testing/lcov-report/
-          git commit -m "Backend Coverage Report" || exit 0
-          git push https://${{ secrets.TOKEN }}@github.com/${{ github.repository }}.git HEAD:${{ github.ref_name }}
+          git add -f ./documentation/docs/testing/lcov-report
+          git commit -m "Updated Backend Coverage Report"
+          git push
+        env:
+          GITHUB_TOKEN: ${{ env.GIT_PASS }}
