@@ -38,6 +38,6 @@ jobs:
           git commit -m "Updated Backend Coverage Report"
           git push --force-with-lease
         env:
-          GITHUB_TOKEN: ${{ env.GIT_PASS }}
+          GITHUB_TOKEN: ${{ env.GITHUB_TOKEN }}
 
 
