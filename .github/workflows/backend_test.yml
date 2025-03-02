@@ -21,13 +21,14 @@ jobs:
     
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref }}
       - name: Use Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '22.x'
       - run: npm run setup
       - run: npm run test:bc && mv ./storybuilder/Backend/coverage/lcov-report ./documentation/docs/testing/lcov-report
-
       
       - name: Update Coverage Report
         run: |
@@ -35,6 +36,8 @@ jobs:
           git config --global user.email "$(git --no-pager log --format=format:'%ae' -n 1)"
           git add -f ./documentation/docs/testing/lcov-report
           git commit -m "Updated Backend Coverage Report"
-          git push
-        env:
-          GITHUB_TOKEN: ${{ env.GIT_PASS }}
+
+      - name: Push Coverage Report to Branch
+        uses: ad-m/github-push-action@master
+        with:
+          branch: ${{ github.head_ref }}
