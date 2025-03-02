@@ -30,7 +30,6 @@ jobs:
           node-version: '22.x'
       - run: npm run setup
       - run: npm run test:bc && mv ./storybuilder/Backend/coverage/lcov-report ./documentation/docs/testing/lcov-report
-
       
       - name: Commit Coverage Report
         run: |
