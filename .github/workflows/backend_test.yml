@@ -41,5 +41,5 @@ jobs:
       - name: Push changes
         uses: ad-m/github-push-action@master
         with:
-          github_token: ${{ secrets.DOCUSAURUS_HOSTING }}
+          github_token: ${{ secrets.GITHUB_TOKEN  }}
           force_with_lease: true
