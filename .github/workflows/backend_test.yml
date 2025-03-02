@@ -17,6 +17,7 @@ permissions:
 jobs:
   build:
     runs-on: ubuntu-latest
+    if: github.ref != 'refs/heads/main'
     env:
       GIT_USER: ${{secrets.USER}}
       GIT_PASS: ${{secrets.TOKEN}}
@@ -39,7 +40,7 @@ jobs:
           git config --global user.email "$(git --no-pager log --format=format:'%ae' -n 1)"
           git add -f ./documentation/docs/testing/lcov-report
           git commit -m "Updated Backend Coverage Report"
-
+      
       - name: Push Coverage Report to Branch
         uses: ad-m/github-push-action@master
         with:
