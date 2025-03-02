@@ -18,9 +18,28 @@ jobs:
     
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
       - name: Use Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '22.x'
       - run: npm run setup
+<<<<<<< Updated upstream
       - run: npm run test:b
+=======
+      - run: npm run test:bc && mv ./storybuilder/Backend/coverage/lcov-report ./documentation/docs/testing/lcov-report
+
+      - name: Commit and push the changes
+        run: |
+          export ORG_NAME=$(echo ${GITHUB_REPOSITORY%/*})
+          export PROJECT_NAME=$(echo ${GITHUB_REPOSITORY#*/})
+          git config --global user.name "$(git --no-pager log --format=format:'%an' -n 1)"
+          git config --global user.email "$(git --no-pager log --format=format:'%ae' -n 1)"
+          git add -f ./documentation/docs/testing/lcov-report
+          git commit -m "Updated coverage report"
+          git push origin ${{ github.ref_name }} SBTA-101-Update-Directories-for-Testing
+
+      
+
+>>>>>>> Stashed changes
