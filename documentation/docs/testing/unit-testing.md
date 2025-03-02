@@ -28,4 +28,4 @@ npm run test:bc
 ## Automatic Testing
 The above commands are run, and Node is installed each time a pull request is created to main and when code is pushed to main. If all the tests pass, then the pull request will be created successfully and the push will go through. 
 
-#### [View Backend Test Coverage Report](documentation/docs/testing/lcov-report/index.html)
+#### [View Backend Test Coverage Report](https://htmlpreview.github.io/?https://github.com/Capstone-Projects-2025-Spring/project-003-story-builder-team-1/blob/main/documentation/docs/testing/lcov-report/index.html)
