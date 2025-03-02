@@ -12,6 +12,7 @@ on:
 permissions:
   contents: write
   actions: write
+  pull-requests: write 
 
 jobs:
   build:
@@ -36,7 +37,7 @@ jobs:
           git config --global user.email "$(git --no-pager log --format=format:'%ae' -n 1)"
           git add -f ./documentation/docs/testing/lcov-report
           git commit -m "Updated Backend Coverage Report"
-          
+
       - name: Push changes
         uses: ad-m/github-push-action@master
         with:
