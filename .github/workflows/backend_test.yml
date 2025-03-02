@@ -16,7 +16,6 @@ jobs:
   build:
     runs-on: ubuntu-latest
     env:
-      GIT_USER: ${{secrets.USER}}
       GIT_PASS: ${{secrets.TOKEN}}
     
     steps:
@@ -30,13 +29,14 @@ jobs:
       - run: npm run setup
       - run: npm run test:bc && mv ./storybuilder/Backend/coverage/lcov-report ./documentation/docs/testing/lcov-report
 
-      - name: Commit and push the changes
-        if: github.ref_name != 'main'
+      - name: Configure Git
         run: |
-          export ORG_NAME=$(echo ${GITHUB_REPOSITORY%/*})
-          export PROJECT_NAME=$(echo ${GITHUB_REPOSITORY#*/})
           git config --global user.name "$(git --no-pager log --format=format:'%an' -n 1)"
           git config --global user.email "$(git --no-pager log --format=format:'%ae' -n 1)"
-          git add -f ./documentation/docs/testing/lcov-report
-          git commit -m "Updated coverage report"
-          git push origin ${{ github.ref_name }}
+
+      - name: Commit and push changes
+        if: github.ref_name != 'main'
+        run: |
+          git add -f ./documentation/docs/testing/lcov-report/
+          git commit -m "Backend Coverage Report" || exit 0
+          git push https://${{ secrets.TOKEN }}@github.com/${{ github.repository }}.git HEAD:${{ github.ref_name }}
