@@ -10,7 +10,7 @@ sidebar_position: 6
 - MongoDB Interface TBD.
 
 ## Languages and Libraries
-- Javascript
+- JavaScript
   - React.js is used to develop the frontend.
   - Node.js is used to develop the backend.
   - Express.js is used as a high level interface for Node.js.
@@ -19,4 +19,5 @@ sidebar_position: 6
   - TBD
 
 - Testing
-  - TBD
+  - Jest is used as a JavaScript testing library
+  - Supertest is used to mimic HTTP requests in order to test the backend
