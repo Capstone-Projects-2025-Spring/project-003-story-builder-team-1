@@ -28,6 +28,7 @@ jobs:
       - run: npm run setup
       - run: npm run test:bc && mv ./storybuilder/Backend/coverage/lcov-report ./documentation/docs/testing/lcov-report
 
+      
       - name: Update Coverage Report
         run: |
           git config --global user.name "$(git --no-pager log --format=format:'%an' -n 1)"
