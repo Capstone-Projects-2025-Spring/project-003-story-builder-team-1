@@ -1,8 +1,6 @@
-name: run_backend_test
+name: run_backend_branch_test
 
 on:
-  push:
-    branches: [ "main" ]
   pull_request:
     branches: [ "main" ]
 
@@ -12,9 +10,8 @@ permissions:
   pull-requests: write 
 
 jobs:
-  build:
+  branch_test:
     runs-on: ubuntu-latest
-    if: github.ref != 'refs/heads/main'
     env:
       GIT_USER: ${{secrets.USER}}
       GIT_PASS: ${{secrets.TOKEN}}
@@ -29,7 +26,8 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           node-version: '22.x'
       - run: npm run setup
-      - run: npm run test:bc && mv ./storybuilder/Backend/coverage/lcov-report ./documentation/docs/testing/backend-lcov-report
+      - run: npm run test:bc && rm -rf ./documentation/docs/testing/lcov-report && mv ./storybuilder/Backend/coverage/lcov-report ./documentation/docs/testing/lcov-report
+
       
       - name: Update Coverage Report
         run: |
