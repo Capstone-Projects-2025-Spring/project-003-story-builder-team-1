@@ -36,7 +36,7 @@ jobs:
           git config --global user.email "$(git --no-pager log --format=format:'%ae' -n 1)"
           git add -f ./documentation/docs/testing/lcov-report
           git commit -m "Updated Backend Coverage Report"
-          git push --force-with-lease
+          git push origin HEAD
         env:
           GITHUB_TOKEN: ${{ env.GITHUB_TOKEN }}
 
