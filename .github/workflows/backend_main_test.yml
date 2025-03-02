@@ -1,0 +1,21 @@
+name: run_backend_main_test
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  main_test:
+    runs-on: ubuntu-latest
+    env:
+      GIT_USER: ${{secrets.USER}}
+      GIT_PASS: ${{secrets.TOKEN}}
+    
+    steps:
+      - uses: actions/checkout@v4
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22.x'
+      - run: npm run setup
+      - run: npm run test:b
