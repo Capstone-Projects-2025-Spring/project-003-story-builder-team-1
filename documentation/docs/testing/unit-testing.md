@@ -5,7 +5,7 @@ sidebar_position: 1
 ## Test Library
 
 ### Jest
-The test Library in use is Jest. Jest is compatible with JavaScript, react, node, and express, making it the testing library for the frontend and backend. 
+The primary testing library is Jest. Jest is compatible with JavaScript, React, Node, and Express, making it the testing library for the Frontend and Backend. 
 
 ### Supertest
 Supertest is also used to for testing. It simulates HTTP requests. This allows for testing the Backend without starting the server each time.
