@@ -28,4 +28,4 @@ On a pull request to main, the above testing process will applied through a work
 
 On a push to main, the above testing process will be applied through a workflow and will use the test:b command to test that the merged code does not cause any issues when pushed to main.
 
-#### [View Backend Test Coverage Report](https://htmlpreview.github.io/?https://github.com/Capstone-Projects-2025-Spring/project-003-story-builder-team-1/blob/main/documentation/docs/testing/lcov-report/index.html)
+#### [View Backend Test Coverage Report](https://htmlpreview.github.io/?https://github.com/Capstone-Projects-2025-Spring/project-003-story-builder-team-1/blob/main/documentation/docs/testing/backend-lcov-report/index.html)
