@@ -26,20 +26,7 @@ jobs:
       - name: Use Node.js
         uses: actions/setup-node@v4
         with:
-          token: ${{ secrets.COVERAGE }}
+          token: ${{ secrets.GITHUB_TOKEN }}
           node-version: '22.x'
       - run: npm run setup
       - run: npm run test:bc && mv ./storybuilder/Backend/coverage/lcov-report ./documentation/docs/testing/lcov-report
-      
-      - name: Commit Coverage Report
-        run: |
-          git config --global user.name "$(git --no-pager log --format=format:'%an' -n 1)"
-          git config --global user.email "$(git --no-pager log --format=format:'%ae' -n 1)"
-          git add -f ./documentation/docs/testing/lcov-report
-          git commit -m "Updated Backend Coverage Report"
-
-      - name: Push changes
-        uses: ad-m/github-push-action@master
-        with:
-          github_token: ${{ secrets.COVERAGE  }}
-          force_with_lease: true
