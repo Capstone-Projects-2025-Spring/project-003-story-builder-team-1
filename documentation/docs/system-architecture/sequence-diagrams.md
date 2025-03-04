@@ -32,22 +32,25 @@ sequenceDiagram
     participant Database
     User->>+Frontend: User clicks "Sign Up"
     Frontend-->>User: Redirect to Registration page
-    loop Until valid email address is provided
-        User->>Frontend: User enters information
+    loop Until valid email is provided
+        User->>Frontend: User enters login information
         Frontend->>+Backend: Send credentials for authentication
-        Backend->>Database: Check database for emails
+        Backend->>+Database: Check database for email
         alt if Email exists
             Database-->>Backend: Returns existing email
             Backend-->>Frontend: Authentication failure response
-            Frontend-->>User: Show "User already exists" message
+            Frontend-->>User: "User already exists error" message
             Frontend-->>User: Prompts User to try again
         else if Email does not exist
             Database-->>Backend: Returns no email
             Backend-->>Frontend: Authentication success response
-            Frontend-->>User: Show "Account successfully created" message
+            Frontend-->>User: "Account successfully created" message
             Frontend-->>User: Redirect to Login Page
         end
     end
+    deactivate Database
+    deactivate Backend
+    deactivate Frontend
 ```
 
 ## Use Case 2: Agent Creation
