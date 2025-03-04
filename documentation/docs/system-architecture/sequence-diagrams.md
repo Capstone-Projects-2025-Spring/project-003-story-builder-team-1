@@ -83,7 +83,24 @@ sequenceDiagram
 ```
 
 ## Use Case 3: Agent Deletion
-![Agent Deletion drawio](https://github.com/user-attachments/assets/2d3264f8-d7bc-4699-ace7-c73063241519)
+```mermaid
+sequenceDiagram
+    participant User
+    participant Frontend
+    participant Backend
+    User->>+Frontend: User clicks "Agents"
+    Frontend-->>User: Redirects to Agents Menu
+    User->>Frontend: User clicks desired Agent
+    Frontend-->>User: Redirects to desired Agent Menu
+    User->>Frontend: User clicks "Delete Agent"
+    Frontend->>+Backend: Agent deletion request
+    alt if Deletion was successful
+        Backend-->>Frontend: Returns "Agent successfully deleted" response
+    else if Deletion was successful
+        Backend-->>-Frontend: Returns "Error: Unable to delete agent" error response
+    end
+    Frontend-->>-User: Shows returned response
+```
 
 ## Use Case 4: Manual vs Automatic Mode Sequence Diagram
 ![Manual vs Automatic Sequence Diagram drawio](https://github.com/user-attachments/assets/0be1057e-c810-451e-a06c-0044f6aa09bf)
