@@ -54,7 +54,33 @@ sequenceDiagram
 ```
 
 ## Use Case 2: Agent Creation
-![Agent Creation Sequence Diagram drawio](https://github.com/user-attachments/assets/dd2f9631-b66f-4843-a396-661a714883b3)
+```mermaid
+sequenceDiagram
+    participant User
+    participant Frontend
+    participant Backend
+    participant LLM
+    participant Database
+    User->>+Frontend: User clicks "Create Agent"
+    Frontend-->>User: Prompts User for writing style
+    opt Writing Style Preferences
+    User->>Frontend: User specifies writing style
+    end
+    Frontend->>+Backend: Agent creation request
+    Backend->>+Database: Search for Agent context
+    alt if Agent context in database
+        Database-->>Backend: Returns agent context
+    else if Agent context is not in database
+        Database-->>Backend: Returns empty cursor
+        Backend->>+LLM: Search for Agent context request
+        LLM-->>-Backend: Returns agent context
+        Backend->>Database: Add agent context
+        Database-->>-Backend: Returns document with entry id
+    end
+    Backend-->>-Frontend: Request successful response
+    Frontend-->>User: "Agent successfully created" message
+    Frontend-->>-User: Redirect to Agent Page
+```
 
 ## Use Case 3: Agent Deletion
 ![Agent Deletion drawio](https://github.com/user-attachments/assets/2d3264f8-d7bc-4699-ace7-c73063241519)
