@@ -8,7 +8,7 @@ sidebar_position: 3
 Many sequence diagrams use this initial sequence. Each Diagram that continues after this sequence will clarify that it continues from this sequence.
 ```mermaid
 sequenceDiagram
-    actor User
+    participant User
     participant Frontend
     participant Backend/Agent
     participant LLM
@@ -24,7 +24,31 @@ sequenceDiagram
 ```
 
 ## Use Case 1: Account Creation
-![Initial Writing Sequence Diagram drawio](https://github.com/user-attachments/assets/68d371fb-4fe7-4a26-a5c1-55c0c01b9ac3)
+```mermaid
+sequenceDiagram
+    participant User
+    participant Frontend
+    participant Backend
+    participant Database
+    User->>+Frontend: User clicks "Sign Up"
+    Frontend-->>User: Redirect to Registration page
+    loop Until valid email address is provided
+        User->>Frontend: User enters information
+        Frontend->>+Backend: Send credentials for authentication
+        Backend->>Database: Check database for emails
+        alt if Email exists
+            Database-->>Backend: Returns existing email
+            Backend-->>Frontend: Authentication failure response
+            Frontend-->>User: Show "User already exists" message
+            Frontend-->>User: Prompts User to try again
+        else if Email does not exist
+            Database-->>Backend: Returns no email
+            Backend-->>Frontend: Authentication success response
+            Frontend-->>User: Show "Account successfully created" message
+            Frontend-->>User: Redirect to Login Page
+        end
+    end
+```
 
 ## Use Case 2: Agent Creation
 ![Agent Creation Sequence Diagram drawio](https://github.com/user-attachments/assets/dd2f9631-b66f-4843-a396-661a714883b3)
