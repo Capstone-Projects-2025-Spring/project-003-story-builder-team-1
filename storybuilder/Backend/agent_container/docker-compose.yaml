@@ -1,0 +1,11 @@
+services:
+  agent:
+    image: ai_agent
+    build: .
+    container_name: ai_agent
+    stdin_open: true  # Keeps stdin open
+    tty: true         # Allocates a TTY
+    environment:
+      - API_KEY=${API_KEY}
+    ports:
+      - "8080:8080"
