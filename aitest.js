@@ -1,18 +1,22 @@
 import LlamaAI from "llamaai";
-
-const apiToken = "API_KEY"; 
-const llamaAPI = new LlamaAI(apiToken);
+const llamaAPI = new LlamaAI(process.env.API_KEY);
 
 const apiRequestJson = {
-    model: "llama3.2-1b", // Use model names from API documentation for model provider
-    messages: [
-        { "role": "user", "content": "You are a helpful assistant. You will work in a Mechanical Turks style with other assistants to compose stories for users following a certain set of steps. First write an outline for the story. Then from that outline write the required scenes. Write me a story that is 100 words long about a dog" }
+    "model": "llama3.1-8b",
+    "messages": [
+        {"role": "system", "content": "You are a helpful assistant. Your role will be to write stories in a Mechanical Turks format." },
+        {"role": "user", "content": "Write a 100 word story about a dog."},
     ],
-    stream: false, // Ensures a single response instead of a streamed response
+    "stream": false,
 };
+console.log("Sending prompt:", apiRequestJson);
+await llamaAPI.run(apiRequestJson)    
+    .then(response => {
+        console.log(JSON.stringify(response, null, 2));
+        console.log(response.choices[0].message.content);
+        console.log("API call successful");
+    })
+    .catch(error => {
+        console.error("API call failed:", error.response ? error.response.data : error.message);
+    });
 
-llamaAPI.run(apiRequestJson).then(response => {
-    console.log(response.choices[0].message.content);
-}).catch(error => {
-    console.error(error);
-});
