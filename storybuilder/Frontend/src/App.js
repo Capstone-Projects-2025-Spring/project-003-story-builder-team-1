@@ -30,8 +30,12 @@ function App() {
 
   // Function for handling send clock
   const handle_send_click = async () => {
+    // If input is empty, return from function
+    const trimmed_input = input_string.trim();
+    if (!trimmed_input) return;
+
     //Converts String to JSON data
-    const data = {'Content': input_string}
+    const data = {'Content': trimmed_input}
 
     //POSTing data to Backend
     try {
@@ -54,6 +58,9 @@ function App() {
         {text: input_string, is_ai: false},
         {text: res_data.message, is_ai: true}
       ]);
+
+      // Clear the input box by resetting the input_string state
+      set_input_string('');
 
     // Catch errors
     } catch (error) {
@@ -90,6 +97,12 @@ function App() {
           type="text"
           value={input_string}
           onChange={handle_input_change}
+          onKeyDown={(event) => {
+            if (event.key === "Enter" && !event.shiftKey) {
+              event.preventDefault();
+              handle_send_click();
+            }
+          }}
           placeholder="Enter text"
           />
           <button className="send-button" onClick={handle_send_click}><img className="send-icon" src="/send-icon.png" alt="Send"/></button>
