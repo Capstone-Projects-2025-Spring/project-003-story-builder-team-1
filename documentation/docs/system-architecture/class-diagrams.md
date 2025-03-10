@@ -375,6 +375,7 @@ class Translator {
    +story_bank: LinkedList
    +agent_instances: int
 
+   +text_box() String
    +rank_format() void
    +writing_session() void`
    +write_chapter(input: JSON) JSON
@@ -477,6 +478,8 @@ class Prompt_Admin {
 - `agent_instances: int` - Keeps track of the number of Courier instances accessing the LLM. In case this can be set by the user later (or in case we want to return ALL of the chapters at once) the user can cite this field.
 
 ### Methods:
+#### 'text_box(): String' - Stores input from frontend text box
+
 #### `rank_format(): void` - PLACEHOLDER
 
 #### `writing_session(): void` - Creates all couriers, has them write and refine stories, and picks one to be the final judge.
