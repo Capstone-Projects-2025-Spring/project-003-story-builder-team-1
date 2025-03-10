@@ -478,7 +478,7 @@ class Prompt_Admin {
 - `agent_instances: int` - Keeps track of the number of Courier instances accessing the LLM. In case this can be set by the user later (or in case we want to return ALL of the chapters at once) the user can cite this field.
 
 ### Methods:
-#### 'text_box(): String' - Stores input from frontend text box
+#### `text_box(): String` - Stores input from frontend text box
 
 #### `rank_format(): void` - PLACEHOLDER
 
