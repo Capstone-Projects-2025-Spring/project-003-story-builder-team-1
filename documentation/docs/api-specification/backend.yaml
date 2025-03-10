@@ -246,7 +246,17 @@ paths:
                 type: array
                 items:
                   type: object
-
+                  
+  /translator/text_box:
+    post:
+      tags:
+        - translator
+      summary: Stores input from frontend text box.
+      operationId: text_box
+      responses:
+        '200':
+          description: Success
+          
   /translator/rank_format:
     post:
       tags:
