@@ -219,6 +219,26 @@ paths:
         '500':
           description: Internal server error
 
+  /db/agent:
+    get:
+      summary: Retrieves agent info.
+      description: Retrieves information about an agent from the database.
+      operationId: agent
+      parameters:
+        - in: query
+          name: agentId
+          required: false
+          schema:
+            type: string
+          description: The ID of the agent to retrieve information for (if needed).
+      responses:
+        '200':
+          description: Successfully retrieved agent data in JSON format
+        '400':
+          description: Invalid query parameters
+        '500':
+          description: Internal server error
+  
   /db/new_account:
     post:
       tags:
@@ -315,13 +335,13 @@ paths:
         '500':
           description: Internal server error
 
-  /translator/rank-format:
+  /translator/rank_format:
     post:
       tags:
         - translator
       summary: Triggers the rank_format() method.
       description: Triggers the ranking process for the given draft.
-      operationId: rankFormat
+      operationId: rank_format
       requestBody:
         required: false
         content:
@@ -337,13 +357,13 @@ paths:
         '500':
           description: Internal server error
 
-  /translator/writing-session:
+  /translator/writing_session:
     post:
       tags:
         - translator
       summary: Starts or updates a writing session.
       description: Starts or updates an active writing session.
-      operationId: startOrUpdateWritingSession
+      operationId: writing_session
       requestBody:
         required: false
         content:
@@ -361,13 +381,13 @@ paths:
         '500':
           description: Internal server error
 
-  /translator/write-chapter:
+  /translator/write_chapter:
     post:
       tags:
         - translator
       summary: Writes a new chapter based on the input JSON data.
       description: Allows you to write a new chapter by providing chapter data in the request body.
-      operationId: writeChapter
+      operationId: write_chapter
       requestBody:
         required: true
         content:
@@ -392,13 +412,13 @@ paths:
         '500':
           description: Internal server error
 
-  /translator/story-bank:
+  /translator/story_bank:
     get:
       tags:
         - translator
       summary: Retrieves the entire story bank as a list.
       description: Retrieves the full list of stories from the story bank.
-      operationId: getStoryBank
+      operationId: story_bank
       responses:
         '200':
           description: List of stories in JSON format
