@@ -315,13 +315,59 @@ paths:
         '500':
           description: Internal server error
 
-  /translator/write_chapter:
+  /translator/rank-format:
     post:
       tags:
         - translator
-      summary: Writes a new chapter based on the input JSON.
-      description: Generates a new chapter based on the provided input JSON, incorporating details like plot, characters, and setting.
-      operationId: write_chapter
+      summary: Triggers the rank_format() method.
+      description: Triggers the ranking process for the given draft.
+      operationId: rankFormat
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              description: Optional body if needed.
+      responses:
+        '200':
+          description: Drafts Ranked
+        '400':
+          description: Invalid input or missing parameters
+        '500':
+          description: Internal server error
+
+  /translator/writing-session:
+    post:
+      tags:
+        - translator
+      summary: Starts or updates a writing session.
+      description: Starts or updates an active writing session.
+      operationId: startOrUpdateWritingSession
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              description: Optional body if needed.
+      responses:
+        '200':
+          description: Session started/updated
+        '400':
+          description: Invalid input or missing parameters
+        '404':
+          description: Session not found for update
+        '500':
+          description: Internal server error
+
+  /translator/write-chapter:
+    post:
+      tags:
+        - translator
+      summary: Writes a new chapter based on the input JSON data.
+      description: Allows you to write a new chapter by providing chapter data in the request body.
+      operationId: writeChapter
       requestBody:
         required: true
         content:
@@ -329,37 +375,32 @@ paths:
             schema:
               type: object
               properties:
-                chapter_info:
-                  type: object
+                chapterTitle:
+                  type: string
+                chapterContent:
+                  type: string
+              required:
+                - chapterTitle
+                - chapterContent
       responses:
         '200':
-          description: Chapter data
-          content:
-            application/json:
-              schema:
-                type: object
+          description: Successfully written chapter in JSON format
         '400':
-          description: Invalid input data
+          description: Invalid input or missing parameter
+        '404':
+          description: Story or session not found
         '500':
           description: Internal server error
 
-  /translator/story_bank:
+  /translator/story-bank:
     get:
       tags:
         - translator
       summary: Retrieves the entire story bank as a list.
-      description: Retrieves a complete list of stored stories available in the system's story bank for reference or use.
-      operationId: story_bank
+      description: Retrieves the full list of stories from the story bank.
+      operationId: getStoryBank
       responses:
         '200':
-          description: A list of stories
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  type: object
-        '404':
-          description: No stories found
+          description: List of stories in JSON format
         '500':
           description: Internal server error
