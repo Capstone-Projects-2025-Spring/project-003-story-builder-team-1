@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import { AppShell, Burger, Group, Skeleton, Text } from '@mantine/core';
+import { AppShell, Burger, Group, Skeleton, Text, Title } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import '@mantine/core/styles.css';
 import Input_Text_Area from './components/Input_Text_Area';
@@ -20,14 +20,18 @@ function App() {
       padding="md"
     >
       <AppShell.Header>
-        <Group h="100%" px="md">
+        <Group h="100%" px="md" position="apart">
           <Burger opened={opened} onClick={toggle} hiddenFrom="sm" size="sm" />
-          <img src="/logo.png" alt="Logo"></img><span className="logo-name">StoryBuilderAI</span>
+          <Group style={{ flex: 1, justifyContent: 'center' }}>
+            <img src="/logo.png" alt="Logo"></img>
+            <Title order={2}>StoryBuilderAI</Title>
+          </Group>
+
         </Group>
       </AppShell.Header>
       <AppShell.Navbar p="md">
         <Group>
-          <Burger opened={opened} onClick={toggle} hiddenFrom="sm" size="sm" />
+          <Burger opened={opened} onClick={toggle} hiddenFrom="sm" size="sm"/>
           <Text>Navbar</Text>
         </Group>
         {Array(15)
@@ -36,7 +40,7 @@ function App() {
             <Skeleton key={index} h={28} mt="sm" animate={false} />
           ))}
       </AppShell.Navbar>
-      <AppShell.Main style={{ display: 'flex', flexDirection: 'column', height: 'calc(100vh - 2rem)' }}>
+      <AppShell.Main style={{ display: 'flex', flexDirection: 'column', height: "100vh" }}>
         <Chat_Area messages={messages}/>
         <Input_Text_Area onSend={Send_Message}/>
       </AppShell.Main>
