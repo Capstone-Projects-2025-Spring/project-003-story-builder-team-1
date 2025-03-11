@@ -36,11 +36,8 @@ function App() {
             <Skeleton key={index} h={28} mt="sm" animate={false} />
           ))}
       </AppShell.Navbar>
-      <AppShell.Main style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
-        <div>
-          Alt layout – Navbar and Aside are rendered on top on Header and Footer
-          <Chat_Area messages={messages}/>
-        </div>
+      <AppShell.Main style={{ display: 'flex', flexDirection: 'column', height: 'calc(100vh - 2rem)' }}>
+        <Chat_Area messages={messages}/>
         <Input_Text_Area onSend={Send_Message}/>
       </AppShell.Main>
       <AppShell.Aside p="md">Aside</AppShell.Aside>
