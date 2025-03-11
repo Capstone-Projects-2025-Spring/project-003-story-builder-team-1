@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Textarea, Group, Button } from '@mantine/core';
+import { Textarea, Group } from '@mantine/core';
 import './Input_Text_Area.css';
 
 function Input_Text_Area({ onSend }) {
