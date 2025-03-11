@@ -1,72 +1,52 @@
 import React, { useState } from 'react';
-import { Textarea } from '@mantine/core';
+import { Textarea, Group, Button } from '@mantine/core';
+import './Input_Text_Area.css';
 
-const backend = 'http://localhost:8080/';
-const text_box = backend + 'app/text_box/'; 
+function Input_Text_Area({ onSend }) {
+  const [input_string, set_input_string] = useState('');
 
-function Input_Text_Area() {
-    const [input_string, set_input_string] = useState('');
-
-    const handle_input_change = (event) => {
-        set_input_string(event.target.value);
-    };
-    
-    // Function for handling send clock
-    const handle_send_click = async () => {
+  const handle_input_change = (event) => {
+    set_input_string(event.target.value);
+  };
+  
+  // Function for handling send click
+  const handle_send_click = async () => {
     // If input is empty, return from function
     const trimmed_input = input_string.trim();
     if (!trimmed_input) return;
 
-    //Converts String to JSON data
-    const data = {'Content': trimmed_input}
+    // Call the sendMessage function from the parent
+    onSend(trimmed_input);
 
-    //POSTing data to Backend
-    try {
-        const response = await fetch(text_box, {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify(data)
-        })
+    // Clear the input field
+    set_input_string('');
+  };
 
-        // Check if response status is an error, if yes throw an error
-        if (!response.ok) throw new Error(`Server error: ${response.status}`);
-
-        // Parse the response
-        const res_data = await response.json();
-        console.log('Success:', res_data);
-
-        // Set messages from input or response from ai
-        set_messages([
-        ...messages,
-        {text: input_string, is_ai: false},
-        {text: res_data.message, is_ai: true}
-        ]);
-
-        // Clear the input box by resetting the input_string state
-        set_input_string('');
-
-    // Catch errors
-    } catch (error) {
-        console.error("Fetch Error: ", error)
-    }
-    };
-
-    return (
-        <Textarea
-        placeholder="Autosize with no rows limit"
-        label="Autosize with no rows limit"
+  return (
+    <Group align='center' style={{ width: '100%' }} gap="0.5rem">
+      <Textarea
+        placeholder="Enter Text Here"
         autosize
         minRows={1}
         maxRows={5}
+        value={input_string}
         onChange={handle_input_change}
-          onKeyDown={(event) => {
-            if (event.key === "Enter" && !event.shiftKey) {
-              event.preventDefault();
-              handle_send_click();
-            }
-          }}
-        />
-    );
+        onKeyDown={(event) => {
+          if (event.key === "Enter" && !event.shiftKey) {
+            event.preventDefault();
+            handle_send_click();
+          }
+        }}
+        style={{ flexGrow: 1 }}
+      />
+      <button 
+        onClick={handle_send_click} 
+        style={{ background: 'transparent', border: 'none', display: 'flex', alignItems: 'center' }}
+      >
+        <img className="send-icon" src="/send-icon.png" alt="Send"/>
+      </button>
+    </Group>
+  );
 }
 
 export default Input_Text_Area;
