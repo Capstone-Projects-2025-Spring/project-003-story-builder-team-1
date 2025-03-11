@@ -221,6 +221,8 @@ paths:
 
   /db/agent:
     get:
+      tags:
+        - db
       summary: Retrieves agent info.
       description: Retrieves information about an agent from the database.
       operationId: agent
