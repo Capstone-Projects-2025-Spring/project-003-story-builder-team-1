@@ -101,15 +101,17 @@ sequenceDiagram
     end
     Frontend-->>-User: Shows returned response
 ```
-
-## Use Case 4: Manual vs Automatic Mode Sequence Diagram
-![Manual vs Automatic Sequence Diagram drawio](https://github.com/user-attachments/assets/0be1057e-c810-451e-a06c-0044f6aa09bf)
-
-## Use Case 5: Involvement Options
-![Involvement Options Sequence Diagram drawio](https://github.com/user-attachments/assets/e09a1c79-4eae-4b7b-9a44-aefd7b49dabe)
-
-## Use Case 6: Editing Agent Work
-This diagram assumes the sequence of events in [Initial Writing Story](#initial-writing-story-process-sequence-diagram) Process Sequence Diagram. 
+## Use Case 4: Viewing History
+```mermaid
+sequenceDiagram
+    participant User
+    participant Frontend
+    User->>+Frontend: User clicks desired story
+    Frontend-->>User: Redirects to story page
+    User->>Frontend: User scrolls up to view story history until desired edit is found
+    User->>Frontend: User clicks "view" on the desired result to view all the individual Agent contributions
+    Frontend-->>-User: Shows all individual Agents and their specific work
+```
 
 ![Editing Agent Work Sequence Diagram drawio](https://github.com/user-attachments/assets/f248a5e5-b196-4932-bc58-5cf5487b2bfa)
 
