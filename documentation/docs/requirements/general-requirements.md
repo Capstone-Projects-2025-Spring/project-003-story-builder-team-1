@@ -30,4 +30,4 @@ This project was tested and developed using the following tools:
 
 - Testing:
     - Jest 29.7.0
-    - SuperTest 7.0.0
+    - Supertest 7.0.0
