@@ -115,7 +115,24 @@ sequenceDiagram
 ```
 
 ## Use Case 5: Editing Agent Work
-This diagram follows the [Viewing History](#use-case-4-viewing-history-sequence-diagram) sequence diagram. If the desired edit is the most current the diagram still applies as the only change is the lack of scrolling up to find it.
+This diagram follows the [Viewing History](#use-case-4-viewing-history-sequence-diagram) sequence diagram for finding the desired agent work to edit.
+```mermaid
+sequenceDiagram
+    participant User
+    participant Frontend
+    participant Backend
+    participant Database
+    User->>+Frontend: User clicks "Edit"
+    Frontend-->>User: Opens text box for editing
+    User->>Frontend: Edits Agent work with desired changes
+    Frontend->>+Backend: Edit request with desired changes
+    Backend->>+Database: Get Request for the story
+    Database-->>-Backend: Return story json
+    Backend->>+Database: Add Request containing new story (Copied story until change + desired change)
+    Database-->>-Backend: Returns document containing entry id
+    Backend-->>-Frontend: Return updated Agent work with desired changes
+    Frontend-->>-User: Display updates and remove any history after changes from story chat
+```
 
 ## Use Case 6: Voting for Stories
 This diagram assumes the sequence of events in [Initial Writing Story](#initial-writing-story-process-sequence-diagram) Process Sequence Diagram.
