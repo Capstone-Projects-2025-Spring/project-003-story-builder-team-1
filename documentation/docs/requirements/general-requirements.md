@@ -17,7 +17,7 @@ This project was tested and developed using the following tools:
 - JavaScript ES2024
 
 - Docker 27.3.1-1
-
+  
 - Frontend: 
   - React.js 19.0.0
   - HTML5
@@ -27,6 +27,11 @@ This project was tested and developed using the following tools:
   - Node.js 22.x
   - Llama 3.3
   - MongoDB 8.0.4
+
+- Database: 
+  - MongoDB 8.0
+  - mongodb (JavaScript library) 6.14
+  - Mongoose 8.12.1
 
 - Testing:
     - Jest 29.7.0
