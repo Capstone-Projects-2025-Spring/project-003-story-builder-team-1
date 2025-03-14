@@ -14,10 +14,16 @@ app.use(function(req, res, next) {
   });
 
 // Import the routes
-const app_text_box = require('./routes/app_text_box');
+const courier = require('./routes/courier');
+const prompt_admin = require('./routes/prompt_admin');
+const db = require('./routes/db');
+const translator = require('./routes/translator');
 
 // Use the imported routes
-app.use(app_text_box);
+app.use(courier);
+app.use(prompt_admin);
+app.use(db);
+app.use(translator);
 
 //Status Message to Home Page of Server
 app.get('/', (req, res) => {
