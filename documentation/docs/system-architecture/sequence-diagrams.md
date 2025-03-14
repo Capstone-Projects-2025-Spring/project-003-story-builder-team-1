@@ -114,7 +114,9 @@ sequenceDiagram
     Frontend-->>-User: Shows all individual Agents and their specific work
 ```
 
-## Use Case 5: Editing Agent Work
+## Use Case 5: Editing Agent Work Sequence Diagram
+This diagram assumes the sequence of events in [Initial Writing Story](#initial-writing-story-process-sequence-diagram)
+
 This diagram follows the [Viewing History](#use-case-4-viewing-history-sequence-diagram) sequence diagram for finding the desired agent work to edit.
 ```mermaid
 sequenceDiagram
@@ -134,7 +136,7 @@ sequenceDiagram
     Frontend-->>-User: Display updates and remove any history after changes from story chat
 ```
 
-## Use Case 6: Voting for Stories
+## Use Case 6: Voting for Stories Sequence Diagram
 This diagram assumes the sequence of events in [Initial Writing Story](#initial-writing-story-process-sequence-diagram) Process Sequence Diagram.
 
 ![Voting for Stories Sequence Diagram drawio](https://github.com/user-attachments/assets/08bf9c45-a7a1-4975-8d3c-75ef229c1d4e)
