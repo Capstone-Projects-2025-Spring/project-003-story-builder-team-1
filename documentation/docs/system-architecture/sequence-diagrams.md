@@ -4,7 +4,7 @@ sidebar_position: 3
 
 # Sequence Diagrams
 
-## Use Case 1: Account Creation Sequence Diagran
+## Use Case 1: Account Creation
 ```mermaid
 sequenceDiagram
     participant User
@@ -34,7 +34,7 @@ sequenceDiagram
     deactivate Frontend
 ```
 
-## Use Case 2: Agent Creation Sequence Diagram
+## Use Case 2: Agent Creation
 ```mermaid
 sequenceDiagram
     participant User
@@ -63,7 +63,7 @@ sequenceDiagram
     Frontend-->>-User: Opens agent popup modal
 ```
 
-## Use Case 3: Agent Deletion Sequence Diagram
+## Use Case 3: Agent Deletion
 ```mermaid
 sequenceDiagram
     participant User
@@ -83,7 +83,7 @@ sequenceDiagram
     Frontend-->>-User: Shows returned response
 ```
 
-## Use Case 4: Viewing History Sequence Diagram
+## Use Case 4: Viewing History
 ```mermaid
 sequenceDiagram
     participant User
@@ -95,7 +95,7 @@ sequenceDiagram
     Frontend-->>-User: Shows all individual Agents and their specific work
 ```
 
-## Use Case 5: Editing Agent Work Sequence Diagram
+## Use Case 5: Editing Agent Work
 This diagram assumes the sequence of events in [Agent Story Generation](#use-case-7-agent-story-generation) sequence diagram.
 
 This diagram follows the [Viewing History](#use-case-4-viewing-history-sequence-diagram) sequence diagram for finding the desired agent work to edit.
@@ -117,7 +117,7 @@ sequenceDiagram
     Frontend-->>-User: Display updates and remove any history after changes from story chat
 ```
 
-## User Case 6: Vetoing Agent Votes Sequence Diagram
+## User Case 6: Vetoing Agent Votes
 This diagram assumes the sequence of events in [Agent Story Generation](#use-case-7-agent-story-generation) sequence diagram.
 
 ```mermaid
@@ -146,7 +146,7 @@ sequenceDiagram
     User->>+Frontend: User selects "Generate Story"
     Frontend-->>User: Opens up a prompt popup modal
     User->>Frontend: User enters necessary information (number of chapters, story subject/synopsis, any extra criteria)
-    Loop For every agent
+    Loop For every Agent
     Frontend->>+Backend: Sends generation request allow with inputted information
     Backend->>+LLM: Generate Request with formatted prompt
     LLM-->>-Backend: Returns generated chapter response as a JSON
@@ -154,8 +154,30 @@ sequenceDiagram
     Database-->>-Backend: Returns document containing status of operation
     end
     Backend-->>-Frontend: Return all agent chapters
-    Frontend-->>User: Display all agent chapters
+    Frontend-->>-User: Display all agent chapters
 ```
+
+## Use Case 8: Agent Voting
+This diagram assumes the sequence of events in [Agent Story Generation](#use-case-7-agent-story-generation) sequence diagram.
+```mermaid
+sequenceDiagram
+    participant User
+    participant Frontend
+    participant Backend
+    participant LLM
+    participant Database
+    activate Frontend
+    activate Backend
+    loop For every Agent
+        Backend->>+LLM: Vote Request (Provides every other agents' work)
+        LLM-->>-Backend: Returns casted vote
+    end
+    Backend->>+Database: Update Request (Change reference in story entry to the most-voted agent work)
+    Database-->>-Backend: Returns document with the operation status
+    Backend-->>-Frontend: Return most-voted agent work
+    Frontend-->>-User: Display the most-voted agent work
+```
+
 ## Use Case 8: Critiquing Stories
 This diagram assumes the sequence of events in [Agent Story Generation](#use-case-7-agent-story-generation) sequence diagram.
 
