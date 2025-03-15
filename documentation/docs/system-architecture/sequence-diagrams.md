@@ -50,7 +50,7 @@ sequenceDiagram
     Frontend->>+Backend: Agent creation request
     Backend->>+Database: Search for Agent context
     alt if Agent context in Database
-        Database-->>Backend: Returns agent context
+        Database-->>Backend: Returns Agent context
     else if Agent context is not in Database
         Database-->>Backend: Returns empty cursor
         Backend->>+LLM: Search for Agent context request
@@ -60,7 +60,7 @@ sequenceDiagram
     end
     Backend-->>-Frontend: Request successful response
     Frontend-->>User: "Agent successfully created" message
-    Frontend-->>-User: Opens agent popup modal
+    Frontend-->>-User: Opens Agent popup modal
 ```
 
 ## Use Case 3: Agent Deletion
@@ -70,7 +70,7 @@ sequenceDiagram
     participant Frontend
     participant Backend
     User->>+Frontend: User clicks "Agents"
-    Frontend-->>User: Opens agents popup modal
+    Frontend-->>User: Opens Agents popup modal
     User->>Frontend: User clicks desired Agent
     Frontend-->>User: Opens specific Agent Menu modal
     User->>Frontend: User clicks "Delete Agent"
@@ -78,7 +78,7 @@ sequenceDiagram
     alt if Deletion was successful
         Backend-->>Frontend: Returns "Agent successfully deleted" response
     else if Deletion was successful
-        Backend-->>-Frontend: Returns "Error: Unable to delete agent" error response
+        Backend-->>-Frontend: Returns "Error: Unable to Delete Agent" error response
     end
     Frontend-->>-User: Shows returned response
 ```
@@ -126,13 +126,13 @@ sequenceDiagram
     participant Backend
     participant Database
     User->>+Frontend: The user clicks on desired voted upon result
-    Frontend-->>User: Opens popup modal containing each agents individual work for chosen result
-    User->>Frontend: The user clicks veto on the specifc agent contribution they prefer
-    Frontend->>+Backend: Send Update Request with the ID of the desired agent work.
-    Backend->>+Database: Update Request (Change ID reference to the desired agent work)
+    Frontend-->>User: Opens popup modal containing each Agents individual work for chosen result
+    User->>Frontend: The user clicks veto on the specifc Agent contribution they prefer
+    Frontend->>+Backend: Send Update Request with the ID of the desired Agent work.
+    Backend->>+Database: Update Request (Change ID reference to the desired Agent work)
     Database-->>-Backend: Returns document containing entry ID
-    Backend-->>-Frontend: Return the new agent work selected via the veto. 
-    Frontend-->>-User: Display the new chosen agent work. 
+    Backend-->>-Frontend: Return the new Agent work selected via the veto. 
+    Frontend-->>-User: Display the new chosen Agent work. 
 ```
 
 ## Use Case 7: Agent Story Generation
@@ -153,8 +153,29 @@ sequenceDiagram
     Backend->>+Database: Add Request for newly generated story chapter
     Database-->>-Backend: Returns document containing status of operation
     end
-    Backend-->>-Frontend: Return all agent chapters
-    Frontend-->>-User: Display all agent chapters
+    Backend-->>-Frontend: Return all Agent chapters
+    Frontend-->>-User: Display all Agent chapters
+```
+
+## Use Case 8: Agent Voting
+This diagram assumes the sequence of events in [Agent Story Generation](#use-case-7-agent-story-generation) sequence diagram.
+```mermaid
+sequenceDiagram
+    participant User
+    participant Frontend
+    participant Backend
+    participant LLM
+    participant Database
+    activate Frontend
+    activate Backend
+    loop For every Agent
+        Backend->>+LLM: Vote Request (Provides every other Agents' work)
+        LLM-->>-Backend: Returns casted vote
+    end
+    Backend->>+Database: Update Request (Change reference in story entry to the most-voted Agent work)
+    Database-->>-Backend: Returns document with the operation status
+    Backend-->>-Frontend: Return most-voted Agent work
+    Frontend-->>-User: Display the most-voted Agent work
 ```
 
 ## Use Case 9: Agent Critiquing
@@ -171,13 +192,13 @@ sequenceDiagram
     User->>+Frontend: User clicks "Continue" to move to critiquing step
     Frontend->>+Backend: Critiquing start signal
     loop For every Agent
-        Backend->>+LLM: Critique Request (Passes most-voted agent chapter for critiquing)
+        Backend->>+LLM: Critique Request (Passes most-voted Agent chapter for critiquing)
         LLM-->>-Backend: Returns critique of most-voted chapter as a JSON
         Backend->>+Database: Add Request (Store each critique as new entry)
         Database-->>-Backend: Returns document with the operation status
     end
-    Backend-->>-Frontend: Returns all agent critiques of most-voted chapter
-    Frontend-->>-User: Displays all agent critiques
+    Backend-->>-Frontend: Returns all Agent critiques of most-voted chapter
+    Frontend-->>-User: Displays all Agent critiques
 ```
 
 ## Use Case 10: Agent Editing
@@ -201,6 +222,6 @@ sequenceDiagram
         Backend->>+Database: Add Request (Store each chapter as new entry)
         Database-->>-Backend: Returns document with the operation status
     end
-    Backend-->>-Frontend: Returns all agent edited most-voted chapter
-    Frontend-->>-User: Displays all agent edited chapters
+    Backend-->>-Frontend: Returns all Agent edited most-voted chapter
+    Frontend-->>-User: Displays all Agent edited chapters
 ```
