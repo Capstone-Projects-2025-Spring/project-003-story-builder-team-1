@@ -141,8 +141,27 @@ This diagram assumes the sequence of events in [Initial Writing Story](#initial-
 
 ![Voting for Stories Sequence Diagram drawio](https://github.com/user-attachments/assets/08bf9c45-a7a1-4975-8d3c-75ef229c1d4e)
 
-## User Case 7: Vetoing Stories
-This diagram assumes the sequence of events in [Initial Writing Story](#initial-writing-story-process-sequence-diagram) Process Sequence Diagram.
+## User Case 7: Vetoing Agent Votes Sequence Diagram
+This diagram assumes the sequence of events in [Initial Writing Story Proccess](#initial-writing-story-process-sequence-diagram) sequence diagram.
+
+This diagram follows the [Viewing History](#use-case-4-viewing-history-sequence-diagram) sequence diagram for finding the desired agent vote to veto.
+```mermaid
+sequenceDiagram
+    participant User
+    participant Frontend
+    participant Backend
+    participant Database
+    User->>+Frontend: The user clicks on desired voted upon result
+    Frontend-->>User: Opens popup modal containing each agents individual work for chosen result
+    User->>Frontend: The user clicks veto on the specifc agent contribution they prefer
+    Frontend->>+Backend: Update Request (Change vote)
+    Backend->>+Database: Get Request for the story
+    Database-->>-Backend: Return story json
+    Backend->>+Database: Add Request containing new story (Copied story until change + desired voting change)
+    Database-->>-Backend: Returns document containing entry id
+    Backend-->>-Frontend: Return vetoed Agent work
+    Frontend-->>-User: Display updates and remove any history after changes from story chat
+```
 
 ![Vetoing Stories Sequence Diagram drawio](https://github.com/user-attachments/assets/7a2d077a-2737-4b9a-936f-c27da21faf0d)
 
