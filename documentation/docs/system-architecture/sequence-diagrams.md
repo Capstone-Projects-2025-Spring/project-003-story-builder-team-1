@@ -79,7 +79,7 @@ sequenceDiagram
     end
     Backend-->>-Frontend: Request successful response
     Frontend-->>User: "Agent successfully created" message
-    Frontend-->>-User: Redirect to Agent Page
+    Frontend-->>-User: Opens agent popup modal
 ```
 
 ## Use Case 3: Agent Deletion Sequence Diagram
@@ -89,9 +89,9 @@ sequenceDiagram
     participant Frontend
     participant Backend
     User->>+Frontend: User clicks "Agents"
-    Frontend-->>User: Redirects to Agents Menu
+    Frontend-->>User: Opens agents popup modal
     User->>Frontend: User clicks desired Agent
-    Frontend-->>User: Redirects to desired Agent Menu
+    Frontend-->>User: Opens specific Agent Menu modal
     User->>Frontend: User clicks "Delete Agent"
     Frontend->>+Backend: Agent deletion request
     alt if Deletion was successful
@@ -108,7 +108,7 @@ sequenceDiagram
     participant User
     participant Frontend
     User->>+Frontend: User clicks desired story
-    Frontend-->>User: Redirects to story page
+    Frontend-->>User: Opens story page
     User->>Frontend: User scrolls up to view story history until desired edit is found
     User->>Frontend: User clicks "view" on the desired result to view all the individual Agent contributions
     Frontend-->>-User: Shows all individual Agents and their specific work
