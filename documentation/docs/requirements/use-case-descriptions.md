@@ -2,7 +2,8 @@
 sidebar_position: 5
 ---
 
-# Use-case descriptions
+# Use-case Descriptions
+
 ## Use Case 1: Account Creation
 As a user, it is crucial that I have an account that stores my stories, Agents, and their history.
 1. The user accesses the resource and is prompted to sign in or make an account.
@@ -20,47 +21,53 @@ As a user, I want to create an Agent, and or specify who the Agent should try to
 As a user, I should be able to locate an Agent and delete it.
 1. The user selects the options button.
 2. The user selects the agent button.
-3. The user clicks on the desired agent.
+3. The user clicks on the desired Agent.
 4. The user selects "Delete Agent".
 
- ## Use Case 4: Human Input vs Agents Only
- As a user, I want to be able to choose whether or not I want to be an active part of the writing process, or if the Agents should handle everything.
- 1. The user provides the initial prompt for the Agents to beginning the story creation process.
- 2. The user chooses between two options, Manual Mode (Agents stop and wait for further user input) or Automatic Mode (Agents complete all steps of the creation process including voting, critiquing and editing).
+## Use Case 4: Viewing History
+As a user, it is important that I am able to look back and view the history of the Agents and the story process.
+1. The user selects a story
+2. The user selects the chapter of the story they wish to view
+3. The user scrolls to the portion of the chapter writing process to see the desired agent work
 
-## Use Case 5: Choosing Involvement
-As a user, it is crucial that I control which parts of the story writing process I want to be directly involved in. 
-1. The user provides the inital prompt for the Agents to beginning the story creation process.
-2. The user clicks "Options".
-3. The user checks off all the parts of the story writing process they wish to be a part of, forcing the Agents to stop their processes and wait for user input at these parts.
-
-## Use Case 6: Editing Agent Work
-As a user, I should be able to edit the story created by the Agents to better fit my needs.
+## Use Case 5: Editing Agent Work
+As a user, I should be able to edit both past and current agent work to ensure that the chapter, edit, goal, or critique better fits my needs.
 1. The user selects the desired story.
-2. The user reads the Agent's draft.
+2. The user selects the desired chapter of the story they wish to edit.
+2. The user scrolls to locate the desired Agent's work.
 3. The user clicks the "Edit" button.
 4. The user makes any desired changes.
 
-## Use Case 7: Viewing and Editing Chat History
-As a user, I should be able to access the history of the conversations I have had with the Agents, being able to view each Agent's contributions.
-1. The user selects a story.
-2. The user can scroll up from the current part of the story building process to view the history.
-3. The user can select a part of the history to edit, if they would like to.
-4. The user can either click "Done" to finish the edit or "Go Back" to return to the current part of the story building process.
-
-## Use Case 8: Voting for Stories
-As a user, after each Agent's chapter draft is presented, I should be able to vote for which one is the best by certain predefined standards of what optimal storytelling is.
-1. The user clicks on the story they wish to view.
-2. The user finds the voting section for the current or any previous portion of the story.
-3. The user provides their vote.
-
-## Use Case 9: Vetoing Stories
+## Use Case 6: Vetoing Agent Votes
 As a user, I should be able to veto the final vote of the Agents on any chapter version, edit, or critique.
-1. After viewing the votes of the Agents, the user can click an option to veto the decision made by the Agents.
-2. The user can instead select a different option that the Agents did not vote for.
+1. The user clicks the desired story
+2. The user selects the chapter currently being worked on.
+3. The user reads the individual work from each Agent.
+4. The user clicks the veto button found above the currently most-voted work.
+5. The user selects an alternative Agent's work that they prefer.
 
-## Use Case 10: Critiquing the Stories
-As a user, at any breakpoint in the story editing process, I should be able to offer a critique of either the story or the critique produced by the Agents.
-1. After a breakpoint in the Agent's writing process, the user can click "Start a Critique".
-2. The user writes their critique of the Agent's work. 
-3. The user clicks "Enter" to submit the critique.
+## Use Case 7: Agent Story Generation
+The Agents should be able to generate a chapter of a story if given a prompt from the user.
+1. The user enters the number of chapters, a story subject/synopsis, and any specific criteria that needs to be met.
+2. The prompt is sent to the backend, formatted properly, and sent to the Agent.
+3. The generated result is returned and displayed to the user.
+4. This process is repeated for each Agent.
+
+## Use Case 8: Agent Voting
+Agents should be able to review all other work from other Agents and cast a vote as to which is best.
+1. A specific Agent is sent work generated by other Agents.
+2. Each Agent reviews the work.
+3. The Agent casts a vote for the best generated result.
+4. The process is repeated for each Agent.
+
+## Use Case 9: Agent Critiquing
+Agents should be able to receive the most-voted agent chapter and provide critiques for the work.
+1. Each Agent is sent the most-voted agent work.
+2. The Agents return a critique for the most-voted agent chapter.
+3. The critiques are displayed to the user.
+
+## Use Case 10: Agent Editing
+Agents should be able to receive the most-voted agent critique and use that to edit the most-voted agent chapter.
+1. Each Agent is sent the most-voted agent critique and chapter. 
+2. The Agents return the edited most-voted chapter.
+3. Each Agent's edited chapter is displayed to the user.
