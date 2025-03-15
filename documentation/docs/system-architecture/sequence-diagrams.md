@@ -163,8 +163,6 @@ sequenceDiagram
     Frontend-->>-User: Display updates and remove any history after changes from story chat
 ```
 
-![Vetoing Stories Sequence Diagram drawio](https://github.com/user-attachments/assets/7a2d077a-2737-4b9a-936f-c27da21faf0d)
-
 ## Use Case 8: Critiquing Stories
 This diagram assumes the sequence of events in [Initial Writing Story](#initial-writing-story-process-sequence-diagram) Process Sequence Diagram.
 
