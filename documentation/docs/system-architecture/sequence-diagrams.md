@@ -119,7 +119,6 @@ sequenceDiagram
 
 ## User Case 6: Vetoing Agent Votes
 This diagram assumes the sequence of events in [Agent Story Generation](#use-case-7-agent-story-generation) sequence diagram.
-
 ```mermaid
 sequenceDiagram
     participant User
@@ -135,6 +134,7 @@ sequenceDiagram
     Backend-->>-Frontend: Return the new agent work selected via the veto. 
     Frontend-->>-User: Display the new chosen agent work. 
 ```
+
 ## Use Case 7: Agent Story Generation
 ```mermaid
 sequenceDiagram
@@ -157,29 +157,10 @@ sequenceDiagram
     Frontend-->>-User: Display all agent chapters
 ```
 
-## Use Case 8: Agent Voting
-This diagram assumes the sequence of events in [Agent Story Generation](#use-case-7-agent-story-generation) sequence diagram.
-```mermaid
-sequenceDiagram
-    participant User
-    participant Frontend
-    participant Backend
-    participant LLM
-    participant Database
-    activate Frontend
-    activate Backend
-    loop For every Agent
-        Backend->>+LLM: Vote Request (Provides every other agents' work)
-        LLM-->>-Backend: Returns casted vote
-    end
-    Backend->>+Database: Update Request (Change reference in story entry to the most-voted agent work)
-    Database-->>-Backend: Returns document with the operation status
-    Backend-->>-Frontend: Return most-voted agent work
-    Frontend-->>-User: Display the most-voted agent work
-```
-
-## Use Case 9: Critiquing Stories
-This diagram assumes the sequence of events in [Agent Story Generation](#use-case-7-agent-story-generation) sequence diagram, followed by the sequence of events in the [Agent Voting](#use-case-8-agent-voting) sequence diagram.
+## Use Case 9: Agent Critiquing
+This diagram assumes the sequence of events in the following sequence diagrams in the following order:
+1. [Agent Story Generation](#use-case-7-agent-story-generation)
+2. [Agent Voting](#use-case-8-agent-voting) on the generated chapters
 ```mermaid
 sequenceDiagram
     participant User
@@ -191,10 +172,35 @@ sequenceDiagram
     Frontend->>+Backend: Critiquing start signal
     loop For every Agent
         Backend->>+LLM: Critique Request (Passes most-voted agent chapter for critiquing)
-        LLM-->>-Backend: Returns critique of most-voted chapter
+        LLM-->>-Backend: Returns critique of most-voted chapter as a JSON
         Backend->>+Database: Add Request (Store each critique as new entry)
         Database-->>-Backend: Returns document with the operation status
     end
     Backend-->>-Frontend: Returns all agent critiques of most-voted chapter
     Frontend-->>-User: Displays all agent critiques
+```
+
+## Use Case 10: Agent Editing
+This diagram assumes the sequence of events in the following sequence diagrams in the following order:
+1. [Agent Story Generation](#use-case-7-agent-story-generation)
+2. [Agent Voting](#use-case-8-agent-voting) on the generated chapters
+3. [Agent Critiquing](#use-case-9-agent-critiquing)
+4. [Agent Voting](#use-case-8-agent-voting) on the generated critiques
+```mermaid
+sequenceDiagram
+    participant User
+    participant Frontend
+    participant Backend
+    participant LLM
+    participant Database
+    User->>+Frontend: User clicks "Continue" to move to editing step
+    Frontend->>+Backend: Editing start signal
+    loop For every Agent
+        Backend->>+LLM: Edit Request (Passes most-voted chapter and critique for editing)
+        LLM-->>-Backend: Returns edited most-voted chapter as a JSON
+        Backend->>+Database: Add Request (Store each chapter as new entry)
+        Database-->>-Backend: Returns document with the operation status
+    end
+    Backend-->>-Frontend: Returns all agent edited most-voted chapter
+    Frontend-->>-User: Displays all agent edited chapters
 ```
