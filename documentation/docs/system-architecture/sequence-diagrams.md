@@ -178,7 +178,23 @@ sequenceDiagram
     Frontend-->>-User: Display the most-voted agent work
 ```
 
-## Use Case 8: Critiquing Stories
-This diagram assumes the sequence of events in [Agent Story Generation](#use-case-7-agent-story-generation) sequence diagram.
-
-![Critiquing Stories Sequence Diagram drawio](https://github.com/user-attachments/assets/78bec6d2-943e-4429-b429-d87205cb8348)
+## Use Case 9: Critiquing Stories
+This diagram assumes the sequence of events in [Agent Story Generation](#use-case-7-agent-story-generation) sequence diagram, followed by the sequence of events in the [Agent Voting](#use-case-8-agent-voting) sequence diagram.
+```mermaid
+sequenceDiagram
+    participant User
+    participant Frontend
+    participant Backend
+    participant LLM
+    participant Database
+    User->>+Frontend: User clicks "Continue" to move to critiquing step
+    Frontend->>+Backend: Critiquing start signal
+    loop For every Agent
+        Backend->>+LLM: Critique Request (Passes most-voted agent chapter for critiquing)
+        LLM-->>-Backend: Returns critique of most-voted chapter
+        Backend->>+Database: Add Request (Store each critique as new entry)
+        Database-->>-Backend: Returns document with the operation status
+    end
+    Backend-->>-Frontend: Returns all agent critiques of most-voted chapter
+    Frontend-->>-User: Displays all agent critiques
+```
