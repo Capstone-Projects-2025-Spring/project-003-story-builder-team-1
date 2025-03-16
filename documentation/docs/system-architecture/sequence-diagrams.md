@@ -77,7 +77,7 @@ sequenceDiagram
     Frontend->>+Backend: Agent deletion request
     alt if Deletion was successful
         Backend-->>Frontend: Returns "Agent successfully deleted" response
-    else if Deletion was successful
+    else if Deletion was unsuccessful
         Backend-->>-Frontend: Returns "Error: Unable to Delete Agent" error response
     end
     Frontend-->>-User: Shows returned response
@@ -90,9 +90,10 @@ sequenceDiagram
     participant Frontend
     User->>+Frontend: User clicks desired story
     Frontend-->>User: Opens story page
-    User->>Frontend: User scrolls up to view story history until desired edit is found
-    User->>Frontend: User clicks "View" on the desired result to view all the individual Agent contributions
-    Frontend-->>-User: Shows all individual Agents and their specific work
+    User->>Frontend: User clicks desired chapter
+    Frontend-->>User: Opens chapter page with full history
+    User->>Frontend: User scrolls to view story history
+    deactivate Frontend
 ```
 
 ## Use Case 5: Editing Agent Work
