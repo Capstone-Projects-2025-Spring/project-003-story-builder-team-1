@@ -22,18 +22,12 @@ stateDiagram-v2
          [*] --> is_satisfied
          
          is_satisfied --> Draft: If the User is Not Yet Satisfied with Draft Quality or Drafts Have Not Yet Been Generated
-         Draft: Agents Write Drafts
+         Draft: Agents Write Drafts and Vote on Which Story They Believe to be the Best
 
-         Draft --> Vote: User May Participate in the Draft Writing Process
-         Vote: Agents Vote on which story they believe to be the best
+         Draft --> Critique: User May Edit a Draft, Veto the Voting Process, or Agree to Continue the Process
+         Critique: Agents Give Critiques of Winning Draft, and Vote on Which Critiques to Focus on
 
-         Vote --> Critique: User May Veto the Vote with Their Own Preference
-         Critique: Agents give critiques of Winning Draft
-
-         Critique --> Critique_Vote: User May Add Critiques of Their Own
-         Critique_Vote: Agents Vote on which Critiques to Focus
-
-         Critique_Vote --> is_satisfied: User May Select Critiques that the Agents did not Select
+         Critique -->  is_satisfied: User Can Either Edit an Agent's Critique, Veto the Critique Vote, or Agree to Continue the Process
 
          is_satisfied --> [*]: If the Chapter Draft is to the User's Satisfaction
       }
