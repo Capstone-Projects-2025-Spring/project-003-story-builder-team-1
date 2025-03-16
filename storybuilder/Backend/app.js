@@ -14,13 +14,11 @@ app.use(function(req, res, next) {
   });
 
 // Import the routes
-const courier = require('./routes/courier');
 const prompt_admin = require('./routes/prompt_admin');
 const db = require('./routes/db');
 const translator = require('./routes/translator');
 
 // Use the imported routes
-app.use(courier);
 app.use(prompt_admin);
 app.use(db);
 app.use(translator);
