@@ -15,13 +15,24 @@ This project was tested and developed using the following tools:
 - Google Chrome 134.0.6998.3
     
 - JavaScript ES2024
-    
+
+- Docker 27.3.1-1
+  
 - Frontend: 
   - React.js 19.0.0
   - HTML5
       
 - Backend: 
-  - Express.js 5.0.1
+  - Express.js 4.21.2
   - Node.js 22.x
   - Llama 3.3
   - MongoDB 8.0.4
+
+- Database: 
+  - MongoDB 8.0
+  - mongodb (JavaScript library) 6.14
+  - Mongoose 8.12.1
+
+- Testing:
+    - Jest 29.7.0
+    - Supertest 7.0.0

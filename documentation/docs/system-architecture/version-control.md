@@ -12,9 +12,10 @@ Branches are created from the main branch, and are created through Jira issues. 
 ## Branch Protection Rules
 
 The following branch protection rules are in effect:
-- A pull request is required before merging.
-- One pull request approval is needed to merge.
+- A pull request is required before merging into main.
+- One pull request approval is needed to merge into main.
 
 ## Deployment
 
-The main branch is set up to deploy the Docusaurus documentation site using Github Actions
+- The main branch is set up to deploy the Docusaurus documentation site using Github Actions.
+- Testing and coverage report generation is automated using Github Actions.
