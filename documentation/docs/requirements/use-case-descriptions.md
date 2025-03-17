@@ -52,6 +52,7 @@ The Agents should be able to generate a chapter of a story if given a prompt fro
 2. The prompt is sent to the backend, formatted properly, and sent to the Agent.
 3. The generated result is returned and displayed to the user.
 4. This process is repeated for each Agent.
+5. All generated stories are displayed to the user. 
 
 ## Use Case 8: Agent Voting
 Agents should be able to review all other work from other Agents and cast a vote as to which is best.
@@ -59,6 +60,7 @@ Agents should be able to review all other work from other Agents and cast a vote
 2. Each Agent reviews the work.
 3. The Agent casts a vote for the best generated result.
 4. The process is repeated for each Agent.
+5. The most-voted agent generated work is displayed to the user.
 
 ## Use Case 9: Agent Critiquing
 Agents should be able to receive the most-voted agent chapter and provide critiques for the work.
