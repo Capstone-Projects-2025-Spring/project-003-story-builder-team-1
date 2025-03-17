@@ -1,7 +1,7 @@
 import React from 'react';
 import { TextInput, Paper, Button, Textarea, Stack } from "@mantine/core";
 
-function Story_Prompt_Box() {
+function STORY_PROMPT_BOX() {
     return (
         <Paper withBorder shadow="md" p={30} mt={30} radius="md">
             <Stack spacing="xl">
@@ -11,7 +11,7 @@ function Story_Prompt_Box() {
                 />
                 <Textarea
                     label="Story Prompt"
-                    placeholder="Enter Prompt Here"
+                    placeholder="Enter Prompt Here" required
                     autosize
                     minRows={2}
                     maxRows={5}
@@ -34,4 +34,4 @@ function Story_Prompt_Box() {
     );
 }
 
-export default Story_Prompt_Box
+export default STORY_PROMPT_BOX

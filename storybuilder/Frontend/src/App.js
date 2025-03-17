@@ -3,11 +3,9 @@ import ReactDOM from 'react-dom/client';
 import { AppShell, Burger, Group, ScrollArea, Text, Title } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import '@mantine/core/styles.css';
-import Story_Prompt_Box from './components/Story_Prompt_Box';
-import Input_Text_Area from './components/Input_Text_Area';
-import Chat_Area from './components/Chat_Area';
+import STORY_PROMPT_BOX from './components/STORY_PROMPT_BOX';
+import STORY_AGENT_NAVBAR from './components/STORY_AGENT_NAVBAR';
 import Use_Messages from './hooks/Use_Messages';
-import Side_Button from './components/Side_Button';
 
 function App() {
   const [opened, { toggle }] = useDisclosure();
@@ -33,8 +31,10 @@ function App() {
       <AppShell.Navbar p="md">
 
       </AppShell.Navbar>
-      <AppShell.Main>
-        <Story_Prompt_Box/>
+      <AppShell.Main style={{ display:"flex", justifyContent:"center" }}>
+        <div style={{width:"60%"}}>
+          <STORY_PROMPT_BOX/>
+        </div>
       </AppShell.Main>
       <AppShell.Aside p="md">
 
