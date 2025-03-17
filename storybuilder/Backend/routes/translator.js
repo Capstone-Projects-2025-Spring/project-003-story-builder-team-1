@@ -1,21 +1,24 @@
 const express = require('express');
 const router = express.Router();
 
+//Global Variables to store data related to the story
 var chapter_count;
-var story_details; 
+var story_details;
 var extra_details;
 var courier_response;
 
 //chapter_count will receive the amount of chapters requested for the story
 router.post('/app/chapter_count/', (req, res) => {
-    //Storing Body Data
-    chapter_count = JSON.stringify(req.body);
-    console.log("POST Input: " + chapter_count);
+    
+    //Storing Body Data as a number
+    chapter_count = Number(JSON.stringify(req.body.data))
 
-    //If data was not received successfully or was not a number
-    if (chapter_count == null || typeof(chapter_count) != "number"){
-        res.status(400).json({message: "Chapter Count was not Received", data: req.body});
+    //Data Type Validation
+    if (isNaN(chapter_count)){
+        res.status(400).json({message: "Invalid Data Type", data: req.body});
     }
+
+    console.log("POST Input: " + chapter_count);
 
     //Send Successful Response Back to Frontend
     res.status(200).json({message: "Chapter Count Received Successfully", data: req.body});
@@ -29,7 +32,7 @@ router.post('/app/story_details/', (req, res) => {
 
     //If data was not received successfully
     if (story_details == null){
-        res.status(400).json({message: "Chapter Count was not Received", data: req.body});
+        res.status(404).json({message: "Chapter Count was not Received", data: req.body});
     }
 
     //Send Successful Response Back to Frontend
@@ -44,7 +47,7 @@ router.post('/app/extra_details/', (req, res) => {
 
     //If data was not received successfully
     if (extra_details == null){
-        res.status(400).json({message: "Chapter Count was not Received", data: req.body});
+        res.status(404).json({message: "Chapter Count was not Received", data: req.body});
     }
 
     //Send Successful Response Back to Frontend
@@ -59,7 +62,7 @@ router.post('/app/courier_response/', (req, res) => {
 
     //If data was not received successfully
     if (extra_details == null){
-        res.status(400).json({message: "Chapter Count was not Received", data: req.body});
+        res.status(404).json({message: "Chapter Count was not Received", data: req.body});
     }
 
     //Send Successful Response Back to Frontend
