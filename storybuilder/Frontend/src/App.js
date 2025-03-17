@@ -1,45 +1,20 @@
 import React from 'react';
-import ReactDOM from 'react-dom/client';
-import { AppShell, Burger, Group, ScrollArea, Text, Title } from '@mantine/core';
-import { useDisclosure } from '@mantine/hooks';
-import '@mantine/core/styles.css';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import MainLayout from './components/MainLayout';
 import STORY_PROMPT_BOX from './components/STORY_PROMPT_BOX';
-import STORY_AGENT_NAVBAR from './components/STORY_AGENT_NAVBAR';
-import Use_Messages from './hooks/Use_Messages';
+import STORY_VIEW from './components/STORY_VIEW';
+import STORY_AGENTS from './components/STORY_AGENTS';
+import '@mantine/core/styles.css';
 
 function App() {
-  const [opened, { toggle }] = useDisclosure();
-  const { messages, Send_Message } = Use_Messages();
-  
   return (
-    <AppShell
-      layout="alt"
-      header={{ height: 60 }}
-      navbar={{ width: 300, breakpoint: 'sm', collapsed: { mobile: !opened } }}
-      aside={{ width: 300, breakpoint: 'md', collapsed: { desktop: false, mobile: true } }}
-      padding="md"
-    >
-      <AppShell.Header>
-        <Group h="100%" px="md" position="apart">
-          <Burger opened={opened} onClick={toggle} hiddenFrom="sm" size="sm" />
-          <Group style={{ flex: 1, justifyContent: 'center' }}>
-            <img src="/logo.png" alt="Logo"></img>
-            <Title order={2}>StoryBuilderAI</Title>
-          </Group>
-        </Group>
-      </AppShell.Header>
-      <AppShell.Navbar p="md">
-
-      </AppShell.Navbar>
-      <AppShell.Main style={{ display:"flex", justifyContent:"center" }}>
-        <div style={{width:"60%"}}>
-          <STORY_PROMPT_BOX/>
-        </div>
-      </AppShell.Main>
-      <AppShell.Aside p="md">
-
-      </AppShell.Aside>
-    </AppShell>
+    <Router>
+      <Routes>
+        <Route path="/" element={<MainLayout><STORY_PROMPT_BOX /></MainLayout>} />
+        <Route path="/story/:id/view" element={<MainLayout><STORY_VIEW /></MainLayout>} />
+        <Route path="/story/:id/agents" element={<MainLayout><STORY_AGENTS /></MainLayout>} />
+      </Routes>
+    </Router>
   );
 }
 
