@@ -67,5 +67,13 @@ router.post('/app/courier_response/', (req, res) => {
     res.status(200).json({message: "Courier Response Received Successfully", data: req.body});
 });
 
+//test_send is used for testing purposes to ensure that data collected in translator can be send out as well
+router.get('/app/test_send/', (req, res) => {
+    //Combining Story and Extra Details together
+    details = "Story Details:\n" + story_details + "\nExtra Details:\n" + extra_details
+    res.status(200).json({message: "Sending Data", data: [chapter_count, details, courier_response]});
+});
+
+
 // Export the routers for use in app.js
 module.exports = router;

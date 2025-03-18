@@ -1,170 +1,214 @@
 const request = require('supertest');
 const app = require('../app');
 
-//Test Case 1: Chapter Count Successfully Receive Numerical Data for Chapter Count
+//chapter_count tests
 describe('POST /app/chapter_count/', () => {
 
+  //Test Case 1: Chapter Count Successfully Receive Numerical Data for Chapter Count
   it('should return 200 and a success message with the input data', async () => {
     
     //Define input data
-    const inputData = {"data": 10};
+    const input_data = {"data": 10};
     
     //Post Request
     const response = await request(app)
       .post('/app/chapter_count/')
-      .send(inputData)
+      .send(input_data)
       .expect('Content-Type', /json/)
       .expect(200);
 
     //assert response matches expected output
-    expect(response.body).toEqual({message: "Chapter Count Received Successfully", data: inputData});
+    expect(response.body).toEqual({message: "Chapter Count Received Successfully", data: input_data});
 
   });
-});
 
-//Test Case 2: Chapter Count Unsuccessfully Receive Non-Numeric Data
-describe('POST /app/chapter_count/', () => {
-
+  //Test Case 2: Chapter Count Unsuccessfully Receive Non-Numeric Data
   it('should return 400 and an error message with the input data', async () => {
     
     //Define input data
-    const inputData = {"data": "Test"};
+    const input_data = {"data": "Test"};
     
     //Post Request
     const response = await request(app)
       .post('/app/chapter_count/')
-      .send(inputData)
+      .send(input_data)
       .expect('Content-Type', /json/)
       .expect(400);
 
     //assert response matches expected output
-    expect(response.body).toEqual({message: "Invalid Data Type", data: inputData});
+    expect(response.body).toEqual({message: "Invalid Data Type", data: input_data});
 
   });
 });
 
-//Test Case 3: Story Details Successfully Receives Story Details
+//story_details tests
 describe('POST /app/story_details/', () => {
 
+  //Test Case 3: Story Details Successfully Receives Story Details
   it('should return 200 and a success message with the input data', async () => {
     
     //Define input data
-    const inputData = {"data": "Story Detail"};
+    const input_data = {"data": "Story Detail"};
     
     //Post Request
     const response = await request(app)
       .post('/app/story_details/')
-      .send(inputData)
+      .send(input_data)
       .expect('Content-Type', /json/)
       .expect(200);
 
     //assert response matches expected output
-    expect(response.body).toEqual({message: "Story Details Received Successfully", data: inputData});
+    expect(response.body).toEqual({message: "Story Details Received Successfully", data: input_data});
 
   });
-});
 
-//Test Case 4: Story Details Unsuccessfully Receives Story Details
-describe('POST /app/story_details/', () => {
-
+  //Test Case 4: Story Details Unsuccessfully Receives Story Details
   it('should return 404 and an error message with the input data', async () => {
     
     //Define input data
-    const inputData = {"data": null};
+    const input_data = {"data": null};
     
     //Post Request
     const response = await request(app)
       .post('/app/story_details/')
-      .send(inputData)
+      .send(input_data)
       .expect('Content-Type', /json/)
       .expect(404);
 
     //assert response matches expected output
-    expect(response.body).toEqual({message: "Story Details were not Received", data: inputData});
+    expect(response.body).toEqual({message: "Story Details were not Received", data: input_data});
 
   });
 });
 
-//Test Case 5: Extra Details Successfully Receives Story Details
+//extra_details tests
 describe('POST /app/extra_details/', () => {
 
+  //Test Case 5: Extra Details Successfully Receives Story Details
   it('should return 200 and a success message with the input data', async () => {
     
     //Define input data
-    const inputData = {"data": "Story Detail"};
+    const input_data = {"data": "Extra Detail"};
     
     //Post Request
     const response = await request(app)
       .post('/app/extra_details/')
-      .send(inputData)
+      .send(input_data)
       .expect('Content-Type', /json/)
       .expect(200);
 
     //assert response matches expected output
-    expect(response.body).toEqual({message: "Extra Details Received Successfully", data: inputData});
+    expect(response.body).toEqual({message: "Extra Details Received Successfully", data: input_data});
 
   });
-});
 
-//Test Case 6: Extra Details Unsuccessfully Receives Story Details
-describe('POST /app/extra_details/', () => {
-
+  //Test Case 6: Extra Details Unsuccessfully Receives Story Details
   it('should return 404 and an error message with the input data', async () => {
     
     //Define input data
-    const inputData = {"data": null};
+    const input_data = {"data": null};
     
     //Post Request
     const response = await request(app)
       .post('/app/extra_details/')
-      .send(inputData)
+      .send(input_data)
       .expect('Content-Type', /json/)
       .expect(404);
 
     //assert response matches expected output
-    expect(response.body).toEqual({message: "Extra Details were not Received", data: inputData});
+    expect(response.body).toEqual({message: "Extra Details were not Received", data: input_data});
 
   });
 });
 
-//Test Case 7: Extra Details Successfully Receives Story Details
+//courier_response tests
 describe('POST /app/courier_response/', () => {
 
+  //Test Case 7: Extra Details Successfully Receives Story Details
   it('should return 200 and a success message with the input data', async () => {
     
     //Define input data
-    const inputData = {"data": "Story Detail"};
+    const input_data = {"data": "Courier Response"};
     
     //Post Request
     const response = await request(app)
       .post('/app/courier_response/')
-      .send(inputData)
+      .send(input_data)
       .expect('Content-Type', /json/)
       .expect(200);
 
     //assert response matches expected output
-    expect(response.body).toEqual({message: "Courier Response Received Successfully", data: inputData});
+    expect(response.body).toEqual({message: "Courier Response Received Successfully", data: input_data});
 
   });
-});
 
-//Test Case 8: Extra Details Unsuccessfully Receives Story Details
-describe('POST /app/courier_response/', () => {
-
+  //Test Case 8: Extra Details Unsuccessfully Receives Story Details
   it('should return 404 and an error message with the input data', async () => {
     
     //Define input data
-    const inputData = {"data": null};
+    const input_data = {"data": null};
     
     //Post Request
     const response = await request(app)
       .post('/app/courier_response/')
-      .send(inputData)
+      .send(input_data)
       .expect('Content-Type', /json/)
       .expect(404);
 
     //assert response matches expected output
-    expect(response.body).toEqual({message: "Courier Response were not Received", data: inputData});
+    expect(response.body).toEqual({message: "Courier Response were not Received", data: input_data});
+
+  });
+});
+
+//Test Case 9: Sending Data From Translator
+describe('GET /app/test_send/', () => {
+
+  it('should return 200 and an success message with the received data', async () => {
+    
+    //Define input data
+    const chapter_data = {"data": 10};
+    const story_data = {"data": "Story Detail"};
+    const extra_data = {"data": "Extra Detail"};
+    const courier_data = {"data": "Courier Response"}
+
+    //Post Request for chapter_count
+    const chapter_response = await request(app)
+      .post('/app/chapter_count/')
+      .send(chapter_data)
+      .expect('Content-Type', /json/)
+      .expect(200);
+
+    //Post Request for story_details
+    const story_response = await request(app)
+      .post('/app/story_details/')
+      .send(story_data)
+      .expect('Content-Type', /json/)
+      .expect(200);
+
+    //Post Request for extra_details
+    const extra_response = await request(app)
+      .post('/app/extra_details/')
+      .send(extra_data)
+      .expect('Content-Type', /json/)
+      .expect(200);
+
+    //Post Request for courier_response
+    const courier_response = await request(app)
+      .post('/app/courier_response/')
+      .send(courier_data)
+      .expect('Content-Type', /json/)
+      .expect(200);
+
+    //Get Request for test_send
+    let details = 'Story Details:\n"Story Detail"\nExtra Details:\n"Extra Detail"'
+    const response = await request(app)
+    .get('/app/test_send/')
+    .expect('Content-Type', /json/)
+    .expect(200);
+
+    //assert response matches expected output
+    expect(response.body).toEqual({message: "Sending Data", data: [10, details, '"Courier Response"']});
 
   });
 });
