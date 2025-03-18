@@ -10,6 +10,11 @@ var courier_response;
 //chapter_count will receive the amount of chapters requested for the story
 router.post('/app/chapter_count/', (req, res) => {
     
+    //If data was not received successfully
+    if (req.body.data == null){
+        res.status(404).json({message: "Chapter Count was not Received", data: req.body});
+    }
+
     //Storing Body Data as a number
     chapter_count = Number(JSON.stringify(req.body.data))
 
@@ -17,11 +22,6 @@ router.post('/app/chapter_count/', (req, res) => {
     if (isNaN(chapter_count)){
         res.status(400).json({message: "Invalid Data Type", data: req.body});
     }
-
-   //If data was not received successfully
-   if (req.body.data == null){
-    res.status(404).json({message: "Story chapters were not Received", data: req.body});
-   }
 
     //Send Successful Response Back to Frontend
     res.status(200).json({message: "Chapter Count Received Successfully", data: req.body});
