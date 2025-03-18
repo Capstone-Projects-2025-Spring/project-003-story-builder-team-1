@@ -57,7 +57,7 @@ router.post('/app/extra_details/', (req, res) => {
     res.status(200).json({message: "Extra Details Received Successfully", data: req.body});
 });
 
-//courier_response will receive any additional requests to take into account when drafting the story
+//courier_response will store the response from a courier instance
 router.post('/app/courier_response/', (req, res) => {
 
     //If data was not received successfully
