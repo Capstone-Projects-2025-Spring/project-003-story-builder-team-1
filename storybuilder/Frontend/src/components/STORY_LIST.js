@@ -22,7 +22,8 @@ function STORY_LIST() {
         <div key={story.id}>
           {/* Story Button */}
           <Button
-            variant="filled"
+            variant="default"
+            color="gray"
             fullWidth
             onClick={() => toggleExpand(story.id)}
           >
@@ -32,10 +33,10 @@ function STORY_LIST() {
           {/* Expandable Section */}
           <Collapse in={expanded_story === story.id}>
             <Stack spacing="xs" mt="xs">
-              <Button variant="light" fullWidth onClick={() => navigate(`/story/${story.id}/view`)}>
+              <Button variant="filled" color="gray" fullWidth onClick={() => navigate(`/story/${story.id}/view`)}>
                 View Story
               </Button>
-              <Button variant="light" fullWidth onClick={() => navigate(`/story/${story.id}/agents`)}>
+              <Button variant="filled" color="gray" fullWidth onClick={() => navigate(`/story/${story.id}/agents`)}>
                 Agents
               </Button>
             </Stack>

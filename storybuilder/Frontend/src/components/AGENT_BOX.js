@@ -1,19 +1,20 @@
 import { useState } from 'react';
-import { Card, Button, Modal, Textarea, Title, Divider, Group, Container, Center } from '@mantine/core';
+import { Card, Button, Modal, Textarea, Title, Divider, Group } from '@mantine/core';
 
 function AGENT_BOX({ name, response }) {
-    const [opened, setOpened] = useState(false);
+    const [opened, set_opened] = useState(false);
 
     return (
         <>
           {/* Modal for Viewing Full Response */}
           <Modal
             opened={opened}
-            onClose={() => setOpened(false)}
-            size="xl"
+            onClose={() => set_opened(false)}
+            size="50%"
             radius="md"
+            style={{ minHeight: '50%' }}
             title={
-                <Title order={2} style={{ fontSize: '24px', fontWeight: 600, textAlign: 'center' }}>
+                <Title order={2} style={{ fontSize: '24px', fontWeight: 600, textAlign: 'center', marginLeft: '15px' }}>
                   {name}
                 </Title>
             }
@@ -23,13 +24,18 @@ function AGENT_BOX({ name, response }) {
               value={response}
               readOnly
               autosize
-              minRows={5}
+              minRows={10}
               maxRows={10}
+              styles={{
+                input: {
+                  fontSize: '18px' // 18px = 1.125rem = mantine size "lg"
+                },
+              }}
               style={{ width: '100%' }}
             />
-          </Modal>
-    
-          {/* Agent Box */}
+            </Modal>
+
+            {/* Agent Box */}
           <Card shadow="sm" padding="md" radius="md" withBorder>
             {/* Header */}
             <div style={{ padding: '10px', borderRadius: '5px 5px 0 0' }}>
@@ -44,14 +50,19 @@ function AGENT_BOX({ name, response }) {
               value={response}
               readOnly
               autosize
-              minRows={3}  // Adjust number of rows to show before scrolling
-              maxRows={5}  // Adjust the number of rows before scrolling starts
+              minRows={3}
+              maxRows={5}
               style={{ width: '100%' }}
+              styles={{
+                input: {
+                  fontSize: '18px'
+                },
+              }}
             />
     
-            {/* View Button - Smaller & Bottom Right */}
+            {/* View Button */}
             <Group position="left" style={{ marginTop: '10px' }}>
-              <Button size="xs" variant="light" onClick={() => setOpened(true)}>
+              <Button size="sm" variant="light" onClick={() => set_opened(true)}>
                 View
               </Button>
             </Group>
