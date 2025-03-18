@@ -7,7 +7,7 @@ var story_details;
 var extra_details;
 var courier_response;
 
-//chapter_count will receive the amount of chapters requested for the story
+//chapter_count will receive the amount of chapters requested for the story from the Frontend
 router.post('/app/chapter_count/', (req, res) => {
     
     //If data was not received successfully
@@ -27,7 +27,7 @@ router.post('/app/chapter_count/', (req, res) => {
     res.status(200).json({message: "Chapter Count Received Successfully", data: req.body});
 });
 
-//story_details will receive the details of the story
+//story_details will receive the details of the story from the Frontend
 router.post('/app/story_details/', (req, res) => {
 
     //If data was not received successfully
@@ -42,7 +42,7 @@ router.post('/app/story_details/', (req, res) => {
     res.status(200).json({message: "Story Details Received Successfully", data: req.body});
 });
 
-//extra_details will receive any additional requests to take into account when drafting the story
+//extra_details will receive any additional requests to take into account when drafting the story from the Frontend
 router.post('/app/extra_details/', (req, res) => {
 
     //If data was not received successfully
@@ -57,7 +57,7 @@ router.post('/app/extra_details/', (req, res) => {
     res.status(200).json({message: "Extra Details Received Successfully", data: req.body});
 });
 
-//courier_response will store the response from a courier instance
+//courier_response will store the response from a courier instance from the Frontend
 router.post('/app/courier_response/', (req, res) => {
 
     //If data was not received successfully
@@ -72,7 +72,7 @@ router.post('/app/courier_response/', (req, res) => {
     res.status(200).json({message: "Courier Response Received Successfully", data: req.body});
 });
 
-//story will send the story and extra details to the frontend
+//story will send the story and extra details to the Frontend
 router.get('/app/story/', (req, res) => {
     //Combining Story and Extra Details together
     details = "Story Details:\n" + story_details + "\nExtra Details:\n" + extra_details
