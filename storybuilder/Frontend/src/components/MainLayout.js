@@ -19,7 +19,7 @@ function MainLayout({ children }) {
             <Burger opened={opened} onClick={toggle} hiddenFrom="sm" size="sm" />
             <Group style={{ flex: 1, justifyContent: 'center' }}>
                 <img src="/logo.png" alt="Logo" />
-                <Title order={2}>StoryBuilderAI</Title>
+                <Title order={2} style={{ color: 'white' }}>StoryBuilderAI</Title>
             </Group>
         </Group>
         </AppShell.Header>
@@ -31,7 +31,7 @@ function MainLayout({ children }) {
 
         {/* Main Content */}
         <AppShell.Main style={{ display: "flex", justifyContent: "center" }}>
-            <div style={{ width: "60%" }}>{children}</div>
+            <div style={{ width: "70%" }}>{children}</div>
         </AppShell.Main>
 
         {/* Aside */}
