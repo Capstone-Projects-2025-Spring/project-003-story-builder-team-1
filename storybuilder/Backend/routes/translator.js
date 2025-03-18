@@ -18,6 +18,11 @@ router.post('/app/chapter_count/', (req, res) => {
         res.status(400).json({message: "Invalid Data Type", data: req.body});
     }
 
+   //If data was not received successfully
+   if (req.body.data == null){
+    res.status(404).json({message: "Story chapters were not Received", data: req.body});
+   }
+
     //Send Successful Response Back to Frontend
     res.status(200).json({message: "Chapter Count Received Successfully", data: req.body});
 });
