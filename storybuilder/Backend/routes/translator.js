@@ -72,13 +72,29 @@ router.post('/app/courier_response/', (req, res) => {
     res.status(200).json({message: "Courier Response Received Successfully", data: req.body});
 });
 
-//test_send is used for testing purposes to ensure that data collected in translator can be send out as well
-router.get('/app/test_send/', (req, res) => {
+//story will send the story and extra details to the frontend
+router.get('/app/story/', (req, res) => {
     //Combining Story and Extra Details together
     details = "Story Details:\n" + story_details + "\nExtra Details:\n" + extra_details
-    res.status(200).json({message: "Sending Data", data: [chapter_count, details, courier_response]});
+
+    //Sending Data to Frontend
+    res.status(200).json({message: "Sending Data to Frontend", data: details});
 });
 
+//courier_data will send the courier data, alongside the story and extra details, to prompt_admin
+router.get('/app/courier_data/', (req, res) => {
+    //Combining Story and Extra Details together
+    details = "Story Details:\n" + story_details + "\nExtra Details:\n" + extra_details
+
+    //Creating Courier Data
+    courier_details = {
+        "story_context": details,
+        "courier_response": courier_response
+    }
+
+    //Sending Data to prompt_admin
+    res.status(200).json({message: "Sending Data to prompt_admin", data: courier_details});
+});
 
 // Export the routers for use in app.js
 module.exports = router;
