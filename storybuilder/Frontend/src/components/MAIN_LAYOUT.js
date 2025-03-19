@@ -1,7 +1,7 @@
-import { AppShell, Burger, Group, Title } from '@mantine/core';
+import { AppShell, Group, Title } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { useState } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation } from 'react-router';
 import STORY_LIST from './STORY_LIST';
 import CHAPTER_LIST from './CHAPTER_LIST';
 
@@ -36,7 +36,6 @@ function MAIN_LAYOUT({ children }) {
             {/* Header */}
             <AppShell.Header>
             <Group h="100%" px="md" position="apart">
-                <Burger opened={opened} onClick={toggle} hiddenFrom="sm" size="sm" />
                 <Group style={{ flex: 1, justifyContent: 'center' }}>
                     <img src="/logo.png" alt="Logo" />
                     <Title order={2} style={{ color: 'white' }}>StoryBuilderAI</Title>

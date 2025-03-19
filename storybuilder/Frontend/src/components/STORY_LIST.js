@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Button, Collapse, Stack } from '@mantine/core';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router';
 
 function STORY_LIST() {
   const navigate = useNavigate();

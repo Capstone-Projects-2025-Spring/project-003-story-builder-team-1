@@ -1,5 +1,5 @@
 import React from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams } from 'react-router';
 import { Container, Title, Text } from '@mantine/core';
 
 // Mock data for chapters (you can also pull this from a state management system)
