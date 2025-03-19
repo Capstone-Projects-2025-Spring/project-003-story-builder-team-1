@@ -202,7 +202,7 @@ describe('GET /app/story/', () => {
     .expect(200);
 
     //assert response matches expected output
-    expect(response.body).toEqual({message: "Sending Data to Frontend", data: details});
+    expect(response.body).toEqual({message: "Sending Data to prompt_admin", data: details});
   });
 });
 
@@ -250,6 +250,6 @@ describe('GET /app/courier_data/', () => {
       "story_context": details,
       "courier_response": '"Courier Response"'
   }
-    expect(response.body).toEqual({message: "Sending Data to prompt_admin", data: courier_details});
+    expect(response.body).toEqual({message: "Sending Data to the Frontend", data: courier_details});
   });
 });
