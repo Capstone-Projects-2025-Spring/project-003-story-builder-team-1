@@ -15,7 +15,6 @@ const mockChapters = [
 ];
 
 function MAIN_LAYOUT({ children }) {
-    console.log("MAIN_LAYOUT render");
     const [opened, { toggle }] = useDisclosure();
     const location = useLocation();
     const [selected_chapter, set_selected_chapter] = useState(null);
@@ -57,6 +56,7 @@ function MAIN_LAYOUT({ children }) {
 
             {/* Aside */}
             <AppShell.Aside p="md">
+                {/* Only render chapter list if on story route*/}
                 {shouldRenderChapterList && (
                     <CHAPTER_LIST
                         chapters={mockChapters}
