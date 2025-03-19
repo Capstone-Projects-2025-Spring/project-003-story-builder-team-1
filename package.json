@@ -1,7 +1,7 @@
 {
   "name": "project-003-story-builder-team-1",
   "scripts": {
-    "setup": "npm install && cd storybuilder/Backend && npm install && cd ../Frontend && npm install",
+    "setup": "npm install && cd storybuilder/Backend && npm install && npm install axios && cd ../Frontend && npm install",
     "start": "concurrently \"npm run start:b\" \"npm run start:f\"",
     "start:b": "node storybuilder/Backend/server.js",
     "start:f": "cd storybuilder/Frontend && npm start",
