@@ -3,6 +3,7 @@ const router = express.Router();
 
 //Global Variables to store data related to the story
 var chapter_count;
+var story_name;
 var story_details;
 var extra_details;
 var courier_response;
@@ -12,7 +13,7 @@ router.post('/app/chapter_count/', (req, res) => {
     
     //If data was not received successfully
     if (req.body.data == null){
-        res.status(404).json({message: "Chapter Count was not Received", data: req.body});
+        res.status(404).json({message: "Chapter Count not Received", data: req.body});
     }
 
     //Storing Body Data as a number
@@ -28,11 +29,26 @@ router.post('/app/chapter_count/', (req, res) => {
 });
 
 //story_details will receive the details of the story from the Frontend
+router.post('/app/story_name/', (req, res) => {
+
+    //If data was not received successfully
+    if (req.body.data == null){
+        res.status(404).json({message: "Story Name not Received", data: req.body});
+    }
+
+    //Storing Body Data
+    story_name = JSON.stringify(req.body.data);
+
+    //Send Successful Response Back to Frontend
+    res.status(200).json({message: "Story Name Received Successfully", data: req.body});
+});
+
+//story_details will receive the details of the story from the Frontend
 router.post('/app/story_details/', (req, res) => {
 
     //If data was not received successfully
     if (req.body.data == null){
-        res.status(404).json({message: "Story Details were not Received", data: req.body});
+        res.status(404).json({message: "Story Details not Received", data: req.body});
     }
 
     //Storing Body Data
@@ -47,7 +63,7 @@ router.post('/app/extra_details/', (req, res) => {
 
     //If data was not received successfully
     if (req.body.data == null){
-        res.status(404).json({message: "Extra Details were not Received", data: req.body});
+        res.status(404).json({message: "Extra Details not Received", data: req.body});
     }
 
     //Storing Body Data
@@ -62,7 +78,7 @@ router.post('/app/courier_response/', (req, res) => {
 
     //If data was not received successfully
     if (req.body.data == null){
-        res.status(404).json({message: "Courier Response were not Received", data: req.body});
+        res.status(404).json({message: "Courier Response not Received", data: req.body});
     }
 
     //Storing Body Data
@@ -84,8 +100,12 @@ router.get('/app/story/', (req, res) => {
 //courier_data will send the courier data, alongside the story and extra details to the Frontend
 router.get('/app/courier_data/', (req, res) => {
 
+    for_frontend = {
+        "title": story_name,
+        "courier_response": courier_response
+    };
     //Sending courier Data to the Frontend
-    res.status(200).json({message: "Sending Data to the Frontend", data: courier_response});
+    res.status(200).json({message: "Sending Data to the Frontend", data: for_frontend});
 });
 
 // Export the routers for use in app.js
