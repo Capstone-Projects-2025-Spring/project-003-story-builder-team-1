@@ -68,20 +68,20 @@ router.post('/app/courier_response/', (req, res) => {
     //Storing Body Data
     courier_response = JSON.stringify(req.body.data);
 
-    //Send Successful Response Back to Frontend
+    //Send Successful Response Back to courier
     res.status(200).json({message: "Courier Response Received Successfully", data: req.body});
 });
 
-//story will send the story and extra details to the Frontend
+//story will send the story and extra details to prompt_admin
 router.get('/app/story/', (req, res) => {
     //Combining Story and Extra Details together
     details = "Story Details:\n" + story_details + "\nExtra Details:\n" + extra_details
 
-    //Sending Data to Frontend
-    res.status(200).json({message: "Sending Data to Frontend", data: details});
+    //Sending Data to prompt_admin
+    res.status(200).json({message: "Sending Data to prompt_admin", data: details});
 });
 
-//courier_data will send the courier data, alongside the story and extra details, to prompt_admin
+//courier_data will send the courier data, alongside the story and extra details to the Frontend
 router.get('/app/courier_data/', (req, res) => {
     //Combining Story and Extra Details together
     details = "Story Details:\n" + story_details + "\nExtra Details:\n" + extra_details
@@ -92,8 +92,8 @@ router.get('/app/courier_data/', (req, res) => {
         "courier_response": courier_response
     }
 
-    //Sending Data to prompt_admin
-    res.status(200).json({message: "Sending Data to prompt_admin", data: courier_details});
+    //Sending Data to the Frontend
+    res.status(200).json({message: "Sending Data to the Frontend", data: courier_details});
 });
 
 // Export the routers for use in app.js
