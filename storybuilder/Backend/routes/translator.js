@@ -28,7 +28,7 @@ router.post('/app/chapter_count/', (req, res) => {
     res.status(200).json({message: "Chapter Count Received Successfully", data: req.body});
 });
 
-//story_details will receive the details of the story from the Frontend
+//story_name will receive the details of the story from the Frontend
 router.post('/app/story_name/', (req, res) => {
 
     //If data was not received successfully
