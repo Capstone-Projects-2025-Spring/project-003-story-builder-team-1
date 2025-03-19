@@ -3,7 +3,7 @@ FROM node:18
 
 WORKDIR /app
 
-COPY package.json ./
+COPY package.json ./ 
 
 RUN npm install
 
@@ -14,4 +14,4 @@ ENV PORT=$PORT
 
 EXPOSE 5000
 
-CMD ["node", "app.js"]
+CMD ["node", "agent_server.js"]
