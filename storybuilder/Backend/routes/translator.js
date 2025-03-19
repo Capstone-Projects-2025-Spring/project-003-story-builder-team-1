@@ -31,9 +31,10 @@ router.post('/app/story_contents/', async (req, res) => {
     try {
         // Make request to courier_response API
         courier_response = await axios.post('http://localhost:8080/app/courier_response');
+        courier_response = courier_response.data
         to_frontend = {
             title: story_name,
-            courier_response: courier_response.data
+            courier_response: courier_response
         }
 
         // Send successful response to frontend
@@ -70,7 +71,7 @@ router.get('/app/story/', (req, res) => {
 });
 
 //courier_data will send the courier data, alongside the story and extra details to the Frontend
-router.get('/app/courier_data/', (req, res) => {
+router.get('/app/courier_data/', async (req, res) => {
 
     for_frontend = {
         "title": story_name,
