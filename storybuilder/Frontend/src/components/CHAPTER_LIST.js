@@ -1,5 +1,5 @@
 import { Button, Stack } from '@mantine/core';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router';
 
 function CHAPTER_LIST({ chapters, storyId }) {
   const navigate = useNavigate();
