@@ -1,44 +1,22 @@
-import LlamaAI from "llamaai";
-const llamaAPI = new LlamaAI(process.env.API_KEY);
+import express from "express";
+import cors from "cors";
+import courier_routes from "./courier.js"; // Import agent route
 
-console.log("LlamaAI instance created:", llamaAPI);
-var conversation = [];
+const app = express();
+const PORT = process.env.PORT || 5000;
 
-while(1) {
-    console.log("Waiting for prompt...");
-    const prompt = await new Promise(resolve => {
-        process.stdin.once('data', data => resolve(data.toString().trim()));
-    });
-    if (prompt === "exit") {
-        console.log("Exiting...");
-        process.exit();
-    }
-    if (prompt === "") {
-        console.log("Empty prompt, waiting for next...");
-        continue;
-    }
-    console.log("Received prompt:", prompt);
-    await send_prompt(prompt);
+// Middleware
+app.use(cors());
+app.use(express.json());
+
+// Routes
+app.use("/courier", courier_routes); // Mount agent routes
+
+// Start Express server
+if (process.env.NODE_ENV !== "test") {
+  app.listen(PORT, () => {
+    console.log(`🚀 Server running on http://localhost:${PORT}`);
+  });
 }
 
-
-async function send_prompt(prompt) {
-    const apiRequestJson = {
-        "model": "llama3.1-8b",
-        "messages": [
-            {"role": "system", "content": "You are a helpful assistant. Your role will be to write stories in a Mechanical Turks format." },
-            {"role": "user", "content": prompt},
-        ],
-        "stream": false,
-    }; 
-    console.log("Sending prompt:", apiRequestJson);
-    await llamaAPI.run(apiRequestJson)    
-        .then(response => {
-            console.log(JSON.stringify(response, null, 2));
-            console.log(response.choices[0].message.content);
-            console.log("API call successful");
-        })
-        .catch(error => {
-            console.error("API call failed:", error.response ? error.response.data : error.message);
-        });
-}
+export default app; // Export for Jest testing

@@ -3,9 +3,14 @@
   "scripts": {
     "setup": "cd storybuilder/Backend && npm install && cd ../Frontend && npm install",
     "start": "npm run start:b & npm run start:f",
+    "start:a": "cd storybuilder/agent_container && AGENT_NAME=${AGENT_NAME} PORT=${PORT} docker-compose up --build",
     "start:b": "node storybuilder/Backend/server.js",
     "start:f": "cd storybuilder/Frontend && npm start",
+    "test:a": "cd storybuilder/Backend/agent_container && NODE_OPTIONS=\"--experimental-vm-modules\" npx jest __test__/agent.test.js",
     "test:b": "cd storybuilder/Backend && npm test",
     "test:bc": "cd storybuilder/Backend && npm run Ctest"
+  },
+  "dependencies": {
+    "jest": "^29.7.0"
   }
 }

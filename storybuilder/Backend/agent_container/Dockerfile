@@ -9,8 +9,9 @@ RUN npm install
 
 COPY . .
 
-ENV PORT=8080
+ARG PORT=5000
+ENV PORT=$PORT
 
-EXPOSE 8080
+EXPOSE 5000
 
-CMD ["node", "agent.js"]
+CMD ["node", "app.js"]

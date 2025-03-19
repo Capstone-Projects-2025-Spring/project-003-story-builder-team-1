@@ -1,5 +1,5 @@
 import request from "supertest";
-import app from "../app";
+import app from "../agent.js";
 import { jest } from "@jest/globals";
 
 // Mock the llamaai module
@@ -14,7 +14,7 @@ jest.unstable_mockModule("llamaai", () => ({
 // Import the mocked module
 const { default: MockedLlamaAI } = await import("llamaai");
 
-describe("POST /api/chat", () => {
+describe("POST /courier/story_call", () => {
 
   it("should return 200 and AI-generated response", async () => {
     // Define input data
@@ -29,7 +29,7 @@ describe("POST /api/chat", () => {
 
   it("should return 400 if message is missing", async () => {
     const response = await request(app)
-      .post(`/api/chat`)
+      .post(`/courier/story_call`)
       .send({})
       .expect(400);
 
