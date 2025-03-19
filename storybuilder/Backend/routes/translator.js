@@ -8,69 +8,28 @@ var story_details;
 var extra_details;
 var courier_response;
 
-//chapter_count will receive the amount of chapters requested for the story from the Frontend
-router.post('/app/chapter_count/', (req, res) => {
+//story_contents will receive the amount of chapters requested, story name, story details, and extra details from the Frontend
+router.post('/app/story_contents/', (req, res) => {
     
-    //If data was not received successfully
-    if (req.body.data == null){
-        res.status(404).json({message: "Chapter Count not Received", data: req.body});
+    //If any data was not received successfully
+    if (req.body.chapter_count == null || req.body.story_name == null || req.body.story_details == null || req.body.extra_details == null){
+        res.status(404).json({message: "Story Contents not Received", data: req.body});
     }
 
-    //Storing Body Data as a number
-    chapter_count = Number(JSON.stringify(req.body.data))
+    //Storing story data
+    chapter_count = Number(JSON.stringify(req.body.chapter_count));
+    story_name = JSON.stringify(req.body.story_name);
+    story_details = JSON.stringify(req.body.story_details);
+    extra_details = JSON.stringify(req.body.extra_details);
 
-    //Data Type Validation
+
+    //Data Type Validation for chapter_count
     if (isNaN(chapter_count)){
         res.status(400).json({message: "Invalid Data Type", data: req.body});
     }
 
     //Send Successful Response Back to Frontend
-    res.status(200).json({message: "Chapter Count Received Successfully", data: req.body});
-});
-
-//story_name will receive the details of the story from the Frontend
-router.post('/app/story_name/', (req, res) => {
-
-    //If data was not received successfully
-    if (req.body.data == null){
-        res.status(404).json({message: "Story Name not Received", data: req.body});
-    }
-
-    //Storing Body Data
-    story_name = JSON.stringify(req.body.data);
-
-    //Send Successful Response Back to Frontend
-    res.status(200).json({message: "Story Name Received Successfully", data: req.body});
-});
-
-//story_details will receive the details of the story from the Frontend
-router.post('/app/story_details/', (req, res) => {
-
-    //If data was not received successfully
-    if (req.body.data == null){
-        res.status(404).json({message: "Story Details not Received", data: req.body});
-    }
-
-    //Storing Body Data
-    story_details = JSON.stringify(req.body.data);
-
-    //Send Successful Response Back to Frontend
-    res.status(200).json({message: "Story Details Received Successfully", data: req.body});
-});
-
-//extra_details will receive any additional requests to take into account when drafting the story from the Frontend
-router.post('/app/extra_details/', (req, res) => {
-
-    //If data was not received successfully
-    if (req.body.data == null){
-        res.status(404).json({message: "Extra Details not Received", data: req.body});
-    }
-
-    //Storing Body Data
-    extra_details = JSON.stringify(req.body.data);
-
-    //Send Successful Response Back to Frontend
-    res.status(200).json({message: "Extra Details Received Successfully", data: req.body});
+    res.status(200).json({message: "Story Contents Received Successfully", data: req.body});
 });
 
 //courier_response will store the response from a courier instance
