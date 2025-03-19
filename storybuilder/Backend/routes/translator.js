@@ -14,7 +14,7 @@ router.post('/app/story_contents/', async (req, res) => {
 
     // Validate required fields
     if (!req.body.chapter_count || !req.body.story_name || !req.body.story_details || !req.body.extra_details) {
-        return res.status(400).json({ message: "Missing required fields", data: req.body });
+        return res.status(404).json({ message: "Missing required fields", data: req.body });
     }
 
     // Store story data
@@ -37,10 +37,7 @@ router.post('/app/story_contents/', async (req, res) => {
         }
 
         // Send successful response to frontend
-        return res.status(200).json({
-            message: "Story Contents Received Successfully",
-            data: to_frontend
-        });
+        return res.status(200).json({message: "Story Contents Received Successfully", data: to_frontend});
 
     } catch (error) {
         console.error("Error fetching courier response:", error.message);
@@ -52,7 +49,7 @@ router.post('/app/story_contents/', async (req, res) => {
 router.post('/app/courier_response/', (req, res) => {
 
     //If data was not received successfully
-    if (req.body.data == null){
+    if (!req.body.data){
         res.status(404).json({message: "Courier Response not Received", data: req.body});
     }
 
