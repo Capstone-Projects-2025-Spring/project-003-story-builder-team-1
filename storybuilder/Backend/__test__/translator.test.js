@@ -213,23 +213,7 @@ describe('GET /app/courier_data/', () => {
   it('should return 200 and an success message with the received data', async () => {
     
     //Define input data
-    const story_data = {"data": "Story Detail"};
-    const extra_data = {"data": "Extra Detail"};
     const courier_data = {"data": "Courier Response"};
-
-    //Post Request for story_details
-    await request(app)
-      .post('/app/story_details/')
-      .send(story_data)
-      .expect('Content-Type', /json/)
-      .expect(200);
-
-    //Post Request for extra_details
-    await request(app)
-      .post('/app/extra_details/')
-      .send(extra_data)
-      .expect('Content-Type', /json/)
-      .expect(200);
 
     //Post Request for courier_Response
     await request(app)
@@ -245,11 +229,6 @@ describe('GET /app/courier_data/', () => {
     .expect(200);
 
     //assert response matches expected output
-    details = 'Story Details:\n"Story Detail"\nExtra Details:\n"Extra Detail"'
-    courier_details = {
-      "story_context": details,
-      "courier_response": '"Courier Response"'
-  }
-    expect(response.body).toEqual({message: "Sending Data to the Frontend", data: courier_details});
+    expect(response.body).toEqual({message: "Sending Data to the Frontend", data: '"Courier Response"'});
   });
 });

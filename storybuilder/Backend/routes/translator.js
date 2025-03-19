@@ -83,17 +83,9 @@ router.get('/app/story/', (req, res) => {
 
 //courier_data will send the courier data, alongside the story and extra details to the Frontend
 router.get('/app/courier_data/', (req, res) => {
-    //Combining Story and Extra Details together
-    details = "Story Details:\n" + story_details + "\nExtra Details:\n" + extra_details
 
-    //Creating Courier Data
-    courier_details = {
-        "story_context": details,
-        "courier_response": courier_response
-    }
-
-    //Sending Data to the Frontend
-    res.status(200).json({message: "Sending Data to the Frontend", data: courier_details});
+    //Sending courier Data to the Frontend
+    res.status(200).json({message: "Sending Data to the Frontend", data: courier_response});
 });
 
 // Export the routers for use in app.js
