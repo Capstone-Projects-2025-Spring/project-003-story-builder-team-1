@@ -19,7 +19,7 @@ function MAIN_LAYOUT({ children }) {
     const location = useLocation();
     const [selected_chapter, set_selected_chapter] = useState(null);
 
-    const shouldRenderChapterList = location.pathname.includes('/story') && !location.pathname.includes('/agents');
+    const should_render_chapter_list = location.pathname.includes('/story') && !location.pathname.includes('/agents');
 
     const on_select_chapter = (chapter) => {
         set_selected_chapter(chapter);
@@ -45,7 +45,7 @@ function MAIN_LAYOUT({ children }) {
 
             {/* Navbar */}
             <AppShell.Navbar p="md">
-            <STORY_LIST />
+                <STORY_LIST />
             </AppShell.Navbar>
 
             {/* Main Content */}
@@ -56,7 +56,7 @@ function MAIN_LAYOUT({ children }) {
             {/* Aside */}
             <AppShell.Aside p="md">
                 {/* Only render chapter list if on story route*/}
-                {shouldRenderChapterList && (
+                {should_render_chapter_list && (
                     <CHAPTER_LIST
                         chapters={mockChapters}
                         onSelectChapter={on_select_chapter}
