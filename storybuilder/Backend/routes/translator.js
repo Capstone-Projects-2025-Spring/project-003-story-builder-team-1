@@ -9,10 +9,10 @@ var story_details;
 var extra_details;
 var courier_response;
 
-// story_contents will receive the requested chapters, story name, story details, and extra details from the frontend
+//story_contents will receive the requested chapters, story name, story details, and extra details from the frontend
 router.post('/app/story_contents/', async (req, res) => {
 
-    // Validate required fields
+    //Validate required fields
     if (!req.body.chapter_count || !req.body.story_name || !req.body.story_details || !req.body.extra_details) {
         return res.status(404).json({ message: "Missing required fields", data: req.body });
     }
@@ -23,13 +23,13 @@ router.post('/app/story_contents/', async (req, res) => {
     story_details = req.body.story_details;
     extra_details = req.body.extra_details;
 
-    // Validate data type of chapter_count
+    //Validate data type of chapter_count
     if (isNaN(chapter_count)) {
         return res.status(400).json({ message: "Invalid Data Type: chapter_count must be a number", data: req.body.chapter_count });
     }
 
     try {
-        // Make request to courier_response API
+        //Await API Response from courier and store data when data is received
         courier_response = await axios.post('http://localhost:8080/app/courier_response');
         courier_response = courier_response.data
         to_frontend = {
@@ -37,7 +37,7 @@ router.post('/app/story_contents/', async (req, res) => {
             courier_response: courier_response
         }
 
-        // Send successful response to frontend
+        //Send successful response to frontend
         return res.status(200).json({message: "Story Contents Received Successfully", data: to_frontend});
 
     } catch (error) {
@@ -53,9 +53,6 @@ router.post('/app/courier_response/', (req, res) => {
     if (!req.body.data){
         res.status(404).json({message: "Courier Response not Received", data: req.body});
     }
-
-    //Storing Body Data
-    courier_response = JSON.stringify(req.body.data);
 
     //Send Successful Response Back to courier
     res.status(200).json({message: "Courier Response Received Successfully", data: req.body});
