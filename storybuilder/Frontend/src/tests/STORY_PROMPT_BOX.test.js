@@ -1,5 +1,5 @@
 import { render, screen, fireEvent } from '../setupTests';
-import STORY_PROMPT_BOX from './components/STORY_PROMPT_BOX';
+import STORY_PROMPT_BOX from '../components/STORY_PROMPT_BOX';
 
 test('renders STORY_PROMPT_BOX component and accepts input', () => {
   render(<STORY_PROMPT_BOX />);
