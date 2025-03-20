@@ -1,4 +1,4 @@
-const promptadmin = require('../promptadmin.js');
+const promptadmin = require('../promptformatter.js');
 
 describe('binarystream', () => {
     it('Creates a JSON prompt with the binary stream altered to "true" from "false"', () => {

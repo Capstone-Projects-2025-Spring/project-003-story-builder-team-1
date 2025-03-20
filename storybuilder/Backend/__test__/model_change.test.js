@@ -1,4 +1,4 @@
-const promptadmin = require('../promptadmin.js');
+const promptadmin = require('../promptformatter.js');
 
 
 

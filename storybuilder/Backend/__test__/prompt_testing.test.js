@@ -1,13 +1,14 @@
-const promptadmin = require('../promptadmin.js');
+const promptadmin = require('../promptformatter.js');
 
 describe('promptforming', () => {
       it('Should build a JSON prompt which contains a prompt with the user input placed inside, specifying the model type and the stream binary.', () => {
         let prompt = "Write a story about pirates.";
-        var draft = promptadmin.write(prompt);
+        var draft = promptadmin.draft(prompt);
         expect(draft).toEqual({
           model: "llama3.2-1b", // Use model names from API documentation for model provider
           messages: [
-              { "role": "user", "content": "You are a helpful assistant. You will work in a Mechanical Turks style with other assistants to compose stories for users following a certain set of steps. The story will be written in chapters, and you will write the first chapter. The request is: Write a story about pirates."}
+              { "role": "system", "content": "You are a helpful assistant. You will work in a Mechanical Turks style with other assistants to compose stories for users following a certain set of steps. The story will be written in chapters, and you will write the first chapter."},
+              { "role": "user", "content": "Write a story about pirates."},
           ],
           stream: false, // Ensures a single response instead of a streamed response
       });
@@ -20,7 +21,9 @@ describe('promptforming', () => {
         expect(crit).toEqual({
           model: "llama3.2-1b", 
           messages: [
-              { "role": "user", "content": "You are now being fed a chapter written by another agent. You will critique the drafting of this story based on grammatical correctness as well as its faithfulness to the style parameters that were specified. The prompt is: 'Write a story about pirates.', and the story you are going to critique is: 'X'" }
+              { "role": "system", "content": "You are now being fed a chapter written by another agent. You will critique the drafting of this story based on grammatical correctness as well as its faithfulness to the style parameters that were specified."},
+              { "role": "user", "content": "Write a story about pirates."},
+              { "role": "assistant", "content": "X"},
           ],
           stream: false, 
       });
@@ -43,12 +46,14 @@ describe('promptforming', () => {
           let chapter = "X";
           var next = promptadmin.nextchapter(prompt, chapter);
           expect(next).toEqual({
-              model: "llama3.2-1b", 
-              messages: [
-                  { "role": "user", "content": "You are now being fed a chapter written by another agent. You will continue the story in another chapter of roughly equal length while still following the guidelines established in the original prompt. The prompt is: 'Write a story about pirates.', and the most recent chapter of this story is: 'X'" }
-              ],
-              stream: false, 
-          });
+            model: "llama3.2-1b", 
+            messages: [
+                { "role": "system", "content": "You are now being fed a chapter written by another agent. You will continue the story in another chapter of roughly equal length while still following the guidelines established in the original prompt."},
+                { "role": "user", "content": "Write a story about pirates."},
+                { "role": "assistant", "content": "X"},
+            ],
+            stream: false, 
+        });
         });
       
 })
