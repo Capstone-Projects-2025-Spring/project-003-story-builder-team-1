@@ -12,7 +12,7 @@ var extra_details;
 var courier_response;
 
 //story_contents will receive the requested chapters, story name, story details, and extra details from the frontend
-router.post('/app/translator/story_contents/', async (req, res) => {
+router.post('/story_contents/', async (req, res) => {
 
     //Validate required fields
     if (!req.body.chapter_count || !req.body.story_name || !req.body.story_details || !req.body.extra_details) {
@@ -33,7 +33,7 @@ router.post('/app/translator/story_contents/', async (req, res) => {
     try {
         //Send data 
         details = "Story Details:\n" + story_details + "\nExtra Details:\n" + extra_details
-        prompt_admin_response = await axios.post('http://localhost:8080/app/prompt_admin/story/', {"data": details});
+        prompt_admin_response = await axios.post('http://localhost:8080/prompt_admin/story/', {"data": details});
 
         to_frontend = {
             title: story_name,
@@ -50,7 +50,7 @@ router.post('/app/translator/story_contents/', async (req, res) => {
 });
 
 //courier_response will store the response from a courier instance
-router.post('/app/translator/courier_response/', (req, res) => {
+router.post('/courier_response/', (req, res) => {
 
     //If data was not received successfully
     if (!req.body.data){

@@ -19,9 +19,9 @@ const db = require('./routes/db');
 const translator = require('./routes/translator');
 
 // Use the imported routes
-app.use(prompt_admin);
-app.use(db);
-app.use(translator);
+app.use('/prompt_admin', prompt_admin);
+app.use('/db', db);
+app.use('/translator', translator);
 
 //Status Message to Home Page of Server
 app.get('/', (req, res) => {
