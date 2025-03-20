@@ -16,13 +16,12 @@ function judge(storybank) {
     return judge;
 }
 
-function draft(promptinfo, extradetails) {
+function draft(promptinfo) {
     var draft = {
         model: "llama3.2-1b", // Use model names from API documentation for model provider
         messages: [
             { "role": "system", "content": "You are a helpful assistant. You will work in a Mechanical Turks style with other assistants to compose stories for users following a certain set of steps. The story will be written in chapters, and you will write the first chapter."},
             { "role": "user", "content": promptinfo},
-            { "role": "user", "content": extradetails},
         ],
         stream: false, // Ensures a single response instead of a streamed response
     };

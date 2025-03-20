@@ -11,11 +11,9 @@ router.post('/story', async (req, res) => {
     //formatting the story & extra details (ignoring story_name and chapter_count for now, also ignores the need for a previous_chapter entry)
     const promptinfo = JSON.stringify(req.body.story_details);
     console.log("story_details taken in as promptinfo: "+ promptinfo);
-    const extra = JSON.stringify(req.body.extra_details);
-    console.log("extra_details taken in as extra: "+ extra);
 
     //sends to promptformatter to be organized in an acceptable format for the llama API
-    var prompt = promptformatter.draft(promptinfo, extra);
+    var prompt = promptformatter.draft(promptinfo);
 
     try {
         //try to send prompt to courier
