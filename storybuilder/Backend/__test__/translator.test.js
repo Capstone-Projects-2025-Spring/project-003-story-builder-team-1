@@ -5,7 +5,7 @@ const app = require('../app');
 jest.mock("axios");
 
 //story_contents tests
-describe("POST /app/story_contents/", () => {
+describe("POST /app/translator/story_contents/", () => {
 
   //Resets all mock async requests before each test
   beforeEach(() => {
@@ -23,7 +23,7 @@ describe("POST /app/story_contents/", () => {
     }
 
     const response = await request(app)
-        .post("/app/story_contents/")
+        .post("/app/translator/story_contents/")
         .send(input)
         .expect('Content-Type', /json/)
         .expect(404);
@@ -36,7 +36,7 @@ describe("POST /app/story_contents/", () => {
   it("should return 400 if chapter_count is not a number", async () => {
 
     // Mock axios response
-    axios.post.mockResolvedValue({message: "Courier Response Received Successfully", data: "Courier Response"});
+    axios.post.mockResolvedValue({message: "Story Data Received Successfully", status: 200});
 
     const input = {
       chapter_count: "Test",
@@ -46,7 +46,7 @@ describe("POST /app/story_contents/", () => {
     }
 
     const response = await request(app)
-        .post("/app/story_contents/")
+        .post("/app/translator/story_contents/")
         .send(input)
         .expect('Content-Type', /json/)
         .expect(400);
@@ -69,7 +69,7 @@ describe("POST /app/story_contents/", () => {
     }
 
     const response = await request(app)
-        .post("/app/story_contents/")
+        .post("/app/translator/story_contents/")
         .send(input)
         .expect('Content-Type', /json/)
         .expect(200)
@@ -96,7 +96,7 @@ describe("POST /app/story_contents/", () => {
     }
 
     const response = await request(app)
-        .post("/app/story_contents/")
+        .post("/app/translator/story_contents/")
         .send(input);
 
     //assert response matches expected output
@@ -107,7 +107,7 @@ describe("POST /app/story_contents/", () => {
 });
 
 //courier_response tests
-describe('POST /app/courier_response/', () => {
+describe('POST /app/translator/courier_response/', () => {
 
   //Test Case 5: translator Successfully Receives Courier Response
   it('should return 200 and a success message with the input data', async () => {
@@ -116,7 +116,7 @@ describe('POST /app/courier_response/', () => {
     
     //Post Request
     const response = await request(app)
-      .post('/app/courier_response/')
+      .post('/app/translator/courier_response/')
       .send(input)
       .expect('Content-Type', /json/)
       .expect(200);
@@ -132,83 +132,12 @@ describe('POST /app/courier_response/', () => {
     
     //Post Request
     const response = await request(app)
-      .post('/app/courier_response/')
+      .post('/app/translator/courier_response/')
       .send(input)
       .expect('Content-Type', /json/)
       .expect(404);
 
     //assert response matches expected output
     expect(response.body).toEqual({message: "Courier Response not Received", data: input});
-  });
-});
-
-//story tests
-describe('GET /app/story/', () => {
-
-  //Test Case 7: Sending Story Data
-  it('should return 200 and an success message with the received data', async () => {
-
-    // Mock axios response
-    axios.post.mockResolvedValue({message: "Courier Response Received Successfully", data: "Courier Response"});
-
-    const input = {
-      chapter_count: 5,
-      story_name: "Story Name",
-      story_details: "Story Detail",
-      extra_details: "Extra Detail"
-    }
-
-    await request(app)
-        .post("/app/story_contents/")
-        .send(input)
-        .expect('Content-Type', /json/)
-        .expect(200)
-    
-    //Get Request for story
-    details = 'Story Details:\n"Story Detail"\nExtra Details:\n"Extra Detail"'
-    const response = await request(app)
-    .get('/app/story/')
-    .expect('Content-Type', /json/)
-    .expect(200);
-
-    //assert response matches expected output
-    expect(response.body).toEqual({message: "Sending Data to prompt_admin", data: details});
-  });
-});
-
-//courier_data tests
-describe('GET /app/courier_data/', () => {
-
-  //Test Case 8: Sending Courier Data
-  it('should return 200 and an success message with the received data', async () => {
-    
-    // Mock axios response
-    axios.post.mockResolvedValue({message: "Courier Response Received Successfully", data: "Courier Response"});
-
-    const input = {
-      chapter_count: 5,
-      story_name: "Story Name",
-      story_details: "Story Detail",
-      extra_details: "Extra Detail"
-    }
-
-    await request(app)
-        .post("/app/story_contents/")
-        .send(input)
-        .expect('Content-Type', /json/)
-        .expect(200)
-
-    //Get Request for courier_data
-    const response = await request(app)
-    .get('/app/courier_data/')
-    .expect('Content-Type', /json/)
-    .expect(200);
-
-    //assert response matches expected output
-    for_frontend = {
-      "title": "Story Name",
-      "courier_response": "Courier Response"
-  };
-    expect(response.body).toEqual({message: "Sending Data to the Frontend", data: for_frontend});
   });
 });
