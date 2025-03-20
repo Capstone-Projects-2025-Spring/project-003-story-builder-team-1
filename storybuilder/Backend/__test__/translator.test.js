@@ -13,7 +13,7 @@ describe("POST /app/translator/story_contents/", () => {
   });
 
   //Test Case 1: if a required field is empty
-  it("should return 400 if required fields are missing", async () => {
+  it("should return 404 if required fields are missing", async () => {
 
     const input = {
       chapter_count: 5,
@@ -59,7 +59,7 @@ describe("POST /app/translator/story_contents/", () => {
   it("should return 200 and include the courier_response if request is valid", async () => {
 
     // Mock axios response
-    axios.post.mockResolvedValue({message: "Courier Response Received Successfully", data: "Courier Response"});
+    axios.post.mockResolvedValue({message: "Story Data Received Successfully", status: 200});
 
     const input = {
       chapter_count: 5,
@@ -67,6 +67,12 @@ describe("POST /app/translator/story_contents/", () => {
       story_details: "Story Detail",
       extra_details: "Extra Detail"
     }
+
+    await request(app)
+    .post("/app/translator/courier_response/")
+    .send({"data": "Courier Response"})
+    .expect('Content-Type', /json/)
+    .expect(200)
 
     const response = await request(app)
         .post("/app/translator/story_contents/")
@@ -97,10 +103,10 @@ describe("POST /app/translator/story_contents/", () => {
 
     const response = await request(app)
         .post("/app/translator/story_contents/")
-        .send(input);
+        .send(input)
+        .expect(500)
 
     //assert response matches expected output
-    expect(response.status).toBe(500);
     expect(response.body).toHaveProperty("message", "Failed to fetch courier response");
     expect(response.body).toHaveProperty("error", "Courier API error");
   });
