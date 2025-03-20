@@ -8,8 +8,6 @@ function STORY_LIST() {
 
   const stories = [
     { id: 1, title: 'Story 1' },
-    { id: 2, title: 'Story 2' },
-    { id: 3, title: 'Story 3' },
   ];
 
   const toggleExpand = (storyId) => {

@@ -5,6 +5,11 @@ function STORY_PROMPT_BOX() {
     return (
         <Paper withBorder shadow="md" p={30} mt={30} radius="md">
             <Stack spacing="xl">
+                {/* Story Title Input */}
+                <TextInput
+                    label="Story Title"
+                    placeholder="Ex. The Bible" required
+                />
                 {/* # of Chapter Input */}
                 <TextInput
                     label="Number of Chapters"

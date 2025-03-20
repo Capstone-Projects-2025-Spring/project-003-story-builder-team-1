@@ -1,5 +1,5 @@
 import { Container, Stack, Button } from '@mantine/core';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router';
 import AGENT_BOX from '../components/AGENT_BOX';
 
 function STORY_AGENTS_VIEW() {
