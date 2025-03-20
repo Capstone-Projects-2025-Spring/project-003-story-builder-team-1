@@ -68,6 +68,7 @@ describe("POST /app/translator/story_contents/", () => {
       extra_details: "Extra Detail"
     }
 
+    //posting courier_response data
     await request(app)
     .post("/app/translator/courier_response/")
     .send({"data": "Courier Response"})
