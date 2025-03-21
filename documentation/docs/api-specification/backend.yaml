@@ -20,6 +20,7 @@ paths:
       tags:
         - courier
       summary: Calls the LLM with a given prompt and returns text.
+      description: Invokes the LLM with a specified prompt to generate a story snippet and returns the resulting text.
       operationId: story_call
       requestBody:
         required: true
@@ -55,6 +56,7 @@ paths:
       tags:
         - courier
       summary: Pushes local story content to the system.
+      description: Uploads local story content to the system for processing or integration with other system components.
       operationId: story_push
       requestBody:
         required: true
@@ -78,6 +80,7 @@ paths:
       tags:
         - courier
       summary: Invokes the judge() method to get a list of judgments/results
+      description: Executes the `judge()` method to retrieve a list of judgment results based on previous interactions or criteria.
       operationId: judge
       responses:
         '200':
@@ -96,6 +99,7 @@ paths:
       tags:
         - prompt_admin
       summary: Calls prompt(prompt_info) to fetch a prompt string.
+      description: Retrieves a specific prompt string based on the input `prompt_info` parameter, used for various purposes within the system.
       operationId: prompt
       parameters:
         - name: prompt_info
@@ -122,6 +126,7 @@ paths:
       tags:
         - prompt_admin
       summary: Retrieves the refine_prompt property.
+      description: Fetches the `refine_prompt` property, which is used to enhance or modify existing prompts for specific tasks.
       operationId: refine_prompt
       responses:
         '200':
@@ -138,6 +143,7 @@ paths:
       tags:
         - prompt_admin
       summary: Retrieves the generate_prompt property.
+      description: Retrieves the `generate_prompt` property used to create new prompts dynamically based on system needs.
       operationId: generate_prompt
       responses:
         '200':
@@ -154,6 +160,7 @@ paths:
       tags:
         - prompt_admin
       summary: Retrieves the rank_prompt property.
+      description: Fetches the `rank_prompt` property, used for ranking or prioritizing prompts based on given criteria.
       operationId: rank_prompt
       responses:
         '200':
@@ -170,6 +177,7 @@ paths:
       tags:
         - db
       summary: Calls DB_grab() to retrieve some global data.
+      description: Executes the `DB_grab()` method to retrieve important global data used across various components of the system.
       operationId: grab
       responses:
         '200':
@@ -188,6 +196,7 @@ paths:
       tags:
         - db
       summary: Retrieves account info given some input JSON.
+      description: Fetches account information from the database based on the provided input JSON query parameters.
       operationId: account
       parameters:
         - in: query
@@ -210,11 +219,34 @@ paths:
         '500':
           description: Internal server error
 
+  /db/agent:
+    get:
+      tags:
+        - db
+      summary: Retrieves agent info.
+      description: Retrieves information about an agent from the database.
+      operationId: agent
+      parameters:
+        - in: query
+          name: agentId
+          required: false
+          schema:
+            type: string
+          description: The ID of the agent to retrieve information for (if needed).
+      responses:
+        '200':
+          description: Successfully retrieved agent data in JSON format
+        '400':
+          description: Invalid query parameters
+        '500':
+          description: Internal server error
+  
   /db/new_account:
     post:
       tags:
         - db
       summary: Creates a new account.
+      description: Creates a new user account in the system using the provided input JSON data.
       operationId: new_account
       requestBody:
         required: true
@@ -242,6 +274,7 @@ paths:
       tags:
         - db
       summary: Creates a new agent.
+      description: Creates a new agent record in the system based on the provided input JSON details.
       operationId: new_agent
       requestBody:
         required: true
@@ -269,6 +302,7 @@ paths:
       tags:
         - db
       summary: Returns a list of agents for a dropdown.
+      description: Retrieves a list of agents formatted for use in a dropdown interface.
       operationId: agent_dropdown
       responses:
         '200':
@@ -287,6 +321,7 @@ paths:
       tags:
         - translator
       summary: Stores input from frontend text box.
+      description: Accepts and stores the text input provided by the frontend user interface into the system for further processing.
       operationId: text_box
       responses:
         '200':
@@ -302,11 +337,58 @@ paths:
         '500':
           description: Internal server error
 
+  /translator/rank_format:
+    post:
+      tags:
+        - translator
+      summary: Triggers the rank_format() method.
+      description: Triggers the ranking process for the given draft.
+      operationId: rank_format
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              description: Optional body if needed.
+      responses:
+        '200':
+          description: Drafts Ranked
+        '400':
+          description: Invalid input or missing parameters
+        '500':
+          description: Internal server error
+
+  /translator/writing_session:
+    post:
+      tags:
+        - translator
+      summary: Starts or updates a writing session.
+      description: Starts or updates an active writing session.
+      operationId: writing_session
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              description: Optional body if needed.
+      responses:
+        '200':
+          description: Session started/updated
+        '400':
+          description: Invalid input or missing parameters
+        '404':
+          description: Session not found for update
+        '500':
+          description: Internal server error
+
   /translator/write_chapter:
     post:
       tags:
         - translator
-      summary: Writes a new chapter based on the input JSON.
+      summary: Writes a new chapter based on the input JSON data.
+      description: Allows you to write a new chapter by providing chapter data in the request body.
       operationId: write_chapter
       requestBody:
         required: true
@@ -315,17 +397,20 @@ paths:
             schema:
               type: object
               properties:
-                chapter_info:
-                  type: object
+                chapterTitle:
+                  type: string
+                chapterContent:
+                  type: string
+              required:
+                - chapterTitle
+                - chapterContent
       responses:
         '200':
-          description: Chapter data
-          content:
-            application/json:
-              schema:
-                type: object
+          description: Successfully written chapter in JSON format
         '400':
-          description: Invalid input data
+          description: Invalid input or missing parameter
+        '404':
+          description: Story or session not found
         '500':
           description: Internal server error
 
@@ -334,17 +419,10 @@ paths:
       tags:
         - translator
       summary: Retrieves the entire story bank as a list.
+      description: Retrieves the full list of stories from the story bank.
       operationId: story_bank
       responses:
         '200':
-          description: A list of stories
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  type: object
-        '404':
-          description: No stories found
+          description: List of stories in JSON format
         '500':
           description: Internal server error
