@@ -67,7 +67,7 @@ export function story_provider({ children }) {
     };
 
     // Function to fetch the next chapter
-    const fetchNextChapter = async (story_id, next_chapter_number) => {
+    const fetch_next_chapter = async (story_id, next_chapter_number) => {
         try {
             const response = await axios.get(`https://your-backend.com/api/story/${story_id}/chapter/${next_chapter_number}`);
             
@@ -78,7 +78,7 @@ export function story_provider({ children }) {
     };
 
     return (
-        <STORY_CONTEXT.Provider value={{ state, submit_story_prompt, fetchNextChapter }}>
+        <STORY_CONTEXT.Provider value={{ state, submit_story_prompt, fetch_next_chapter }}>
             {children}
         </STORY_CONTEXT.Provider>
     );

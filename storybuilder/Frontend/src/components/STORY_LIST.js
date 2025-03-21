@@ -10,8 +10,8 @@ function STORY_LIST() {
     { id: 1, title: 'Story 1' },
   ];
 
-  const toggleExpand = (storyId) => {
-    set_expanded_story(expanded_story === storyId ? null : storyId);
+  const toggleExpand = (story_id) => {
+    set_expanded_story(expanded_story === story_id ? null : story_id);
   };
 
   return (
