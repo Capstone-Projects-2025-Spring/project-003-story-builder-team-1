@@ -5,7 +5,7 @@ const promptformatter = require('../promptformatter')
 
 router.post('/story', async (req, res) => {
     //throws 400 status 
-    if(!req.body.story_details || !req.body.extra_details) {
+    if(!req.body.story_details) {
        return res.status(400).json({message: "No prompt data received", data: req.body});
     }
     //formatting the story & extra details (ignoring story_name and chapter_count for now, also ignores the need for a previous_chapter entry)
