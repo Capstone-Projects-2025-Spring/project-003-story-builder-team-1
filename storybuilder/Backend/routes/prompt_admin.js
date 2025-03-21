@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 
+
 //prompt
 router.get('/app/prompt/', (req, res) => {
     res.status(200).json({message: "Data Received Successfully", data: req.body});
