@@ -33,8 +33,6 @@ jobs:
         run: |
           git config --global user.name "$(git --no-pager log --format=format:'%an' -n 1)"
           git config --global user.email "$(git --no-pager log --format=format:'%ae' -n 1)"
-          git fetch origin ${{ github.head_ref }}
-          git rebase origin/${{ github.head_ref }}
           git add -f ./documentation/docs/testing/backend-lcov-report
           git commit -m "Updated Backend Coverage Report"
       
