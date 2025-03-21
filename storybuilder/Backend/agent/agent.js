@@ -1,6 +1,6 @@
+import express from "express";
 import axios from "axios";
 import readline from "node:readline";
-import padmin from "../promptadmin.js";
 
 let body = [
     {

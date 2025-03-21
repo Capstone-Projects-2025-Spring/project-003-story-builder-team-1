@@ -1,8 +1,8 @@
 {
   "name": "project-003-story-builder-team-1",
   "scripts": {
-    "setup": "cd storybuilder/Backend && npm install && cd ../Frontend && npm install",
-    "start": "npm run start:b & npm run start:f",
+    "setup": "cd storybuilder/Backend && npm install && cd ../Frontend && npm install && cd ../Backend/agent/agent_container && npm install",
+    "start": "npm run start:b & npm run start:f & npm run start:a",
     "start:a": "cd storybuilder/agent_container && AGENT_NAME=${AGENT_NAME} PORT=${PORT} docker-compose up --build",
     "start:b": "node storybuilder/Backend/server.js",
     "start:f": "cd storybuilder/Frontend && npm start",
