@@ -12,7 +12,7 @@ var extra_details;
 var courier_response;
 
 //story_contents will receive the requested chapters, story name, story details, and extra details from the frontend
-router.post('/story_contents/', async (req, res) => {
+router.post('/story_contents', async (req, res) => {
 
     //Validate required fields
     if (!req.body.chapter_count || !req.body.story_name || !req.body.story_details || !req.body.extra_details) {
@@ -50,7 +50,7 @@ router.post('/story_contents/', async (req, res) => {
 });
 
 //courier_response will store the response from a courier instance
-router.post('/courier_response/', (req, res) => {
+router.post('/courier_response', (req, res) => {
 
     //If data was not received successfully
     if (!req.body.data){

@@ -5,7 +5,7 @@ const app = require('../app');
 jest.mock("axios");
 
 //story_contents tests
-describe("POST /story_contents/", () => {
+describe("POST /story_contents", () => {
 
   //Resets all mock async requests before each test
   beforeEach(() => {
@@ -23,7 +23,7 @@ describe("POST /story_contents/", () => {
     }
 
     const response = await request(app)
-        .post("/translator/story_contents/")
+        .post("/translator/story_contents")
         .send(input)
         .expect('Content-Type', /json/)
         .expect(404);
@@ -46,7 +46,7 @@ describe("POST /story_contents/", () => {
     }
 
     const response = await request(app)
-        .post("/translator/story_contents/")
+        .post("/translator/story_contents")
         .send(input)
         .expect('Content-Type', /json/)
         .expect(400);
@@ -70,13 +70,13 @@ describe("POST /story_contents/", () => {
 
     //posting courier_response data
     await request(app)
-    .post("/translator/courier_response/")
+    .post("/translator/courier_response")
     .send({"data": "Courier Response"})
     .expect('Content-Type', /json/)
     .expect(200)
 
     const response = await request(app)
-        .post("/translator/story_contents/")
+        .post("/translator/story_contents")
         .send(input)
         .expect('Content-Type', /json/)
         .expect(200)
@@ -103,18 +103,17 @@ describe("POST /story_contents/", () => {
     }
 
     const response = await request(app)
-        .post("/translator/story_contents/")
+        .post("/translator/story_contents")
         .send(input)
         .expect(500)
 
     //assert response matches expected output
-    expect(response.body).toHaveProperty("message", "Failed to fetch courier response");
-    expect(response.body).toHaveProperty("error", "Courier API error");
+    expect(response.body).toEqual({"message": "Failed to fetch courier response", "error": "Courier API error"});
   });
 });
 
 //courier_response tests
-describe('POST /courier_response/', () => {
+describe('POST /courier_response', () => {
 
   //Test Case 5: translator Successfully Receives Courier Response
   it('should return 200 and a success message with the input data', async () => {
@@ -123,7 +122,7 @@ describe('POST /courier_response/', () => {
     
     //Post Request
     const response = await request(app)
-      .post('/translator/courier_response/')
+      .post('/translator/courier_response')
       .send(input)
       .expect('Content-Type', /json/)
       .expect(200);
@@ -139,7 +138,7 @@ describe('POST /courier_response/', () => {
     
     //Post Request
     const response = await request(app)
-      .post('/translator/courier_response/')
+      .post('/translator/courier_response')
       .send(input)
       .expect('Content-Type', /json/)
       .expect(404);
