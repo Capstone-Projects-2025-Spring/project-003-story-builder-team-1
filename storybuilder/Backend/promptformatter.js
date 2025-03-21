@@ -1,9 +1,6 @@
 /*
 Allows for fast, organized prompt formatting. Templates for drafting, critiquing and judging stories.
 */
-const courier = require('./agent.js');
-const axios = require('axios');
-const express = require('express');
 
 function judge(storybank) {
     var judge = {
