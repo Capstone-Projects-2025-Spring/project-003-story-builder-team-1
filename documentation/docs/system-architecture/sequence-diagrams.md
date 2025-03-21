@@ -226,3 +226,27 @@ sequenceDiagram
     Backend-->>-Frontend: Returns all Agent edited most-voted chapter
     Frontend-->>-User: Displays all Agent edited chapters
 ```
+
+## User-to-Agent Generation Pipeline
+```mermaid
+sequenceDiagram
+    participant User
+    participant Frontend
+    participant Backend-Translator
+    participant Backend-Prompt_Admin
+    participant Courier
+    participant LLM
+
+    User->>+Frontend: Input prompt information
+    Frontend->>+Backend-Translator: POST /story_contents (Prompt Data)
+    Backend-Translator->>+Backend-Prompt_Admin: POST /prompt_admin (Prompt Data)
+    Backend-Prompt_Admin->>+Courier: POST /courier/storycall (Formatted Prompt Data)
+    Courier->>+LLM: Generate Story Request (Formated Prompt Data)
+    LLM-->>-Courier: Returns Generated story
+    Courier->>Backend-Translator: POST /courier_response (Generated Story Data) 
+    Backend-Translator-->>Courier: Returns response code
+    Courier-->>-Backend-Prompt_Admin: Returns response code
+    Backend-Prompt_Admin-->>-Backend-Translator: Returns response code
+    Backend-Translator-->>-Frontend: Returns Generated Story Data
+    Frontend-->>-User: Displays Generated Story Data
+```
