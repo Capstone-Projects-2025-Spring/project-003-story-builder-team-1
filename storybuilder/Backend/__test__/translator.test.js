@@ -55,7 +55,7 @@ describe("POST /story_contents", () => {
     expect(response.body).toEqual({message: "Invalid Data Type: chapter_count must be a number", data: "Test"});
   });
 
-  //Test Case 3: if data is received, courier esponse is given, and all data is sent back to Frontend
+  //Test Case 3: if data is received and courier response is given, courier_response data is sent back to Frontend
   it("should return 200 and include the courier_response if request is valid", async () => {
 
     // Mock axios response
