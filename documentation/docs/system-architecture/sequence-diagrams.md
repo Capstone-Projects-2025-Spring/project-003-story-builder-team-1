@@ -241,7 +241,7 @@ sequenceDiagram
     Frontend->>+Backend-Translator: POST /story_contents (Prompt Data)
     Backend-Translator->>+Backend-Prompt_Admin: POST /prompt_admin (Prompt Data)
     Backend-Prompt_Admin->>+Courier: POST /courier/storycall (Formatted Prompt Data)
-    Courier->>+LLM: Generate Story Request (Formated Prompt Data)
+    Courier->>+LLM: Generate Story Request (Formatted Prompt Data)
     LLM-->>-Courier: Returns Generated story
     Courier->>Backend-Translator: POST /courier_response (Generated Story Data) 
     Backend-Translator-->>Courier: Returns response code
