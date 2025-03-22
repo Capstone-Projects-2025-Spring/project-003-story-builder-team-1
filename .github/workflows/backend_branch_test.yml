@@ -25,6 +25,7 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           node-version: '22.x'
+      - run: sudo apt-get install -y docker-compose
       - run: npm run setup
       - run: npm run test:bc && rm -rf ./documentation/docs/testing/backend-lcov-report && mv ./storybuilder/Backend/coverage/lcov-report ./documentation/docs/testing/backend-lcov-report
 
@@ -33,7 +34,7 @@ jobs:
         run: |
           git config --global user.name "$(git --no-pager log --format=format:'%an' -n 1)"
           git config --global user.email "$(git --no-pager log --format=format:'%ae' -n 1)"
-          git add -f ./documentation/docs/testing/lcov-report
+          git add -f ./documentation/docs/testing/backend-lcov-report
           git commit -m "Updated Backend Coverage Report"
       
       - name: Push Coverage Report to Branch

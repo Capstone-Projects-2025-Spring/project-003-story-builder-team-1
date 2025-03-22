@@ -5,7 +5,6 @@ sidebar_position: 2
 # System Block Diagram
 ![System Block Diagram](../../../documentation/static/img/System_Block_Diagram.png)
 
-# Description
 ## Frontend
 The user will be able to interact through a broswer interface that is built with React. Here they will be able to select their AI Agents as well as provide a prompt for the AI Agents to generate a story from. They will also be able to review the generated prompts and provide feedback to the AI Agents.
 
