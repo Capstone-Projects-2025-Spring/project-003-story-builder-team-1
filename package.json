@@ -1,12 +1,18 @@
 {
   "name": "project-003-story-builder-team-1",
   "scripts": {
-    "setup": "npm install && cd storybuilder/Backend && npm install && cd ../Frontend && npm install",
-    "start": "concurrently \"npm run start:b\" \"npm run start:f\"",
+    "setup": "cd storybuilder/Backend && npm install && cd ../Frontend && npm install && cd ../Backend/agent/agent_container && npm install && docker-compose build",
+    "start": "npm run start:b & npm run start:f & npm run start:a",
+    "start:con": "concurrently \"npm run start:b\" \"npm run start:f\" \"npm run start:a\"",
+    "start:a": "cd storybuilder/Backend/agent/agent_container && docker-compose up -d",
     "start:b": "node storybuilder/Backend/server.js",
     "start:f": "cd storybuilder/Frontend && npm start",
+    "test:a": "cd storybuilder/Backend/agent/agent_container && npm test",
     "test:b": "cd storybuilder/Backend && npm test",
     "test:bc": "cd storybuilder/Backend && npm run Ctest"
+  },
+  "dependencies": {
+    "jest": "^29.7.0"
   },
   "devDependencies": {
     "concurrently": "^9.1.2"
