@@ -3,7 +3,7 @@
   "scripts": {
     "setup": "cd storybuilder/Backend && npm install && cd ../Frontend && npm install && cd ../Backend/agent/agent_container && npm install && docker-compose build",
     "start": "npm run start:b & npm run start:f & npm run start:a",
-    "start:a": "cd storybuilder/Backend/agent/agent_container && docker-compose up",
+    "start:a": "cd storybuilder/Backend/agent/agent_container && docker-compose up -d",
     "start:b": "node storybuilder/Backend/server.js",
     "start:f": "cd storybuilder/Frontend && npm start",
     "test:a": "cd storybuilder/Backend/agent/agent_container && npm test",
