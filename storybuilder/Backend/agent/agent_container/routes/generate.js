@@ -9,7 +9,7 @@ router.post("/generate", async (req, res) => {
     if (!req.body.messages) {
       return res.status(400).json({ error: "Message is required" });
     }
-    console.log("Received API request:", req.body.messages);
+    console.log("Received API request:", req.body);
     const response = await send_prompt(req);
     res.status(200).json({ reply: response });
 

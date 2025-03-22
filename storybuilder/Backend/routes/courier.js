@@ -8,7 +8,7 @@ let body = []
 //story_call
 router.post('/story_call', async (req, res) => {
     try {
-        console.log("Request:", req.body.messages);
+        console.log("Request - courier:", req.body.data);
         body.push({ role: "user", content: req.body.messages });
 
         const response = await axios.post(
@@ -19,7 +19,7 @@ router.post('/story_call', async (req, res) => {
 
         const result = response.data;
         body.push({ role: "assistant", content: result.reply });    
-        console.log("Response:", result);
+        console.log("Response - courier:", result);
 
         // Ensure this request is properly awaited
         await axios.post(
