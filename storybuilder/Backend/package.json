@@ -9,6 +9,6 @@
   },
   "scripts": {
     "test": "jest",
-    "Ctest": "jest --coverage"
+    "Ctest": "NODE_OPTIONS='--experimental-vm-modules' jest --coverage"
   }
 }
