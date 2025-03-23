@@ -61,6 +61,7 @@ export function Story_Provider({ children }) {
             });
 
             console.log("PROMPT BOX RESPONSE:", response.data);
+            console.log("PROMPT BOX ERROR:", response.error);
 
             dispatch({ type: "FETCH_SUCCESS", payload: response.data });
         } catch (error) {

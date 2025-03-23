@@ -5,11 +5,11 @@ const promptformatter = require('../promptformatter')
 
 router.post('/story', async (req, res) => {
     //throws 400 status 
-    if(!req.body.story_details) {
+    if(!req.body.data) {
        return res.status(400).json({message: "No prompt data received", data: req.body});
     }
     //formatting the story & extra details (ignoring story_name and chapter_count for now, also ignores the need for a previous_chapter entry)
-    const promptinfo = JSON.stringify(req.body.story_details);
+    const promptinfo = JSON.stringify(req.body.data);
     console.log("story_details taken in as promptinfo: "+ promptinfo);
 
     //sends to promptformatter to be organized in an acceptable format for the llama API
