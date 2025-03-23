@@ -45,7 +45,7 @@ function story_reducer(state, action) {
 }
 
 // StoryProvider Component
-export function story_provider({ children }) {
+export function Story_Provider({ children }) {
     const [state, dispatch] = useReducer(story_reducer, initial_state);
 
     // Function to submit a new story prompt
@@ -53,12 +53,14 @@ export function story_provider({ children }) {
         dispatch({ type: "SUBMIT_PROMPT" });
 
         try {
-            const response = await axios.post("https://your-backend.com/api/generate-story", {
+            const response = await axios.post("http://localhost:8080/story_contents", {
                 title,
                 chapters,
                 prompt,
                 additional_info,
             });
+
+            console.log("PROMPT BOX RESPONSE:", response.data);
 
             dispatch({ type: "FETCH_SUCCESS", payload: response.data });
         } catch (error) {

@@ -1,8 +1,13 @@
-import { useState } from 'react';
+import { useState, useContext } from 'react';
 import { Card, Button, Modal, Textarea, Title, Divider, Group } from '@mantine/core';
+import STORY_CONTEXT from "../context/STORY_CONTEXT";
 
 function AGENT_BOX({ name, response }) {
+    const { latest_chapter } = useContext(STORY_CONTEXT);
     const [opened, set_opened] = useState(false);
+
+    const title = latest_chapter?.title || "Chapter Title";
+    const chapter_content = latest_chapter?.content || "Waiting for the agent to generate a response...";
 
     return (
         <>
@@ -15,13 +20,13 @@ function AGENT_BOX({ name, response }) {
             style={{ minHeight: '50%' }}
             title={
                 <Title order={2} style={{ fontSize: '24px', fontWeight: 600, textAlign: 'center', marginLeft: '15px' }}>
-                  {name}
+                  {title}
                 </Title>
             }
           >
             {/* Scrollable Text Area */}
             <Textarea
-              value={response}
+              value={chapter_content}
               readOnly
               autosize
               minRows={10}
@@ -47,7 +52,7 @@ function AGENT_BOX({ name, response }) {
     
             {/* Scrollable Text Area */}
             <Textarea
-              value={response}
+              value={chapter_content}
               readOnly
               autosize
               minRows={3}

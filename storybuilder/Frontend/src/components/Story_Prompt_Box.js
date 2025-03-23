@@ -1,8 +1,11 @@
 import React from 'react';
+import { useState, useContext } from 'react';
+import { useNavigate } from 'react-router';
 import { TextInput, Paper, Button, Textarea, Stack } from "@mantine/core";
 import STORY_CONTEXT from "../context/STORY_CONTEXT";
 
 function STORY_PROMPT_BOX() {
+    const navigate = useNavigate();
     const { submit_story_prompt } = useContext(STORY_CONTEXT);
     const [title, set_title] = useState("");
     const [num_chapters, set_num_chapters] = useState("");
@@ -11,6 +14,9 @@ function STORY_PROMPT_BOX() {
 
     const handle_submit = () => {
         submit_story_prompt(title, num_chapters, prompt, additional_info);
+
+        // hardcoded for 1 story for now
+        navigate(`/story/1/agents`);
     };
     return (
         <Paper withBorder shadow="md" p={30} mt={30} radius="md">
