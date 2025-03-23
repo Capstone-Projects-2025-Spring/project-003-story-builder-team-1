@@ -7,13 +7,13 @@ import STORY_CONTEXT from "../context/STORY_CONTEXT";
 function STORY_PROMPT_BOX() {
     const navigate = useNavigate();
     const { submit_story_prompt } = useContext(STORY_CONTEXT);
-    const [title, set_title] = useState("");
-    const [num_chapters, set_num_chapters] = useState("");
-    const [prompt, set_prompt] = useState("");
-    const [additional_info, set_additional_info] = useState("");
+    const [story_name, set_story_name] = useState("");
+    const [chapter_count, set_chapter_count] = useState("");
+    const [story_details, set_story_details] = useState("");
+    const [extra_details, set_extra_details] = useState("");
 
     const handle_submit = () => {
-        submit_story_prompt(title, num_chapters, prompt, additional_info);
+        submit_story_prompt(story_name, chapter_count, story_details, extra_details);
 
         // hardcoded for 1 story for now
         navigate(`/story/1/agents`);
@@ -25,18 +25,18 @@ function STORY_PROMPT_BOX() {
                 <TextInput
                     label="Story Title"
                     placeholder="Ex. The Bible" required
-                    value={title}
-                    onChange={(e) => set_title(e.target.value)}
+                    value={story_name}
+                    onChange={(e) => set_story_name(e.target.value)}
                 />
                 {/* # of Chapter Input */}
                 <TextInput
                     label="Number of Chapters"
                     placeholder="Ex. 1, 2, 3 ..." required
                     type="number"
-                    value={num_chapters}
+                    value={chapter_count}
                     onChange={(e) => {
                         const intValue = parseInt(e.target.value, 10);
-                        if (!isNaN(intValue)) set_num_chapters(intValue);
+                        if (!isNaN(intValue)) set_chapter_count(intValue);
                     }}
                 />
                 {/* Prompt Input */}
@@ -44,8 +44,8 @@ function STORY_PROMPT_BOX() {
                     label="Story Prompt"
                     placeholder="Enter Prompt Here" required
                     autosize
-                    value={prompt}
-                    onChange={(e) => set_prompt(e.target.value)}
+                    value={story_details}
+                    onChange={(e) => set_story_details(e.target.value)}
                     minRows={2}
                     maxRows={5}
                     style={{ flexGrow: 1 }}
@@ -55,8 +55,8 @@ function STORY_PROMPT_BOX() {
                     label="Additional Information"
                     placeholder="Anything you want to add?"
                     autosize
-                    value={additional_info}
-                    onChange={(e) => set_additional_info(e.target.value)}
+                    value={extra_details}
+                    onChange={(e) => set_extra_details(e.target.value)}
                     minRows={2}
                     maxRows={5}
                     style={{ flexGrow: 1 }}

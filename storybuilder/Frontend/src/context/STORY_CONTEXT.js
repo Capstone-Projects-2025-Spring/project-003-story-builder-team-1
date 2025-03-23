@@ -49,15 +49,15 @@ export function Story_Provider({ children }) {
     const [state, dispatch] = useReducer(story_reducer, initial_state);
 
     // Function to submit a new story prompt
-    const submit_story_prompt = async (title, chapters, prompt, additional_info) => {
+    const submit_story_prompt = async (story_name, chapter_count, story_details, extra_details) => {
         dispatch({ type: "SUBMIT_PROMPT" });
 
         try {
-            const response = await axios.post("http://localhost:8080/story_contents", {
-                title,
-                chapters,
-                prompt,
-                additional_info,
+            const response = await axios.post("http://localhost:8080/translator/story_contents", {
+                "story_name": story_name,
+                "chapter_count": chapter_count,
+                "story_details": story_details,
+                "extra_details": extra_details
             });
 
             console.log("PROMPT BOX RESPONSE:", response.data);

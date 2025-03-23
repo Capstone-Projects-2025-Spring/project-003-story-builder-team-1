@@ -15,7 +15,7 @@ function judge(storybank) {
 
 function draft(promptinfo) {
     var draft = {
-        model: "llama3.2-1b", // Use model names from API documentation for model provider
+        model: "llama3.1-8b", // Use model names from API documentation for model provider
         messages: [
             { "role": "system", "content": "You are a helpful assistant. You will work in a Mechanical Turks style with other assistants to compose stories for users following a certain set of steps. The story will be written in chapters, and you will write the first chapter."},
             { "role": "user", "content": promptinfo},
