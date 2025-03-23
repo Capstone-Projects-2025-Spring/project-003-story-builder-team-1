@@ -9,7 +9,7 @@
     "start:f": "cd storybuilder/Frontend && npm start",
     "test:a": "cd storybuilder/Backend/agent/agent_container && npm test",
     "test:b": "cd storybuilder/Backend && npm test",
-    "test:bc": "cd storybuilder/Backend && npm run Ctest",
+    "test:bc": "cd storybuilder/Backend && npm run Ctest"
   },
   "dependencies": {
     "jest": "^29.7.0"
