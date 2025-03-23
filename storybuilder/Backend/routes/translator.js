@@ -1,8 +1,6 @@
 const express = require('express');
 const axios = require('axios');
 const router = express.Router();
-const prompt_admin = require('./prompt_admin');
-router.use(prompt_admin)
 
 //Global Variables to store data related to the story
 var chapter_count;
