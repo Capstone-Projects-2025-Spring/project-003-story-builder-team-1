@@ -25,10 +25,6 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           node-version: '22.x'
-      - name: Docker Setup Compose
-        uses: docker/setup-compose-action@v1.2.0
-        with:
-          version: 'v2.31.0'
       - name: Install Docker using Docker's official script
         run: |
           curl -fsSL https://get.docker.com -o get-docker.sh

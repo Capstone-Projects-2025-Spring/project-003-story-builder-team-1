@@ -8,7 +8,7 @@
     "supertest": "^7.0.0"
   },
   "scripts": {
-    "test": "jest",
+    "test": "NODE_OPTIONS='--experimental-vm-modules' jest",
     "Ctest": "NODE_OPTIONS='--experimental-vm-modules' jest --coverage"
   }
 }
