@@ -124,9 +124,9 @@ router.post('/next_chapter', async (req, res) => {
     previous_chapters = req.body.previous_chapters;
     story_outline = req.body.story_outline;
 
-    //Validate data type of chapter_count
-    if (isNaN(chapter_count)) {
-        return res.status(400).json({ message: "Invalid Data Type: chapter_count must be a number", data: req.body.chapter_count });
+    //Validate that previous_chapters is not empty
+    if (previous_chapters.length == 0) {
+        return res.status(400).json({ message: "Invalid Data Type: previous_chapters is empty", data: req.body.previous_chapters });
     }
 
     try {

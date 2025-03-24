@@ -262,7 +262,31 @@ describe("POST /next_chapter", () => {
     expect(response.body).toEqual({message: "Missing required fields", data: input});
   });
 
-  //Test Case 10: if data is received and courier response is given, courier_response data is sent back to Frontend
+  //Test Case 10: if previous_chapters is empty
+  it("should return 400 if chapter_count is not a number", async () => {
+
+    // Mock axios response
+    axios.post.mockResolvedValue({message: "Story Data Received Successfully", status: 200});
+
+    const input = {
+      "story_name": "Story Name",
+      "story_details": "Story Detail",
+      "extra_details": "Extra Detail",
+      "previous_chapters": [],
+      "story_outline": "Story Outline"
+    }
+
+    const response = await request(app)
+        .post("/translator/next_chapter")
+        .send(input)
+        .expect('Content-Type', /json/)
+        .expect(400);
+
+    //assert response matches expected output
+    expect(response.body).toEqual({message: "Invalid Data Type: previous_chapters is empty", data: []});
+  });
+
+  //Test Case 11: if data is received and courier response is given, courier_response data is sent back to Frontend
   it("should return 200 and include the courier_response if request is valid", async () => {
 
     // Mock axios response
@@ -297,7 +321,7 @@ describe("POST /next_chapter", () => {
     expect(response.body).toEqual({"message": "Story Contents Received Successfully", data: to_frontend});
   });
 
-  //Test Case 11: if API call to courier_response fails
+  //Test Case 12: if API call to courier_response fails
   it("should return 500 if courier_response API fails", async () => {
 
     // Mock axios to return an error
