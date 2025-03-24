@@ -4,7 +4,7 @@ Allows for fast, organized prompt formatting. Templates for drafting, critiquing
 
 function judge(storybank) {
     var judge = {
-        model: "llama3.2-1b", // Use model names from API documentation for model provider
+        model: "llama3.1-8b", // Use model names from API documentation for model provider
         messages: [
             { "role": "user", "content": "Your job now is to judge all of these stories as objectively as you can based on the initial prompt information. Each of these stories have gone through two drafting sessions, now you will rank them from best to worst. " + storybank },
         ],
@@ -27,7 +27,7 @@ function draft(promptinfo) {
     
 function critique(promptinfo, chapter) {
     var crit =  {
-        model: "llama3.2-1b", 
+        model: "llama3.1-8b", 
         messages: [
             { "role": "system", "content": "You are now being fed a chapter written by another agent. You will critique the drafting of this story based on grammatical correctness as well as its faithfulness to the style parameters that were specified."},
             { "role": "user", "content": promptinfo},
@@ -40,7 +40,7 @@ function critique(promptinfo, chapter) {
 
 function nextchapter(promptinfo, chapter) {
     var chap =  {
-        model: "llama3.2-1b", 
+        model: "llama3.1-8b", 
         messages: [
             { "role": "system", "content": "You are now being fed a chapter written by another agent. You will continue the story in another chapter of roughly equal length while still following the guidelines established in the original prompt."},
             { "role": "user", "content": promptinfo},
@@ -53,7 +53,7 @@ function nextchapter(promptinfo, chapter) {
 
 //Boosts model to a newer, higher-parameter version.
 function boostmodel(prompt) {
-    prompt.model = "llama3.2-8b";
+    prompt.model = "llama3.1-8b";
     return prompt;
 }
 
