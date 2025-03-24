@@ -18,7 +18,8 @@ describe("POST /first_chapter", () => {
     const input = {
       "story_name": "Story Name",
       "story_details": "Story Detail",
-      "extra_details": null
+      "extra_details": null,
+      "story_outline": "Story Outline"
     }
 
     const response = await request(app)
@@ -40,7 +41,8 @@ describe("POST /first_chapter", () => {
     const input = {
       "story_name": "Story Name",
       "story_details": "Story Detail",
-      "extra_details": "Extra Detail"
+      "extra_details": "Extra Detail",
+      "story_outline": "Story Outline"
     }
 
     //posting courier_response data
@@ -73,7 +75,8 @@ describe("POST /first_chapter", () => {
     const input = {
       "story_name": "Story Name",
       "story_details": "Story Detail",
-      "extra_details": "Extra Detail"
+      "extra_details": "Extra Detail",
+      "story_outline": "Story Outline"
     }
 
     const response = await request(app)
