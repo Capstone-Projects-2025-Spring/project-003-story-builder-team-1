@@ -12,9 +12,9 @@ function App() {
     <Router>
       <Routes>
         <Route path="/" element={<MAIN_LAYOUT><STORY_PROMPT_BOX /></MAIN_LAYOUT>} />
-        <Route path="/story/:id/view" element={<MAIN_LAYOUT><STORY_VIEW /></MAIN_LAYOUT>} />
-        <Route path="/story/:id/view/:chapterId" element={<MAIN_LAYOUT><CHAPTER_VIEW /></MAIN_LAYOUT>} />
-        <Route path="/story/:id/agents" element={<MAIN_LAYOUT><STORY_AGENTS_VIEW /></MAIN_LAYOUT>} />
+        <Route path="/story/:story_id/view" element={<MAIN_LAYOUT><STORY_VIEW /></MAIN_LAYOUT>} />
+        <Route path="/story/:story_id/view/:chapter_id" element={<MAIN_LAYOUT><CHAPTER_VIEW /></MAIN_LAYOUT>} />
+        <Route path="/story/:story_id/agents" element={<MAIN_LAYOUT><STORY_AGENTS_VIEW /></MAIN_LAYOUT>} />
       </Routes>
     </Router>
   );

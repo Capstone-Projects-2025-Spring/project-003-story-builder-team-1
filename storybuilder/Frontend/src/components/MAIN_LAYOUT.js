@@ -57,10 +57,7 @@ function MAIN_LAYOUT({ children }) {
             <AppShell.Aside p="md">
                 {/* Only render chapter list if on story route*/}
                 {should_render_chapter_list && (
-                    <CHAPTER_LIST
-                        chapters={mockChapters}
-                        onSelectChapter={on_select_chapter}
-                    />
+                    <CHAPTER_LIST/>
                     )}
             </AppShell.Aside>
         </AppShell>

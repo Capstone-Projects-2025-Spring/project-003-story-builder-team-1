@@ -61,9 +61,18 @@ export function Story_Provider({ children }) {
             });
 
             console.log("PROMPT BOX RESPONSE:", response.data);
-            console.log("PROMPT BOX ERROR:", response.error);
 
-            dispatch({ type: "FETCH_SUCCESS", payload: response.data });
+            console.log("Full response:", response);
+            const title = response.data?.data?.title;
+            const chapter = response.data?.data?.courier_response;
+
+            console.log("Title:", title);
+            console.log("Chapter:", chapter);
+            
+            dispatch({ type: "FETCH_SUCCESS", payload: {
+                title: title,
+                chapter: chapter,
+            } });
         } catch (error) {
             dispatch({ type: "FETCH_ERROR", payload: error.message });
         }

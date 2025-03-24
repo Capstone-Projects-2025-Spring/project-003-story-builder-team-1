@@ -1,10 +1,19 @@
+import { useState, useContext, useEffect } from 'react';
 import { Container, Title, Text } from "@mantine/core";
+import STORY_CONTEXT from "../context/STORY_CONTEXT";
 
-function STORY_VIEW({ 
-  story_title = "The Adventure Begins", 
-  chapter_title = "Chapter 1: A New Journey", 
-  chapter_text = "Once upon a time, in a land far away, a young hero embarked on an unforgettable journey. The sky was painted with shades of orange and purple as the sun dipped below the horizon. Each step forward brought new challenges, but also new friendships. The adventure had only just begun..." 
-  }) {
+function STORY_VIEW({ }) {
+    const { state } = useContext(STORY_CONTEXT);
+    const [story_title, set_story_title] = useState("Story Title");
+    const [chapters, set_chapters] = useState([]);
+
+    useEffect(() => {
+      if (state.current_story) {
+          set_story_title(state.current_story.title);
+          set_chapters(state.current_story.chapters);
+      }
+    }, [state.current_story]);
+    
     return (
       <Container fluid style={{ display: 'flex', flexDirection: 'column', gap: '16px', maxWidth: '100%', margin: 'auto' }}>
         {/* Story Title */}
@@ -12,14 +21,16 @@ function STORY_VIEW({
           {story_title}
         </Title>
 
-        {/* Chapter Title */}
+        {/* Chapter Title ***Chapter Title currently in full response from agent
         <Title order={2} style={{ textAlign: 'center' }}>
           {chapter_title}
-        </Title>
+        </Title> */}
 
         {/* Chapter Text */}
         <Text size="lg" style={{ textAlign: 'justify', lineHeight: 1.6 }}>
-          {chapter_text}
+        {chapters.map((chapter, index) => (
+          <div key={index} dangerouslySetInnerHTML={{ __html: chapter.replace(/\n/g, '<br />') }} />
+        ))}
         </Text>
       </Container>
     );
