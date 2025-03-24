@@ -202,7 +202,6 @@ describe("POST /story_outline", () => {
     //assert response matches expected output
     to_frontend = {
       "title": "Story Name",
-      "chapter_count": 5,
       "courier_response": "Courier Response"
     }
     expect(response.body).toEqual({"message": "Story Contents Received Successfully", data: to_frontend});

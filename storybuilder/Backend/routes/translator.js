@@ -80,11 +80,16 @@ router.post('/story_outline', async (req, res) => {
     try {
         //Send data 
         details = "Story Details:\n" + story_details + "\nExtra Details:\n" + extra_details
-        prompt_admin_response = await axios.post('http://localhost:8080/prompt_admin/story_outline/', {"data": details});
+
+        to_prompt_admin = {
+            "data": details,
+            "chapter_count": chapter_count
+        }
+
+        prompt_admin_response = await axios.post('http://localhost:8080/prompt_admin/story_outline/', {"data": to_prompt_admin});
 
         to_frontend = {
             "title": story_name,
-            "chapter_count": chapter_count,
             "courier_response": courier_response
         }
 
