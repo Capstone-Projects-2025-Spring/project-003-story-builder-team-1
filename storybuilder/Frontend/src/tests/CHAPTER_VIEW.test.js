@@ -1,6 +1,8 @@
 import { render, screen } from '../setupTests';
 import { MemoryRouter, Route, Routes } from 'react-router';
 import CHAPTER_VIEW from '../components/CHAPTER_VIEW';
+const axios = require('axios');
+jest.mock('axios');
 
 const mockChapters = [
   { id: 1, title: "Chapter 1: A New Journey", text: "Once upon a time, in a land far away..." },
