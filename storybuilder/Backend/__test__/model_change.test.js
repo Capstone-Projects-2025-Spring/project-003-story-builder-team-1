@@ -13,14 +13,14 @@ describe('modelchange', () => {
             stream: false, // Ensures a single response instead of a streamed response
         };
         boost = promptadmin.boostmodel(prompttemp);
-        expect(boost.model).toBe("llama3.2-8b")
+        expect(boost.model).toBe("llama3.1-8b")
     });
 
 
     it('Should return a JSON prompt which downgrades the model from Llama 3.2 with 8 billion parameters to 3.1 with 1 billion parameters.', () => {
         let prompttemp = 
         {
-            model: "llama3.2-8b", // Uses a cheaper model for a less intensive task
+            model: "llama3.1-8b", // Uses a cheaper model for a less intensive task
             messages: [
                 { "role": "user", "content": "Return a list of style tags that correlate with this prompt: Return it so that I could just extract the list and append it to the end of a prompt, with commas and everything."}
             ],
