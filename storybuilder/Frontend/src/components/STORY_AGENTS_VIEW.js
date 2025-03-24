@@ -18,7 +18,7 @@ function STORY_AGENTS_VIEW() {
           ))}
         </Stack>
   
-        {/* Continue Button */}
+        {/* Continue Button *** commented out until we get next step implemented
         <Button 
             size="lg"
             variant="filled"
@@ -28,7 +28,7 @@ function STORY_AGENTS_VIEW() {
             alignSelf: 'flex-end',  // Align the button to the right
             }}>
           Continue
-        </Button>
+        </Button> */}
       </Container>
     );
 }
