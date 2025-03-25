@@ -27,12 +27,14 @@ const prompt_admin = require('./routes/prompt_admin');
 const db = require('./routes/db');
 const translator = require('./routes/translator');
 const courier = require('./routes/courier');
+const account = require('./routes/account');
 
 // Use the imported routes
 app.use('/prompt_admin', prompt_admin);
 app.use('/db', db);
 app.use('/translator', translator);
 app.use('/courier', courier);
+app.use('/account', account);
 
 //Status Message to Home Page of Server
 app.get('/', (req, res) => {
