@@ -224,3 +224,90 @@ describe("POST /account_creation", () => {
         expect(response.body).toEqual({message: "Internal server error"});
     });
 });
+
+describe ("POST /account_login", () => {
+    beforeEach(() => {
+        jest.clearAllMocks();
+    });
+
+    //Test Case 11: if a required field is empty
+    it("should return 400 if required fields are missing", async () => {
+
+        const input = {
+          username: null,
+          password: "Password1!"
+        }
+    
+        const response = await request(app)
+            .post("/account/account_login")
+            .send(input)
+            .expect('Content-Type', /json/)
+            .expect(400);
+    
+        //assert response matches expected output
+        expect(response.body).toEqual({message: "Missing required fields", data: input});
+    });
+
+    //Test Case 12: if login is successful
+    it("should return 200 if login is successful", async () => {
+
+        // Mock axios response
+        axios.post.mockResolvedValue({ data: { exists: true, user_id: 12345 } });
+    
+        const input = {
+          username: "Kyle",
+          password: "Password1!"
+        }
+    
+        const response = await request(app)
+            .post("/account/account_login")
+            .send(input)
+            .expect('Content-Type', /json/)
+            .expect(200);
+    
+        //assert response matches expected output
+        expect(response.body).toEqual({message: "Login successful", user_id: 12345});
+    });
+
+    //Test Case 13: if username or password is invalid
+    it("should return 400 if username or password is invalid", async () => {
+
+        // Mock axios response
+        axios.post.mockResolvedValue({ data: { exists: false } });
+    
+        const input = {
+          username: "Kyle",
+          password: "Password1!"
+        }
+    
+        const response = await request(app)
+            .post("/account/account_login")
+            .send(input)
+            .expect('Content-Type', /json/)
+            .expect(400);
+    
+        //assert response matches expected output
+        expect(response.body).toEqual({message: "Invalid username or password"});
+    });
+
+    //Test Case 14: if an internal server error occurs
+    it("should return 500 if an internal server error occurs", async () => {
+
+        // Mock axios to return an error
+        axios.post.mockRejectedValue(new Error("Internal server error"));
+    
+        const input = {
+          username: "Kyle",
+          password: "Password1!"
+        }
+    
+        const response = await request(app)
+            .post("/account/account_login")
+            .send(input)
+            .expect('Content-Type', /json/)
+            .expect(500);
+    
+        //assert response matches expected output
+        expect(response.body).toEqual({message: "Internal server error"});
+    });
+});
