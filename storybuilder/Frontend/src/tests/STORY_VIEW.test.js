@@ -1,6 +1,10 @@
 import { render, screen } from '../setupTests';
 import STORY_VIEW from '../components/STORY_VIEW'; // Adjust the path if necessary
 
+jest.mock("axios", () => ({
+  default: jest.fn(),
+}));
+
 describe('STORY_VIEW Component', () => {
   test('renders the default story content', () => {
     render(<STORY_VIEW />);
