@@ -6,9 +6,10 @@
     "start:dev": "concurrently \"npm run start:b\" \"npm run start:a\"",
     "start:con": "concurrently \"npm run start:b\" \"npm run start:a\" > output.log",
     "start:serv": "screen -S storybuilder npm run start:con",
-    "start:a": "cd storybuilder/Backend/agent/agent_container && docker-compose up -d",
+    "start:a": "docker container start default-agent",
     "start:b": "node storybuilder/Backend/server.js",
     "start:f": "cd storybuilder/Frontend && npm start",
+    "stop:serv": "screen -S storybuilder -X stuff $'\\003'",
     "test:a": "cd storybuilder/Backend/agent/agent_container && npm test",
     "test:b": "cd storybuilder/Backend && npm test",
     "test:bc": "cd storybuilder/Backend && npm run Ctest"

@@ -3,6 +3,7 @@ const axios = require('axios');
 const router = express.Router();
 
 const PRIVATE_URL = process.env.PRIVATE_URL || "http://localhost";
+const APP_URL = PRIVATE_URL + ":8080"
 
 //Global Variables to store data related to the story
 var chapter_count;
@@ -33,7 +34,7 @@ router.post('/story_contents', async (req, res) => {
     try {
         //Send data 
         details = "Story Details:\n" + story_details + "\nExtra Details:\n" + extra_details
-        prompt_admin_response = await axios.post(PRIVATE_URL + ':8080/prompt_admin/story/', {"data": details});
+        prompt_admin_response = await axios.post(APP_URL + '/prompt_admin/story/', {"data": details});
 
         to_frontend = {
             title: story_name,
