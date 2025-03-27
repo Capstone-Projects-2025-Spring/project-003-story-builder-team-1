@@ -23,9 +23,9 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">85.71% </span>
+                <span class="strong">89.65% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>18/21</span>
+                <span class='fraction'>26/29</span>
             </div>
         
             
@@ -37,16 +37,16 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">88.88% </span>
+                <span class="strong">90.9% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>8/9</span>
+                <span class='fraction'>10/11</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">85.71% </span>
+                <span class="strong">88.88% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>18/21</span>
+                <span class='fraction'>24/27</span>
             </div>
         
             
@@ -164,7 +164,29 @@
 <a name='L99'></a><a href='#L99'>99</a>
 <a name='L100'></a><a href='#L100'>100</a>
 <a name='L101'></a><a href='#L101'>101</a>
-<a name='L102'></a><a href='#L102'>102</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L102'></a><a href='#L102'>102</a>
+<a name='L103'></a><a href='#L103'>103</a>
+<a name='L104'></a><a href='#L104'>104</a>
+<a name='L105'></a><a href='#L105'>105</a>
+<a name='L106'></a><a href='#L106'>106</a>
+<a name='L107'></a><a href='#L107'>107</a>
+<a name='L108'></a><a href='#L108'>108</a>
+<a name='L109'></a><a href='#L109'>109</a>
+<a name='L110'></a><a href='#L110'>110</a>
+<a name='L111'></a><a href='#L111'>111</a>
+<a name='L112'></a><a href='#L112'>112</a>
+<a name='L113'></a><a href='#L113'>113</a>
+<a name='L114'></a><a href='#L114'>114</a>
+<a name='L115'></a><a href='#L115'>115</a>
+<a name='L116'></a><a href='#L116'>116</a>
+<a name='L117'></a><a href='#L117'>117</a>
+<a name='L118'></a><a href='#L118'>118</a>
+<a name='L119'></a><a href='#L119'>119</a>
+<a name='L120'></a><a href='#L120'>120</a>
+<a name='L121'></a><a href='#L121'>121</a>
+<a name='L122'></a><a href='#L122'>122</a>
+<a name='L123'></a><a href='#L123'>123</a>
+<a name='L124'></a><a href='#L124'>124</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -205,8 +227,30 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -271,7 +315,7 @@ Allows for fast, organized prompt formatting. Templates for drafting, critiquing
 &nbsp;
 function judge(storybank) {
     var judge = {
-        model: "llama3.2-1b", // Use model names from API documentation for model provider
+        model: "llama3.1-8b", // Use model names from API documentation for model provider
         messages: [
             { "role": "user", "content": "Your job now is to judge all of these stories as objectively as you can based on the initial prompt information. Each of these stories have gone through two drafting sessions, now you will rank them from best to worst. " + storybank },
         ],
@@ -282,10 +326,10 @@ function judge(storybank) {
 &nbsp;
 function draft(promptinfo) {
     var draft = {
-        model: "llama3.2-1b", // Use model names from API documentation for model provider
+        model: "llama3.1-8b", // Use model names from API documentation for model provider
         messages: [
-            { "role": "system", "content": "You are a helpful assistant. You will work in a Mechanical Turks style with other assistants to compose stories for users following a certain set of steps. The story will be written in chapters, and you will write the first chapter."},
-            { "role": "user", "content": promptinfo},
+            { "role": "system", "content": `You are a helpful assistant. You will work in a Mechanical Turks style with other assistants to compose stories for users following a certain set of steps. The story will be written in chapters, and you will write the first chapter.`},
+            { "role": "user", "content": `${promptinfo}`},
         ],
         stream: false, // Ensures a single response instead of a streamed response
     };
@@ -294,7 +338,7 @@ function draft(promptinfo) {
     
 function critique(promptinfo, chapter) {
     var crit =  {
-        model: "llama3.2-1b", 
+        model: "llama3.1-8b", 
         messages: [
             { "role": "system", "content": "You are now being fed a chapter written by another agent. You will critique the drafting of this story based on grammatical correctness as well as its faithfulness to the style parameters that were specified."},
             { "role": "user", "content": promptinfo},
@@ -305,18 +349,40 @@ function critique(promptinfo, chapter) {
     return crit;
     }
 &nbsp;
-function nextchapter(promptinfo, chapter) {
+//takes in previous chapter context, story outline and story prompt
+function nextchapter(promptinfo, outline, chapter) {
     var chap =  {
-        model: "llama3.2-1b", 
+        model: "llama3.1-8b", 
         messages: [
-            { "role": "system", "content": "You are now being fed a chapter written by another agent. You will continue the story in another chapter of roughly equal length while still following the guidelines established in the original prompt."},
-            { "role": "user", "content": promptinfo},
-            { "role": "assistant", "content": chapter},
+            { "role": "system", "content": `You are now being fed a chapter written by another agent. You will continue the story in another chapter of roughly equal length while still following the guidelines established in the original prompt.`},
+            { "role": "user", "content": `${promptinfo}\n\nStory outline: ${outline}`},
+            { "role": "assistant", "content": `${chapter}`},
         ],
         stream: false, 
     };
     return chap;
     }
+&nbsp;
+function storyoutline(chaptercount, promptinfo) {
+    //array template to be formatted for the prompt, organized by chapter number
+    var outlinelist = [];
+    for(let i = 1; i &lt;= chaptercount; i++) {
+        //every chapter entry in the list has a (Fill this entry) stuck in its outline field so the LLM knows EXACTLY where to place its outline
+        outlinelist.push({chapter: i, outline: `(Fill this entry)`})
+    }
+&nbsp;
+    //create outline template for other templates to easily parse after the LLM call
+    var outlinestring = outlinelist.map(entry =&gt; `Chapter ${entry.chapter}: ${entry.outline}`).join("\n");
+    var outlineprompt =  {
+        model: "llama3.1-8b", 
+        messages: [
+            { "role": "system", "content": `The following is a prompt for a story that will be split into ${chaptercount} chapters. You will write an outline for each chapter, no more than two sentences for each chapter. You will fill the provided list with a summary of each chapter.`},
+            { "role": "user", "content": `${promptinfo}:\n\n ${outlinestring}`},
+        ],
+        stream: false, 
+    };
+    return outlineprompt;
+}
 &nbsp;
 //Boosts model to a newer, higher-parameter version.
 function boostmodel(prompt) {
@@ -342,7 +408,7 @@ function <span class="fstat-no" title="function not covered" >getstylesearch(</s
 <span class="cstat-no" title="statement not covered" >    {</span>
         model: "llama3.1-1b", // Uses a cheaper model for a less intensive task
         messages: [
-            { "role": "user", "content": "Return a list of style tags that correlate with this prompt: " + promptinfo + ", Return it so that I could just extract the list and append it to the end of a prompt, with commas and everything."}
+            { "role": "user", "content": `Return a list of style tags that correlate with this prompt: ${promptinfo}, Return it so that I could just extract the list and append it to the end of a prompt, with commas and everything.`}
         ],
         stream: false, // Ensures a single response instead of a streamed response
     };
@@ -365,7 +431,7 @@ function setstream(prompt, streamset) {
 &nbsp;
 &nbsp;
 &nbsp;
-module.exports = {judge, draft, critique, nextchapter, boostmodel, degrademodel, defaultmodel, getstylesearch, setstream};
+module.exports = {judge, draft, critique, nextchapter, storyoutline, boostmodel, degrademodel, defaultmodel, getstylesearch, setstream};
 &nbsp;</pre></td></tr></table></pre>
 
                 <div class='push'></div><!-- for sticky footer -->
@@ -373,7 +439,7 @@ module.exports = {judge, draft, critique, nextchapter, boostmodel, degrademodel,
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-03-21T20:40:09.850Z
+                at 2025-03-27T23:00:59.971Z
             </div>
         <script src="../prettify.js"></script>
         <script>
