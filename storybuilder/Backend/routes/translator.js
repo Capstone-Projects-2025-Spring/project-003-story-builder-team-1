@@ -2,14 +2,14 @@ const express = require('express');
 const axios = require('axios');
 const router = express.Router();
 
+const PRIVATE_URL = process.env.PRIVATE_URL || "http://localhost";
+
 //Global Variables to store data related to the story
 var chapter_count;
 var story_name;
 var story_details;
 var extra_details;
 var courier_response;
-
-const PRIVATE_URL = process.env.PRIVATE_URL || "http://localhost";
 
 //story_contents will receive the requested chapters, story name, story details, and extra details from the frontend
 router.post('/story_contents', async (req, res) => {
