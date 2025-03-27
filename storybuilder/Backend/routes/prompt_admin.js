@@ -3,7 +3,8 @@ const router = express.Router();
 const axios = require('axios');
 const promptformatter = require('../promptformatter')
 
-router.post('/story', async (req, res) => {
+
+router.post('/first_chapter', async (req, res) => {
     //throws 400 status 
     if(!req.body.data) {
        return res.status(400).json({message: "No prompt data received", data: req.body});
@@ -28,18 +29,47 @@ router.post('/story', async (req, res) => {
 
 
 //next chapter
-router.get('/nextchapter', (req, res) => {
-    res.status(200).json({message: "Data Received Successfully", data: req.body});
+router.post('/next_chapter', async (req, res) => {
+    if(!req.body.data) {
+        return res.status(400).json({message: "No prompt data received", data: req.body});
+     }
+    var promptinfo = JSON.stringify(req.body.details);
+    var chapteroutline = JSON.stringify(req.body.story_outline);
+    var previouschapter = JSON.stringify(req.body.previous_chapters);
+
+    var prompt = promptformatter.nextchapter(promptinfo, chapteroutline, previouschapter);
+
+    try {
+        //try to send prompt to courier
+        courier_res = await axios.post('http://localhost:8080/courier/story_call', {data:prompt});
+        return res.status(200).json({message: "Data Received Successfully", data: req.body});
+
+    }
+    catch(error) {
+        return res.status(500).json({message: "PromptAdmin failed to connect to the couriers", error: error})
+    }
+
 });
 
 //refine_prompt
-router.get('/critique', (req, res) => {
-    res.status(200).json({message: "Data Received Successfully", data: req.body});
-});
+router.post('/story_outline', async (req, res) => {
+    if(!req.body.data) {
+        return res.status(400).json({message: "No prompt data received", data: req.body});
+     }
+    //separate request body into two fields to create outline with promptformatter
+    var chaptercount = JSON.stringify(req.body.chaptercount);
+    var promptinfo = JSON.stringify(req.body.details);
+    //create outline with two entries, calling promptformatter's storyoutline() function
+    var prompt = promptformatter.storyoutline(chaptercount, promptinfo);
+    try {
+        //try to send prompt to courier
+        courier_res = await axios.post('http://localhost:8080/courier/story_call', {data:prompt});
+        return res.status(200).json({message: "Data Received Successfully", data: req.body});
 
-//rank_prompt
-router.get('/judge', (req, res) => {
-    res.status(200).json({message: "Data Received Successfully", data: req.body});
+    }
+    catch(error) {
+        return res.status(500).json({message: "PromptAdmin failed to connect to the couriers", error: error})
+    }
 });
 
 // Export the routers for use in app.js
