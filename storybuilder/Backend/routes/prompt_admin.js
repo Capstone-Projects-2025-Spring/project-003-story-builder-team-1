@@ -3,8 +3,8 @@ const router = express.Router();
 const axios = require('axios');
 const promptformatter = require('../promptformatter')
 
-const PRIVATE_URL = process.env.PRIVATE_URL || "http://localhost:8080";
-const APP_URL = PRIVATE_URL
+const PRIVATE_URL = process.env.PRIVATE_URL || "http://localhost";
+const APP_URL = PRIVATE_URL + ":8080"
 
 router.post('/story', async (req, res) => {
     //throws 400 status 
