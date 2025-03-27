@@ -3,10 +3,11 @@ import axios from "axios";
 
 // Create Context
 const STORY_CONTEXT = createContext();
+const SERVER_URL = process.env.SERVER_URL || "http://localhost:8080";
 
 // Initial State
 const initial_state = {
-    current_story: null,   // Holds story details & chapters
+    current_story: null,  // Holds story details & chapters
     loading: false,       // Loading state for API calls
     error: null,          // Error messages
 };
@@ -53,7 +54,7 @@ export function Story_Provider({ children }) {
         dispatch({ type: "SUBMIT_PROMPT" });
 
         try {
-            const response = await axios.post("http://localhost:8080/translator/story_contents", {
+            const response = await axios.post(SERVER_URL + "/translator/story_contents", {
                 "story_name": story_name,
                 "chapter_count": chapter_count,
                 "story_details": story_details,
