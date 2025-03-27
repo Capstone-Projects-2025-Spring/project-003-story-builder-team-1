@@ -9,6 +9,8 @@ var story_details;
 var extra_details;
 var courier_response;
 
+const PRIVATE_URL = process.env.PRIVATE_URL || "http://localhost";
+
 //story_contents will receive the requested chapters, story name, story details, and extra details from the frontend
 router.post('/story_contents', async (req, res) => {
 
@@ -31,7 +33,7 @@ router.post('/story_contents', async (req, res) => {
     try {
         //Send data 
         details = "Story Details:\n" + story_details + "\nExtra Details:\n" + extra_details
-        prompt_admin_response = await axios.post('http://localhost:8080/prompt_admin/story/', {"data": details});
+        prompt_admin_response = await axios.post(PRIVATE_URL + ':8080/prompt_admin/story/', {"data": details});
 
         to_frontend = {
             title: story_name,

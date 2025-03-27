@@ -8,19 +8,15 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 const corsOptions = {
-    origin: 'http://localhost:3000', // Replace with the correct frontend URL
+    origin: ['http://localhost:3000' ,'http://localhost:8080', 'http://35.175.87.28', 'http://172.26.5.222'], // Replace with the correct frontend URL
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], // Allowed HTTP methods
     allowedHeaders: ['Content-Type', 'Authorization'], // Allowed headers
     optionsSuccessStatus: 200
 };
 app.use(cors(corsOptions));
 
-//CORS Policy Handling
-// app.use(function(req, res, next) {
-//     res.header("Access-Control-Allow-Origin", "*");
-//     res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-//     next();
-//   });
+// Serve the static files from the React app
+app.use(express.static(path.join(__dirname, '../Frontend/build')));
 
 // Import the routes
 const prompt_admin = require('./routes/prompt_admin');
@@ -33,6 +29,11 @@ app.use('/prompt_admin', prompt_admin);
 app.use('/db', db);
 app.use('/translator', translator);
 app.use('/courier', courier);
+
+// Catch-all route to serve React's index.html for frontend routing
+app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, '../Frontend/build', 'index.html'));
+});
 
 //Status Message to Home Page of Server
 app.get('/', (req, res) => {

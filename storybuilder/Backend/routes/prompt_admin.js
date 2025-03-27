@@ -3,6 +3,8 @@ const router = express.Router();
 const axios = require('axios');
 const promptformatter = require('../promptformatter')
 
+const PRIVATE_URL = process.env.PRIVATE_URL || "http://localhost";
+
 router.post('/story', async (req, res) => {
     //throws 400 status 
     if(!req.body.data) {
@@ -17,7 +19,7 @@ router.post('/story', async (req, res) => {
 
     try {
         //try to send prompt to courier
-        courier_res = await axios.post('http://localhost:8080/courier/story_call', {data:prompt});
+        courier_res = await axios.post(PRIVATE_URL + ':8080/courier/story_call', {data:prompt});
         return res.status(200).json({message: "Data Received Successfully", data: req.body});
 
     }
