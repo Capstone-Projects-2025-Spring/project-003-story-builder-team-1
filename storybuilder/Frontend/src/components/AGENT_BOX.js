@@ -2,23 +2,18 @@ import { useState, useContext, useEffect } from 'react';
 import { Card, Button, Modal, Textarea, Title, Divider, Group } from '@mantine/core';
 import STORY_CONTEXT from "../context/STORY_CONTEXT";
 
-function AGENT_BOX({ name, response }) {
+function AGENT_BOX({ name }) {
     const { state } = useContext(STORY_CONTEXT);
     const [title, set_title] = useState("Chapter Title");
     //const [chapter_content, set_chapter_content] = useState("Waiting for the agent to generate a response...");
     const [opened, set_opened] = useState(false);
     const [chapter_content, set_chapter_content] = useState("Waiting for the agent to generate a response...");
 
-    console.log("AGENT_BOX 1: state.current_story", state.current_story);
-
     useEffect(() => {
       if (state.current_story?.chapters?.length > 0) {
           set_chapter_content(state.current_story.chapters[0]); // Display first chapter
       }
-      console.log("AGENT_BOX 2: state.current_story", state.current_story);
     }, [state.current_story]);
-
-    console.log("AGENT_BOX 3: state.current_story", state.current_story);
 
     return (
         <>
