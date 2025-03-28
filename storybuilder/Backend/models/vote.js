@@ -1,17 +1,9 @@
-const mongoose = require('mongoose')
+const mongoose = require('mongoose');
 
+const voteSchema = new mongoose.Schema({
+    agent: { type: mongoose.Schema.Types.ObjectId, ref: 'Agent', required: true }, // The agent casting the vote
+    chapter: { type: mongoose.Schema.Types.ObjectId, ref: 'Story.chapter', required: true }, // The chapter being voted on
+    votedChapterVersion: { type: mongoose.Schema.Types.ObjectId, ref: 'Story.agent_chapter_versions.agent', required: true } // The agent's chapter version being voted for
+});
 
-const DB_URI = 'mongodb+srv://yousufqari:greenblue2025@cluster0.dzlzu.mongodb.net/StoryBuilder?retryWrites=true&w=majority&appName=Cluster0';
-
-//connect to the database
-const connectDB = async () => {
-    try {
-        await mongoose.connect(DB_URI);
-        console.log('Connected to MongoDB (StoryBuilder Database)');
-    } catch (error) {
-        console.error('MongoDB connection error:', error);
-        process.exit(1); // Exit process with failure
-    }
-};
-
-module.exports = connectDB;
+module.exports = mongoose.model('Vote', voteSchema);
