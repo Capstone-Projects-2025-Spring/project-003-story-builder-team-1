@@ -60,15 +60,9 @@ export function Story_Provider({ children }) {
                 "story_details": story_details,
                 "extra_details": extra_details
             });
-
-            console.log("PROMPT BOX RESPONSE:", response.data);
-
-            console.log("Full response:", response);
+            
             const title = response.data?.data?.title;
             const chapter = response.data?.data?.courier_response;
-
-            console.log("Title:", title);
-            console.log("Chapter:", chapter);
             
             dispatch({ type: "FETCH_SUCCESS", payload: {
                 title: title,

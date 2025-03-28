@@ -38,7 +38,7 @@ describe('STORY_AGENTS_VIEW Component', () => {
       </STORY_CONTEXT.Provider>
     );
 
-    // Check for agents being displayed
+    // Agent 1 still hardcoded in STORY_AGENTS_VIEW.js, will need to be changed
     expect(screen.getByText('Agent 1')).toBeInTheDocument();
     expect(screen.getByText("Chapter 1 Mock Data")).toBeInTheDocument();
   });

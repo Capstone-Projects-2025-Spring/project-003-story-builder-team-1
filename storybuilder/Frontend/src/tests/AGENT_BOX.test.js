@@ -21,7 +21,7 @@ describe('AGENT_BOX Component', () => {
     </STORY_CONTEXT.Provider>
     );
 
-    // Agent 1 still hardcoded in AGENT_BOX.js, will need to be changed
+    // Agent 1 still hardcoded in STORY_AGENTS_VIEW.js, will need to be changed
     expect(screen.getByText('Agent 1')).toBeInTheDocument();
     expect(screen.getByText('Chapter 1 Mock Data')).toBeInTheDocument();
   });

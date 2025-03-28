@@ -49,8 +49,7 @@ test('renders STORY_PROMPT_BOX component and accepts input', () => {
   expect(screen.getByLabelText(/Story Prompt/i).value).toBe('Test Story Prompt');
   expect(screen.getByLabelText(/Additional Information/i).value).toBe('Test Additional Info');
 
-  // Simulate button click (you can assert if it calls a function or triggers an action)
+  // Simulate button click *** this is still hardcoded to story 1, must change in STORY_PROMPT_BOX once multiple stories are supported
   fireEvent.click(send_button);
   expect(mock_navigate).toHaveBeenCalledWith('/story/1/agents');
-  // You can add more assertions here based on what happens when the button is clicked
 });
