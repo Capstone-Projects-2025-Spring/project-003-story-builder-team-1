@@ -1,21 +1,17 @@
 import {
     Anchor,
     Button,
-    Checkbox,
     Container,
-    Group,
     Paper,
     PasswordInput,
     Text,
     TextInput,
     Title,
-    Center,
-    Flex
     } from '@mantine/core';
 
 function LOGIN() {
 return (
-    <Container size="md" my={40}>
+    <Container size="sm" my={40}>
     <Title ta="center" >
         Welcome to StoryBuilderAI!
     </Title>
