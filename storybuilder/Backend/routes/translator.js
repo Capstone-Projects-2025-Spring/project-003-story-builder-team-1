@@ -2,8 +2,8 @@ const express = require('express');
 const axios = require('axios');
 const router = express.Router();
 
-const PRIVATE_URL = process.env.PRIVATE_URL || "http://localhost";
-const APP_URL = PRIVATE_URL + ":8080"
+const PRIVATE_URL = process.env.PRIVATE_URL || "http://localhost:8080";
+const APP_URL = PRIVATE_URL;
 
 //Global Variables to store data related to the story
 var chapter_count;

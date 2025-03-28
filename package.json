@@ -9,7 +9,8 @@
     "start:a": "docker container start default-agent",
     "start:b": "node storybuilder/Backend/server.js",
     "start:f": "cd storybuilder/Frontend && npm start",
-    "stop:serv": "screen -S storybuilder -X stuff $'\\003'",
+    "stop:serv": "screen -S storybuilder -X stuff $'\\003' && npm run stop:a",
+    "stop:a": "docker container stop default-agent",
     "test:a": "cd storybuilder/Backend/agent/agent_container && npm test",
     "test:b": "cd storybuilder/Backend && npm test",
     "test:bc": "cd storybuilder/Backend && npm run Ctest"
