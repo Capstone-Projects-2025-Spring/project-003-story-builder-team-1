@@ -34,7 +34,13 @@ router.post('/story_contents', async (req, res) => {
     try {
         //Send data 
         details = "Story Details:\n" + story_details + "\nExtra Details:\n" + extra_details
-        prompt_admin_response = await axios.post(APP_URL + '/prompt_admin/story/', {"data": details});
+
+        to_prompt_admin = {
+            "data": details,
+            "story_outline": story_outline
+        }
+
+        prompt_admin_response = await axios.post(APP_URL + '/prompt_admin/story/', {"data": to_prompt_admin});
 
         to_frontend = {
             title: story_name,
