@@ -13,7 +13,7 @@ app.use("/agent", agent_routes(llama)); // Mount agent routes
 
 // Start Express server
 if (process.env.NODE_ENV !== "test") {
-  app.listen(PORT, () => {
+  app.listen(PORT, '0.0.0.0', () => {
     console.log(`🚀 Server running on http://localhost:${PORT}`);
   });
 }

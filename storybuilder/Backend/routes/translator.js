@@ -2,6 +2,9 @@ const express = require('express');
 const axios = require('axios');
 const router = express.Router();
 
+const PRIVATE_URL = process.env.PRIVATE_URL || "http://localhost:8080";
+const APP_URL = PRIVATE_URL;
+
 //Global Variables to store data related to the story
 var chapter_count;
 var story_name;
@@ -34,7 +37,7 @@ router.post('/first_chapter', async (req, res) => {
             "story_outline": story_outline
         }
 
-        prompt_admin_response = await axios.post('http://localhost:8080/prompt_admin/first_chapter/', {"data": to_prompt_admin});
+        prompt_admin_response = await axios.post(APP_URL + '/prompt_admin/story/', {"data": to_prompt_admin});
 
         to_frontend = {
             "title": story_name,
@@ -93,7 +96,7 @@ router.post('/story_outline', async (req, res) => {
             "chapter_count": chapter_count
         }
 
-        prompt_admin_response = await axios.post('http://localhost:8080/prompt_admin/story_outline/', {"data": to_prompt_admin});
+        prompt_admin_response = await axios.post(APP_URL + '/prompt_admin/story_outline/', {"data": to_prompt_admin});
 
         to_frontend = {
             "title": story_name,
@@ -139,7 +142,7 @@ router.post('/next_chapter', async (req, res) => {
             "story_outline": story_outline
         }
 
-        prompt_admin_response = await axios.post('http://localhost:8080/prompt_admin/next_chapter/', to_prompt_admin);
+        prompt_admin_response = await axios.post(APP_URL + '/prompt_admin/next_chapter/', to_prompt_admin);
 
         to_frontend = {
             "title": story_name,
