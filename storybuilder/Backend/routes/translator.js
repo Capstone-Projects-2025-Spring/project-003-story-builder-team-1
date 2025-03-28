@@ -15,7 +15,7 @@ var story_outline;
 router.post('/first_chapter', async (req, res) => {
 
     //Validate required fields
-    if (!req.body.story_name || !req.body.story_details || !req.body.extra_details || !req.body.story_outline) {
+    if (!req.body.story_name || !req.body.story_details || !req.body.story_outline) {
         return res.status(404).json({ message: "Missing required fields", data: req.body });
     }
 
@@ -69,7 +69,7 @@ router.post('/courier_response', (req, res) => {
 router.post('/story_outline', async (req, res) => {
 
     //Validate required fields
-    if (!req.body.chapter_count || !req.body.story_name || !req.body.story_details || !req.body.extra_details) {
+    if (!req.body.chapter_count || !req.body.story_name || !req.body.story_details) {
         return res.status(404).json({ message: "Missing required fields", data: req.body });
     }
 
@@ -113,7 +113,7 @@ router.post('/story_outline', async (req, res) => {
 router.post('/next_chapter', async (req, res) => {
 
     //Validate required fields
-    if (!req.body.story_name || !req.body.story_details || !req.body.extra_details || !req.body.previous_chapters || !req.body.story_outline) {
+    if (!req.body.story_name || !req.body.story_details || !req.body.previous_chapters || !req.body.story_outline) {
         return res.status(404).json({ message: "Missing required fields", data: req.body });
     }
 

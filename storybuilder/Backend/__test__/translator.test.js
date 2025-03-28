@@ -17,8 +17,8 @@ describe("POST /first_chapter", () => {
 
     const input = {
       "story_name": "Story Name",
-      "story_details": "Story Detail",
-      "extra_details": null,
+      "story_details": null,
+      "extra_details": "Extra Detail",
       "story_outline": "Story Outline"
     }
 
@@ -139,8 +139,8 @@ describe("POST /story_outline", () => {
     const input = {
       "chapter_count": 5,
       "story_name": "Story Name",
-      "story_details": "Story Detail",
-      "extra_details": null
+      "story_details": null,
+      "extra_details": "Extra Detail"
     }
 
     const response = await request(app)
@@ -246,8 +246,8 @@ describe("POST /next_chapter", () => {
 
     const input = {
       "story_name": "Story Name",
-      "story_details": "Story Detail",
-      "extra_details": null,
+      "story_details": null,
+      "extra_details": "Extra Detail",
       "previous_chapters": ["Chapter 1", "Chapter 2"],
       "story_outline": "Story Outline"
     }
