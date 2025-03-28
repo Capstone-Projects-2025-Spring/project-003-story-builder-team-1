@@ -242,7 +242,7 @@ describe ("POST /account_login", () => {
             .post("/account/account_login")
             .send(input)
             .expect('Content-Type', /json/)
-            .expect(400);
+            .expect(404);
     
         //assert response matches expected output
         expect(response.body).toEqual({message: "Missing required fields", data: input});

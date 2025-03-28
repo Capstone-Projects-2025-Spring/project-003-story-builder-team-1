@@ -58,7 +58,7 @@ router.post('/account_login', async (req, res) => {
 
     // Validate required fields
     if (!username || !password) {
-        return res.status(400).json({ message: "Missing required fields", data: req.body });
+        return res.status(404).json({ message: "Missing required fields", data: req.body });
     }
 
     try {
