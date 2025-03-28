@@ -4,7 +4,13 @@ const router = express.Router();
 
 const PRIVATE_URL = process.env.PRIVATE_URL || "http://localhost";
 const API_URL = PRIVATE_URL + ":5000";
-const APP_URL = PRIVATE_URL + ":8080";
+let APP_URL;
+if(PRIVATE_URL === "http://localhost") {
+   APP_URL = "http://localhost:8080";
+}
+else {
+   APP_URL = PRIVATE_URL;
+}
 let body = []
 //story_call
 router.post('/story_call', async (req, res) => {
