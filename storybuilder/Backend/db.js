@@ -1,7 +1,13 @@
 const mongoose = require('mongoose')
 
+const DB_URI = process.env.MONGO_URI;
 
-const DB_URI = 'mongodb+srv://yousufqari:greenblue2025@cluster0.dzlzu.mongodb.net/StoryBuilder?retryWrites=true&w=majority&appName=Cluster0';
+if (!DB_URI) {
+    console.error('MongoDB URI is undefined. Check your .env file.');
+    process.exit(1);
+}
+
+console.log("MongoDB URI:", DB_URI);
 
 //connect to the database
 const connectDB = async () => {
