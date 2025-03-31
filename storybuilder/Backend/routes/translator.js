@@ -37,7 +37,7 @@ router.post('/first_chapter', async (req, res) => {
             "story_outline": story_outline
         }
 
-        prompt_admin_response = await axios.post(APP_URL + '/prompt_admin/story/', {"data": to_prompt_admin});
+        prompt_admin_response = await axios.post(APP_URL + '/prompt_admin/first_chapter/', {"data": to_prompt_admin});
 
         to_frontend = {
             "title": story_name,
