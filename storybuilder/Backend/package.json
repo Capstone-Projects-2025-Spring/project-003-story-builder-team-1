@@ -1,14 +1,19 @@
 {
   "dependencies": {
+    "@langchain/core": "^0.3.43",
+    "@langchain/langgraph": "^0.2.57",
     "axios": "^1.8.4",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
     "express": "^4.21.2"
   },
   "devDependencies": {
+    "cross-env": "^7.0.3",
     "jest": "^29.7.0",
     "supertest": "^7.0.0"
   },
   "scripts": {
-    "test": "jest",
-    "Ctest": "jest --coverage"
+    "test": "cross-env NODE_OPTIONS='--experimental-vm-modules' jest",
+    "Ctest": "cross-env NODE_OPTIONS='--experimental-vm-modules' jest --coverage"
   }
 }

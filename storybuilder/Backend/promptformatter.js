@@ -75,7 +75,7 @@ function storyoutline(chaptercount, promptinfo) {
 
 //Boosts model to a newer, higher-parameter version.
 function boostmodel(prompt) {
-    prompt.model = "llama3.2-8b";
+    prompt.model = "llama3.1-8b";
     return prompt;
 }
 
