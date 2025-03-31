@@ -6,7 +6,7 @@ import IconCheck from '@tabler/icons-react/dist/esm/icons/IconCheck';
 import IconX from '@tabler/icons-react/dist/esm/icons/IconX';
 
 // rendering of the password requirements
-function PasswordRequirement({ meets, label }) {
+function PASSWORD_REQUIREMENT({ meets, label }) {
 return (
     <Text
     component="div"
@@ -30,7 +30,7 @@ const requirements = [
 ];
 
 // function to get the strength for the strength bar
-function getStrength(password) {
+function GET_STRENGTH(password) {
     let multiplier = password.length > 7 ? 0 : 1;
 
     requirements.forEach((requirement) => {
@@ -50,10 +50,10 @@ function CREATE_ACCOUNT() {
     const { create_account, user_error, pass_error, confirm_pass_error, api_error } = USE_CREATE_ACCOUNT();
     const [popover_opened, set_popover_opened] = useState(false);
     const checks = requirements.map((requirement, index) => (
-        <PasswordRequirement key={index} label={requirement.label} meets={requirement.re.test(password)} />
+        <PASSWORD_REQUIREMENT key={index} label={requirement.label} meets={requirement.re.test(password)} />
     ));
 
-    const strength = getStrength(password);
+    const strength = GET_STRENGTH(password);
     const color = strength === 100 ? 'teal' : strength > 50 ? 'yellow' : 'red';
 
     const handle_create_account = async () => {
@@ -113,7 +113,7 @@ return (
             </Popover.Target>
             <Popover.Dropdown>
                 <Progress color={color} value={strength} size={5} mb="xs" />
-                <PasswordRequirement label="Includes at least 8 characters" meets={password.length > 7} />
+                <PASSWORD_REQUIREMENT label="Includes at least 8 characters" meets={password.length > 7} />
                 {checks}
             </Popover.Dropdown>
         </Popover>
