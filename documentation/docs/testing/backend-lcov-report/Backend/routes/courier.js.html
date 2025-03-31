@@ -25,14 +25,14 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">100% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>23/23</span>
+                <span class='fraction'>24/24</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">100% </span>
+                <span class="strong">75% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/0</span>
+                <span class='fraction'>3/4</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">100% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>23/23</span>
+                <span class='fraction'>24/24</span>
             </div>
         
             
@@ -171,8 +171,9 @@
 const axios = require('axios');
 const router = express.Router();
 &nbsp;
-const API_URL = "http://localhost:5000";
-const APP_URL = "http://localhost:8080";
+const PRIVATE_URL = process.env.PRIVATE_URL || "http://localhost";
+const API_URL = PRIVATE_URL + ":5000";
+const APP_URL = PRIVATE_URL.includes("localhost") ? PRIVATE_URL + ":8080" : <span class="branch-1 cbranch-no" title="branch not covered" >PRIVATE_URL;</span>
 let body = []
 //story_call
 router.post('/story_call', async (req, res) =&gt; {
