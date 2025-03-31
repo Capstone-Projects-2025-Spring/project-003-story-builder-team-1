@@ -6,6 +6,7 @@ import STORY_VIEW from './components/STORY_VIEW';
 import STORY_AGENTS_VIEW from './components/STORY_AGENTS_VIEW';
 import CHAPTER_VIEW from './components/CHAPTER_VIEW';
 import LOGIN from './components/LOGIN';
+import CREATE_ACCOUNT from './components/CREATE_ACCOUNT';
 import '@mantine/core/styles.css';
 
 function App() {
@@ -13,6 +14,7 @@ function App() {
     <Router>
       <Routes>
         <Route path="/" element={<LOGIN/>} />
+        <Route path="/account_creation" element={<CREATE_ACCOUNT/>} />
         <Route path="/home" element={<MAIN_LAYOUT><STORY_PROMPT_BOX /></MAIN_LAYOUT>} />
         <Route path="/story/:story_id/view" element={<MAIN_LAYOUT><STORY_VIEW /></MAIN_LAYOUT>} />
         <Route path="/story/:story_id/view/:chapter_id" element={<MAIN_LAYOUT><CHAPTER_VIEW /></MAIN_LAYOUT>} />
