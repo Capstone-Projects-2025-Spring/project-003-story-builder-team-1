@@ -16,7 +16,8 @@
     "test:bc": "cd storybuilder/Backend && npm run Ctest"
   },
   "dependencies": {
-    "jest": "^29.7.0"
+    "jest": "^29.7.0",
+    "mongoose": "^8.13.0"
   },
   "devDependencies": {
     "concurrently": "^9.1.2"
