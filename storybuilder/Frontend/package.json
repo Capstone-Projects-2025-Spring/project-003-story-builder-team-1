@@ -23,6 +23,7 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "cross-env NODE_OPTIONS='--experimental-vm-modules' react-scripts test",
+    "Ctest": "cross-env NODE_OPTIONS='--experimental-vm-modules' react-scripts test --coverage",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
