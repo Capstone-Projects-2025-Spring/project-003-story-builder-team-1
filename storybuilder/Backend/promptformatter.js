@@ -38,18 +38,40 @@ function critique(promptinfo, chapter) {
     return crit;
     }
 
-function nextchapter(promptinfo, chapter) {
+//takes in previous chapter context, story outline and story prompt
+function nextchapter(promptinfo, outline, chapter) {
     var chap =  {
         model: "llama3.1-8b", 
         messages: [
-            { "role": "system", "content": "You are now being fed a chapter written by another agent. You will continue the story in another chapter of roughly equal length while still following the guidelines established in the original prompt."},
-            { "role": "user", "content": promptinfo},
-            { "role": "assistant", "content": chapter},
+            { "role": "system", "content": `You are now being fed a chapter written by another agent. You will continue the story in another chapter of roughly equal length while still following the guidelines established in the original prompt.`},
+            { "role": "user", "content": `${promptinfo}\n\nStory outline: ${outline}`},
+            { "role": "assistant", "content": `${chapter}`},
         ],
         stream: false, 
     };
     return chap;
     }
+
+function storyoutline(chaptercount, promptinfo) {
+    //array template to be formatted for the prompt, organized by chapter number
+    var outlinelist = [];
+    for(let i = 1; i <= chaptercount; i++) {
+        //every chapter entry in the list has a (Fill this entry) stuck in its outline field so the LLM knows EXACTLY where to place its outline
+        outlinelist.push({chapter: i, outline: `(Fill this entry)`})
+    }
+
+    //create outline template for other templates to easily parse after the LLM call
+    var outlinestring = outlinelist.map(entry => `Chapter ${entry.chapter}: ${entry.outline}`).join("\n");
+    var outlineprompt =  {
+        model: "llama3.1-8b", 
+        messages: [
+            { "role": "system", "content": `The following is a prompt for a story that will be split into ${chaptercount} chapters. You will write an outline for each chapter, no more than two sentences for each chapter. You will fill the provided list with a summary of each chapter.`},
+            { "role": "user", "content": `${promptinfo}:\n\n ${outlinestring}`},
+        ],
+        stream: false, 
+    };
+    return outlineprompt;
+}
 
 //Boosts model to a newer, higher-parameter version.
 function boostmodel(prompt) {
@@ -75,7 +97,7 @@ function getstylesearch(promptinfo) {
     {
         model: "llama3.1-1b", // Uses a cheaper model for a less intensive task
         messages: [
-            { "role": "user", "content": "Return a list of style tags that correlate with this prompt: " + promptinfo + ", Return it so that I could just extract the list and append it to the end of a prompt, with commas and everything."}
+            { "role": "user", "content": `Return a list of style tags that correlate with this prompt: ${promptinfo}, Return it so that I could just extract the list and append it to the end of a prompt, with commas and everything.`}
         ],
         stream: false, // Ensures a single response instead of a streamed response
     };
@@ -98,4 +120,4 @@ function setstream(prompt, streamset) {
 
 
 
-module.exports = {judge, draft, critique, nextchapter, boostmodel, degrademodel, defaultmodel, getstylesearch, setstream};
+module.exports = {judge, draft, critique, nextchapter, storyoutline, boostmodel, degrademodel, defaultmodel, getstylesearch, setstream};
