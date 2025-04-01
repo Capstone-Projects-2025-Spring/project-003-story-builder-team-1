@@ -8,4 +8,11 @@ const critiqueSchema = new mongoose.Schema({
     createdAt: { type: Date, default: Date.now }
 });
 
+// Virtual property to generate the URL for a critique
+critiqueSchema.virtual("url").get(function () {
+    return `/critique/${this._id}`;
+    // This provides a consistent way to reference a critique's page in routes/templates.
+});
+
+
 module.exports = mongoose.model('Critique', critiqueSchema);

@@ -16,4 +16,16 @@ const storySchema = new mongoose.Schema({
     }]
 }, { timestamps: true });
 
+// Virtual property to generate the URL for a story
+storySchema.virtual("url").get(function () {
+  return `/story/${this._id}`;
+  // This allows us to easily generate a link to view the full story.
+});
+
+// Virtual function to generate a URL for a specific agent's version of a chapter
+storySchema.virtual("chapterUrl").get(function () {
+  return (chapterNumber, agentId) => `/story/${this._id}/chapter/${chapterNumber}/agent/${agentId}`;
+  // This function allows dynamically generating URLs to specific chapter versions created by different agents.
+});
+
 module.exports = mongoose.model('Story', storySchema);
