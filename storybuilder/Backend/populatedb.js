@@ -15,8 +15,10 @@ const Story = require("./models/story");
 const Agent = require("./models/agent");
 // const Critique = require("./models/critique");
 
+
 const users = [];
 const stories = [];
+const chapters = [];
 const agents = [];
 // const critiques = [];
 
@@ -32,6 +34,7 @@ async function main() {
     await createUsers();
     await createAgents();
     await createStories();
+    await createChapters();  // Add chapters to stories
     // await createCritiques();
 
     console.log("Debug: Closing mongoose connection");
@@ -39,10 +42,17 @@ async function main() {
 }
 
 async function createUser(index, username, password) {
-    const user = new User({ username, password });
-    await user.save();
-    users[index] = user;
-    console.log(`Added user: ${username}`);
+    const existingUser = await User.findOne({ username });
+    
+    if (existingUser) {
+        console.log(`User with username ${username} already exists. Skipping.`);
+        users[index] = existingUser; // Use the existing user
+    } else {
+        const user = new User({ username, password });
+        await user.save();
+        users[index] = user;
+        console.log(`Added user: ${username}`);
+    }
 }
 
 async function createAgent(index, name, agent_prompt) {
@@ -59,6 +69,18 @@ async function createStory(index, story_name, user, prompt) {
     console.log(`Added story: ${story_name}`);
 }
 
+async function createChapter(index, story, chapter_number, content, agent_versions) {
+    const chapter = {
+        chapter_number,
+        content,
+        agent_chapter_versions: agent_versions
+    };
+    story.chapters.push(chapter);
+    await story.save();
+    chapters[index] = chapter;
+    console.log(`Added chapter ${chapter_number} to story: ${story.story_name}`);
+}
+
 // async function createCritique(index, user, agentVersion, chapter, critiqueText) {
 //     const critique = new Critique({ user, agentVersion, chapter, critiqueText });
 //     await critique.save();
@@ -69,24 +91,59 @@ async function createStory(index, story_name, user, prompt) {
 async function createUsers() {
     console.log("Adding users");
     await Promise.all([
-    createUser(0, "test_user1", "password123"),
-    createUser(1, "test_user2", "password456"),
+        createUser(0, "test_user1", "password123"),
+        createUser(1, "test_user2", "password456"),
     ]);
 }
 
 async function createAgents() {
     console.log("Adding agents");
     await Promise.all([
-    createAgent(0, "Agent A", "Prompt for Agent A"),
-    createAgent(1, "Agent B", "Prompt for Agent B"),
+        createAgent(0, "Agent A", "Prompt for Agent A"),
+        createAgent(1, "Agent B", "Prompt for Agent B"),
     ]);
 }
 
 async function createStories() {
     console.log("Adding stories");
     await Promise.all([
-    createStory(0, "Story One", users[0]._id, "Once upon a time..."),
-    createStory(1, "Story Two", users[1]._id, "In a land far away..."),
+        createStory(0, "Story One", users[0]._id, "Once upon a time..."),
+        createStory(1, "Story Two", users[1]._id, "In a land far away..."),
+    ]);
+}
+
+async function createChapters() {
+    console.log("Adding chapters to stories");
+    const agentVersionsForStoryOne = [
+        {
+            agent: agents[0]._id,
+            agent_chapter_version_content: "Agent A's version of Chapter 1",
+            critiques: "Needs more excitement!",  
+        },
+        {
+            agent: agents[1]._id,
+            agent_chapter_version_content: "Agent B's version of Chapter 1",
+            critiques: "More detail on the setting.",  
+        },
+    ];
+
+    const agentVersionsForStoryTwo = [
+        {
+            agent: agents[0]._id,
+            agent_chapter_version_content: "Agent A's version of Chapter 1",
+            critiques: "Good character development.",  
+        },
+        {
+            agent: agents[1]._id,
+            agent_chapter_version_content: "Agent B's version of Chapter 1",
+            critiques: "Lacking emotional depth.",  
+        }
+    ];
+
+    // Here we add the agent versions for the chapters
+    await Promise.all([
+        createChapter(0, stories[0], 1, "The beginning of an adventure...", agentVersionsForStoryOne),
+        createChapter(1, stories[1], 1, "A new land full of mysteries...", agentVersionsForStoryTwo),
     ]);
 }
 
