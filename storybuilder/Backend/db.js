@@ -1,6 +1,6 @@
 const mongoose = require('mongoose')
 
-const DB_URI = process.env.MONGO_URI;
+const DB_URI = process.env.DB_URI;
 
 if (!DB_URI) {
     console.error('MongoDB URI is undefined. Check your .env file.');
