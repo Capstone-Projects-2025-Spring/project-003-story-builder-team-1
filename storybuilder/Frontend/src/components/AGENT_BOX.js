@@ -4,8 +4,6 @@ import STORY_CONTEXT from "../context/STORY_CONTEXT";
 
 function AGENT_BOX({ name }) {
     const { state } = useContext(STORY_CONTEXT);
-    const [title, set_title] = useState("Chapter Title");
-    //const [chapter_content, set_chapter_content] = useState("Waiting for the agent to generate a response...");
     const [opened, set_opened] = useState(false);
     const [chapter_content, set_chapter_content] = useState("Waiting for the agent to generate a response...");
 
@@ -54,7 +52,7 @@ function AGENT_BOX({ name }) {
             </div>
     
             {/* Divider Line */}
-            <Divider my="sm" />
+            <Divider my="sm" mt={1}/>
     
             {/* Scrollable Text Area */}
             <Textarea

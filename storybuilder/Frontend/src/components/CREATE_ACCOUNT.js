@@ -1,4 +1,4 @@
-import { Anchor, Button, Container, Paper, PasswordInput, TextInput, Title, Progress, Text, Popover, Box } from '@mantine/core';
+import { Anchor, Button, Container, Paper, PasswordInput, TextInput, Title, Progress, Text, Popover, Box, Modal, Divider } from '@mantine/core';
 import { useState } from 'react';
 import { useNavigate } from 'react-router';
 import USE_CREATE_ACCOUNT from '../hooks/USE_CREATE_ACCOUNT';
@@ -49,6 +49,7 @@ function CREATE_ACCOUNT() {
     const [confirm_password, set_confirm_password] = useState('');
     const { create_account, user_error, pass_error, confirm_pass_error, api_error } = USE_CREATE_ACCOUNT();
     const [popover_opened, set_popover_opened] = useState(false);
+    const [modal_opened, set_modal_opened] = useState(false);
     const checks = requirements.map((requirement, index) => (
         <PASSWORD_REQUIREMENT key={index} label={requirement.label} meets={requirement.re.test(password)} />
     ));
@@ -61,6 +62,7 @@ function CREATE_ACCOUNT() {
         const create_success = await create_account(username, password, confirm_password, strength);
         if (create_success) {
             console.log("Account Creation Successful");
+            set_modal_opened(true);
         }
         else {
             console.log("Account Creation Unsuccessful");
@@ -91,7 +93,7 @@ return (
             placeholder="Your username" required
             value={username}
             onChange={(e) => set_username(e.target.value)}
-            error={user_error}
+            error={user_error || api_error}
         />
 
         {/* Password Input Box w/ Requirement Strength Meter Popup*/}
@@ -133,6 +135,24 @@ return (
             Create Your Account
         </Button>
     </Paper>
+
+    {/* Success Modal */}
+    <Modal
+        opened={modal_opened}
+        onClose={() => set_modal_opened(false)}
+        title="Account Created!"
+        centered
+    >
+        {/* Divider Line */}
+        <Divider my="sm" mt={1}/>
+
+        <Text size="md" align="center" mb="md">
+            Congratulations! Your account has been successfully created.
+        </Text>
+        <Button fullWidth mt="md" onClick={handle_login}>
+            Back to Login
+        </Button>
+    </Modal>
     </Container>
 
     );

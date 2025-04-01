@@ -7,16 +7,17 @@ function LOGIN() {
     const navigate = useNavigate();
     const [username, set_username] = useState('');
     const [password, set_password] = useState('');
-    const { login, error } = USE_LOGIN();
+    const { login, user_error, pass_error, api_error } = USE_LOGIN();
 
     const handle_login = async () => {
         const login_success = await login(username, password);
         if (login_success) {
             console.log("Login Successful")
+            navigate(`/story/1/agents`);
         }
         else {
             console.log("Login Unsuccessful");
-            console.log(error)
+            console.log(api_error)
         }
     }
 
@@ -43,7 +44,7 @@ return (
             placeholder="Your username" required
             value={username}
             onChange={(e) => set_username(e.target.value)}
-            error={error}
+            error={user_error || api_error}
         />
 
         {/* Password Input Box */}
@@ -53,7 +54,7 @@ return (
             mt="md"
             value={password}
             onChange={(e) => set_password(e.target.value)}
-            error={error}
+            error={pass_error || api_error}
         />
 
         {/* Sign In Button */}

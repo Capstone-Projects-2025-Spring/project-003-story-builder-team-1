@@ -1,33 +1,47 @@
 import { useState } from 'react';
+import USE_AXIOS from './USE_AXIOS';
 
 function USE_LOGIN() {
-    const [error, setError] = useState('');
+    const [is_error, set_is_error] = useState(false);
+    const [user_error, set_user_error] = useState('');
+    const [pass_error, set_pass_error] = useState('');
+    const [api_error, set_api_error] = useState('');
+    const { use_axios } = USE_AXIOS();
 
     const login = async (username, password) => {
-        try {
-            const response = await fetch('/api/login', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ username, password }),
-            });
+        // reset errors
+        set_user_error('');
+        set_pass_error('');
+        set_api_error('');
+        set_is_error(false);
 
-            if (!response.ok) {
-                const { message } = await response.json();
-                setError(message || 'Invalid username or password');
+        // input handling
+        // if any inputs are empty
+        if (username === '') {
+            set_user_error('Username must not be empty');
+            set_is_error(true);
+        }
+        if (password === '') {
+            set_pass_error('Password must not be empty');
+            set_is_error(true);
+        }
+
+        // if no error, api call to backend
+        if (!is_error) {
+            const { data, error } = await use_axios('/api/login', 'POST', { username, password });
+            if (data === null) {
+                set_api_error(error);
+                set_is_error(true);
                 return false;
             }
-
-            setError('');
+            // if no error return true
             return true;
-        } catch (err) {
-            setError('Something went wrong. Please try again.');
-            return false;
         }
+
+        return false
     };
 
-    return { login, error };
+    return { login, user_error, pass_error, api_error };
 }
 
 export default USE_LOGIN;
