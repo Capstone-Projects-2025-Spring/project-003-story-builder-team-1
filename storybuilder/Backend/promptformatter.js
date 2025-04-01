@@ -17,7 +17,7 @@ function draft(promptinfo) {
     var draft = {
         model: "llama3.1-8b", // Use model names from API documentation for model provider
         messages: [
-            { "role": "system", "content": "You are a helpful assistant. You will work in a Mechanical Turks style with other assistants to compose stories for users following a certain set of steps. The story will be written in chapters, and you will write the first chapter."},
+            { "role": "system", "content": "You are a helpful assistant. You will work in a Mechanical Turks style with other assistants to compose stories for users following a certain set of steps. The story will be written in chapters, and you will write the first chapter. Do not ask for input from the user."},
             { "role": "user", "content": promptinfo},
         ],
         stream: false, // Ensures a single response instead of a streamed response
