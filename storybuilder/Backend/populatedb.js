@@ -13,12 +13,12 @@ mongoose.set("strictQuery", false);
 const User = require("./models/user");
 const Story = require("./models/story");
 const Agent = require("./models/agent");
-const Critique = require("./models/critique");
+// const Critique = require("./models/critique");
 
 const users = [];
 const stories = [];
 const agents = [];
-const critiques = [];
+// const critiques = [];
 
 const mongoDB = userArgs[0];
 
@@ -32,7 +32,7 @@ async function main() {
     await createUsers();
     await createAgents();
     await createStories();
-    await createCritiques();
+    // await createCritiques();
 
     console.log("Debug: Closing mongoose connection");
     mongoose.connection.close();
@@ -59,12 +59,12 @@ async function createStory(index, story_name, user, prompt) {
     console.log(`Added story: ${story_name}`);
 }
 
-async function createCritique(index, user, agentVersion, chapter, critiqueText) {
-    const critique = new Critique({ user, agentVersion, chapter, critiqueText });
-    await critique.save();
-    critiques[index] = critique;
-    console.log(`Added critique by user ${user.username}`);
-}
+// async function createCritique(index, user, agentVersion, chapter, critiqueText) {
+//     const critique = new Critique({ user, agentVersion, chapter, critiqueText });
+//     await critique.save();
+//     critiques[index] = critique;
+//     console.log(`Added critique by user ${user.username}`);
+// }
 
 async function createUsers() {
     console.log("Adding users");
@@ -90,10 +90,10 @@ async function createStories() {
     ]);
 }
 
-async function createCritiques() {
-    console.log("Adding critiques");
-    await Promise.all([
-    createCritique(0, users[0]._id, agents[0]._id, stories[0]._id, "Great start!"),
-    createCritique(1, users[1]._id, agents[1]._id, stories[1]._id, "Needs more detail."),
-    ]);
-}
+// async function createCritiques() {
+//     console.log("Adding critiques");
+//     await Promise.all([
+//     createCritique(0, users[0]._id, agents[0]._id, stories[0]._id, "Great start!"),
+//     createCritique(1, users[1]._id, agents[1]._id, stories[1]._id, "Needs more detail."),
+//     ]);
+// }
