@@ -18,14 +18,13 @@ router.post('/story_call', async (req, res) => {
             { headers: { "Content-Type": "application/json" } }
         );
 
-        const result = response.data;
-        body.push({ role: "assistant", content: result.reply });    
-        console.log("Response - courier:", result);
-
+        body.push({ role: "assistant", content: response.content });    
+        console.log("Response - courier:", response.data);
+        console.log("Result content:", response.data.response.content);
         // Ensure this request is properly awaited
         await axios.post(
             APP_URL + "/translator/courier_response",
-            { data: result.reply },
+            { data: response.data.response.content },
             { headers: { "Content-Type": "application/json" } }
         );
 

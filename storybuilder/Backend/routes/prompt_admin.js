@@ -59,8 +59,11 @@ router.post('/story_outline', async (req, res) => {
         return res.status(400).json({message: "No prompt data received", data: req.body});
      }
     //separate request body into two fields to create outline with promptformatter
-    var chaptercount = JSON.stringify(req.body.chaptercount);
-    var promptinfo = JSON.stringify(req.body.details);
+    var chaptercount = JSON.stringify(req.body.data.chapter_count);
+    var promptinfo = JSON.stringify(req.body.data.data);
+    if (!chaptercount || !promptinfo) {
+        return res.status(400).json({message: "Missing required fields for story outline", data: req.body});
+    }
     //create outline with two entries, calling promptformatter's storyoutline() function
     var prompt = promptformatter.storyoutline(chaptercount, promptinfo);
     try {

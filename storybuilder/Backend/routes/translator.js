@@ -59,6 +59,8 @@ router.post('/courier_response', (req, res) => {
     //If data was not received successfully
     if (!req.body.data){
         res.status(404).json({message: "Courier Response not Received", data: req.body});
+        console.error("Error: Courier Response not Received");
+        return;
     }
 
     //Storing courier response
