@@ -9,6 +9,9 @@ RUN npm install
 
 COPY . .
 
+RUN useradd -m storybuilder && chown -R storybuilder:storybuilder /app
+USER storybuilder
+
 ARG PORT=5000
 ENV PORT=$PORT
 
