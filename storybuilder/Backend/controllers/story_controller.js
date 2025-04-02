@@ -1,42 +1,56 @@
 const Story = require("../models/story");
+const User = require("../models/user");
 const asyncHandler = require("express-async-handler");
 
 // Display list of all Stories
 exports.story_list = asyncHandler(async (req, res, next) => {
-    res.send("NOT IMPLEMENTED: Story list");
+    const stories = await Story.find().populate("user").exec();
+    res.json(stories);
 });
 
 // Display detail page for a specific Story
 exports.story_detail = asyncHandler(async (req, res, next) => {
-    res.send(`NOT IMPLEMENTED: Story detail: ${req.params.id}`);
-});
-
-// Display Story create form on GET
-exports.story_create_get = asyncHandler(async (req, res, next) => {
-    res.send("NOT IMPLEMENTED: Story create GET");
+    const story = await Story.findById(req.params.id).populate("user").exec();
+    if (!story) {
+        return res.status(404).json({ error: "Story not found" });
+    }
+    res.json(story);    
 });
 
 // Handle Story create on POST
 exports.story_create_post = asyncHandler(async (req, res, next) => {
-    res.send("NOT IMPLEMENTED: Story create POST");
-});
+    const { story_name, user, prompt } = req.body;
 
-// Display Story delete form on GET
-exports.story_delete_get = asyncHandler(async (req, res, next) => {
-    res.send("NOT IMPLEMENTED: Story delete GET");
+    if (!story_name || !user || !prompt) {
+        return res.status(400).json({ error: "All fields are required" });
+    }
+
+    const newStory = new Story({ story_name, user, prompt, chapters: [] });
+    await newStory.save();
+
+    await User.findByIdAndUpdate(user, { $push: { stories: newStory._id } });
+
+    res.status(201).json({ message: "Story created", story: newStory });
 });
 
 // Handle Story delete on POST
 exports.story_delete_post = asyncHandler(async (req, res, next) => {
-    res.send("NOT IMPLEMENTED: Story delete POST");
-});
-
-// Display Story update form on GET
-exports.story_update_get = asyncHandler(async (req, res, next) => {
-    res.send("NOT IMPLEMENTED: Story update GET");
+    await Story.findByIdAndDelete(req.params.id);
+    res.json({ message: "Story deleted" });
 });
 
 // Handle Story update on POST
 exports.story_update_post = asyncHandler(async (req, res, next) => {
-    res.send("NOT IMPLEMENTED: Story update POST");
+    const { story_name, prompt } = req.body;
+
+    const story = await Story.findById(req.params.id).exec();
+    if (!story) {
+        return res.status(404).json({ error: "Story not found" });
+    }
+
+    if (story_name) story.story_name = story_name;
+    if (prompt) story.prompt = prompt;
+
+    await story.save();
+    res.json({ message: "Story updated", story });
 });
