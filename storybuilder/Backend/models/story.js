@@ -10,8 +10,8 @@ const storySchema = new mongoose.Schema({
         agent_chapter_versions: [{
             agent: { type: mongoose.Schema.Types.ObjectId, ref: 'Agent' },
             agent_chapter_version_content: { type: String }, // Store agent-specific version of the chapter
-            votes: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Vote' }],
-            critiques: { type: String, required: true }
+            votes: [{ type: Number }],
+            critiques: { type: String }
         }]
     }]
 }, { timestamps: true });
