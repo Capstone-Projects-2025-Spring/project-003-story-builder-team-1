@@ -8,11 +8,11 @@ const APP_URL = PRIVATE_URL;
 
 router.post('/first_chapter', async (req, res) => {
     //throws 400 status 
-    if(!req.body.data) {
+    if(!req.body.details) {
        return res.status(400).json({message: "No prompt data received", data: req.body});
     }
     //formatting the story & extra details (ignoring story_name and chapter_count for now, also ignores the need for a previous_chapter entry)
-    const promptinfo = JSON.stringify(req.body.data);
+    const promptinfo = JSON.stringify(req.body.details);
     console.log("story_details taken in as promptinfo: "+ promptinfo);
 
     //sends to promptformatter to be organized in an acceptable format for the llama API
@@ -29,10 +29,9 @@ router.post('/first_chapter', async (req, res) => {
     }
 });
 
-
 //next chapter
 router.post('/next_chapter', async (req, res) => {
-    if(!req.body.data) {
+    if(!req.body.details) {
         return res.status(400).json({message: "No prompt data received", data: req.body});
      }
     var promptinfo = JSON.stringify(req.body.details);
@@ -55,7 +54,7 @@ router.post('/next_chapter', async (req, res) => {
 
 //refine_prompt
 router.post('/story_outline', async (req, res) => {
-    if(!req.body.data) {
+    if(!req.body.details) {
         return res.status(400).json({message: "No prompt data received", data: req.body});
      }
     //separate request body into two fields to create outline with promptformatter
