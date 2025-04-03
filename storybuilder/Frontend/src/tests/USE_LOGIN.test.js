@@ -24,7 +24,7 @@ describe('USE_LOGIN Hook', () => {
     expect(result.current.user_error).toBe('Username must not be empty');
   });
 
-  it('should return error when password is empty', async () => {
+  test('should return error when password is empty', async () => {
     const mock_use_axios = require('../hooks/USE_AXIOS').default;
     mock_use_axios.mockReturnValue({
         use_axios: jest.fn().mockResolvedValue({ data: null, error: 'Password must not be empty' }),
@@ -40,7 +40,7 @@ describe('USE_LOGIN Hook', () => {
     expect(result.current.pass_error).toBe('Password must not be empty');
   });
 
-  it('should make API call and handle error response', async () => {
+  test('should make API call and handle error response', async () => {
     const mock_use_axios = require('../hooks/USE_AXIOS').default;
     mock_use_axios.mockReturnValue({
         use_axios: jest.fn().mockResolvedValue({ data: null, error: 'API error' }),
@@ -56,7 +56,7 @@ describe('USE_LOGIN Hook', () => {
     expect(result.current.api_error).toBe('API error');
   });
 
-  it('should return true if login is successful', async () => {
+  test('should return true if login is successful', async () => {
     const mock_use_axios = require('../hooks/USE_AXIOS').default;
     mock_use_axios.mockReturnValue({
         use_axios: jest.fn().mockResolvedValue({ data: { user: 'username' }, error: null }),
