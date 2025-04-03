@@ -44,7 +44,7 @@ exports.user_create_post = asyncHandler(async (req, res, next) => {
     const newUser = new User({ username, password });
     await newUser.save();
 
-    res.status(200).json({ message: "Account created successfully", user_id: newUser._id });
+    res.status(200).json({ message: "Account created successfully" });
 });
 
 // Handle User delete on POST
@@ -77,7 +77,7 @@ exports.user_login_post = asyncHandler(async (req, res, next) => {
     const { username, password } = req.body;
 
     if (!username || !password) {
-        return res.status(404).json({ error: "Invalid username or password" });
+        return res.status(404).json({ error: "Username and password are required" });
     }
 
     const existingUser = await User.findOne({ username }).exec();
