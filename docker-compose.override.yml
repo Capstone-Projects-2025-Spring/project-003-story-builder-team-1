@@ -1,0 +1,8 @@
+services:
+  backend:
+    volumes:
+      - ./storybuilder/Backend:/app/Backend
+      - ./storybuilder/Frontend:/app/Frontend  # Mount the Frontend directory for live updates
+      - /app/Backend/node_modules  # Avoid overwriting node_modules
+      - /app/Frontend/node_modules  # Avoid overwriting node_modules in Frontend
+
