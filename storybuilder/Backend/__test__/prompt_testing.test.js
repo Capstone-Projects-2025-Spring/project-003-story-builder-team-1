@@ -50,8 +50,8 @@ describe('promptforming', () => {
             model: "llama3.1-8b", 
             messages: [
                 { "role": "system", "content": `You are now being fed a chapter written by another agent. You will continue the story in another chapter of roughly equal length while still following the guidelines established in the original prompt.`},
-                { "role": "user", "content": `Write a story about pirates.\n\nStory outline: Y`},
-                { "role": "assistant", "content": `X`},
+                { "role": "assistant", "content": `Write a story about pirates.\n\nStory outline: Y`},
+                { "role": "user", "content": `X`},
             ],
             stream: false, 
         });
