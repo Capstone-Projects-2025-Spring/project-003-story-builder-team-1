@@ -1,0 +1,37 @@
+services:
+  agent:
+    image: "${AGENT_NAME}-agent"  # Unique image name per agent
+    build: 
+      context: storybuilder/Agent/agent_container/  # Path to the agent's build context
+      dockerfile: Dockerfile  # Path to the agent's Dockerfile
+    container_name: "${AGENT_NAME}-agent"  # Unique container name
+    environment:
+      - API_KEY=${API_KEY}
+      - AGENT_NAME=${AGENT_NAME}
+      - DOCKER=true
+    ports:
+      - "${PORT}:5000"  # Custom external port
+    networks:
+      - storybuilder-network  # Connect to the shared network
+  backend:
+    image: "storybuilder-backend"  # Backend service image
+    container_name: "storybuilder-backend"
+    build:
+      context: storybuilder/  # Path to the backend Dockerfile
+      dockerfile: Backend/Dockerfile
+    environment:
+      - MONGO_URI=${MONGO_URI}  # MongoDB connection string
+      - AGENT_URL=http://agent:5000  # URL to access the agent service
+      - DOCKER_HOST=0.0.0.0 # Allow backend to listen on all interfaces
+    ports:
+      - "8080:8080"  # Expose backend on port 8080
+    depends_on:
+      - agent  # Ensure agent starts before backend
+    networks:
+      - storybuilder-network
+
+networks:
+  storybuilder-network:
+    driver: bridge  # Use a bridge network for isolation and communication
+    name: storybuilder-network  # Name of the network
+    attachable: true  # Allow other containers to attach to this network

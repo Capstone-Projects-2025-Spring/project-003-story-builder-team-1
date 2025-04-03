@@ -2,7 +2,7 @@
     "name": "ai_agent",
     "version": "1.0.0",
     "description": "An AI agent that can be used to generate stories",
-    "type" : "module",
+    "type": "module",
     "jest": {
         "transform": {
             "^.+\\.jsx?$": "babel-jest"
@@ -15,6 +15,7 @@
         "test": "NODE_OPTIONS='--experimental-vm-modules' jest"
     },
     "dependencies": {
+        "ai_agent": "file:",
         "axios": "^1.7.9",
         "cors": "^2.8.5",
         "express": "^4.18.2",

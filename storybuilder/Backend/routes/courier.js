@@ -3,8 +3,9 @@ const axios = require('axios');
 const router = express.Router();
 
 const PRIVATE_URL = process.env.PRIVATE_URL || "http://localhost";
-const API_URL = PRIVATE_URL + ":5000";
+const API_URL = process.env.AGENT_URL || PRIVATE_URL + ":5000";
 const APP_URL = PRIVATE_URL.includes("localhost") ? PRIVATE_URL + ":8080" : PRIVATE_URL;
+console.log( "DEBUG: API_URL:", API_URL); // Debugging line
 let body = []
 //story_call
 router.post('/story_call', async (req, res) => {

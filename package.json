@@ -1,7 +1,7 @@
 {
   "name": "project-003-story-builder-team-1",
   "scripts": {
-    "setup": "npm install && cd storybuilder/Backend && npm install && cd ../Frontend && npm install && cd ../Backend/agent/agent_container && npm install && docker-compose build",
+    "setup": "npm install && cd storybuilder/Backend && npm install && cd ../Frontend && npm install && cd ../agent/agent_container && npm install && docker-compose build",
     "start": "npm run start:b & npm run start:f & npm run start:a",
     "start:dev": "concurrently \"npm run start:b\" \"npm run start:a\"",
     "start:con": "concurrently \"npm run start:b\" \"npm run start:a\" > output.log",
@@ -11,14 +11,15 @@
     "start:f": "cd storybuilder/Frontend && npm start",
     "stop:serv": "screen -S storybuilder -X stuff $'\\003' && npm run stop:a",
     "stop:a": "docker container stop default-agent",
-    "test:a": "cd storybuilder/Backend/agent/agent_container && npm test",
+    "test:a": "cd storybuilder/agent/agent_container && npm test",
     "test:b": "cd storybuilder/Backend && npm test",
     "test:bc": "cd storybuilder/Backend && npm run Ctest",
     "build:f": "cd storybuilder/Frontend && npm run build"
   },
   "dependencies": {
     "jest": "^29.7.0",
-    "mongoose": "^8.13.0"
+    "mongoose": "^8.13.0",
+    "project-003-story-builder-team-1": "file:"
   },
   "devDependencies": {
     "concurrently": "^9.1.2"
