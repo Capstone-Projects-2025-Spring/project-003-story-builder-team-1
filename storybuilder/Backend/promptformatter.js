@@ -2,11 +2,14 @@
 Allows for fast, organized prompt formatting. Templates for drafting, critiquing and judging stories.
 */
 
-function judge(storybank) {
+function judge(storybank, promptinfo) {
+    //creates string from storybank object clearly delineating each story from each other
+    var outlinestring = storybank.map(entry => `Story index number ${storybank.story_index}: ${entry.story}`).join("\n\n");
     var judge = {
         model: "llama3.1-8b", // Use model names from API documentation for model provider
         messages: [
-            { "role": "user", "content": "Your job now is to judge all of these stories as objectively as you can based on the initial prompt information. Each of these stories have gone through two drafting sessions, now you will rank them from best to worst. " + storybank },
+            { "role": "system", "content": `Your job now is to judge all of these stories as objectively as you can based on the initial prompt information. You will rank them from best to worst. Do not return an explanation for your ranking and don't return the stories themselves, just return the stories' index numbers.` },
+            { "role": "user", "content": `${promptinfo}\n\n${outlinestring}` },
         ],
         stream: false, 
     };
@@ -29,14 +32,25 @@ function critique(promptinfo, chapter) {
     var crit =  {
         model: "llama3.1-8b", 
         messages: [
-            { "role": "system", "content": "You are now being fed a chapter written by another agent. You will critique the drafting of this story based on grammatical correctness as well as its faithfulness to the style parameters that were specified."},
-            { "role": "user", "content": promptinfo},
-            { "role": "assistant", "content": chapter},
+            { "role": "system", "content": `You are now being fed a chapter written by another agent. You will critique the drafting of this story based on grammatical correctness as well as its faithfulness to the style parameters that were specified. Do not rewrite the chapter.`},
+            { "role": "user", "content":  `${promptinfo}: \n\n ${chapter}`},
         ],
         stream: false, 
     };
     return crit;
     }
+
+function rewrite(promptinfo, chapter, critique) {
+        var rewrite =  {
+            model: "llama3.1-8b", 
+            messages: [
+                { "role": "system", "content": `You are now being fed a chapter written by another agent, along with a critique of that chapter and the original prompt information. Rewrite the chapter, improving it based upon the critique's observations. Make sure it's a similar chapter length, and do not change anything if it doesn't violate the critique parameters. Just return the rewritten chapter and nothing else.`},
+                { "role": "user", "content":  `This is the prompt: ${promptinfo} \nThis is the critique: ${critique}\n\nAnd this is the chapter: ${chapter}`},
+            ],
+            stream: false, 
+        };
+        return rewrite;
+        }
 
 //takes in previous chapter context, story outline and story prompt
 function nextchapter(promptinfo, outline, chapter) {
@@ -44,8 +58,7 @@ function nextchapter(promptinfo, outline, chapter) {
         model: "llama3.1-8b", 
         messages: [
             { "role": "system", "content": `You are now being fed a chapter written by another agent. You will continue the story in another chapter of roughly equal length while still following the guidelines established in the original prompt.`},
-            { "role": "user", "content": `${promptinfo}\n\nStory outline: ${outline}`},
-            { "role": "assistant", "content": `${chapter}`},
+            { "role": "user", "content": `${promptinfo}\n\nStory outline: ${outline}\n\n Chapter: ${chapter}`},
         ],
         stream: false, 
     };
@@ -53,11 +66,11 @@ function nextchapter(promptinfo, outline, chapter) {
     }
 
 function storyoutline(chaptercount, promptinfo) {
-    //array template to be formatted for the prompt, organized by chapter number
+    //create list to be filled by an AI with summaries of each chapter
     var outlinelist = [];
     for(let i = 1; i <= chaptercount; i++) {
         //every chapter entry in the list has a (Fill this entry) stuck in its outline field so the LLM knows EXACTLY where to place its outline
-        outlinelist.push({chapter: i, outline: `(Fill this entry)`})
+        outlinelist.push({chapter: i, outline: "Fill this story"})
     }
 
     //create outline template for other templates to easily parse after the LLM call
@@ -75,7 +88,7 @@ function storyoutline(chaptercount, promptinfo) {
 
 //Boosts model to a newer, higher-parameter version.
 function boostmodel(prompt) {
-    prompt.model = "llama3.1-8b";
+    prompt.model = "llama3.2-8b";
     return prompt;
 }
 
@@ -90,20 +103,6 @@ function defaultmodel(prompt) {
     prompt.model = "llama3.1-8b";
     return prompt;
 }
-
-//Creates a call to return a list of style tags using a lower parameter model in Llama's API.
-function getstylesearch(promptinfo) {
-    var stylesearch = 
-    {
-        model: "llama3.1-1b", // Uses a cheaper model for a less intensive task
-        messages: [
-            { "role": "user", "content": `Return a list of style tags that correlate with this prompt: ${promptinfo}, Return it so that I could just extract the list and append it to the end of a prompt, with commas and everything.`}
-        ],
-        stream: false, // Ensures a single response instead of a streamed response
-    };
-    return stylesearch;
-}
-
 
 //Sets prompt settings to "stream" mode (this may be useful for real-time critiques)
 function setstream(prompt, streamset) {
@@ -120,4 +119,4 @@ function setstream(prompt, streamset) {
 
 
 
-module.exports = {judge, draft, critique, nextchapter, storyoutline, boostmodel, degrademodel, defaultmodel, getstylesearch, setstream};
+module.exports = {judge, draft, critique, rewrite, nextchapter, storyoutline, boostmodel, degrademodel, defaultmodel, setstream};

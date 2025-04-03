@@ -3,8 +3,17 @@ const router = express.Router();
 const axios = require('axios');
 const promptformatter = require('../promptformatter')
 
-const PRIVATE_URL = process.env.PRIVATE_URL || "http://localhost:8080";
-const APP_URL = PRIVATE_URL;
+async function couriersend(promptreq) {
+    try {
+        //try to send prompt to courier
+        courier_res = await axios.post('http://localhost:8080/courier/story_call', {data:promptreq});
+        return {success: true, response: courier_res.data};
+
+    }
+    catch(error) {
+    return {success: false, error};
+    }
+}
 
 router.post('/first_chapter', async (req, res) => {
     //throws 400 status 
@@ -18,13 +27,11 @@ router.post('/first_chapter', async (req, res) => {
     //sends to promptformatter to be organized in an acceptable format for the llama API
     var prompt = promptformatter.draft(promptinfo);
 
-    try {
-        //try to send prompt to courier
-        courier_res = await axios.post(APP_URL + '/courier/story_call', {data:prompt});
+    const courierresult = await couriersend(prompt);
+    if(courierresult.success) {
         return res.status(200).json({message: "Data Received Successfully", data: req.body});
-
     }
-    catch(error) {
+    else {
         return res.status(500).json({message: "PromptAdmin failed to connect to the couriers", error: error})
     }
 });
@@ -41,13 +48,11 @@ router.post('/next_chapter', async (req, res) => {
 
     var prompt = promptformatter.nextchapter(promptinfo, chapteroutline, previouschapter);
 
-    try {
-        //try to send prompt to courier
-        courier_res = await axios.post('http://localhost:8080/courier/story_call', {data:prompt});
+    const courierresult = await couriersend(prompt);
+    if(courierresult.success) {
         return res.status(200).json({message: "Data Received Successfully", data: req.body});
-
     }
-    catch(error) {
+    else {
         return res.status(500).json({message: "PromptAdmin failed to connect to the couriers", error: error})
     }
 
@@ -63,13 +68,11 @@ router.post('/story_outline', async (req, res) => {
     var promptinfo = JSON.stringify(req.body.details);
     //create outline with two entries, calling promptformatter's storyoutline() function
     var prompt = promptformatter.storyoutline(chaptercount, promptinfo);
-    try {
-        //try to send prompt to courier
-        courier_res = await axios.post('http://localhost:8080/courier/story_call', {data:prompt});
+    const courierresult = await couriersend(prompt);
+    if(courierresult.success) {
         return res.status(200).json({message: "Data Received Successfully", data: req.body});
-
     }
-    catch(error) {
+    else {
         return res.status(500).json({message: "PromptAdmin failed to connect to the couriers", error: error})
     }
 });
