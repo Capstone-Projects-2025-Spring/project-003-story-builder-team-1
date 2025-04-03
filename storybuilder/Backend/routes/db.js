@@ -8,20 +8,14 @@ const agent_controller = require("../controllers/agent_controller");
 
 /// USER ROUTES ///
 
-// GET request for creating a User
-router.get("/user/create", user_controller.user_create_get);
+// POST request for creating new User
+router.post('/account_creation', user_controller.user_create_post);
 
-// POST request for creating User
-router.post("/user/create", user_controller.user_create_post);
-
-// GET request to delete User
-router.get("/user/:id/delete", user_controller.user_delete_get);
+// POST request for logging a User in
+router.post('/account_login', user_controller.user_login_post);
 
 // POST request to delete User
 router.post("/user/:id/delete", user_controller.user_delete_post);
-
-// GET request to update User
-router.get("/user/:id/update", user_controller.user_update_get);
 
 // POST request to update User
 router.post("/user/:id/update", user_controller.user_update_post);
@@ -29,25 +23,19 @@ router.post("/user/:id/update", user_controller.user_update_post);
 // GET request for one User
 router.get("/user/:id", user_controller.user_detail);
 
-// GET request for list of all Users
-router.get("/users", user_controller.user_list);
-
 /// STORY ROUTES ///
 
-// GET request for creating a Story
-router.get("/story/create", story_controller.story_create_get);
+// todo:
+// get outline, critique and chapter
+// update for all^
+// updating conent of story (vetoing)
+// editing and critiquing (CJ)
 
 // POST request for creating Story
 router.post("/story/create", story_controller.story_create_post);
 
-// GET request to delete Story
-router.get("/story/:id/delete", story_controller.story_delete_get);
-
 // POST request to delete Story
 router.post("/story/:id/delete", story_controller.story_delete_post);
-
-// GET request to update Story
-router.get("/story/:id/update", story_controller.story_update_get);
 
 // POST request to update Story
 router.post("/story/:id/update", story_controller.story_update_post);
@@ -60,23 +48,14 @@ router.get("/stories", story_controller.story_list);
 
 /// AGENT ROUTES ///
 
-// GET request for creating an Agent
-router.get("/agent/create", agent_controller.agent_create_get);
-
-// POST request for creating Agent
+// POST request for creating new instance of an Agent
 router.post("/agent/create", agent_controller.agent_create_post);
 
-// GET request to delete Agent
-router.get("/agent/:id/delete", agent_controller.agent_delete_get);
+// POST request for deleting an instance of an Agent
+router.post("agent/:id/delete", agent_controller.agent_delete_post);
 
-// POST request to delete Agent
-router.post("/agent/:id/delete", agent_controller.agent_delete_post);
-
-// GET request to update Agent
-router.get("/agent/:id/update", agent_controller.agent_update_get);
-
-// POST request to update Agent
-router.post("/agent/:id/update", agent_controller.agent_update_post);
+// POST request for updating the agent_prompt of an Agent
+router.post("agent/:id/update", agent_controller.agent_update_post);
 
 // GET request for one Agent
 router.get("/agent/:id", agent_controller.agent_detail);
