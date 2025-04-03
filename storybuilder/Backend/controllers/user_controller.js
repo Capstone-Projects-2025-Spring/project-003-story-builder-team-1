@@ -2,12 +2,6 @@ const User = require("../models/user");
 const asyncHandler = require("express-async-handler");
 const bcrypt = require("bcrypt");
 
-// Display list of all Users
-exports.user_list = asyncHandler(async (req, res, next) => {
-    const users = await User.find().select("username stories").populate("stories").exec();
-    res.json(users);
-});
-
 // Display detail page for a specific User
 exports.user_detail = asyncHandler(async (req, res, next) => {
     const user = await User.findById(req.params.id).populate("stories").exec();
