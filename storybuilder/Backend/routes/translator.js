@@ -52,14 +52,14 @@ router.post('/courier_response', (req, res) => {
 
     //If data was not received successfully
     if (!req.body.data){
-        res.status(404).json({message: "Courier Response not Received", data: req.body});
+        return res.status(404).json({message: "Courier Response not Received", data: req.body});
     }
 
     //Storing courier response
     courier_response = req.body.data
 
     //Send Successful Response Back to courier
-    res.status(200).json({message: "Courier Response Received Successfully", data: req.body});
+    return res.status(200).json({message: "Courier Response Received Successfully", data: req.body});
 });
 
 //story_outline will receive the requested chapters, story name, story details, and extra details from the frontend, and send back the story name, number of chapters and generated story outline

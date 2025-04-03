@@ -54,7 +54,7 @@ export function Story_Provider({ children }) {
         dispatch({ type: "SUBMIT_PROMPT" });
 
         try {
-            const response = await axios.post(SERVER_URL + "/translator/story_contents", {
+            const response = await axios.post(SERVER_URL + "/translator/story_outline", {
                 "story_name": story_name,
                 "chapter_count": chapter_count,
                 "story_details": story_details,

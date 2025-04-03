@@ -58,10 +58,10 @@ router.post('/story_outline', async (req, res) => {
         return res.status(400).json({message: "No prompt data received", data: req.body});
      }
     //separate request body into two fields to create outline with promptformatter
-    var chaptercount = JSON.stringify(req.body.chaptercount);
+    var chapter_count = JSON.stringify(req.body.chapter_count);
     var promptinfo = JSON.stringify(req.body.details);
     //create outline with two entries, calling promptformatter's storyoutline() function
-    var prompt = promptformatter.storyoutline(chaptercount, promptinfo);
+    var prompt = promptformatter.storyoutline(chapter_count, promptinfo);
     try {
         //try to send prompt to courier
         courier_res = await axios.post('http://localhost:8080/courier/story_call', {data:prompt});
