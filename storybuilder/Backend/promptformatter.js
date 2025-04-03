@@ -44,8 +44,8 @@ function nextchapter(promptinfo, outline, chapter) {
         model: "llama3.1-8b", 
         messages: [
             { "role": "system", "content": `You are now being fed a chapter written by another agent. You will continue the story in another chapter of roughly equal length while still following the guidelines established in the original prompt.`},
-            { "role": "user", "content": `${promptinfo}\n\nStory outline: ${outline}`},
-            { "role": "assistant", "content": `${chapter}`},
+            { "role": "assistant", "content": `${promptinfo}\n\nStory outline: ${outline}`},
+            { "role": "user", "content": `${chapter}`},
         ],
         stream: false, 
     };
