@@ -39,7 +39,7 @@ describe("POST /generate", () => {
             .send({ messages: ["Test message"] });
 
         expect(response.status).toBe(200);
-        expect(response.body).toEqual({ reply: "Hello, this is a test response." });
+        expect(response.body).toEqual({ "response": {"content": "Hello, this is a test response.",},});
         expect(mockLlama.run).toHaveBeenCalledWith({ messages: ["Test message"] });
     });
 
