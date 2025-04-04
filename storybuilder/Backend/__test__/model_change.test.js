@@ -13,7 +13,7 @@ describe('modelchange', () => {
             stream: false, // Ensures a single response instead of a streamed response
         };
         boost = promptadmin.boostmodel(prompttemp);
-        expect(boost.model).toBe("llama3.1-8b")
+        expect(boost.model).toBe("llama3.1-70b")
     });
 
 

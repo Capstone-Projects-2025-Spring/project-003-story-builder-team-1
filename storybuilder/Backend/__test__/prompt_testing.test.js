@@ -15,27 +15,44 @@ describe('promptforming', () => {
       });
       
       it('Should build a JSON prompt that asks to critique a story, and which provides the original prompt and the draft in its proper place', () => {
-        let prompt = "Write a story about pirates.";
+        let prompt = "Z";
+        let outline = "Y";
         let story = "X";
-        var crit = promptadmin.critique(prompt, story);
+        var crit = promptadmin.critique(prompt, story, outline);
         expect(crit).toEqual({
           model: "llama3.1-8b", 
           messages: [
-              { "role": "system", "content": "You are now being fed a chapter written by another agent. You will critique the drafting of this story based on grammatical correctness as well as its faithfulness to the style parameters that were specified."},
-              { "role": "user", "content": "Write a story about pirates."},
-              { "role": "assistant", "content": "X"},
+              { "role": "system", "content": `You are now being fed a chapter written by another agent. You will critique the drafting of this story based on grammatical correctness as well as its faithfulness to the style parameters that were specified. Do not rewrite the chapter.`},
+              { "role": "user", "content":  `Z: Synopsis: Y\n\nChapter: X`},
+          ],
+          stream: false, 
+      });
+      });
+
+      it('Should build a JSON prompt that asks to critique a story, and which provides the original prompt and the draft in its proper place', () => {
+        let prompt = "Z";
+        let chapter = "X";
+        let critique = "Y";
+        var crit = promptadmin.rewrite(prompt, chapter, critique);
+        expect(crit).toEqual({
+          model: "llama3.1-8b", 
+          messages: [
+              { "role": "system", "content": `You are now being fed a chapter written by another agent, along with a critique of that chapter and the original prompt information. Rewrite the chapter, improving it based upon the critique's observations. Make sure it's a similar chapter length, and do not change anything if it doesn't violate the critique parameters. Just return the rewritten chapter and nothing else.`},
+              { "role": "user", "content":  `This is the prompt: Z\n\nThis is the critique: Y\n\nAnd this is the chapter: X`},
           ],
           stream: false, 
       });
       });
       
       it('Should build a JSON prompt that parses the stories in the storybank and places them in the prompt template.', () => {
-        let storybank = "Judge a story about pirates: X";
-        var judgelist = promptadmin.judge(storybank);
+        let promptinfo = "Write a story about pirates.";
+        var storybank = [{story_index: 1, story: "X"}, {story_index: 2, story: "Y"}, {story_index: 3, story: "Z"}];
+        var judgelist = promptadmin.judge(storybank, promptinfo);
         expect(judgelist).toEqual({
           model: "llama3.1-8b", // Use model names from API documentation for model provider
           messages: [
-              { "role": "user", "content": "Your job now is to judge all of these stories as objectively as you can based on the initial prompt information. Each of these stories have gone through two drafting sessions, now you will rank them from best to worst. Judge a story about pirates: X"}
+              { "role": "system", "content": `Your job now is to judge all of these stories as objectively as you can based on the initial prompt information. You will choose the best story. Do not return an explanation for your decision and don't return the stories themselves, just return the story's index number.` },
+              { "role": "user", "content": `Write a story about pirates.\n\nStory index number 1: X\n\nStory index number 2: Y\n\nStory index number 3: Z`},
           ],
           stream: false, 
       });
@@ -50,8 +67,7 @@ describe('promptforming', () => {
             model: "llama3.1-8b", 
             messages: [
                 { "role": "system", "content": `You are now being fed a chapter written by another agent. You will continue the story in another chapter of roughly equal length while still following the guidelines established in the original prompt.`},
-                { "role": "user", "content": `Write a story about pirates.\n\nStory outline: Y`},
-                { "role": "assistant", "content": `X`},
+                { "role": "user", "content": `Write a story about pirates.\n\nStory outline: Y\n\n Chapter: X`},
             ],
             stream: false, 
         });

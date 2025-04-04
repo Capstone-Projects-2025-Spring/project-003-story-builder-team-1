@@ -4,11 +4,11 @@ Allows for fast, organized prompt formatting. Templates for drafting, critiquing
 
 function judge(storybank, promptinfo) {
     //creates string from storybank object clearly delineating each story from each other
-    var outlinestring = storybank.map(entry => `Story index number ${storybank.story_index}: ${entry.story}`).join("\n\n");
+    var outlinestring = storybank.map(entry => `Story index number ${entry.story_index}: ${entry.story}`).join("\n\n");
     var judge = {
         model: "llama3.1-8b", // Use model names from API documentation for model provider
         messages: [
-            { "role": "system", "content": `Your job now is to judge all of these stories as objectively as you can based on the initial prompt information. You will rank them from best to worst. Do not return an explanation for your ranking and don't return the stories themselves, just return the stories' index numbers.` },
+            { "role": "system", "content": `Your job now is to judge all of these stories as objectively as you can based on the initial prompt information. You will choose the best story. Do not return an explanation for your decision and don't return the stories themselves, just return the story's index number.` },
             { "role": "user", "content": `${promptinfo}\n\n${outlinestring}` },
         ],
         stream: false, 
@@ -16,7 +16,7 @@ function judge(storybank, promptinfo) {
     return judge;
 }
 
-function draft(promptinfo) {
+function draft(promptinfo, outline) {
     var draft = {
         model: "llama3.1-8b", // Use model names from API documentation for model provider
         messages: [
@@ -28,24 +28,24 @@ function draft(promptinfo) {
     return draft;
     }
     
-function critique(promptinfo, chapter) {
+function critique(promptinfo, chapter, outline) {
     var crit =  {
         model: "llama3.1-8b", 
         messages: [
             { "role": "system", "content": `You are now being fed a chapter written by another agent. You will critique the drafting of this story based on grammatical correctness as well as its faithfulness to the style parameters that were specified. Do not rewrite the chapter.`},
-            { "role": "user", "content":  `${promptinfo}: \n\n ${chapter}`},
+            { "role": "user", "content":  `${promptinfo}: Synopsis: ${outline}\n\nChapter: ${chapter}`},
         ],
         stream: false, 
     };
     return crit;
     }
 
-function rewrite(promptinfo, chapter, critique) {
+function rewrite(promptinfo, chapter, critique, outline) {
         var rewrite =  {
             model: "llama3.1-8b", 
             messages: [
                 { "role": "system", "content": `You are now being fed a chapter written by another agent, along with a critique of that chapter and the original prompt information. Rewrite the chapter, improving it based upon the critique's observations. Make sure it's a similar chapter length, and do not change anything if it doesn't violate the critique parameters. Just return the rewritten chapter and nothing else.`},
-                { "role": "user", "content":  `This is the prompt: ${promptinfo} \nThis is the critique: ${critique}\n\nAnd this is the chapter: ${chapter}`},
+                { "role": "user", "content":  `This is the prompt: ${promptinfo}\n\nThis is the critique: ${critique}\n\nAnd this is the chapter: ${chapter}`},
             ],
             stream: false, 
         };
@@ -70,7 +70,7 @@ function storyoutline(chaptercount, promptinfo) {
     var outlinelist = [];
     for(let i = 1; i <= chaptercount; i++) {
         //every chapter entry in the list has a (Fill this entry) stuck in its outline field so the LLM knows EXACTLY where to place its outline
-        outlinelist.push({chapter: i, outline: "Fill this story"})
+        outlinelist.push({chapter: i, outline: "(Fill this entry)"})
     }
 
     //create outline template for other templates to easily parse after the LLM call
@@ -88,7 +88,7 @@ function storyoutline(chaptercount, promptinfo) {
 
 //Boosts model to a newer, higher-parameter version.
 function boostmodel(prompt) {
-    prompt.model = "llama3.2-8b";
+    prompt.model = "llama3.1-70b";
     return prompt;
 }
 
