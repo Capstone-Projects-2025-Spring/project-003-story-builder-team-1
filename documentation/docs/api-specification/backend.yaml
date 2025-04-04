@@ -28,13 +28,16 @@ paths:
           application/json:
             schema:
               type: object
+              required:
+                - data
+                - messages
               properties:
-                PLACEHOLDER:
-                  type: integer
-                key:
+                data:
+                  type: object
+                  description: Data formatted for the agent, passed directly to `/agent/generate`
+                messages:
                   type: string
-                prompt:
-                  type: string
+                  description: The user message content to be pushed into the interaction log
       responses:
         '200':
           description: A story snippet
