@@ -102,6 +102,8 @@ paths:
           description: Internal server error
   /prompt_admin/first_chapter:
     post:
+      tags:
+        - prompt_admin
       summary: Format and send the first chapter's data to courier
       description: >-
         Receives data for the first chapter from translator, engineers a prompt
@@ -136,6 +138,8 @@ paths:
           description: Failed to connect to the courier
   /prompt_admin/next_chapter:
     post:
+      tags:
+        - prompt_admin
       summary: Format and send data to generate the next chapter
       description: >-
         Receives data for next chapter from translator, engineers a prompt using
@@ -184,6 +188,8 @@ paths:
           description: Failed to connect to the courier
   /prompt_admin/story_outline:
     post:
+      tags:
+        - prompt_admin
       summary: Format and send data to generate a story outline
       description: >-
         Receives data from translator, engineers a prompt using the given data,
