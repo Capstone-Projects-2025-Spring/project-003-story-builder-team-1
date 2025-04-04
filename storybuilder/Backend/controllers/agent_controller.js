@@ -33,8 +33,13 @@ exports.agent_create_post = asyncHandler(async (req, res, next) => {
 
 // Handle Agent delete on POST, removes a document from MongoDB.
 exports.agent_delete_post = asyncHandler(async (req, res, next) => {
+    const agent = await Agent.findById(req.params.id);
+
+    if (!agent) {
+        return res.status(404).json({ error: "Agent not found" });
+    }
     await Agent.findByIdAndDelete(req.params.id);
-    res.json({ message: "Agent deleted" });
+    res.json({ message: "Agent deleted successfully" });
 });
 
 // Handle Agent update on POST, finds an agent by ID and updates its fields.
