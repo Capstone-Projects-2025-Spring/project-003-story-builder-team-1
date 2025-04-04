@@ -333,6 +333,7 @@ paths:
       tags:
         - translator
       summary: Generate the first chapter of a story
+      description: Obtains the first chapter draft to send back to the frontend
       requestBody:
         required: true
         content:
@@ -378,6 +379,9 @@ paths:
       tags:
         - translator
       summary: Store courier response
+      description: >-
+        Receives responses from the courier when asking for an outline or
+        chapter
       requestBody:
         required: true
         content:
@@ -399,6 +403,7 @@ paths:
       tags:
         - translator
       summary: Generate a story outline
+      description: Obtains the story outline draft to send back to the frontend
       requestBody:
         required: true
         content:
@@ -446,6 +451,7 @@ paths:
       tags:
         - translator
       summary: Generate the next chapter of the story
+      description: Obtains the draft of a subsequent chapter to send back to the frontend
       requestBody:
         required: true
         content:
