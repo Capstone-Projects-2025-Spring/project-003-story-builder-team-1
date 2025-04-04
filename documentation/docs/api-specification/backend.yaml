@@ -316,7 +316,7 @@ paths:
         '500':
           description: Internal server error
 
-translator/first_chapter:
+  /translator/first_chapter:
     post:
       tags:
         - translator
@@ -362,7 +362,7 @@ translator/first_chapter:
         '500':
           description: Server error
 
-  translator/courier_response:
+  /translator/courier_response:
     post:
       tags:
         - translator
@@ -384,7 +384,7 @@ translator/first_chapter:
         '404':
           description: Missing courier data
 
-  translator/story_outline:
+  /translator/story_outline:
     post:
       tags:
         - translator
@@ -432,7 +432,7 @@ translator/first_chapter:
         '500':
           description: Server error
 
-  translator/next_chapter:
+  /translator/next_chapter:
     post:
       tags:
         - translator
