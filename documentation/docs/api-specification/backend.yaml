@@ -316,113 +316,171 @@ paths:
         '500':
           description: Internal server error
 
-  /translator/text_box:
+translator/first_chapter:
     post:
       tags:
         - translator
-      summary: Stores input from frontend text box.
-      description: Accepts and stores the text input provided by the frontend user interface into the system for further processing.
-      operationId: text_box
-      responses:
-        '200':
-          description: Text input from frontend text box
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  type: object
-        '400':
-          description: Bad request
-        '500':
-          description: Internal server error
-
-  /translator/rank_format:
-    post:
-      tags:
-        - translator
-      summary: Triggers the rank_format() method.
-      description: Triggers the ranking process for the given draft.
-      operationId: rank_format
-      requestBody:
-        required: false
-        content:
-          application/json:
-            schema:
-              type: object
-              description: Optional body if needed.
-      responses:
-        '200':
-          description: Drafts Ranked
-        '400':
-          description: Invalid input or missing parameters
-        '500':
-          description: Internal server error
-
-  /translator/writing_session:
-    post:
-      tags:
-        - translator
-      summary: Starts or updates a writing session.
-      description: Starts or updates an active writing session.
-      operationId: writing_session
-      requestBody:
-        required: false
-        content:
-          application/json:
-            schema:
-              type: object
-              description: Optional body if needed.
-      responses:
-        '200':
-          description: Session started/updated
-        '400':
-          description: Invalid input or missing parameters
-        '404':
-          description: Session not found for update
-        '500':
-          description: Internal server error
-
-  /translator/write_chapter:
-    post:
-      tags:
-        - translator
-      summary: Writes a new chapter based on the input JSON data.
-      description: Allows you to write a new chapter by providing chapter data in the request body.
-      operationId: write_chapter
+      summary: Generate the first chapter of a story
       requestBody:
         required: true
         content:
           application/json:
             schema:
               type: object
-              properties:
-                chapterTitle:
-                  type: string
-                chapterContent:
-                  type: string
               required:
-                - chapterTitle
-                - chapterContent
+                - story_name
+                - story_details
+                - story_outline
+              properties:
+                story_name:
+                  type: string
+                story_details:
+                  type: string
+                story_outline:
+                  type: string
+                extra_details:
+                  type: string
       responses:
         '200':
-          description: Successfully written chapter in JSON format
-        '400':
-          description: Invalid input or missing parameter
+          description: First chapter generated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  data:
+                    type: object
+                    properties:
+                      title:
+                        type: string
+                      courier_response:
+                        type: string
         '404':
-          description: Story or session not found
+          description: Missing required fields
         '500':
-          description: Internal server error
+          description: Server error
 
-  /translator/story_bank:
-    get:
+  translator/courier_response:
+    post:
       tags:
         - translator
-      summary: Retrieves the entire story bank as a list.
-      description: Retrieves the full list of stories from the story bank.
-      operationId: story_bank
+      summary: Store courier response
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - data
+              properties:
+                data:
+                  type: string
       responses:
         '200':
-          description: List of stories in JSON format
+          description: Courier response stored successfully
+        '404':
+          description: Missing courier data
+
+  translator/story_outline:
+    post:
+      tags:
+        - translator
+      summary: Generate a story outline
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - chapter_count
+                - story_name
+                - story_details
+              properties:
+                chapter_count:
+                  type: integer
+                story_name:
+                  type: string
+                story_details:
+                  type: string
+                extra_details:
+                  type: string
+      responses:
+        '200':
+          description: Story outline generated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  data:
+                    type: object
+                    properties:
+                      title:
+                        type: string
+                      courier_response:
+                        type: string
+        '400':
+          description: Invalid data type for chapter_count
+        '404':
+          description: Missing required fields
         '500':
-          description: Internal server error
+          description: Server error
+
+  translator/next_chapter:
+    post:
+      tags:
+        - translator
+      summary: Generate the next chapter of the story
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - story_name
+                - story_details
+                - previous_chapters
+                - story_outline
+              properties:
+                story_name:
+                  type: string
+                story_details:
+                  type: string
+                previous_chapters:
+                  type: array
+                  items:
+                    type: string
+                story_outline:
+                  type: string
+                extra_details:
+                  type: string
+      responses:
+        '200':
+          description: Next chapter generated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  data:
+                    type: object
+                    properties:
+                      title:
+                        type: string
+                      courier_response:
+                        type: string
+        '400':
+          description: Invalid or empty previous_chapters
+        '404':
+          description: Missing required fields
+        '500':
+          description: Server error
