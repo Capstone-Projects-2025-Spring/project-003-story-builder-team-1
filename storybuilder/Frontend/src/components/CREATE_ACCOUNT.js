@@ -2,8 +2,9 @@ import { Anchor, Button, Container, Paper, PasswordInput, TextInput, Title, Prog
 import { useState } from 'react';
 import { useNavigate } from 'react-router';
 import USE_CREATE_ACCOUNT from '../hooks/USE_CREATE_ACCOUNT';
-import IconCheck from '@tabler/icons-react/dist/esm/icons/IconCheck';
-import IconX from '@tabler/icons-react/dist/esm/icons/IconX';
+// import IconCheck from '@tabler/icons-react/dist/esm/icons/IconCheck';
+// import IconX from '@tabler/icons-react/dist/esm/icons/IconX';
+import { IconCheck, IconX } from '@tabler/icons-react';
 
 // rendering of the password requirements
 function PASSWORD_REQUIREMENT({ meets, label }) {
@@ -123,7 +124,7 @@ return (
         {/* Confirm Password Input Box */}
         <PasswordInput
             label="Confirm Password"
-            placeholder="Your password" required
+            placeholder="Confirm your password" required
             mt="md"
             value={confirm_password}
             onChange={(e) => set_confirm_password(e.target.value)}
