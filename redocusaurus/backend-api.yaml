@@ -1,7 +1,7 @@
 openapi: 3.0.0
 info:
   title: Story Builder API
-  version: 0.0.0
+  version: 0.2.0
   description: >-
     API for communication between frontend user interface, LLM Agents, and
     MongoDB Database.
@@ -100,88 +100,130 @@ paths:
                   type: string
         '500':
           description: Internal server error
-  /prompt_admin/prompt:
-    get:
-      tags:
-        - prompt_admin
-      summary: Calls prompt(prompt_info) to fetch a prompt string.
+  /prompt_admin/first_chapter:
+    post:
+      summary: Format and send the first chapter's data to courier
       description: >-
-        Retrieves a specific prompt string based on the input `prompt_info`
-        parameter, used for various purposes within the system.
-      operationId: prompt
-      parameters:
-        - name: prompt_info
-          in: query
-          required: true
-          schema:
-            type: string
+        Receives data for the first chapter from translator, engineers a prompt
+        using the given data, and sends prompt to the courier
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - data
+              properties:
+                data:
+                  type: object
+                  description: JSON object containing story and extra details
       responses:
         '200':
-          description: A prompt string
+          description: Prompt successfully sent to courier
           content:
             application/json:
               schema:
-                type: string
+                type: object
+                properties:
+                  message:
+                    type: string
+                  data:
+                    type: object
         '400':
-          description: Missing or invalid prompt_info parameter
-        '404':
-          description: Prompt not found
+          description: No prompt data received
         '500':
-          description: Internal server error
-  /prompt_admin/refine_prompt:
-    get:
-      tags:
-        - prompt_admin
-      summary: Retrieves the refine_prompt property.
+          description: Failed to connect to the courier
+  /prompt_admin/next_chapter:
+    post:
+      summary: Format and send data to generate the next chapter
       description: >-
-        Fetches the `refine_prompt` property, which is used to enhance or modify
-        existing prompts for specific tasks.
-      operationId: refine_prompt
+        Receives data for next chapter from translator, engineers a prompt using
+        the given data, and sends prompt to the courier
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - data
+                - details
+                - story_outline
+                - previous_chapters
+              properties:
+                data:
+                  type: object
+                  description: Raw data (duplicated but required by backend check)
+                details:
+                  type: object
+                  description: Story details and extra information
+                story_outline:
+                  type: object
+                  description: Current story outline
+                previous_chapters:
+                  type: array
+                  items:
+                    type: string
+                  description: Previously generated chapters
       responses:
         '200':
-          description: A refine prompt string
+          description: Prompt successfully sent to courier
           content:
             application/json:
               schema:
-                type: string
+                type: object
+                properties:
+                  message:
+                    type: string
+                  data:
+                    type: object
+        '400':
+          description: No prompt data received
         '500':
-          description: Internal server error
-  /prompt_admin/generate_prompt:
-    get:
-      tags:
-        - prompt_admin
-      summary: Retrieves the generate_prompt property.
+          description: Failed to connect to the courier
+  /prompt_admin/story_outline:
+    post:
+      summary: Format and send data to generate a story outline
       description: >-
-        Retrieves the `generate_prompt` property used to create new prompts
-        dynamically based on system needs.
-      operationId: generate_prompt
+        Receives data from translator, engineers a prompt using the given data,
+        and sends prompt to the courier
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - data
+                - chaptercount
+                - details
+              properties:
+                data:
+                  type: object
+                  description: Raw data (duplicated but required by backend check)
+                chaptercount:
+                  type: integer
+                  description: Number of chapters desired
+                details:
+                  type: object
+                  description: Story details and extra info
       responses:
         '200':
-          description: A generate prompt string
+          description: Prompt successfully sent to courier
           content:
             application/json:
               schema:
-                type: string
+                type: object
+                properties:
+                  message:
+                    type: string
+                  data:
+                    type: object
+        '400':
+          description: No prompt data received
         '500':
-          description: Internal server error
-  /prompt_admin/rank_prompt:
-    get:
-      tags:
-        - prompt_admin
-      summary: Retrieves the rank_prompt property.
-      description: >-
-        Fetches the `rank_prompt` property, used for ranking or prioritizing
-        prompts based on given criteria.
-      operationId: rank_prompt
-      responses:
-        '200':
-          description: A rank prompt string
-          content:
-            application/json:
-              schema:
-                type: string
-        '500':
-          description: Internal server error
+          description: Failed to connect to the courier
   /db/grab:
     get:
       tags:
@@ -333,7 +375,9 @@ paths:
       tags:
         - translator
       summary: Generate the first chapter of a story
-      description: Obtains the first chapter draft to send back to the frontend
+      description: >-
+        Obtains first chapter data from frontend, and sends it to prompt_admin
+        to eventually receive a chapter draft
       requestBody:
         required: true
         content:
@@ -380,8 +424,8 @@ paths:
         - translator
       summary: Store courier response
       description: >-
-        Receives responses from the courier when asking for an outline or
-        chapter
+        Receives and stores responses from the courier when asking for an
+        outline or chapter
       requestBody:
         required: true
         content:
@@ -403,7 +447,9 @@ paths:
       tags:
         - translator
       summary: Generate a story outline
-      description: Obtains the story outline draft to send back to the frontend
+      description: >-
+        Obtains story outline data from frontend, and sends it to prompt_admin
+        to eventually receive a story outline draft
       requestBody:
         required: true
         content:
@@ -451,7 +497,9 @@ paths:
       tags:
         - translator
       summary: Generate the next chapter of the story
-      description: Obtains the draft of a subsequent chapter to send back to the frontend
+      description: >-
+        Obtains subsequent chapter data from frontend, and sends it to
+        prompt_admin to eventually receive a chapter draft
       requestBody:
         required: true
         content:
