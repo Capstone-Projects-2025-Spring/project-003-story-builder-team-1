@@ -5,7 +5,7 @@ const storySchema = new mongoose.Schema({
     user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
     prompt: { type: String, required: true },
     story_content: [{
-        chapter_number: { type: Number, required: true },
+        story_chapter_number: { type: Number, required: true },
         text: { type: String, required: true }
     }],
     agents: [{
