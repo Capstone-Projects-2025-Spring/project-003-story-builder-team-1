@@ -404,12 +404,20 @@ paths:
               properties:
                 story_name:
                   type: string
+                  description: The name of the story
                 story_details:
                   type: string
+                  description: >-
+                    Overall details about the story, such as the plot points and
+                    characters
                 story_outline:
                   type: string
+                  description: An outline of the story, chapter by chapter
                 extra_details:
                   type: string
+                  description: >-
+                    More specific details, such as characterization, locations,
+                    pacing, etc.
       responses:
         '200':
           description: First chapter generated successfully
@@ -476,12 +484,20 @@ paths:
               properties:
                 chapter_count:
                   type: integer
+                  description: The requested number of chapters in the story
                 story_name:
                   type: string
+                  description: The name of the story
                 story_details:
                   type: string
+                  description: >-
+                    Overall details about the story, such as the plot points and
+                    characters
                 extra_details:
                   type: string
+                  description: >-
+                    More specific details, such as characterization, locations,
+                    pacing, etc.
       responses:
         '200':
           description: Story outline generated successfully
@@ -527,16 +543,25 @@ paths:
               properties:
                 story_name:
                   type: string
+                  description: The name of the story
                 story_details:
                   type: string
+                  description: >-
+                    Overall details about the story, such as the plot points and
+                    characters
                 previous_chapters:
                   type: array
                   items:
                     type: string
+                  description: A string array of the previous chapters
                 story_outline:
                   type: string
+                  description: An outline of the story, chapter by chapter
                 extra_details:
                   type: string
+                  description: >-
+                    More specific details, such as characterization, locations,
+                    pacing, etc.
       responses:
         '200':
           description: Next chapter generated successfully
