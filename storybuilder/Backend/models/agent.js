@@ -2,7 +2,10 @@ const mongoose = require('mongoose');
 
 const agentSchema = new mongoose.Schema({
     name: { type: String, required: true },
-    agent_prompt: { type: String, required: true } //could be prompt used to build the agent with the LLM
+    agent_responses: [{
+        response: { type: String, required: true },
+        story: { type: mongoose.Schema.Types.ObjectId, ref: 'Story', required: true },
+    }]
 });
 
 // Virtual property to generate the URL for an agent
