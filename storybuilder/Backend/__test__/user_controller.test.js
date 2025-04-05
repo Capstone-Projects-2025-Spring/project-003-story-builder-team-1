@@ -135,7 +135,7 @@ describe("Account Creation Tests", () => {
         };
         const res = await request(app).post(endpoint).send(newUser);
         expect(res.statusCode).toBe(400);
-        expect(res.body.error).toBe("Username already taken");
+        expect(res.body.error).toBe("Username already exists");
     });
 
     it("should return 400 if username is not alphanumeric", async () => {

@@ -12,7 +12,7 @@ exports.user_create_post = asyncHandler(async (req, res, next) => {
 
     const existingUser = await User.findOne({ username }).exec();
     if (existingUser) {
-        return res.status(400).json({ error: "Username already taken" });
+        return res.status(400).json({ error: "Username already exists" });
     }
 
     // Validate username format
