@@ -6,17 +6,27 @@ import STORY_CONTEXT from "../context/STORY_CONTEXT";
 
 function STORY_PROMPT_BOX() {
     const navigate = useNavigate();
-    const { submit_story_prompt } = useContext(STORY_CONTEXT);
+    const { submit_story_prompt, story_name_error, chapter_count_error, story_details_error, api_error } = useContext(STORY_CONTEXT);
     const [story_name, set_story_name] = useState("");
     const [chapter_count, set_chapter_count] = useState("");
     const [story_details, set_story_details] = useState("");
     const [extra_details, set_extra_details] = useState("");
 
-    const handle_submit = () => {
-        submit_story_prompt(story_name, chapter_count, story_details, extra_details);
+    const handle_submit = async () => {
+        const submit_success = await submit_story_prompt(story_name, chapter_count, story_details, extra_details);
+        console.log("submit_success: ", submit_success);
 
-        // hardcoded for 1 story for now
-        navigate(`/story/1/agents`);
+        if (submit_success) {
+            console.log("Story Successfully Submitted");
+
+            // hardcoded for 1 story for now
+            navigate(`/story/1/agents`);
+        }
+        else {
+            console.log("Story NOT submitted");
+            console.log("API ERROR: ", api_error)
+        }
+        
     };
     return (
         <Paper withBorder shadow="md" p={30} mt={30} radius="md">
@@ -27,6 +37,7 @@ function STORY_PROMPT_BOX() {
                     placeholder="Ex. The Bible" required
                     value={story_name}
                     onChange={(e) => set_story_name(e.target.value)}
+                    error={story_name_error || api_error}
                 />
                 {/* # of Chapter Input */}
                 <TextInput
@@ -38,6 +49,7 @@ function STORY_PROMPT_BOX() {
                         const intValue = parseInt(e.target.value, 10);
                         if (!isNaN(intValue)) set_chapter_count(intValue);
                     }}
+                    error={chapter_count_error || api_error}
                 />
                 {/* Prompt Input */}
                 <Textarea
@@ -49,6 +61,7 @@ function STORY_PROMPT_BOX() {
                     minRows={2}
                     maxRows={5}
                     style={{ flexGrow: 1 }}
+                    error={story_details_error || api_error}
                 />
                 {/* Additional Info */}
                 <Textarea

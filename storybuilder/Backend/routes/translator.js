@@ -6,13 +6,7 @@ const PRIVATE_URL = process.env.PRIVATE_URL || "http://localhost:8080";
 const APP_URL = PRIVATE_URL;
 
 //Global Variables to store data related to the story
-var chapter_count;
-var story_name;
-var story_details;
-var extra_details;
 var courier_response;
-var previous_chapters;
-var story_outline;
 
 //first_chapter will receive the story name, story details, and extra details from the frontend, and send back the story name and generated chapter
 router.post('/first_chapter', async (req, res) => {
@@ -33,11 +27,11 @@ router.post('/first_chapter', async (req, res) => {
         details = "Story Details:\n" + story_details + "\nExtra Details:\n" + extra_details
 
         to_prompt_admin = {
-            "data": details,
+            "details": details,
             "story_outline": story_outline
         }
 
-        prompt_admin_response = await axios.post(APP_URL + '/prompt_admin/first_chapter/', {"data": to_prompt_admin});
+        prompt_admin_response = await axios.post(APP_URL + '/prompt_admin/first_chapter/', to_prompt_admin);
 
         to_frontend = {
             "title": story_name,
@@ -58,14 +52,14 @@ router.post('/courier_response', (req, res) => {
 
     //If data was not received successfully
     if (!req.body.data){
-        res.status(404).json({message: "Courier Response not Received", data: req.body});
+        return res.status(404).json({message: "Courier Response not Received", data: req.body});
     }
 
     //Storing courier response
     courier_response = req.body.data
 
     //Send Successful Response Back to courier
-    res.status(200).json({message: "Courier Response Received Successfully", data: req.body});
+    return res.status(200).json({message: "Courier Response Received Successfully", data: req.body});
 });
 
 //story_outline will receive the requested chapters, story name, story details, and extra details from the frontend, and send back the story name, number of chapters and generated story outline
@@ -92,11 +86,11 @@ router.post('/story_outline', async (req, res) => {
         details = "Story Details:\n" + story_details + "\nExtra Details:\n" + extra_details
 
         to_prompt_admin = {
-            "data": details,
+            "details": details,
             "chapter_count": chapter_count
         }
 
-        prompt_admin_response = await axios.post(APP_URL + '/prompt_admin/story_outline/', {"data": to_prompt_admin});
+        prompt_admin_response = await axios.post(APP_URL + '/prompt_admin/story_outline/', to_prompt_admin);
 
         to_frontend = {
             "title": story_name,
@@ -137,7 +131,7 @@ router.post('/next_chapter', async (req, res) => {
         details = "Story Details:\n" + story_details + "\nExtra Details:\n" + extra_details
 
         to_prompt_admin = {
-            "data": details,
+            "details": details,
             "previous_chapters": previous_chapters,
             "story_outline": story_outline
         }
