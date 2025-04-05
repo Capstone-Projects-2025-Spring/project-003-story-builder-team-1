@@ -21,7 +21,7 @@ router.post("/user/:user_id/delete", user_controller.user_delete_post);
 router.post("/user/:user_id/update", user_controller.user_update_post);
 
 // GET request for one User
-router.get("/user/:id", user_controller.user_detail);
+router.get("/user/:user_id", user_controller.user_details);
 
 /// STORY ROUTES ///
 

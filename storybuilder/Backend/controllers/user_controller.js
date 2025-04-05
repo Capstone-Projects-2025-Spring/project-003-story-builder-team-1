@@ -101,8 +101,8 @@ exports.user_update_post = asyncHandler(async (req, res, next) => {
 });
 
 // Display detail page for a specific User
-exports.user_detail = asyncHandler(async (req, res, next) => {
-    const user = await User.findById(req.params.id).populate("stories").exec();
+exports.user_details = asyncHandler(async (req, res, next) => {
+    const user = await User.findById(req.params.user_id).populate("stories").exec();
     if (!user) {
         return res.status(404).json({ error: "User not found" });
     }
