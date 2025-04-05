@@ -90,7 +90,7 @@ describe("Account Creation Tests", () => {
     it("should return 400 if password is less than 8 characters", async () => {
         const newUser = {
             username: "bob",
-            password: "short"
+            password: "Short1!"
         };
         const res = await request(app).post(endpoint).send(newUser);
         expect(res.statusCode).toBe(400);
@@ -250,6 +250,112 @@ describe("User Update Tests", () => {
         expect(res.statusCode).toBe(200);
         expect(res.body.message).toBe("User updated successfully");
         expect(res.body.user.username).toBe("bob_updated");
+    });
+
+    it("should return 400 if username already exists", async () => {
+        const existingUser = new User({
+            username: "alice",
+            password: "Password123!"
+        });
+        await existingUser.save();
+        const user = await User.findOne({ username: "bob" });
+        const updatedData = {
+            username: "alice",
+            password: "NewPassword123!"
+        };
+        const res = await request(app).post(`/db/user/${user._id}/update`).send(updatedData);
+        expect(res.statusCode).toBe(400);
+        expect(res.body.error).toBe("Username already exists");
+    });
+
+    it("should return 400 if username is not alphanumeric", async () => {
+        const user = await User.findOne({ username: "bob" });
+        const updatedData = {
+            username: "bob@123",
+            password: "NewPassword123!"
+        };
+        const res = await request(app).post(`/db/user/${user._id}/update`).send(updatedData);
+        expect(res.statusCode).toBe(400);
+        expect(res.body.message).toBe("Username must be alphanumeric");
+    });
+
+    it("should return 400 if password is less than 8 characters", async () => {
+        const user = await User.findOne({ username: "bob" });
+        const updatedData = {
+            username: "bob_updated",
+            password: "Short1!"
+        };
+        const res = await request(app).post(`/db/user/${user._id}/update`).send(updatedData);
+        expect(res.statusCode).toBe(400);
+        expect(res.body.message).toBe("Password must meet the security criteria.");
+    });
+
+    it ("should return 400 if password does not have a capital letter", async () => {
+        const user = await User.findOne({ username: "bob" });
+        const updatedData = {
+            username: "bob_updated",
+            password: "password123!"
+        };
+        const res = await request(app).post(`/db/user/${user._id}/update`).send(updatedData);
+        expect(res.statusCode).toBe(400);
+        expect(res.body.message).toBe("Password must meet the security criteria.");
+    });
+
+    it("should return 400 if password does not have a lower case letter", async () => {
+        const user = await User.findOne({ username: "bob" });
+        const updatedData = {
+            username: "bob_updated",
+            password: "PASSWORD123!"
+        };
+        const res = await request(app).post(`/db/user/${user._id}/update`).send(updatedData);
+        expect(res.statusCode).toBe(400);
+        expect(res.body.message).toBe("Password must meet the security criteria.");
+    });
+
+    it("should return 400 if password does not have a number", async () => {
+        const user = await User.findOne({ username: "bob" });
+        const updatedData = {
+            username: "bob_updated",
+            password: "Password!"
+        };
+        const res = await request(app).post(`/db/user/${user._id}/update`).send(updatedData);
+        expect(res.statusCode).toBe(400);
+        expect(res.body.message).toBe("Password must meet the security criteria.");
+    });
+
+    it("should return 400 if password does not have a special character", async () => {
+        const user = await User.findOne({ username: "bob" });
+        const updatedData = {
+            username: "bob_updated",
+            password: "Password123"
+        };
+        const res = await request(app).post(`/db/user/${user._id}/update`).send(updatedData);
+        expect(res.statusCode).toBe(400);
+        expect(res.body.message).toBe("Password must meet the security criteria.");
+    });
+
+    it("should only update both if both the username and password meet the criteria", async () => {
+        const user = await User.findOne({ username: "bob" });
+        const updatedData = {
+            username: "bob@updated",
+            password: "NewPassword123!"
+        };
+        const res = await request(app).post(`/db/user/${user._id}/update`).send(updatedData);
+        expect(res.statusCode).toBe(400);
+        expect(res.body.message).toBe("Username must be alphanumeric");
+    }
+    );
+
+    it("should update only the username if password is not provided", async () => {
+        const user = await User.findOne({ username: "bob" });
+        const updatedData = {
+            username: "bob_updated",
+            password: "password123!"
+        }; 
+        const res = await request(app).post(`/db/user/${user._id}/update`).send(updatedData);
+        expect(res.statusCode).toBe(400);
+        expect(res.body.message).toBe("Password must meet the security criteria.");
+        expect(user.username).toBe("bob");
     });
 
     it("should update only the password if username is not provided", async () => {

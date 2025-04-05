@@ -66,12 +66,31 @@ exports.user_delete_post = asyncHandler(async (req, res, next) => {
 exports.user_update_post = asyncHandler(async (req, res, next) => {
     const { username, password } = req.body;
 
-    const user = await User.findById(req.params.id).exec();
+    const user = await User.findById(req.params.user_id).exec();
     if (!user) {
         return res.status(404).json({ error: "User not found" });
     }
 
+    if (username) {
+        const existingUser = await User.findOne({ username }).exec();
+        if (existingUser) {
+            return res.status(400).json({ error: "Username already exists" });
+        }
+        if (!/^[a-zA-Z0-9_]+$/.test(username)) {
+            return res.status(400).json({ message: "Username must be alphanumeric" });
+        }
+    }
+
+    if (password) {
+        // Check if the password meets the security criteria
+        const password_regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*(),.?":{}|<>])[A-Za-z\d!@#$%^&*(),.?":{}|<>]{8,}$/;
+        if (!password_regex.test(password)) {
+            return res.status(400).json({ message: "Password must meet the security criteria." });
+        }
+    }
+
     if (username) user.username = username;
+    
     if (password) {
         const salt = await bcrypt.genSalt(10);
         user.password = await bcrypt.hash(password, salt);

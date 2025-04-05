@@ -18,7 +18,7 @@ router.post('/account_login', user_controller.user_login_post);
 router.post("/user/:user_id/delete", user_controller.user_delete_post);
 
 // POST request to update User
-router.post("/user/:id/update", user_controller.user_update_post);
+router.post("/user/:user_id/update", user_controller.user_update_post);
 
 // GET request for one User
 router.get("/user/:id", user_controller.user_detail);
