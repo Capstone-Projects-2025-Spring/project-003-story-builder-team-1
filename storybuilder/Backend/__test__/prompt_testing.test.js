@@ -3,12 +3,13 @@ const promptadmin = require('../promptformatter.js');
 describe('promptforming', () => {
       it('Should build a JSON prompt which contains a prompt with the user input placed inside, specifying the model type and the stream binary.', () => {
         let prompt = "Write a story about pirates.";
-        var draft = promptadmin.draft(prompt);
-        expect(draft).toEqual({
+        let outline = "X";
+        var firstchapter = promptadmin.firstchapter(prompt, outline);
+        expect(firstchapter).toEqual({
           model: "llama3.1-8b", // Use model names from API documentation for model provider
           messages: [
               { "role": "system", "content": `You are a helpful assistant. You will work in a Mechanical Turks style with other assistants to compose stories for users following a certain set of steps. The story will be written in chapters, and you will write the first chapter.`},
-              { "role": "user", "content": `Write a story about pirates.`},
+              { "role": "user", "content": `This is the prompt: Write a story about pirates.\nThis is the story outline: X. \n\nYou will write the first chapter based on the chapter 1 summary above.`},
           ],
           stream: false, // Ensures a single response instead of a streamed response
       });
@@ -33,12 +34,13 @@ describe('promptforming', () => {
         let prompt = "Z";
         let chapter = "X";
         let critique = "Y";
-        var crit = promptadmin.rewrite(prompt, chapter, critique);
+        let outline = "A";
+        var crit = promptadmin.rewrite(prompt, chapter, critique, outline);
         expect(crit).toEqual({
           model: "llama3.1-8b", 
           messages: [
               { "role": "system", "content": `You are now being fed a chapter written by another agent, along with a critique of that chapter and the original prompt information. Rewrite the chapter, improving it based upon the critique's observations. Make sure it's a similar chapter length, and do not change anything if it doesn't violate the critique parameters. Just return the rewritten chapter and nothing else.`},
-              { "role": "user", "content":  `This is the prompt: Z\n\nThis is the critique: Y\n\nAnd this is the chapter: X`},
+              { "role": "user", "content":  `This is the prompt: Z\n\nThis is the critique: Y\n\nThis is the outline of the entire story: A\n\nAnd this is the chapter: X`},
           ],
           stream: false, 
       });
@@ -62,12 +64,13 @@ describe('promptforming', () => {
           let prompt = "Write a story about pirates.";
           let chapter = "X";
           let outline = "Y"
-          var next = promptadmin.nextchapter(prompt, outline, chapter);
+          let chaptercount = 2;
+          var next = promptadmin.nextchapter(prompt, outline, chapter, chaptercount);
           expect(next).toEqual({
             model: "llama3.1-8b", 
             messages: [
                 { "role": "system", "content": `You are now being fed a chapter written by another agent. You will continue the story in another chapter of roughly equal length while still following the guidelines established in the original prompt.`},
-                { "role": "user", "content": `Write a story about pirates.\n\nStory outline: Y\n\n Chapter: X`},
+                { "role": "user", "content": `Write a story about pirates.\n\nPrevious chapter(s) whose story you're continuing: X\n\nStory outline: Y\n\n Write chapter 3.`},
             ],
             stream: false, 
         });

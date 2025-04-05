@@ -8,15 +8,16 @@ const APP_URL = PRIVATE_URL;
 
 router.post('/first_chapter', async (req, res) => {
     //throws 400 status 
-    if(!req.body.details) {
+    if(!req.body.details || !req.body.story_outline) {
        return res.status(400).json({message: "No prompt data received", data: req.body});
     }
     //formatting the story & extra details (ignoring story_name and chapter_count for now, also ignores the need for a previous_chapter entry)
     const promptinfo = JSON.stringify(req.body.details);
+    const storyoutline = JSON.stringify(req.body.story_outline);
     console.log("story_details taken in as promptinfo: "+ promptinfo);
 
     //sends to promptformatter to be organized in an acceptable format for the llama API
-    var prompt = promptformatter.draft(promptinfo);
+    var prompt = promptformatter.firstchapter(promptinfo, storyoutline);
 
     try {
         //try to send prompt to courier
@@ -31,14 +32,17 @@ router.post('/first_chapter', async (req, res) => {
 
 //next chapter
 router.post('/next_chapter', async (req, res) => {
-    if(!req.body.details) {
+    if(!req.body.details || !req.body.story_outline || !req.body.chapter_count) {
         return res.status(400).json({message: "No prompt data received", data: req.body});
      }
+    var chaptercount = req.body.previous_chapters.length;
+    console.log("Current chapter count: (Test)" + chaptercount);
     var promptinfo = JSON.stringify(req.body.details);
     var chapteroutline = JSON.stringify(req.body.story_outline);
     var previouschapter = JSON.stringify(req.body.previous_chapters);
 
-    var prompt = promptformatter.nextchapter(promptinfo, chapteroutline, previouschapter);
+
+    var prompt = promptformatter.nextchapter(promptinfo, chapteroutline, previouschapter, chaptercount);
 
     try {
         //try to send prompt to courier
