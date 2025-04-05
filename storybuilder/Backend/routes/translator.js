@@ -34,6 +34,7 @@ router.post('/first_chapter', async (req, res) => {
         prompt_admin_response = await axios.post(APP_URL + '/prompt_admin/first_chapter/', to_prompt_admin);
 
         to_frontend = {
+            "title": story_name,
             "courier_response": courier_response
         }
 
@@ -138,6 +139,7 @@ router.post('/next_chapter', async (req, res) => {
         prompt_admin_response = await axios.post(APP_URL + '/prompt_admin/next_chapter/', to_prompt_admin);
 
         to_frontend = {
+            "title": story_name,
             "courier_response": courier_response,
         }
 
