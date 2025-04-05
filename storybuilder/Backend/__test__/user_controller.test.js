@@ -215,39 +215,19 @@ describe("User Deletion Tests", () => {
         expect(res.body.message).toBe("User deleted successfully"); 
     });
 
-    it("should return 404 if user ID is invalid", async () => {
-        const res = await request(app).post("/db/user/invalid_id/delete");
-        expect(res.statusCode).toBe(500);
-        expect(res.body.error).toBe(undefined);
-    });
-
     it("should return 404 if user not found", async () => {
         const test_user_id = generate_valid_object_id();
         const res = await request(app).post(`/db/user/${test_user_id}/delete`);
         expect(res.statusCode).toBe(404);
         expect(res.body.error).toBe("User not found");
     });
-});
 
-describe("User Update Tests", () => {
-    beforeEach(async () => {
-        const newUser = new User({
-            username: "bob",
-            password: "Password123!",
-        });
-        await newUser.save();
+    it("should return 500 if user ID is invalid", async () => {
+        const res = await request(app).post("/db/user/invalid_id/delete");
+        expect(res.statusCode).toBe(500);
+        expect(res.body.error).toBe(undefined);
     });
 
-    it("should update an existing user's details", async () => {
-        const user = await User.findOne({ username: "bob" });
-        const updatedData = {
-            username: "bob_updated",
-            password: "NewPassword123!"
-        };
-        const res = await request(app).post(`/db/user/${user._id}/update`).send(updatedData);
-        expect(res.statusCode).toBe(200);
-        expect(res.body.message).toBe("User updated successfully");
-    });
 });
 
 describe("User Update Tests", () => {
