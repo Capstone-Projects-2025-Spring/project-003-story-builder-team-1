@@ -35,7 +35,7 @@ router.post('/next_chapter', async (req, res) => {
         return res.status(400).json({message: "No prompt data received", data: req.body});
     }
 
-    var current_chapter_count = req.body.previous_chapters.length;
+    var current_chapter_count = req.body.previous_chapters.length + 1;
     var chapter_outline = JSON.stringify(req.body.story_outline);
     var previous_chapter = JSON.stringify(req.body.previous_chapters);
 
