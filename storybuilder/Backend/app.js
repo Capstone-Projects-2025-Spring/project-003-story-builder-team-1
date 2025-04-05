@@ -40,5 +40,40 @@ app.get('/', (req, res) => {
     res.send("Backend Server Active");
 })
 
+app.use((err, req, res, next) => {
+    console.error(err.stack);
+
+    // Handle CastError (Invalid input format)
+    if (err.name === "CastError") {
+        return res.status(400).json({ error: "Invalid input format" });
+    }
+
+    // Handle ValidationError (Invalid data provided)
+    if (err.name === "ValidationError") {
+        return res.status(400).json({ error: "Validation failed", details: err.errors });
+    }
+
+    // Handle Duplicate key error (Unique constraint violation)
+    if (err.code === 11000) {
+        return res.status(400).json({ error: "Duplicate key error, resource already exists" });
+    }
+
+    // Handle server selection errors (MongoDB server issues)
+    if (err.name === "MongooseServerSelectionError") {
+        return res.status(503).json({ error: "Service unavailable, could not connect to database" });
+    }
+
+    // Handle DocumentNotFoundError (Document not found)
+    if (err.name === "DocumentNotFoundError") {
+        return res.status(404).json({ error: "Document not found" });
+    }
+
+    // Generic 500 for all other errors
+    res.status(500).json({
+        error: "Internal Server Error",
+        message: err.message
+    });
+});
+
 // Export the app to be used in the server.js
 module.exports = app;
