@@ -132,39 +132,27 @@ exports.story_chapter_veto_post = asyncHandler(async (req, res, next) => {
     res.json({ message: "Agent version promoted to final chapter", story_content: story.story_content });
 });
 
-// Create outline for a story (initialize chapter numbers and agents if needed)
-exports.story_outline_create_post = asyncHandler(async (req, res, next) => {
-    const { id } = req.params;
-    const { chapter_numbers, agents } = req.body;
-
-    const story = await Story.findById(id).exec();
-    if (!story) return res.status(404).json({ error: "Story not found" });
-
-    if (!Array.isArray(chapter_numbers) || !Array.isArray(agents)) {
-        return res.status(400).json({ error: "chapter_numbers and agents must be arrays" });
-    }
-
-    story.agents = agents.map(agentId => ({
-        agent: agentId,
-        chapters: chapter_numbers.map(num => ({ chapter_number: num, content: "", votes: [], critiques: [] }))
-    }));
-
-    await story.save();
-    res.status(201).json({ message: "Outline created with agents and chapter slots", agents: story.agents });
-});
-
-
-// Get summary outline for a story
+// Update the outline for a story
 exports.story_outline = asyncHandler(async (req, res, next) => {
     const { id } = req.params;
+    const { outline } = req.body; // The outline received in the request body
 
-    const story = await Story.findById(id).exec();
-    if (!story) return res.status(404).json({ error: "Story not found" });
+    // Ensure the outline is provided
+    if (!outline) {
+        return res.status(400).json({ error: "Outline is required" });
+    }
 
-    const outline = story.story_content.map((chapter) => ({
-        chapter_number: chapter.story_chapter_number,
-        summary: chapter.text.slice(0, 100)
-    }));
-    
-    res.json({ outline });
+    // Find the story by its ID and update the outline field
+    const story = await Story.findByIdAndUpdate(
+        id,
+        { outline: outline },
+        { new: true } // Return the updated story
+    ).exec();
+
+    if (!story) {
+        return res.status(404).json({ error: "Story not found" });
+    }
+
+    // Return the updated story with the new outline
+    res.json({ story });
 });
