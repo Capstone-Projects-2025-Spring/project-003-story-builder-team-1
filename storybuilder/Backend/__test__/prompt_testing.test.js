@@ -3,55 +3,74 @@ const promptadmin = require('../promptformatter.js');
 describe('promptforming', () => {
       it('Should build a JSON prompt which contains a prompt with the user input placed inside, specifying the model type and the stream binary.', () => {
         let prompt = "Write a story about pirates.";
-        var draft = promptadmin.draft(prompt);
-        expect(draft).toEqual({
+        let outline = "X";
+        var firstchapter = promptadmin.firstchapter(prompt, outline);
+        expect(firstchapter).toEqual({
           model: "llama3.1-8b", // Use model names from API documentation for model provider
           messages: [
               { "role": "system", "content": `You are a helpful assistant. You will work in a Mechanical Turks style with other assistants to compose stories for users following a certain set of steps. The story will be written in chapters, and you will write the first chapter.`},
-              { "role": "user", "content": `This is the story outline. Please adapt Chapter 1: Write a story about pirates.`},
+              { "role": "user", "content": `This is the prompt: Write a story about pirates.\nThis is the story outline: X. \n\nYou will write the first chapter based on the chapter 1 summary above.`},
           ],
           stream: false, // Ensures a single response instead of a streamed response
       });
       });
       
       it('Should build a JSON prompt that asks to critique a story, and which provides the original prompt and the draft in its proper place', () => {
-        let prompt = "Write a story about pirates.";
+        let prompt = "Z";
+        let outline = "Y";
         let story = "X";
-        var crit = promptadmin.critique(prompt, story,);
+        var crit = promptadmin.critique(prompt, story, outline);
         expect(crit).toEqual({
           model: "llama3.1-8b", 
           messages: [
-              { "role": "system", "content": "You are now being fed a chapter written by another agent. You will critique the drafting of this story based on grammatical correctness as well as its faithfulness to the style parameters that were specified."},
-              { "role": "user", "content": "Write a story about pirates."},
-              { "role": "assistant", "content": "X"},
+              { "role": "system", "content": `You are now being fed a chapter written by another agent. You will critique the drafting of this story based on grammatical correctness as well as its faithfulness to the style parameters that were specified. Do not rewrite the chapter.`},
+              { "role": "user", "content":  `Z: Synopsis: Y\n\nChapter: X`},
+          ],
+          stream: false, 
+      });
+      });
+
+      it('Should build a JSON prompt that asks to critique a story, and which provides the original prompt and the draft in its proper place', () => {
+        let prompt = "Z";
+        let chapter = "X";
+        let critique = "Y";
+        let outline = "A";
+        var crit = promptadmin.rewrite(prompt, chapter, critique, outline);
+        expect(crit).toEqual({
+          model: "llama3.1-8b", 
+          messages: [
+              { "role": "system", "content": `You are now being fed a chapter written by another agent, along with a critique of that chapter and the original prompt information. Rewrite the chapter, improving it based upon the critique's observations. Make sure it's a similar chapter length, and do not change anything if it doesn't violate the critique parameters. Just return the rewritten chapter and nothing else.`},
+              { "role": "user", "content":  `This is the prompt: Z\n\nThis is the critique: Y\n\nThis is the outline of the entire story: A\n\nAnd this is the chapter: X`},
           ],
           stream: false, 
       });
       });
       
       it('Should build a JSON prompt that parses the stories in the storybank and places them in the prompt template.', () => {
-        let storybank = "Judge a story about pirates: X";
-        var judgelist = promptadmin.judge(storybank);
+        let promptinfo = "Write a story about pirates.";
+        var storybank = [{story_index: 1, story: "X"}, {story_index: 2, story: "Y"}, {story_index: 3, story: "Z"}];
+        var judgelist = promptadmin.judge(storybank, promptinfo);
         expect(judgelist).toEqual({
           model: "llama3.1-8b", // Use model names from API documentation for model provider
           messages: [
-              { "role": "user", "content": "Your job now is to judge all of these stories as objectively as you can based on the initial prompt information. Each of these stories have gone through two drafting sessions, now you will rank them from best to worst. Judge a story about pirates: X"}
+              { "role": "system", "content": `Your job now is to judge all of these stories as objectively as you can based on the initial prompt information. You will choose the best story. Do not return an explanation for your decision and don't return the stories themselves, just return the story's index number.` },
+              { "role": "user", "content": `Write a story about pirates.\n\nStory index number 1: X\n\nStory index number 2: Y\n\nStory index number 3: Z`},
           ],
           stream: false, 
       });
       });
       
       it('Should build a JSON prompt that asks to continue a story in a new chapter based on the previous chapter thats given as input.', () => {
-        let chapter_count = 3;
+          let prompt = "Write a story about pirates.";
           let chapter = "X";
           let outline = "Y"
-          var next = promptadmin.nextchapter(outline, chapter, chapter_count);
+          let chaptercount = 2;
+          var next = promptadmin.nextchapter(prompt, outline, chapter, chaptercount);
           expect(next).toEqual({
             model: "llama3.1-8b", 
             messages: [
                 { "role": "system", "content": `You are now being fed a chapter written by another agent. You will continue the story in another chapter of roughly equal length while still following the guidelines established in the original prompt.`},
-                { "role": "assistant", "content": `Story outline: Y`},
-                { "role": "user", "content": `These are the chapters that have already been written. Please write chapter 3: X`},
+                { "role": "user", "content": `Write a story about pirates.\n\nPrevious chapter(s) whose story you're continuing: X\n\nStory outline: Y\n\n Write chapter 3.`},
             ],
             stream: false, 
         });
