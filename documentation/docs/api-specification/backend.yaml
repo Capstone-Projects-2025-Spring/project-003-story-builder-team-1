@@ -1,7 +1,7 @@
 openapi: 3.0.0
 info:
   title: Story Builder API
-  version: 0.0.0
+  version: 0.2.0
   description: API for communication between frontend user interface, LLM Agents, and MongoDB Database.
 
 tags:
@@ -28,13 +28,16 @@ paths:
           application/json:
             schema:
               type: object
+              required:
+                - data
+                - messages
               properties:
-                PLACEHOLDER:
-                  type: integer
-                key:
+                data:
+                  type: object
+                  description: Data formatted for the agent, passed directly to `/agent/generate`
+                messages:
                   type: string
-                prompt:
-                  type: string
+                  description: The user message content to be pushed into the interaction log
       responses:
         '200':
           description: A story snippet
@@ -94,83 +97,132 @@ paths:
         '500':
           description: Internal server error
 
-  /prompt_admin/prompt:
-    get:
+  /prompt_admin/first_chapter:
+    post:
       tags:
         - prompt_admin
-      summary: Calls prompt(prompt_info) to fetch a prompt string.
-      description: Retrieves a specific prompt string based on the input `prompt_info` parameter, used for various purposes within the system.
-      operationId: prompt
-      parameters:
-        - name: prompt_info
-          in: query
-          required: true
-          schema:
-            type: string
+      summary: Format and send the first chapter's data to courier
+      description: Receives data for the first chapter from translator, engineers a prompt using the given data, and sends prompt to the courier
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - data
+              properties:
+                data:
+                  type: object
+                  description: JSON object containing story and extra details
       responses:
         '200':
-          description: A prompt string
+          description: Prompt successfully sent to courier
           content:
             application/json:
               schema:
-                type: string
+                type: object
+                properties:
+                  message:
+                    type: string
+                  data:
+                    type: object
         '400':
-          description: Missing or invalid prompt_info parameter
-        '404':
-          description: Prompt not found
+          description: No prompt data received
         '500':
-          description: Internal server error
+          description: Failed to connect to the courier
 
-  /prompt_admin/refine_prompt:
-    get:
+  /prompt_admin/next_chapter:
+    post:
       tags:
         - prompt_admin
-      summary: Retrieves the refine_prompt property.
-      description: Fetches the `refine_prompt` property, which is used to enhance or modify existing prompts for specific tasks.
-      operationId: refine_prompt
+      summary: Format and send data to generate the next chapter
+      description: Receives data for next chapter from translator, engineers a prompt using the given data, and sends prompt to the courier
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - data
+                - details
+                - story_outline
+                - previous_chapters
+              properties:
+                data:
+                  type: object
+                  description: Raw data (duplicated but required by backend check)
+                details:
+                  type: object
+                  description: Story details and extra information
+                story_outline:
+                  type: object
+                  description: Current story outline
+                previous_chapters:
+                  type: array
+                  items:
+                    type: string
+                  description: Previously generated chapters
       responses:
         '200':
-          description: A refine prompt string
+          description: Prompt successfully sent to courier
           content:
             application/json:
               schema:
-                type: string
+                type: object
+                properties:
+                  message:
+                    type: string
+                  data:
+                    type: object
+        '400':
+          description: No prompt data received
         '500':
-          description: Internal server error
+          description: Failed to connect to the courier
 
-  /prompt_admin/generate_prompt:
-    get:
+  /prompt_admin/story_outline:
+    post:
       tags:
         - prompt_admin
-      summary: Retrieves the generate_prompt property.
-      description: Retrieves the `generate_prompt` property used to create new prompts dynamically based on system needs.
-      operationId: generate_prompt
+      summary: Format and send data to generate a story outline
+      description: Receives data from translator, engineers a prompt using the given data, and sends prompt to the courier
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - data
+                - chaptercount
+                - details
+              properties:
+                data:
+                  type: object
+                  description: Raw data (duplicated but required by backend check)
+                chaptercount:
+                  type: integer
+                  description: Number of chapters desired
+                details:
+                  type: object
+                  description: Story details and extra info
       responses:
         '200':
-          description: A generate prompt string
+          description: Prompt successfully sent to courier
           content:
             application/json:
               schema:
-                type: string
+                type: object
+                properties:
+                  message:
+                    type: string
+                  data:
+                    type: object
+        '400':
+          description: No prompt data received
         '500':
-          description: Internal server error
-
-  /prompt_admin/rank_prompt:
-    get:
-      tags:
-        - prompt_admin
-      summary: Retrieves the rank_prompt property.
-      description: Fetches the `rank_prompt` property, used for ranking or prioritizing prompts based on given criteria.
-      operationId: rank_prompt
-      responses:
-        '200':
-          description: A rank prompt string
-          content:
-            application/json:
-              schema:
-                type: string
-        '500':
-          description: Internal server error
+          description: Failed to connect to the courier
 
   /db/grab:
     get:
@@ -316,113 +368,188 @@ paths:
         '500':
           description: Internal server error
 
-  /translator/text_box:
+  /translator/first_chapter:
     post:
       tags:
         - translator
-      summary: Stores input from frontend text box.
-      description: Accepts and stores the text input provided by the frontend user interface into the system for further processing.
-      operationId: text_box
-      responses:
-        '200':
-          description: Text input from frontend text box
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  type: object
-        '400':
-          description: Bad request
-        '500':
-          description: Internal server error
-
-  /translator/rank_format:
-    post:
-      tags:
-        - translator
-      summary: Triggers the rank_format() method.
-      description: Triggers the ranking process for the given draft.
-      operationId: rank_format
-      requestBody:
-        required: false
-        content:
-          application/json:
-            schema:
-              type: object
-              description: Optional body if needed.
-      responses:
-        '200':
-          description: Drafts Ranked
-        '400':
-          description: Invalid input or missing parameters
-        '500':
-          description: Internal server error
-
-  /translator/writing_session:
-    post:
-      tags:
-        - translator
-      summary: Starts or updates a writing session.
-      description: Starts or updates an active writing session.
-      operationId: writing_session
-      requestBody:
-        required: false
-        content:
-          application/json:
-            schema:
-              type: object
-              description: Optional body if needed.
-      responses:
-        '200':
-          description: Session started/updated
-        '400':
-          description: Invalid input or missing parameters
-        '404':
-          description: Session not found for update
-        '500':
-          description: Internal server error
-
-  /translator/write_chapter:
-    post:
-      tags:
-        - translator
-      summary: Writes a new chapter based on the input JSON data.
-      description: Allows you to write a new chapter by providing chapter data in the request body.
-      operationId: write_chapter
+      summary: Generate the first chapter of a story
+      description: Obtains first chapter data from frontend, and sends it to prompt_admin to eventually receive a chapter draft
       requestBody:
         required: true
         content:
           application/json:
             schema:
               type: object
-              properties:
-                chapterTitle:
-                  type: string
-                chapterContent:
-                  type: string
               required:
-                - chapterTitle
-                - chapterContent
+                - story_name
+                - story_details
+                - story_outline
+              properties:
+                story_name:
+                  type: string
+                  description: The name of the story
+                story_details:
+                  type: string
+                  description: Overall details about the story, such as the plot points and characters
+                story_outline:
+                  type: string
+                  description: An outline of the story, chapter by chapter
+                extra_details:
+                  type: string
+                  description: More specific details, such as characterization, locations, pacing, etc.
       responses:
         '200':
-          description: Successfully written chapter in JSON format
-        '400':
-          description: Invalid input or missing parameter
+          description: First chapter generated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  data:
+                    type: object
+                    properties:
+                      title:
+                        type: string
+                      courier_response:
+                        type: string
         '404':
-          description: Story or session not found
+          description: Missing required fields
         '500':
-          description: Internal server error
+          description: Server error
 
-  /translator/story_bank:
-    get:
+  /translator/courier_response:
+    post:
       tags:
         - translator
-      summary: Retrieves the entire story bank as a list.
-      description: Retrieves the full list of stories from the story bank.
-      operationId: story_bank
+      summary: Store courier response
+      description: Receives and stores responses from the courier when asking for an outline or chapter
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - data
+              properties:
+                data:
+                  type: string
       responses:
         '200':
-          description: List of stories in JSON format
+          description: Courier response stored successfully
+        '404':
+          description: Missing courier data
+
+  /translator/story_outline:
+    post:
+      tags:
+        - translator
+      summary: Generate a story outline
+      description: Obtains story outline data from frontend, and sends it to prompt_admin to eventually receive a story outline draft
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - chapter_count
+                - story_name
+                - story_details
+              properties:
+                chapter_count:
+                  type: integer
+                  description: The requested number of chapters in the story
+                story_name:
+                  type: string
+                  description: The name of the story
+                story_details:
+                  type: string
+                  description: Overall details about the story, such as the plot points and characters
+                extra_details:
+                  type: string
+                  description: More specific details, such as characterization, locations, pacing, etc.
+      responses:
+        '200':
+          description: Story outline generated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  data:
+                    type: object
+                    properties:
+                      title:
+                        type: string
+                      courier_response:
+                        type: string
+        '400':
+          description: Invalid data type for chapter_count
+        '404':
+          description: Missing required fields
         '500':
-          description: Internal server error
+          description: Server error
+
+  /translator/next_chapter:
+    post:
+      tags:
+        - translator
+      summary: Generate the next chapter of the story
+      description: Obtains subsequent chapter data from frontend, and sends it to prompt_admin to eventually receive a chapter draft
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - story_name
+                - story_details
+                - previous_chapters
+                - story_outline
+              properties:
+                story_name:
+                  type: string
+                  description: The name of the story
+                story_details:
+                  type: string
+                  description: Overall details about the story, such as the plot points and characters
+                previous_chapters:
+                  type: array
+                  items:
+                    type: string
+                  description: A string array of the previous chapters
+                story_outline:
+                  type: string
+                  description: An outline of the story, chapter by chapter
+                extra_details:
+                  type: string
+                  description: More specific details, such as characterization, locations, pacing, etc.
+      responses:
+        '200':
+          description: Next chapter generated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  data:
+                    type: object
+                    properties:
+                      title:
+                        type: string
+                      courier_response:
+                        type: string
+        '400':
+          description: Invalid or empty previous_chapters
+        '404':
+          description: Missing required fields
+        '500':
+          description: Server error

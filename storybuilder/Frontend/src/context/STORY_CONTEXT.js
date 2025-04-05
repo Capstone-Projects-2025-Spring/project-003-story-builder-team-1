@@ -3,10 +3,11 @@ import USE_AXIOS from '../hooks/USE_AXIOS';
 
 // Create Context
 const STORY_CONTEXT = createContext();
+const SERVER_URL = process.env.REACT_APP_SERVER_URL || "http://localhost:8080";
 
 // Initial State
 const initial_state = {
-    current_story: null,   // Holds story details & chapters
+    current_story: null,  // Holds story details & chapters
     loading: false,       // Loading state for API calls
     error: null,          // Error messages
 };
@@ -85,7 +86,7 @@ export function Story_Provider({ children }) {
 
         if (!is_error) {
             dispatch({ type: "SUBMIT_PROMPT" });
-            const { data, error } = await use_axios("http://localhost:8080/translator/story_outline", "POST", {
+            const { data, error } = await use_axios(SERVER_URL + "/translator/story_outline", "POST", {
                 "story_name": story_name,
                 "chapter_count": chapter_count,
                 "story_details": story_details,
