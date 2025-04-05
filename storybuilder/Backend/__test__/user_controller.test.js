@@ -138,6 +138,78 @@ describe("Account Creation Tests", () => {
     });
 });
 
+describe("Account Login Tests", () => {
+    const endpoint = "/db/account_login";
+    
+    beforeEach(async () => {
+        const newUser = new User({
+            username: "bob",
+            password: "Password123!",
+        });
+        await newUser.save();
+    });
+
+    it("should log in an existing user", async () => {
+        const loginData = {
+            username: "bob",
+            password: "Password123!",
+        };
+        const res = await request(app).post(endpoint).send(loginData);
+        expect(res.statusCode).toBe(200);
+        expect(res.body.message).toBe("Login successful");
+    });
+
+    it("should return 404 if password is missing", async () => {
+        const loginData = {
+            username: "bob",
+            password: null
+        };
+        const res = await request(app).post(endpoint).send(loginData);
+        expect(res.statusCode).toBe(404);
+        expect(res.body.error).toBe("Username and password are required");
+    });
+
+    it("should return 404 if username is missing", async () => {
+        const loginData = {
+            username: null,
+            password: "Password123!"
+        };
+        const res = await request(app).post(endpoint).send(loginData);
+        expect(res.statusCode).toBe(404);
+        expect(res.body.error).toBe("Username and password are required");
+    });
+
+    it("should return 404 if password is missing", async () => {
+        const loginData = {
+            username: "bob",
+            password: null
+        };
+        const res = await request(app).post(endpoint).send(loginData);
+        expect(res.statusCode).toBe(404);
+        expect(res.body.error).toBe("Username and password are required");
+    });
+
+    it("should return 400 if username does not exist", async () => {
+        const loginData = {
+            username: "nonexistent_user",
+            password: "Password123!"
+        };
+        const res = await request(app).post(endpoint).send(loginData);
+        expect(res.statusCode).toBe(400);
+        expect(res.body.error).toBe("Invalid username or password");
+    });
+
+    it("should return 400 if password is incorrect", async () => {
+        const loginData = {
+            username: "bob",
+            password: "WrongPassword123!"
+        };
+        const res = await request(app).post(endpoint).send(loginData);
+        expect(res.statusCode).toBe(400);
+        expect(res.body.error).toBe("Invalid username or password");
+    });
+});
+
 describe("User Deletion Tests", () => {
     beforeEach(async () => {
         const newUser = new User({
@@ -227,78 +299,6 @@ describe("User Update Tests", () => {
         const res = await request(app).post("/db/user/invalid_id/update");
         expect(res.statusCode).toBe(500);
         expect(res.body.error).toBe(undefined);
-    });
-});
-
-describe("Account Login Tests", () => {
-    const endpoint = "/db/account_login";
-    
-    beforeEach(async () => {
-        const newUser = new User({
-            username: "bob",
-            password: "Password123!",
-        });
-        await newUser.save();
-    });
-
-    it("should log in an existing user", async () => {
-        const loginData = {
-            username: "bob",
-            password: "Password123!",
-        };
-        const res = await request(app).post(endpoint).send(loginData);
-        expect(res.statusCode).toBe(200);
-        expect(res.body.message).toBe("Login successful");
-    });
-
-    it("should return 404 if password is missing", async () => {
-        const loginData = {
-            username: "bob",
-            password: null
-        };
-        const res = await request(app).post(endpoint).send(loginData);
-        expect(res.statusCode).toBe(404);
-        expect(res.body.error).toBe("Username and password are required");
-    });
-
-    it("should return 404 if username is missing", async () => {
-        const loginData = {
-            username: null,
-            password: "Password123!"
-        };
-        const res = await request(app).post(endpoint).send(loginData);
-        expect(res.statusCode).toBe(404);
-        expect(res.body.error).toBe("Username and password are required");
-    });
-
-    it("should return 404 if password is missing", async () => {
-        const loginData = {
-            username: "bob",
-            password: null
-        };
-        const res = await request(app).post(endpoint).send(loginData);
-        expect(res.statusCode).toBe(404);
-        expect(res.body.error).toBe("Username and password are required");
-    });
-
-    it("should return 400 if username does not exist", async () => {
-        const loginData = {
-            username: "nonexistent_user",
-            password: "Password123!"
-        };
-        const res = await request(app).post(endpoint).send(loginData);
-        expect(res.statusCode).toBe(400);
-        expect(res.body.error).toBe("Invalid username or password");
-    });
-
-    it("should return 400 if password is incorrect", async () => {
-        const loginData = {
-            username: "bob",
-            password: "WrongPassword123!"
-        };
-        const res = await request(app).post(endpoint).send(loginData);
-        expect(res.statusCode).toBe(400);
-        expect(res.body.error).toBe("Invalid username or password");
     });
 });
 
