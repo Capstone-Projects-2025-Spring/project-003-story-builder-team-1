@@ -16,10 +16,7 @@ describe("POST /first_chapter", () => {
   it("should return 404 if required fields are missing", async () => {
 
     const input = {
-      "story_name": "Story Name",
-      "story_details": null,
-      "extra_details": "Extra Detail",
-      "story_outline": "Story Outline"
+      "story_outline": null
     }
 
     const response = await request(app)
@@ -39,9 +36,6 @@ describe("POST /first_chapter", () => {
     axios.post.mockResolvedValue({message: "Story Data Received Successfully", status: 200});
 
     const input = {
-      "story_name": "Story Name",
-      "story_details": "Story Detail",
-      "extra_details": "Extra Detail",
       "story_outline": "Story Outline"
     }
 
@@ -60,7 +54,6 @@ describe("POST /first_chapter", () => {
 
     //assert response matches expected output
     to_frontend = {
-      "title": "Story Name",
       "courier_response": "Courier Response"
     }
     expect(response.body).toEqual({"message": "Story Contents Received Successfully", data: to_frontend});
@@ -73,9 +66,6 @@ describe("POST /first_chapter", () => {
     axios.post.mockRejectedValue(new Error("Courier API error"));
 
     const input = {
-      "story_name": "Story Name",
-      "story_details": "Story Detail",
-      "extra_details": "Extra Detail",
       "story_outline": "Story Outline"
     }
 
@@ -245,11 +235,8 @@ describe("POST /next_chapter", () => {
   it("should return 404 if required fields are missing", async () => {
 
     const input = {
-      "story_name": "Story Name",
-      "story_details": null,
-      "extra_details": "Extra Detail",
       "previous_chapters": ["Chapter 1", "Chapter 2"],
-      "story_outline": "Story Outline"
+      "story_outline": null
     }
 
     const response = await request(app)
@@ -263,15 +250,12 @@ describe("POST /next_chapter", () => {
   });
 
   //Test Case 10: if previous_chapters is empty
-  it("should return 400 if chapter_count is not a number", async () => {
+  it("should return 400 if previous_Chapters is empty", async () => {
 
     // Mock axios response
     axios.post.mockResolvedValue({message: "Story Data Received Successfully", status: 200});
 
     const input = {
-      "story_name": "Story Name",
-      "story_details": "Story Detail",
-      "extra_details": "Extra Detail",
       "previous_chapters": [],
       "story_outline": "Story Outline"
     }
@@ -293,9 +277,6 @@ describe("POST /next_chapter", () => {
     axios.post.mockResolvedValue({message: "Story Data Received Successfully", status: 200});
 
     const input = {
-      "story_name": "Story Name",
-      "story_details": "Story Detail",
-      "extra_details": "Extra Detail",
       "previous_chapters": ["Chapter 1", "Chapter 2"],
       "story_outline": "Story Outline"
     }
@@ -315,7 +296,6 @@ describe("POST /next_chapter", () => {
 
     //assert response matches expected output
     to_frontend = {
-      "title": "Story Name",
       "courier_response": "Courier Response"
     }
     expect(response.body).toEqual({"message": "Story Contents Received Successfully", data: to_frontend});
@@ -328,9 +308,6 @@ describe("POST /next_chapter", () => {
     axios.post.mockRejectedValue(new Error("Courier API error"));
 
     const input = {
-      "story_name": "Story Name",
-      "story_details": "Story Detail",
-      "extra_details": "Extra Detail",
       "previous_chapters": ["Chapter 1", "Chapter 2"],
       "story_outline": "Story Outline"
     }
