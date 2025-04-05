@@ -34,6 +34,9 @@ function STORY_LIST() {
               <Button variant="filled" color="gray" fullWidth onClick={() => navigate(`/story/${story.id}/view`)}>
                 View Story
               </Button>
+              <Button variant="filled" color="gray" fullWidth onClick={() => navigate(`/story/${story.id}/best_response`)}>
+                Best Response
+              </Button>
               <Button variant="filled" color="gray" fullWidth onClick={() => navigate(`/story/${story.id}/agents`)}>
                 Agents
               </Button>
