@@ -15,7 +15,7 @@ router.post('/account_creation', user_controller.user_create_post);
 router.post('/account_login', user_controller.user_login_post);
 
 // POST request to delete User
-router.post("/user/:id/delete", user_controller.user_delete_post);
+router.post("/user/:user_id/delete", user_controller.user_delete_post);
 
 // POST request to update User
 router.post("/user/:id/update", user_controller.user_update_post);

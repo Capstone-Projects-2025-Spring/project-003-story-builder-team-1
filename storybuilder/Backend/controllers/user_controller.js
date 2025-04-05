@@ -53,13 +53,12 @@ exports.user_login_post = asyncHandler(async (req, res, next) => {
 
 // Handle User delete on POST
 exports.user_delete_post = asyncHandler(async (req, res, next) => {
-    const user = await User.findById(req.params.id);
+    const user = await User.findByIdAndDelete(req.params.user_id);
 
     if (!user) {
         return res.status(404).json({ error: "User not found" });
     }
 
-    await User.findByIdAndDelete(req.params.id);
     res.json({ message: "User deleted successfully" });
 });
 

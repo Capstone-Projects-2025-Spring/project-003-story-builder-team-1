@@ -223,10 +223,10 @@ describe("User Deletion Tests", () => {
         expect(res.body.error).toBe("User not found");
     });
 
-    it("should return 500 if user ID is invalid", async () => {
+    it("should return 400 if user ID is invalid", async () => {
         const res = await request(app).post("/db/user/invalid_id/delete");
-        expect(res.statusCode).toBe(500);
-        expect(res.body.error).toBe(undefined);
+        expect(res.statusCode).toBe(400);
+        expect(res.body.error).toBe("Invalid input format");
     });
 
 });
@@ -285,10 +285,10 @@ describe("User Update Tests", () => {
         expect(res.body.error).toBe("User not found");
     });
 
-    it("should return 500 if user ID is invalid", async () => {
+    it("should return 400 if user ID is invalid", async () => {
         const res = await request(app).post("/db/user/invalid_id/update");
-        expect(res.statusCode).toBe(500);
-        expect(res.body.error).toBe(undefined);
+        expect(res.statusCode).toBe(400);
+        expect(res.body.error).toBe("Invalid input format");
     });
 });
 
@@ -345,10 +345,10 @@ describe("user_detail tests", () => {
         expect(res.body.error).toBe("User not found");
     });
 
-    it("should return 500 if user ID is invalid", async () => {
+    it("should return 400 if user ID is invalid", async () => {
         const res = await request(app).get("/db/user/invalid_id");
 
-        expect(res.statusCode).toBe(500);
-        expect(res.body.error).toBe(undefined);
+        expect(res.statusCode).toBe(400);
+        expect(res.body.error).toBe("Invalid input format");
     });
 });
