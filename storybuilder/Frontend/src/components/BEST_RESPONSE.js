@@ -5,23 +5,29 @@ import STORY_CONTEXT from "../context/STORY_CONTEXT";
 function BEST_RESPONSE() {
     const { state, fetch_first_chapter, fetch_next_chapter, api_error } = useContext(STORY_CONTEXT);
     const [best_res, set_best_res] = useState("Waiting for the agents to choose the best response...");
+    const [show_cont_button, set_show_cont_button] = useState(true);
 
     useEffect(() => {
         if (state.current_story) {
-            set_best_res(state.current_story.chapters[-1]);
+            set_best_res(state.current_story.chapters[state.current_story.chapters.length - 1]);
+            if (state.current_story.chapters.length > state.current_story.chapter_count + 1) {
+                set_show_cont_button(false);
+            }
         }
       }, [state.current_story]);
 
-    function handle_continue() {
+    const handle_continue = async () => {
         // Handle continue button click
         console.log("Continue button clicked");
 
+        console.log("Outline: ", state.current_story.chapters[0]);
+
         // if chapters length is 1, only outline is available, so fetch first chapter
         if (state.current_story.chapters.length === 1) {
-            const first_chapter_success = fetch_first_chapter(state.current_story.title, state.current_story.chapters[0]);
+            const first_chapter_success = await fetch_first_chapter(state.current_story.chapters[0]);
             if (first_chapter_success) {
                 console.log("Successfully fetched first chapter");
-    
+                console.log("First Chapter: ", state.current_story.chapters[1]);
             }
             else {
                 console.log("First Chapter error");
@@ -30,7 +36,7 @@ function BEST_RESPONSE() {
         }
         // chapters contains more than outline and 1st chapter, so fetch next chapter
         else {
-            const next_chapter_success = fetch_next_chapter(state.current_story.title, state.current_story.chapters[0], state.current_story.chapters.slice(1));
+            const next_chapter_success = await fetch_next_chapter(state.current_story.chapters[0], state.current_story.chapters.slice(1));
             if (next_chapter_success) {
                 console.log("Successfully fetched next chapter");
     
@@ -59,9 +65,11 @@ function BEST_RESPONSE() {
 
         {/* View Button */}
         <Group justify="flex-end">
-            <Button size="sm" variant="light" color="teal" onClick={() => handle_continue()}>
-            Continue
-            </Button>
+            {show_cont_button && (
+                <Button size="sm" variant="light" color="teal" onClick={() => handle_continue()}>
+                Continue
+                </Button>
+            )}
         </Group>
         </Card>
     );

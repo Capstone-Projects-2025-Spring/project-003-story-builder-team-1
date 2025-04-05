@@ -23,6 +23,7 @@ function story_reducer(state, action) {
                 ...state,
                 current_story: {
                     title: action.payload.title,
+                    chapter_count: action.payload.chapter_count,
                     chapters: [action.payload.chapter], // Store first chapter
                 },
                 loading: false,
@@ -108,6 +109,7 @@ export function Story_Provider({ children }) {
 
             dispatch({ type: "FETCH_SUCCESS", payload: {
                         title: title,
+                        chapter_count: chapter_count,
                         chapter: chapter,
                     } });
             return true;
@@ -116,12 +118,11 @@ export function Story_Provider({ children }) {
         return false;
     };
 
-    const fetch_first_chapter = async (story_name, story_outline) => {
+    const fetch_first_chapter = async (story_outline) => {
         // reset errors
         set_api_error('');
 
         const { data, error } = await use_axios(SERVER_URL + "/translator/first_chapter", "POST", {
-            "story_name": story_name,
             "story_outline": story_outline,
             }
         );
@@ -133,20 +134,20 @@ export function Story_Provider({ children }) {
             return false
         }
 
+        const chapter = data?.data?.courier_response;
         // data exists then dispatch ADD_CHAPTER
-        dispatch({ type: "ADD_CHAPTER", payload: data })
+        dispatch({ type: "ADD_CHAPTER", payload: chapter })
 
         return true;
         
     };
 
     // Function to fetch the next chapter
-    const fetch_next_chapter = async (story_name, story_outline, previous_chapters) => {
+    const fetch_next_chapter = async (story_outline, previous_chapters) => {
         // reset errors
         set_api_error('');
 
         const { data, error } = await use_axios(SERVER_URL + "/translator/first_chapter", "POST", {
-            "story_name": story_name,
             "story_outline": story_outline,
             "previous_chapters": previous_chapters,
             }
@@ -159,8 +160,10 @@ export function Story_Provider({ children }) {
             return false
         }
 
+        const chapter = data?.data?.courier_response;
         // data exists then dispatch ADD_CHAPTER
-        dispatch({ type: "ADD_CHAPTER", payload: data })
+        dispatch({ type: "ADD_CHAPTER", payload: chapter })
+        console.log("Next chapter 1: ", chapter);
         return true;
 
     };

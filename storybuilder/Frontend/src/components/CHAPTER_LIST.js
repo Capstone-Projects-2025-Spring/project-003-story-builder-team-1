@@ -45,7 +45,7 @@ function CHAPTER_LIST({ }) {
           fullWidth
           onClick={() => handle_chapter_click(index)}
         >
-          Chapter {index + 1}
+          {index === 0 ? "Outline" : `Chapter ${index}`}
         </Button>
       ))}
     </Stack>

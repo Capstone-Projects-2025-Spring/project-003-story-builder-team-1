@@ -9,7 +9,7 @@ function AGENT_BOX({ name }) {
 
     useEffect(() => {
       if (state.current_story?.chapters?.length > 0) {
-          set_chapter_content(state.current_story.chapters[0]); // Display first chapter
+          set_chapter_content(state.current_story.chapters[state.current_story.chapters.length - 1]); // recent chapter
       }
     }, [state.current_story]);
 
