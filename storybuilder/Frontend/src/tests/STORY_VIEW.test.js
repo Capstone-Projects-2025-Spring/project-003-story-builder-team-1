@@ -1,32 +1,39 @@
 import { render, screen } from '../setupTests';
-import STORY_VIEW from '../components/STORY_VIEW'; // Adjust the path if necessary
+import STORY_VIEW from '../components/STORY_VIEW';
+import { Story_Provider } from '../context/STORY_CONTEXT'
+import STORY_CONTEXT from '../context/STORY_CONTEXT';
+
+jest.mock("axios", () => ({
+  default: jest.fn(),
+}));
+
+const mock_state = {
+  current_story: {
+      title: "Mock Story",
+      chapters: ["Chapter 1 Mock Data"],
+  },
+};
 
 describe('STORY_VIEW Component', () => {
   test('renders the default story content', () => {
-    render(<STORY_VIEW />);
-
-    // Check if the default title, chapter title, and chapter text are rendered
-    expect(screen.getByText('The Adventure Begins')).toBeInTheDocument();
-    expect(screen.getByText('Chapter 1: A New Journey')).toBeInTheDocument();
-    expect(screen.getByText(/Once upon a time, in a land far away/)).toBeInTheDocument();
-  });
-
-  test('renders custom story content when props are provided', () => {
-    const customStoryTitle = 'Epic Journey';
-    const customChapterTitle = 'Chapter 1: The Call';
-    const customChapterText = 'In the heart of a bustling city, a lone figure stood on the balcony, gazing into the horizon...';
-
     render(
-      <STORY_VIEW
-        story_title={customStoryTitle}
-        chapter_title={customChapterTitle}
-        chapter_text={customChapterText}
-      />
+      <Story_Provider>
+          <STORY_VIEW />
+      </Story_Provider>
     );
 
-    // Check if the custom title, chapter title, and chapter text are rendered
-    expect(screen.getByText(customStoryTitle)).toBeInTheDocument();
-    expect(screen.getByText(customChapterTitle)).toBeInTheDocument();
-    expect(screen.getByText(customChapterText)).toBeInTheDocument();
+    expect(screen.getByText('Story Title')).toBeInTheDocument();
+  });
+
+  test('renders the story content provided', () => {
+    render(
+      <STORY_CONTEXT.Provider value={{ state: mock_state }}>
+          <STORY_VIEW />
+      </STORY_CONTEXT.Provider>
+    );
+
+    // Check if the mock data is rendered
+    expect(screen.getByText('Mock Story')).toBeInTheDocument();
+    expect(screen.getByText('Chapter 1 Mock Data')).toBeInTheDocument();
   });
 });

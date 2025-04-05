@@ -11,20 +11,10 @@ function CHAPTER_VIEW() {
     const [chapters, set_chapters] = useState([]);
     const curr_chapter = parseInt(chapter_id, 10) - 1;
 
-    console.log("Params:", useParams());
-    console.log("Index: ", chapter_id);
-
-    console.log("CHAPTER_VIEW chapters1: ", chapters);
-    console.log("CHAPTER_VIEW number1: ", curr_chapter);
-    console.log("CHAPTER_VIEW1: ", chapters[curr_chapter]);
-
     useEffect(() => {
         if (state.current_story) {
             set_chapters(state.current_story.chapters);
         }
-        console.log("CHAPTER_VIEW chapters2: ", chapters);
-        console.log("CHAPTER_VIEW number2: ", curr_chapter);
-        console.log("CHAPTER_VIEW2: ", chapters[curr_chapter]);
     }, [state.current_story]);
 
     // In case the chapter is not found
