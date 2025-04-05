@@ -11,6 +11,7 @@ router.post('/first_chapter', async (req, res) => {
     if(!req.body.details || !req.body.story_outline) {
        return res.status(400).json({message: "No prompt data received", data: req.body});
     }
+
     //formatting the story & extra details (ignoring story_name and chapter_count for now, also ignores the need for a previous_chapter entry)
     const promptinfo = JSON.stringify(req.body.details);
     const storyoutline = JSON.stringify(req.body.story_outline);
@@ -32,15 +33,15 @@ router.post('/first_chapter', async (req, res) => {
 
 //next chapter
 router.post('/next_chapter', async (req, res) => {
-    if(!req.body.details || !req.body.story_outline || !req.body.chapter_count) {
+    if(!req.body.details || !req.body.story_outline || !req.body.previous_chapters) {
         return res.status(400).json({message: "No prompt data received", data: req.body});
      }
+
     var chaptercount = req.body.previous_chapters.length;
     console.log("Current chapter count: (Test)" + chaptercount);
     var promptinfo = JSON.stringify(req.body.details);
     var chapteroutline = JSON.stringify(req.body.story_outline);
     var previouschapter = JSON.stringify(req.body.previous_chapters);
-
 
     var prompt = promptformatter.nextchapter(promptinfo, chapteroutline, previouschapter, chaptercount);
 
@@ -60,7 +61,8 @@ router.post('/next_chapter', async (req, res) => {
 router.post('/story_outline', async (req, res) => {
     if(!req.body.details) {
         return res.status(400).json({message: "No prompt data received", data: req.body});
-     }
+    }
+
     //separate request body into two fields to create outline with promptformatter
     var chapter_count = JSON.stringify(req.body.chapter_count);
     var promptinfo = JSON.stringify(req.body.details);
