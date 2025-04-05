@@ -45,7 +45,7 @@ function nextchapter(outline, chapter) {
         messages: [
             { "role": "system", "content": `You are now being fed a chapter written by another agent. You will continue the story in another chapter of roughly equal length while still following the guidelines established in the original prompt.`},
             { "role": "assistant", "content": `Story outline: ${outline}`},
-            { "role": "user", "content": `These are the chapters that have already been written. Please write chapter ${chapter.length}: ${chapter}`},
+            { "role": "user", "content": `These are the chapters that have already been written. Please write chapter ${chapter.length+1}: ${chapter}`},
         ],
         stream: false, 
     };
