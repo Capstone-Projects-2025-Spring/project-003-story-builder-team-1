@@ -122,7 +122,7 @@ describe("Account Creation Tests", () => {
         expect(res.body.error).toBe("Username and password are required");
     });
 
-    it("should return 400 if username is already taken", async () => {
+    it("should return 400 if username already exists", async () => {
         const existingUser = new User({
             username: "bob",
             password: "Password123!"
