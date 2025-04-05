@@ -18,7 +18,7 @@ function draft(promptinfo) {
         model: "llama3.1-8b", // Use model names from API documentation for model provider
         messages: [
             { "role": "system", "content": `You are a helpful assistant. You will work in a Mechanical Turks style with other assistants to compose stories for users following a certain set of steps. The story will be written in chapters, and you will write the first chapter.`},
-            { "role": "user", "content": `${promptinfo}`},
+            { "role": "user", "content": `This is the story outline. Please adapt Chapter 1: ${promptinfo}`},
         ],
         stream: false, // Ensures a single response instead of a streamed response
     };
@@ -45,7 +45,7 @@ function nextchapter(outline, chapter) {
         messages: [
             { "role": "system", "content": `You are now being fed a chapter written by another agent. You will continue the story in another chapter of roughly equal length while still following the guidelines established in the original prompt.`},
             { "role": "assistant", "content": `Story outline: ${outline}`},
-            { "role": "user", "content": `${chapter}`},
+            { "role": "user", "content": `These are the chapters that have already been written. Write the next chapter: ${chapter}`},
         ],
         stream: false, 
     };
