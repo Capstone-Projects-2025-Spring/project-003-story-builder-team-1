@@ -147,7 +147,7 @@ export function Story_Provider({ children }) {
         // reset errors
         set_api_error('');
 
-        const { data, error } = await use_axios(SERVER_URL + "/translator/first_chapter", "POST", {
+        const { data, error } = await use_axios(SERVER_URL + "/translator/next_chapter", "POST", {
             "story_outline": story_outline,
             "previous_chapters": previous_chapters,
             }
