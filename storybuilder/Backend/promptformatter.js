@@ -39,13 +39,13 @@ function critique(promptinfo, chapter) {
     }
 
 //takes in previous chapter context, story outline and story prompt
-function nextchapter(outline, chapter) {
+function nextchapter(outline, chapter, chapter_count) {
     var chap =  {
         model: "llama3.1-8b", 
         messages: [
             { "role": "system", "content": `You are now being fed a chapter written by another agent. You will continue the story in another chapter of roughly equal length while still following the guidelines established in the original prompt.`},
             { "role": "assistant", "content": `Story outline: ${outline}`},
-            { "role": "user", "content": `These are the chapters that have already been written. Please write chapter ${chapter.length+1}: ${chapter}`},
+            { "role": "user", "content": `These are the chapters that have already been written. Please write chapter ${chapter_count}: ${chapter}`},
         ],
         stream: false, 
     };

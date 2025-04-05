@@ -34,10 +34,12 @@ router.post('/next_chapter', async (req, res) => {
     if(!req.body.story_outline || !req.body.previous_chapters) {
         return res.status(400).json({message: "No prompt data received", data: req.body});
     }
+
+    var current_chapter_count = req.body.previous_chapters.length;
     var chapter_outline = JSON.stringify(req.body.story_outline);
     var previous_chapter = JSON.stringify(req.body.previous_chapters);
 
-    var prompt = promptformatter.nextchapter(chapter_outline, previous_chapter);
+    var prompt = promptformatter.nextchapter(chapter_outline, previous_chapter, current_chapter_count);
 
     try {
         //try to send prompt to courier
