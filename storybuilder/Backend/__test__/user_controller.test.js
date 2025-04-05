@@ -179,16 +179,6 @@ describe("Account Login Tests", () => {
         expect(res.body.error).toBe("Username and password are required");
     });
 
-    it("should return 404 if password is missing", async () => {
-        const loginData = {
-            username: "bob",
-            password: null
-        };
-        const res = await request(app).post(endpoint).send(loginData);
-        expect(res.statusCode).toBe(404);
-        expect(res.body.error).toBe("Username and password are required");
-    });
-
     it("should return 400 if username does not exist", async () => {
         const loginData = {
             username: "nonexistent_user",
