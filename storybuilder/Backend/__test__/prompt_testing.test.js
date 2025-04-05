@@ -8,7 +8,7 @@ describe('promptforming', () => {
           model: "llama3.1-8b", // Use model names from API documentation for model provider
           messages: [
               { "role": "system", "content": `You are a helpful assistant. You will work in a Mechanical Turks style with other assistants to compose stories for users following a certain set of steps. The story will be written in chapters, and you will write the first chapter.`},
-              { "role": "user", "content": `Write a story about pirates.`},
+              { "role": "user", "content": `This is the story outline. Please adapt Chapter 1: Write a story about pirates.`},
           ],
           stream: false, // Ensures a single response instead of a streamed response
       });
@@ -17,7 +17,7 @@ describe('promptforming', () => {
       it('Should build a JSON prompt that asks to critique a story, and which provides the original prompt and the draft in its proper place', () => {
         let prompt = "Write a story about pirates.";
         let story = "X";
-        var crit = promptadmin.critique(prompt, story);
+        var crit = promptadmin.critique(prompt, story,);
         expect(crit).toEqual({
           model: "llama3.1-8b", 
           messages: [
@@ -42,15 +42,16 @@ describe('promptforming', () => {
       });
       
       it('Should build a JSON prompt that asks to continue a story in a new chapter based on the previous chapter thats given as input.', () => {
+        let chapter_count = 3;
           let chapter = "X";
           let outline = "Y"
-          var next = promptadmin.nextchapter(outline, chapter);
+          var next = promptadmin.nextchapter(outline, chapter, chapter_count);
           expect(next).toEqual({
             model: "llama3.1-8b", 
             messages: [
                 { "role": "system", "content": `You are now being fed a chapter written by another agent. You will continue the story in another chapter of roughly equal length while still following the guidelines established in the original prompt.`},
                 { "role": "assistant", "content": `Story outline: Y`},
-                { "role": "user", "content": `X`},
+                { "role": "user", "content": `These are the chapters that have already been written. Please write chapter 3: X`},
             ],
             stream: false, 
         });
