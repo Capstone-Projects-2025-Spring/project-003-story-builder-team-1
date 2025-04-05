@@ -42,15 +42,14 @@ describe('promptforming', () => {
       });
       
       it('Should build a JSON prompt that asks to continue a story in a new chapter based on the previous chapter thats given as input.', () => {
-          let prompt = "Write a story about pirates.";
           let chapter = "X";
           let outline = "Y"
-          var next = promptadmin.nextchapter(prompt, outline, chapter);
+          var next = promptadmin.nextchapter(outline, chapter);
           expect(next).toEqual({
             model: "llama3.1-8b", 
             messages: [
                 { "role": "system", "content": `You are now being fed a chapter written by another agent. You will continue the story in another chapter of roughly equal length while still following the guidelines established in the original prompt.`},
-                { "role": "assistant", "content": `Write a story about pirates.\n\nStory outline: Y`},
+                { "role": "assistant", "content": `Story outline: Y`},
                 { "role": "user", "content": `X`},
             ],
             stream: false, 
