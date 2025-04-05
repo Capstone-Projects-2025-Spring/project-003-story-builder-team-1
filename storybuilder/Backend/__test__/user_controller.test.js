@@ -28,67 +28,6 @@ afterEach(async () => {
     await Story.deleteMany();
 });
 
-describe("user_detail tests", () => {
-    let user;
-    let story_1;
-    let story_2;
-
-    // Setup a new user and associated stories before each test
-    beforeEach(async () => {
-        user = new User({
-            username: "alice",
-            password: "Password123!",
-        });
-        await user.save();
-        
-        story_1 = new Story({
-            story_name: "First Story",
-            prompt: "Write about a dragon.",
-            content: "Once upon a time...",
-            user: user._id,  // Link to the user
-        });
-        story_2 = new Story({
-            story_name: "Second Story",
-            prompt: "A haunted house mystery.",
-            content: "It was a dark night...",
-            user: user._id,  // Link to the user
-        });
-
-        await story_1.save();
-        await story_2.save();
-
-        user.stories = [story_1._id, story_2._id];
-        await user.save();
-    });
-    
-    // Test cases for the API routes
-
-    it("should return user details including populated stories", async () => {
-        const res = await request(app).get(`/db/user/${user._id}`);
-
-        expect(res.statusCode).toBe(200);
-        expect(res.body.username).toBe("alice");
-        expect(res.body.stories).toHaveLength(2);
-        expect(res.body.stories[0]).toHaveProperty("story_name", "First Story");
-        expect(res.body.stories[1]).toHaveProperty("story_name", "Second Story");
-    });
-
-    it("should return 404 if user not found", async () => {
-        const test_user_id = generate_valid_object_id();
-        const res = await request(app).get(`/db/user/${test_user_id}`);
-
-        expect(res.statusCode).toBe(404);
-        expect(res.body.error).toBe("User not found");
-    });
-
-    it("should return 500 if user ID is invalid", async () => {
-        const res = await request(app).get("/db/user/invalid_id");
-
-        expect(res.statusCode).toBe(500);
-        expect(res.body.error).toBe(undefined);
-    });
-});
-
 describe("Account Creation Tests", () => {
     const endpoint = "/db/account_creation";
 
@@ -360,5 +299,66 @@ describe("Account Login Tests", () => {
         const res = await request(app).post(endpoint).send(loginData);
         expect(res.statusCode).toBe(400);
         expect(res.body.error).toBe("Invalid username or password");
+    });
+});
+
+describe("user_detail tests", () => {
+    let user;
+    let story_1;
+    let story_2;
+
+    // Setup a new user and associated stories before each test
+    beforeEach(async () => {
+        user = new User({
+            username: "alice",
+            password: "Password123!",
+        });
+        await user.save();
+        
+        story_1 = new Story({
+            story_name: "First Story",
+            prompt: "Write about a dragon.",
+            content: "Once upon a time...",
+            user: user._id,  // Link to the user
+        });
+        story_2 = new Story({
+            story_name: "Second Story",
+            prompt: "A haunted house mystery.",
+            content: "It was a dark night...",
+            user: user._id,  // Link to the user
+        });
+
+        await story_1.save();
+        await story_2.save();
+
+        user.stories = [story_1._id, story_2._id];
+        await user.save();
+    });
+    
+    // Test cases for the API routes
+
+    it("should return user details including populated stories", async () => {
+        const res = await request(app).get(`/db/user/${user._id}`);
+
+        expect(res.statusCode).toBe(200);
+        expect(res.body.username).toBe("alice");
+        expect(res.body.stories).toHaveLength(2);
+        expect(res.body.stories[0]).toHaveProperty("story_name", "First Story");
+        expect(res.body.stories[1]).toHaveProperty("story_name", "Second Story");
+    });
+
+    it("should return 404 if user not found", async () => {
+        const test_user_id = generate_valid_object_id();
+        const res = await request(app).get(`/db/user/${test_user_id}`);
+
+        expect(res.statusCode).toBe(404);
+        expect(res.body.error).toBe("User not found");
+    });
+
+    it("should return 500 if user ID is invalid", async () => {
+        const res = await request(app).get("/db/user/invalid_id");
+
+        expect(res.statusCode).toBe(500);
+        expect(res.body.error).toBe(undefined);
     });
 });
