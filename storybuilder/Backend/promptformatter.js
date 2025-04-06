@@ -13,7 +13,7 @@ function judge(storybank) {
     return judge;
 }
 
-function draft(promptinfo) {
+function draft(promptinfo, outline) {
     var draft = {
         model: "llama3.1-8b", // Use model names from API documentation for model provider
         messages: [
@@ -30,8 +30,8 @@ function critique(promptinfo, chapter) {
         model: "llama3.1-8b", 
         messages: [
             { "role": "system", "content": "You are now being fed a chapter written by another agent. You will critique the drafting of this story based on grammatical correctness as well as its faithfulness to the style parameters that were specified."},
-            { "role": "user", "content": promptinfo},
-            { "role": "assistant", "content": chapter},
+            { "role": "assistant", "content": promptinfo},
+            { "role": "user", "content": chapter},
         ],
         stream: false, 
     };
@@ -51,6 +51,46 @@ function nextchapter(promptinfo, outline, chapter) {
     };
     return chap;
     }
+
+function critique_outline(promptinfo, chapter) {
+    var crit =  {
+        model: "llama3.1-8b", 
+        messages: [
+            { "role": "system", "content": "You are now being fed a chapter written by another agent. You will critique the drafting of this story based on grammatical correctness as well as its faithfulness to the style parameters that were specified."},
+            { "role": "assistant", "content": promptinfo},
+            { "role": "user", "content": chapter},
+        ],
+        stream: false, 
+    };
+    return crit;
+    }
+
+function revise_outline(promptinfo, outline) {
+    var revise =  {
+        model: "llama3.1-8b",
+        messages: [ 
+            { "role": "system", "content": "You are now being fed a chapter outline that needs to be revised. Your job is to improve the outline based on the critique provided, ensuring it adheres to the original prompt and improves the quality of the story."},
+            { "role": "assistant", "content": `Critique: ${promptinfo}`},
+            { "role": "user", "content": `${outline}`} 
+        ],
+        stream: false,
+    };
+    return revise;
+}
+
+function revise(promptinfo, chapter) {
+    var revise =  {
+        model: "llama3.1-8b",
+        messages: [ 
+            { "role": "system", "content": "You are now being fed a chapter that needs to be revised. Your job is to improve the chapter based on the critique provided, ensuring it adheres to the original prompt and improves the quality of the story."},
+            { "role": "assistant", "content": `${promptinfo}`},
+            { "role": "user", "content": `${chapter}` } // The chapter text to be revised
+        ],
+        stream: false,
+    };
+    return revise;
+}
+
 
 function storyoutline(chaptercount, promptinfo) {
     //array template to be formatted for the prompt, organized by chapter number
@@ -120,4 +160,4 @@ function setstream(prompt, streamset) {
 
 
 
-module.exports = {judge, draft, critique, nextchapter, storyoutline, boostmodel, degrademodel, defaultmodel, getstylesearch, setstream};
+module.exports = {judge, draft, critique, critique_outline, revise, revise_outline, nextchapter, storyoutline, boostmodel, degrademodel, defaultmodel, getstylesearch, setstream};

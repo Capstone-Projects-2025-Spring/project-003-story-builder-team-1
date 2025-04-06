@@ -1,5 +1,5 @@
 # Use official Node.js image
-FROM node:23-alpine
+FROM node:22-alpine
 
 WORKDIR /app
 
@@ -13,6 +13,7 @@ COPY ./Frontend /app/Frontend
 
 RUN cd /app/Backend/ && npm install
 RUN cd /app/Frontend/ && npm install
+
 # Build the frontend application
 RUN cd /app/Frontend/ && npm run build
 
