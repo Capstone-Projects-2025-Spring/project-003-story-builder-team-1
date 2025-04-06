@@ -140,3 +140,29 @@ exports.story_update_post = asyncHandler(async (req, res, next) => {
 
     res.status(200).json({ message: "Story updated successfully", story: { story_name: story.story_name, prompt: story.prompt } });
 });
+
+// Handle getting the number of chapters in a Story
+exports.story_get_number_of_chapters = asyncHandler(async (req, res, next) => {
+    const { user_id, story_id } = req.params;
+
+    // Find the user and ensure they exist
+    const user = await User.findById(user_id);
+    if (!user) {
+        return res.status(404).json({ error: "User not found" });
+    }
+
+    // Find the story and check if the user is the owner
+    const story = await Story.findById(story_id);
+    if (!story) {
+        return res.status(404).json({ error: "Story not found" });
+    }
+
+    if (story.user.toString() !== user_id) {
+        return res.status(403).json({ error: "You do not have permission to access this story" });
+    }
+
+    // Get the number of chapters in the story_content array
+    const number_of_chapters = story.story_content.length;
+
+    res.status(200).json({ number_of_chapters });
+});

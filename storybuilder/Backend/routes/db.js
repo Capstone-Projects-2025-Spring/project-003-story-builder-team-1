@@ -43,6 +43,10 @@ router.post("/story/:user_id/:story_id/delete", story_controller.story_delete_po
 // POST request to update Story
 router.post("/story/:user_id/:story_id/update", story_controller.story_update_post);
 
+router.get("/story/:user_id/:story_id/get_number_of_chapters", story_controller.story_get_number_of_chapters);
+
+//router.post("/story/:user_id/:story_id/add_chatper", story_controller.story_add_chapter_post);
+
 
 /// AGENT ROUTES ///
 
