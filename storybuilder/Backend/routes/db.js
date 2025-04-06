@@ -25,17 +25,19 @@ router.get("/user/:user_id", user_controller.user_details);
 
 /// STORY ROUTES ///
 
-// GET request for list of all Stories
-router.get("/stories", story_controller.story_list);
-
-// GET request for one Story
-router.get("/story/:id", story_controller.story_detail);
-
 // POST request for creating Story
 router.post("/story/create", story_controller.story_create_post);
 
+// GET request for q list of all Stories based on the user_id
+router.get("/story/:user_id/get_stories", story_controller.user_stories_list);
+
+// GET request for one Story
+router.get("/story/:user_id/:story_id/get_story", story_controller.story_detail);
+
 // POST request to delete Story
-router.post("/story/:id/delete", story_controller.story_delete_post);
+router.post("/story/:user_id/:story_id/delete", story_controller.story_delete_post);
+
+/*
 
 // POST request to update Story
 router.post("/story/:id/update", story_controller.story_update_post);
@@ -67,13 +69,14 @@ router.get("/agents", agent_controller.agent_list);
 // GET request for one Agent
 router.get("/agent/:id", agent_controller.agent_detail);
 
-// POST request for creating new instance of an Agent
-router.post("/agent/create", agent_controller.agent_create_post);
 
 // POST request for deleting an instance of an Agent
 router.post("/agent/:id/delete", agent_controller.agent_delete_post);
 
 // POST request for updating the agent_prompt of an Agent
 router.post("/agent/:id/update", agent_controller.agent_update_post);
+*/
 
+// POST request for creating new instance of an Agent
+router.post("/agent/create", agent_controller.agent_create_post);
 module.exports = router;

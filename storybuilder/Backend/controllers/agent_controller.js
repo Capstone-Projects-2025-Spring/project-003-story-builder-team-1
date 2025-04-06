@@ -2,33 +2,18 @@ const Agent = require("../models/agent");
 const Story = require("../models/story");
 const asyncHandler = require("express-async-handler");
 
-// Display list of all Agents
-exports.agent_list = asyncHandler(async (req, res, next) => {
-    const agents = await Agent.find().exec();
-    res.json(agents);
-});
-
-// Display detail page for a specific Agent
-exports.agent_detail = asyncHandler(async (req, res, next) => {
-    const agent = await Agent.findById(req.params.id).exec();
-    if (!agent) {
-        return res.status(404).json({ error: "Agent not found" });
-    }
-    res.json(agent);
-});
-
 // Handle Agent create on POST, inserts a new document into MongoDB.
 exports.agent_create_post = asyncHandler(async (req, res, next) => {
-    const { name, agent_prompt } = req.body;
+    const { name, agent_prompt} = req.body;
 
     if (!name || !agent_prompt) {
-        return res.status(400).json({ error: "Name and prompt are required" });
+        return res.status(400).json({ error: "Name prompt, and story are required" });
     }
 
     const newAgent = new Agent({ name, agent_prompt });
     await newAgent.save();
 
-    res.status(201).json({ message: "Agent created", agent: newAgent });
+    res.status(200).json({ message: "Agent created", agent: newAgent });
 });
 
 // Handle Agent delete on POST, removes a document from MongoDB.

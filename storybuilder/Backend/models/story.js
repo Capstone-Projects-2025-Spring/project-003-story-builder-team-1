@@ -3,7 +3,11 @@ const mongoose = require('mongoose');
 const storySchema = new mongoose.Schema({
     story_name: { type: String, required: true },
     user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
-    prompt: { type: String, required: true },
+    prompt: {
+      story_details: { type: String, required: true },
+      extra_details: { type: String, default: null },
+      chapter_count: { type: Number, required: true },
+    },
     outline: { type: String },
     story_content: [{
         story_chapter_number: { type: Number, required: true },
