@@ -24,7 +24,9 @@ function story_reducer(state, action) {
                 current_story: {
                     title: action.payload.title,
                     chapter_count: action.payload.chapter_count,
-                    chapters: [action.payload.chapter], // Store first chapter
+                    story_details: action.payload.story_details,
+                    extra_details: action.payload.extra_details,
+                    chapters: [action.payload.chapter], // Store the outline as first chapter
                 },
                 loading: false,
             };
@@ -110,6 +112,8 @@ export function Story_Provider({ children }) {
             dispatch({ type: "FETCH_SUCCESS", payload: {
                         title: title,
                         chapter_count: chapter_count,
+                        story_details: story_details,
+                        extra_details: extra_details,
                         chapter: chapter,
                     } });
             return true;
@@ -118,11 +122,19 @@ export function Story_Provider({ children }) {
         return false;
     };
 
-    const fetch_first_chapter = async (story_outline) => {
+    const fetch_first_chapter = async (story_name, story_details, extra_details, story_outline) => {
         // reset errors
         set_api_error('');
 
+        console.log("Name: ", story_name);
+        console.log("Details: ", story_details);
+        console.log("Extra: ", extra_details);
+        console.log("Outline: ", story_outline);
+
         const { data, error } = await use_axios(SERVER_URL + "/translator/first_chapter", "POST", {
+            "story_name": story_name,
+            "story_details": story_details,
+            "extra_details": extra_details,
             "story_outline": story_outline,
             }
         );
@@ -143,13 +155,22 @@ export function Story_Provider({ children }) {
     };
 
     // Function to fetch the next chapter
-    const fetch_next_chapter = async (story_outline, previous_chapters) => {
+    const fetch_next_chapter = async (story_name, story_details, extra_details, previous_chapters, story_outline) => {
         // reset errors
         set_api_error('');
 
+        console.log("NEXT CHAPTER:");
+        console.log("Name: ", story_name);
+        console.log("Details: ", story_details);
+        console.log("Extra: ", extra_details);
+        console.log("Outline: ", story_outline);
+
         const { data, error } = await use_axios(SERVER_URL + "/translator/next_chapter", "POST", {
-            "story_outline": story_outline,
+            "story_name": story_name,
+            "story_details": story_details,
+            "extra_details": extra_details,
             "previous_chapters": previous_chapters,
+            "story_outline": story_outline,
             }
         );
 

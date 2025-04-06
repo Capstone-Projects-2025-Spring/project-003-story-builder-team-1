@@ -16,7 +16,7 @@ function CHAPTER_LIST({ }) {
 
   // hardcoded for 1 story for now MUST CHANGE
   const handle_chapter_click = (index) => {
-    navigate(`/story/1/view/${index + 1}`);
+    navigate(`/story/1/view/${index}`);
   };
 
   // hardcoded for 1 story for now MUST CHANGE

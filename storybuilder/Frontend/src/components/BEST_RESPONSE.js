@@ -20,14 +20,11 @@ function BEST_RESPONSE() {
         // Handle continue button click
         console.log("Continue button clicked");
 
-        console.log("Outline: ", state.current_story.chapters[0]);
-
         // if chapters length is 1, only outline is available, so fetch first chapter
         if (state.current_story.chapters.length === 1) {
-            const first_chapter_success = await fetch_first_chapter(state.current_story.chapters[0]);
+            const first_chapter_success = await fetch_first_chapter(state.current_story.title, state.current_story.story_details, state.current_story.extra_details, state.current_story.chapters[0]);
             if (first_chapter_success) {
                 console.log("Successfully fetched first chapter");
-                console.log("First Chapter: ", state.current_story.chapters[1]);
             }
             else {
                 console.log("First Chapter error");
@@ -36,7 +33,8 @@ function BEST_RESPONSE() {
         }
         // chapters contains more than outline and 1st chapter, so fetch next chapter
         else {
-            const next_chapter_success = await fetch_next_chapter(state.current_story.chapters[0], state.current_story.chapters.slice(1));
+            console.log("previous chapters: ", state.current_story.chapters.slice(1));
+            const next_chapter_success = await fetch_next_chapter(state.current_story.title, state.current_story.story_details, state.current_story.extra_details, state.current_story.chapters.slice(1), state.current_story.chapters[0]);
             if (next_chapter_success) {
                 console.log("Successfully fetched next chapter");
     
@@ -54,17 +52,17 @@ function BEST_RESPONSE() {
         <Textarea
             value={best_res}
             readOnly
-            style={{ width: '100%', height: '100%' }}
+            style={{ flexGrow: 1 }}
             styles={{
             input: {
                 fontSize: '18px',
-                height: '79vh', // im not sure why this works, but it fits the space i need it to
+                height: '79vh', // need to find a better way to fix this
             },
             }}
         />
 
         {/* View Button */}
-        <Group justify="flex-end">
+        <Group justify="flex-end" style={{ marginTop: '10px' }}>
             {show_cont_button && (
                 <Button size="sm" variant="light" color="teal" onClick={() => handle_continue()}>
                 Continue

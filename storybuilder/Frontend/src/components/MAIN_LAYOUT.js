@@ -7,7 +7,7 @@ function MAIN_LAYOUT({ children }) {
     const location = useLocation();
     const navigate = useNavigate();
 
-    const should_render_chapter_list = location.pathname.includes('/story') && !location.pathname.includes('/agents');
+    const should_render_chapter_list = location.pathname.includes('/story') && !location.pathname.includes('/agents')&& !location.pathname.includes('/best_response');; 
 
     function handle_logo_click() {
         navigate('/');
