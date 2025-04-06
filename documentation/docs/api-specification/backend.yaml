@@ -249,6 +249,8 @@ paths:
 
   /db/account_login:
     post:
+      tags:
+        - db
       summary: Log in a user
       requestBody:
         required: true
