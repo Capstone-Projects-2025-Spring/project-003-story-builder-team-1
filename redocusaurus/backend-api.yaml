@@ -263,6 +263,8 @@ paths:
           description: Username exists or password format invalid
   /db/account_login:
     post:
+      tags:
+        - db
       summary: Log in a user
       requestBody:
         required: true
