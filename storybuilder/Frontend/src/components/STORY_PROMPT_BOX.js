@@ -20,7 +20,7 @@ function STORY_PROMPT_BOX() {
             console.log("Story Successfully Submitted");
 
             // hardcoded for 1 story for now
-            navigate(`/story/1/agents`);
+            navigate(`/story/1/best_response`);
         }
         else {
             console.log("Story NOT submitted");

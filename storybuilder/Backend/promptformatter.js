@@ -138,7 +138,5 @@ function setstream(prompt, streamset) {
 }
 
 
-
-
-
 module.exports = {judge, firstchapter, critique, rewrite, nextchapter, storyoutline, boostmodel, degrademodel, defaultmodel, setstream};
+

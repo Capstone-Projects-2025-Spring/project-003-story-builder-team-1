@@ -23,7 +23,10 @@ function story_reducer(state, action) {
                 ...state,
                 current_story: {
                     title: action.payload.title,
-                    chapters: [action.payload.chapter], // Store first chapter
+                    chapter_count: action.payload.chapter_count,
+                    story_details: action.payload.story_details,
+                    extra_details: action.payload.extra_details,
+                    chapters: [action.payload.chapter], // Store the outline as first chapter
                 },
                 loading: false,
             };
@@ -108,39 +111,27 @@ export function Story_Provider({ children }) {
 
             dispatch({ type: "FETCH_SUCCESS", payload: {
                         title: title,
+                        chapter_count: chapter_count,
+                        story_details: story_details,
+                        extra_details: extra_details,
                         chapter: chapter,
                     } });
             return true;
         }
 
         return false;
-
-        // try {
-        //     const response = await axios.post("http://localhost:8080/translator/story_contents", {
-        //         "story_name": story_name,
-        //         "chapter_count": chapter_count,
-        //         "story_details": story_details,
-        //         "extra_details": extra_details
-        //     });
-            
-        //     const title = response.data?.data?.title;
-        //     const chapter = response.data?.data?.courier_response;
-            
-        //     dispatch({ type: "FETCH_SUCCESS", payload: {
-        //         title: title,
-        //         chapter: chapter,
-        //     } });
-        // } catch (error) {
-        //     dispatch({ type: "FETCH_ERROR", payload: error.message });
-        // }
     };
 
-    // Function to fetch the next chapter
-    const fetch_next_chapter = async (story_name, story_details, extra_details, story_outline) => {
+    const fetch_first_chapter = async (story_name, story_details, extra_details, story_outline) => {
         // reset errors
         set_api_error('');
 
-        const { data, error } = await use_axios("http://localhost:8080/translator/next_chapter", "POST", {
+        console.log("Name: ", story_name);
+        console.log("Details: ", story_details);
+        console.log("Extra: ", extra_details);
+        console.log("Outline: ", story_outline);
+
+        const { data, error } = await use_axios(SERVER_URL + "/translator/first_chapter", "POST", {
             "story_name": story_name,
             "story_details": story_details,
             "extra_details": extra_details,
@@ -151,26 +142,55 @@ export function Story_Provider({ children }) {
         // if data is null there is an error
         if (data === null) {
             set_api_error(error);
-            set_is_error(false);
+            set_is_error(true);
             return false
         }
 
+        const chapter = data?.data?.courier_response;
         // data exists then dispatch ADD_CHAPTER
-        dispatch({ type: "ADD_CHAPTER", payload: data })
+        dispatch({ type: "ADD_CHAPTER", payload: chapter })
+
+        return true;
         
+    };
 
+    // Function to fetch the next chapter
+    const fetch_next_chapter = async (story_name, story_details, extra_details, previous_chapters, story_outline) => {
+        // reset errors
+        set_api_error('');
 
-        // try {
-        //     const response = await axios.get(`https://your-backend.com/api/story/${story_id}/chapter/${next_chapter_number}`);
-            
-        //     dispatch({ type: "ADD_CHAPTER", payload: response.data });
-        // } catch (error) {
-        //     console.error("Error fetching chapter:", error.message);
-        // }
+        console.log("NEXT CHAPTER:");
+        console.log("Name: ", story_name);
+        console.log("Details: ", story_details);
+        console.log("Extra: ", extra_details);
+        console.log("Outline: ", story_outline);
+
+        const { data, error } = await use_axios(SERVER_URL + "/translator/next_chapter", "POST", {
+            "story_name": story_name,
+            "story_details": story_details,
+            "extra_details": extra_details,
+            "previous_chapters": previous_chapters,
+            "story_outline": story_outline,
+            }
+        );
+
+        // if data is null there is an error
+        if (data === null) {
+            set_api_error(error);
+            set_is_error(true);
+            return false
+        }
+
+        const chapter = data?.data?.courier_response;
+        // data exists then dispatch ADD_CHAPTER
+        dispatch({ type: "ADD_CHAPTER", payload: chapter })
+        console.log("Next chapter 1: ", chapter);
+        return true;
+
     };
 
     return (
-        <STORY_CONTEXT.Provider value={{ state, submit_story_prompt, fetch_next_chapter, story_name_error, chapter_count_error, story_details_error, api_error }}>
+        <STORY_CONTEXT.Provider value={{ state, submit_story_prompt, fetch_first_chapter, fetch_next_chapter, story_name_error, chapter_count_error, story_details_error, api_error }}>
             {children}
         </STORY_CONTEXT.Provider>
     );

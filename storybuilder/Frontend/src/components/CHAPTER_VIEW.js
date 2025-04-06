@@ -9,7 +9,7 @@ function CHAPTER_VIEW() {
     const { state } = useContext(STORY_CONTEXT);
     const { chapter_id } = useParams();
     const [chapters, set_chapters] = useState([]);
-    const curr_chapter = parseInt(chapter_id, 10) - 1;
+    const curr_chapter = parseInt(chapter_id, 10);
 
     useEffect(() => {
         if (state.current_story) {

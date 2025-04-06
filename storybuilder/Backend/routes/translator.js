@@ -24,7 +24,7 @@ router.post('/first_chapter', async (req, res) => {
 
     try {
         //Send data 
-        details = "Story Details:\n" + story_details + "\nExtra Details:\n" + extra_details
+        details = "Story Name:\n"+ story_name + "\nStory Details:\n" + story_details + "\nExtra Details:\n" + extra_details
 
         to_prompt_admin = {
             "details": details,
@@ -128,7 +128,7 @@ router.post('/next_chapter', async (req, res) => {
 
     try {
         //Send data 
-        details = "Story Details:\n" + story_details + "\nExtra Details:\n" + extra_details
+        details = "Story Name:\n"+ story_name + "\nStory Details:\n" + story_details + "\nExtra Details:\n" + extra_details
 
         to_prompt_admin = {
             "details": details,

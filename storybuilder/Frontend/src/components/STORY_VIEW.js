@@ -10,7 +10,7 @@ function STORY_VIEW({ }) {
     useEffect(() => {
       if (state.current_story) {
           set_story_title(state.current_story.title);
-          set_chapters(state.current_story.chapters);
+          set_chapters(state.current_story.chapters.slice(1)); // remove outline from chapters
       }
     }, [state.current_story]);
     
