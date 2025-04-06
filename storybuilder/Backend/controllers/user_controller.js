@@ -51,15 +51,21 @@ exports.user_login_post = asyncHandler(async (req, res, next) => {
     res.status(200).json({ message: "Login successful", user_id: existingUser._id });
 });
 
-// Handle User delete on POST
 exports.user_delete_post = asyncHandler(async (req, res, next) => {
-    const user = await User.findByIdAndDelete(req.params.user_id);
+    const { user_id } = req.params;
 
+    const user = await User.findById(user_id);
     if (!user) {
         return res.status(404).json({ error: "User not found" });
     }
 
-    res.json({ message: "User deleted successfully" });
+    // 1. Delete all the user's stories first
+    await Story.deleteMany({ user: user_id });
+
+    // 2. Then delete the user
+    await User.findByIdAndDelete(user_id);
+
+    res.json({ message: "User and their stories deleted successfully" });
 });
 
 // Handle User update on POST

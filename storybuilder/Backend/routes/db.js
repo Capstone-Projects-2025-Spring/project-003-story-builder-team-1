@@ -26,7 +26,7 @@ router.get("/user/:user_id", user_controller.user_details);
 /// STORY ROUTES ///
 
 // POST request for creating Story
-router.post("/story/create", story_controller.story_create_post);
+router.post("/story/:user_id/create", story_controller.story_create_post);
 
 // GET request for q list of all Stories based on the user_id
 router.get("/story/:user_id/get_stories", story_controller.user_stories_list);
@@ -34,18 +34,26 @@ router.get("/story/:user_id/get_stories", story_controller.user_stories_list);
 // GET request for one Story
 router.get("/story/:user_id/:story_id/get_story", story_controller.story_detail);
 
+// GET request for a chapter specific to a story 
+router.get("/story/:user_id/:story_id/:chapter_number/get_chapter", story_controller.story_chapter_detail)
+
 // POST request to delete Story
 router.post("/story/:user_id/:story_id/delete", story_controller.story_delete_post);
 
-/*
-
 // POST request to update Story
-router.post("/story/:id/update", story_controller.story_update_post);
+router.post("/story/:user_id/:story_id/update", story_controller.story_update_post);
+
+
+/// AGENT ROUTES ///
+
+// POST request for creating new instance of an Agent
+router.post("/agent/create", agent_controller.agent_create_post);
+
+
+/*
 
 // STORY ROUTES - CHAPTER (VETO, VOTING)
 
-// GET request for a chapter specific to a story 
-router.get("/story/:id/:chapter_number", story_controller.story_chapter_detail)
 
 // POST request to edit a chapter specific to a story (update chapter content)
 router.post("/story/:id/:chapter_number/edit", story_controller.story_chapter_edit_post);
@@ -77,6 +85,4 @@ router.post("/agent/:id/delete", agent_controller.agent_delete_post);
 router.post("/agent/:id/update", agent_controller.agent_update_post);
 */
 
-// POST request for creating new instance of an Agent
-router.post("/agent/create", agent_controller.agent_create_post);
 module.exports = router;
