@@ -80,7 +80,7 @@ function nextchapter(promptinfo, outline, chapter, chaptercount) {
         stream: false, 
     };
     return chap;
-    }
+}
 
 /*
 This function returns a full outline of the story before it's written, with each chapter receieving a 1-2 sentence synopsis.
@@ -138,7 +138,5 @@ function setstream(prompt, streamset) {
 }
 
 
-
-
-
 module.exports = {judge, firstchapter, critique, rewrite, nextchapter, storyoutline, boostmodel, degrademodel, defaultmodel, setstream};
+
