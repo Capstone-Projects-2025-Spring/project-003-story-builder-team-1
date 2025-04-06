@@ -1,6 +1,6 @@
 require('dotenv').config();
 
-// console.log("DEBUG: Loaded MONGO_URI:", process.env.MONGO_URI); // Debugging line
+// console.log("DEBUG: Loaded MONGO_URI:", process.env.DB_URI); // Debugging line
 
 //Import the app configuration
 const app = require('./app');

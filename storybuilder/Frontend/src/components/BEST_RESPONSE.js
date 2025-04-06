@@ -10,7 +10,7 @@ function BEST_RESPONSE() {
     useEffect(() => {
         if (state.current_story) {
             set_best_res(state.current_story.chapters[state.current_story.chapters.length - 1]);
-            if (state.current_story.chapters.length > state.current_story.chapter_count + 1) {
+            if (state.current_story.chapters.length > state.current_story.chapter_count) {
                 set_show_cont_button(false);
             }
         }

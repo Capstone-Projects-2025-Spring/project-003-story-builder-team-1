@@ -12,7 +12,7 @@ function AGENT_BOX({ name }) {
       if (state.current_story?.chapters?.length > 0) {
           set_chapter_content(state.current_story.chapters[state.current_story.chapters.length - 1]); // recent chapter
       }
-      if (state.current_story.chapters.length > state.current_story.chapter_count + 1) {
+      if (state.current_story.chapters.length > state.current_story.chapter_count) {
         set_show_cont_button(false);
       }
     }, [state.current_story]);
