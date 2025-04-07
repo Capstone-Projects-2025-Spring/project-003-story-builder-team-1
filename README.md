@@ -35,7 +35,7 @@ Many AI clients and web applications exist in order to make it easier for non-te
 4. Run the following: ``npm run setup``.
 5. Next, run ``npm run build:f``.
 6. Finally, run ``npm run start:con``.
-7. Go to localhost://8080, where you can locally view the project.
+7. Go to [localhost://8080](http://localhost:8080/), where you can locally view the project.
 
 ## Collaborators
 
