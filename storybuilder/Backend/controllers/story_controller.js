@@ -166,3 +166,40 @@ exports.story_get_number_of_chapters = asyncHandler(async (req, res, next) => {
 
     res.status(200).json({ number_of_chapters });
 });
+
+exports.story_add_chapter_post = asyncHandler(async (req, res, next) => {
+    const { user_id, story_id } = req.params; // Story ID
+    const { agentId, chapter_number, content } = req.body;
+
+    if (!agentId || chapter_number == null || !content) {
+        return res.status(400).json({ error: "agentId, chapter_number, and content are required." });
+    }
+
+    // Find the user and ensure they exist
+    const user = await User.findById(user_id);
+    if (!user) {
+        return res.status(404).json({ error: "User not found" });
+    }
+    // Find the story
+    const story = await Story.findById(story_id);
+    if (!story) return res.status(404).json({ error: "Story not found" });
+
+    // Find the agent in the agents array
+    const agentEntry = story.agents.find(agentObj => agentObj.agent.toString() === agentId);
+    
+    if (agentEntry) {
+        // Append the chapter to this agent's chapters
+        agentEntry.chapters.push({ chapter_number, content });
+    } else {
+        // If agent not found, add a new agent with the chapter
+        story.agents.push({
+            agent: agentId,
+            chapters: [{ chapter_number, content }]
+        });
+    }
+
+    // Save the updated story
+    await story.save();
+
+    res.status(200).json({ message: "Chapter added successfully", story });
+});
