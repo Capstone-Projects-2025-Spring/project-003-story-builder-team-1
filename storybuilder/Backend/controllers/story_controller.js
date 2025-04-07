@@ -167,6 +167,7 @@ exports.story_get_number_of_chapters = asyncHandler(async (req, res, next) => {
     res.status(200).json({ number_of_chapters });
 });
 
+// Add chapter to agent-specfic version
 exports.story_add_chapter_post = asyncHandler(async (req, res, next) => {
     const { user_id, story_id } = req.params; // Story ID
     const { agentId, chapter_number, content } = req.body;
