@@ -18,8 +18,8 @@ const storySchema = new mongoose.Schema({
         chapters: [{
             chapter_number: { type: Number },
             content: { type: String },
-            votes: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Vote' }],
-            critiques: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Critique' }]
+            votes: { type: Number, default: 0 },
+            critiques: { type: String }
         }]
     }],
 }, { timestamps: true });
