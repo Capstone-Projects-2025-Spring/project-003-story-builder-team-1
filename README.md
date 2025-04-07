@@ -28,6 +28,14 @@ The amount of agents running at a time is scalable, and the user will decide how
 
 Many AI clients and web applications exist in order to make it easier for non-technical people to access this technology, such as ChatGPT and Deepseek’s websites. There are also plenty of programs the user can choose to locally host LLMs, like Ollama and Text Generation WebUI. These options usually either require too much setup for casual users or provide fewer customization options in the refinement process. ChatGPT, for example, will provide, at most, two agents at a time, and these agents only return the output without critiquing it themselves first. By including elements from both approaches to LLM interfaces, this application reaps the benefits of a technician-focused user experience with the ease of use of Llama and OpenAI’s web clients.
 
+## How to Run
+1. Ensure that npm and Docker are installed on your system.
+2. Clone the repository.
+3. Ensure that Docker is running on your system.
+4. Run the following: ``npm run setup``.
+5. Next, run ``npm run build:f``.
+6. Finally, run ``npm run start:con``.
+7. Go to localhost://8080, where you can locally view the project.
 
 ## Collaborators
 
