@@ -204,9 +204,3 @@ exports.story_add_agent_chapter_post = asyncHandler(async (req, res, next) => {
 
     res.status(200).json({ message: "Chapter added successfully", story });
 });
-
-exports.story_add_final_chapter_post = asyncHandler(async (req, res, next) => {
-    const { user_id, story_id } = req.params; // Story ID and User ID
-    const { agentId, story_chapter_number, text } = req.body;
-
-});
