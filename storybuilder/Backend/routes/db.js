@@ -47,8 +47,15 @@ router.post("/story/:user_id/:story_id/update", story_controller.story_update_po
 router.get("/story/:user_id/:story_id/get_number_of_chapters", story_controller.story_get_number_of_chapters);
 
 // POST request to add chapter to agent-specfic version
-router.post("/story/:user_id/:story_id/add_chapter", story_controller.story_add_chapter_post);
+router.post("/story/:user_id/:story_id/add_agent_chapter", story_controller.story_add_agent_chapter_post);
 
+// POST request to add a critique to a chapter
+
+// POST request for vetoing
+
+// GET request for getting the number of votes for an agent's chapter version
+
+// GET request for getting the critique related to a chapter
 
 /// AGENT ROUTES ///
 
