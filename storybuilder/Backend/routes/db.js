@@ -84,10 +84,6 @@ router.post("/agent/create", agent_controller.agent_create_post);
 
 /// AGENT ROUTES ///
 
-// post and get store last response
-
-
-
 // GET request for one Agent
 router.get("/agent/:name", agent_controller.agent_detail);
 
@@ -104,8 +100,7 @@ router.post("/agent/:id/update", agent_controller.agent_update_post);
 router.post("/agent/:agent_id/:story_id/get_last_response", agent_controller.agent_update_last_response_post);
 
 // GET request for getting the last response
+router.get("/agent/:agent_id/:story_id/get_last_response", agent_controller.agent_get_last_response);
 
-
-// AGENT_LIST ROUTES
 
 module.exports = router;

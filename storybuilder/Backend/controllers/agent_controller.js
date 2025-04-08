@@ -70,8 +70,35 @@ exports.agent_update_last_response_post = asyncHandler(async (req, res, next) =>
         return res.status(400).json({ error: "Response is required" });
     }
 
-    agent.agent_responses.push({ response, story: story_id });
+    agent.agent_responses.push({ response, story_id: story_id });
     await agent.save();
 
     res.json({ message: "Last response updated", agent });
+});
+
+exports.agent_get_last_response = asyncHandler(async (req, res, next) => {
+    const { agent_id, story_id } = req.params;
+
+    console.log(`📥 Fetching last response for agent: ${agent_id} in story: ${story_id}`);
+
+    // Find agent by ID
+    const agent = await Agent.findById(agent_id);
+    if (!agent) {
+        return res.status(404).json({ error: "Agent not found" });
+    }
+
+    // Filter responses belonging to the specific story_id
+    const storyResponses = agent.agent_responses.filter(
+        (resp) => resp.story_id && resp.story_id.toString() === story_id
+
+    );
+
+    if (storyResponses.length === 0) {
+        return res.status(404).json({ error: "No responses found for this story" });
+    }
+
+    // Get the last response (based on array order)
+    const lastResponse = storyResponses[storyResponses.length - 1];
+
+    res.status(200).json({ response: lastResponse });
 });
