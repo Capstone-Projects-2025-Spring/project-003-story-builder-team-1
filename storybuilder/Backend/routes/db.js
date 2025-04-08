@@ -87,6 +87,7 @@ router.post("/agent/create", agent_controller.agent_create_post);
 // post and get store last response
 
 
+
 // GET request for one Agent
 router.get("/agent/:name", agent_controller.agent_detail);
 
@@ -98,6 +99,12 @@ router.post("/agent/:id/delete", agent_controller.agent_delete_post);
 
 // POST request for updating the agent_prompt of an Agent
 router.post("/agent/:id/update", agent_controller.agent_update_post);
+
+// POST request for updating the last response
+router.post("/agent/:agent_id/:story_id/get_last_response", agent_controller.agent_update_last_response_post);
+
+// GET request for getting the last response
+
 
 // AGENT_LIST ROUTES
 

@@ -2,6 +2,20 @@ const Agent = require("../models/agent");
 const Story = require("../models/story");
 const asyncHandler = require("express-async-handler");
 
+// Return a list of agents
+exports.agent_list = asyncHandler(async (req, res, next) => {
+    const agents = await Agent.find().exec();
+    res.json(agents);
+});
+
+exports.agent_detail = asyncHandler(async (req, res, next) => {
+    const agent = await Agent.findOne({ name: req.params.name }).exec();
+    if (!agent) {
+        return res.status(404).json({ error: "Agent not found" });
+    }
+    res.json(agent);
+});
+
 // Handle Agent create on POST, inserts a new document into MongoDB.
 exports.agent_create_post = asyncHandler(async (req, res, next) => {
     const { name, agent_prompt} = req.body;
@@ -41,4 +55,23 @@ exports.agent_update_post = asyncHandler(async (req, res, next) => {
 
     await agent.save();
     res.json({ message: "Agent updated", agent });
+});
+
+exports.agent_update_last_response_post = asyncHandler(async (req, res, next) => {
+    const { agent_id, story_id } = req.params;
+    const { response } = req.body;
+
+    const agent = await Agent.findById(agent_id).exec();
+    if (!agent) {
+        return res.status(404).json({ error: "Agent not found" });
+    }
+
+    if (!response) {
+        return res.status(400).json({ error: "Response is required" });
+    }
+
+    agent.agent_responses.push({ response, story: story_id });
+    await agent.save();
+
+    res.json({ message: "Last response updated", agent });
 });
