@@ -19,7 +19,9 @@ describe("POST /first_chapter", () => {
       "story_name": "Story Name",
       "story_details": null,
       "extra_details": "Extra Detail",
-      "story_outline": "Story Outline"
+      "story_outline": "Story Outline",
+      "user_id": "User ID",
+      "story_id": "Story ID"
     }
 
     const response = await request(app)
@@ -42,7 +44,9 @@ describe("POST /first_chapter", () => {
       "story_name": "Story Name",
       "story_details": "Story Detail",
       "extra_details": "Extra Detail",
-      "story_outline": "Story Outline"
+      "story_outline": "Story Outline",
+      "user_id": "User ID",
+      "story_id": "Story ID"
     }
 
     //posting courier_response data
@@ -76,7 +80,9 @@ describe("POST /first_chapter", () => {
       "story_name": "Story Name",
       "story_details": "Story Detail",
       "extra_details": "Extra Detail",
-      "story_outline": "Story Outline"
+      "story_outline": "Story Outline",
+      "user_id": "User ID",
+      "story_id": "Story ID"
     }
 
     const response = await request(app)
@@ -140,7 +146,9 @@ describe("POST /story_outline", () => {
       "chapter_count": 5,
       "story_name": "Story Name",
       "story_details": null,
-      "extra_details": "Extra Detail"
+      "extra_details": "Extra Detail",
+      "user_id": "User ID",
+      "story_id": "Story ID"
     }
 
     const response = await request(app)
@@ -163,7 +171,9 @@ describe("POST /story_outline", () => {
       "chapter_count": "Test",
       "story_name": "Story Name",
       "story_details": "Story Detail",
-      "extra_details": "Extra Detail"
+      "extra_details": "Extra Detail",
+      "user_id": "User ID",
+      "story_id": "Story ID"
     }
 
     const response = await request(app)
@@ -186,7 +196,9 @@ describe("POST /story_outline", () => {
       "chapter_count": 5,
       "story_name": "Story Name",
       "story_details": "Story Detail",
-      "extra_details": "Extra Detail"
+      "extra_details": "Extra Detail",
+      "user_id": "User ID",
+      "story_id": "Story ID"
     }
 
     //posting courier_response data
@@ -220,7 +232,9 @@ describe("POST /story_outline", () => {
       "chapter_count": 5,
       "story_name": "Story Name",
       "story_details": "Story Detail",
-      "extra_details": "Extra Detail"
+      "extra_details": "Extra Detail",
+      "user_id": "User ID",
+      "story_id": "Story ID"
     }
 
     const response = await request(app)
@@ -249,7 +263,9 @@ describe("POST /next_chapter", () => {
       "story_details": null,
       "extra_details": "Extra Detail",
       "previous_chapters": ["Chapter 1", "Chapter 2"],
-      "story_outline": "Story Outline"
+      "story_outline": "Story Outline",
+      "user_id": "User ID",
+      "story_id": "Story ID"
     }
 
     const response = await request(app)
@@ -273,7 +289,9 @@ describe("POST /next_chapter", () => {
       "story_details": "Story Detail",
       "extra_details": "Extra Detail",
       "previous_chapters": [],
-      "story_outline": "Story Outline"
+      "story_outline": "Story Outline",
+      "user_id": "User ID",
+      "story_id": "Story ID"
     }
 
     const response = await request(app)
@@ -297,7 +315,9 @@ describe("POST /next_chapter", () => {
       "story_details": "Story Detail",
       "extra_details": "Extra Detail",
       "previous_chapters": ["Chapter 1", "Chapter 2"],
-      "story_outline": "Story Outline"
+      "story_outline": "Story Outline",
+      "user_id": "User ID",
+      "story_id": "Story ID"
     }
 
     //posting courier_response data
@@ -332,7 +352,9 @@ describe("POST /next_chapter", () => {
       "story_details": "Story Detail",
       "extra_details": "Extra Detail",
       "previous_chapters": ["Chapter 1", "Chapter 2"],
-      "story_outline": "Story Outline"
+      "story_outline": "Story Outline",
+      "user_id": "User ID",
+      "story_id": "Story ID"
     }
 
     const response = await request(app)

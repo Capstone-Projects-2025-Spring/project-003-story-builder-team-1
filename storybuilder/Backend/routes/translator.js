@@ -8,7 +8,7 @@ const APP_URL = PRIVATE_URL;
 //Global Variables to store data related to the story
 var courier_response;
 
-//first_chapter will receive the story name, story details, and extra details from the frontend, and send back the story name and generated chapter
+//first_chapter will receive the user id, story id, story name, story details, and extra details from the frontend, and send back the story name and generated chapter
 router.post('/first_chapter', async (req, res) => {
 
     //Validate required fields
@@ -68,7 +68,7 @@ router.post('/courier_response', (req, res) => {
     return res.status(200).json({message: "Courier Response Received Successfully", data: req.body});
 });
 
-//story_outline will receive the requested chapters, story name, story details, and extra details from the frontend, and send back the story name, number of chapters and generated story outline
+//story_outline will receive the user id, story id, requested chapters, story name, story details, and extra details from the frontend, and send back the story name, number of chapters and generated story outline
 router.post('/story_outline', async (req, res) => {
 
     //Validate required fields
@@ -118,7 +118,7 @@ router.post('/story_outline', async (req, res) => {
     }
 });
 
-//next_chapter will receive the previous chapters, story name, story details, extra details, and story outline, and send back the story name and generated chapter
+//next_chapter will receive the user id, story id, previous chapters, story name, story details, extra details, and story outline, and send back the story name and generated chapter
 router.post('/next_chapter', async (req, res) => {
 
     //Validate required fields
@@ -170,7 +170,7 @@ router.post('/next_chapter', async (req, res) => {
     }
 });
 
-//next_chapter will receive the previous chapters, story name, story details, extra details, and story outline, and send back the story name and generated chapter
+//regenerate_chapter will receive the user id, story id, previous chapters, story name, story details, extra details, and story outline, and send back the story name and regenerated chapter
 router.post('/regenerate_chapter', async (req, res) => {
 
     //Validate required fields
