@@ -211,6 +211,41 @@ exports.story_add_agent_chapter_post = asyncHandler(async (req, res, next) => {
     res.status(200).json({ message: "Chapter added successfully", story });
 });
 
+// Add voted chapter to main story
+exports.story_add_agent_chapter_post = asyncHandler(async (req, res, next) => {
+    const { user_id, story_id } = req.params;
+    const { chapter_number, content } = req.body;
+    
+    if (chapter_number == null || !content) {
+        return res.status(400).json({ error: "chapter_number and content are required." });
+    }
+
+    // Find the user and ensure they exist
+    const user = await User.findById(user_id);
+    if (!user) {
+        return res.status(404).json({ error: "User not found" });
+    }
+
+    // Find the story
+    const story = await Story.findById(story_id);
+    if (!story) return res.status(404).json({ error: "Story not found" });
+
+    const chapter_exists = story.story_content.some(ch => ch.story_chapter_number === chapter_number);
+    if (chapter_exists) {
+        return res.status(400).json({ error: `Chapter number ${chapter_number} already exists in the story content.` });
+    }
+    // Append the chapter to the story_content
+    
+    const new_chapter = {
+        story_chapter_number: chapter_number,
+        text: content
+    }
+
+    story.story_content.push(new_chapter);
+    // Save the updated story
+    await story.save();
+    res.status(200).json({ message: "Voted chapter added successfully", story });
+});
 
 exports.story_add_critique_post = asyncHandler(async (req, res, next) => {
     const { user_id, story_id, agent_id, chapter_number } = req.params; // Story ID and User ID and Chapter ID
