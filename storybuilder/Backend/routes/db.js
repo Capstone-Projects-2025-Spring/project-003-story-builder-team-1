@@ -102,5 +102,9 @@ router.post("/agent/:agent_id/:story_id/get_last_response", agent_controller.age
 // GET request for getting the last response
 router.get("/agent/:agent_id/:story_id/get_last_response", agent_controller.agent_get_last_response);
 
+// AGENT LIST ROUTES //
+// GET request for getting the list of all agents
+router.get("/agents", agent_controller.agent_list);
+
 
 module.exports = router;
