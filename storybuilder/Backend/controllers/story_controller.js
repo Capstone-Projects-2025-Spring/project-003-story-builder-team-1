@@ -289,9 +289,9 @@ exports.story_agent_chapter_edit_post = asyncHandler(async (req, res, next) => {
 // Add voted chapter to main story
 exports.story_add_chapter_post = asyncHandler(async (req, res, next) => {
     const { user_id, story_id } = req.params;
-    const { chapter_number, content } = req.body;
+    const { story_chapter_number, text } = req.body;
     
-    if (chapter_number == null || !content) {
+    if (story_chapter_number == null || !text) {
         return res.status(400).json({ error: "chapter_number and content are required." });
     }
 
@@ -312,8 +312,8 @@ exports.story_add_chapter_post = asyncHandler(async (req, res, next) => {
     // Append the chapter to the story_content
     
     const new_chapter = {
-        story_chapter_number: chapter_number,
-        text: content
+        story_chapter_number: story_chapter_number,
+        text: text
     }
 
     story.story_content.push(new_chapter);
