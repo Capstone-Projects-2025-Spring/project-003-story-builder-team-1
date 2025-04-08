@@ -97,7 +97,7 @@ router.post('/story_outline', async (req, res) => {
             "user_id": user_id,
             "story_id": story_id,
             prompt_info: {
-                "deatails": details,
+                "details": details,
                 "chapter_count": chapter_count
             }
         }
