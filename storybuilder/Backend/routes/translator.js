@@ -12,7 +12,7 @@ var courier_response;
 router.post('/first_chapter', async (req, res) => {
 
     //Validate required fields
-    if (!req.body.story_name || !req.body.story_details || !req.body.story_outline) {
+    if (!req.body.story_name || !req.body.story_details || !req.body.story_outline || !req.body.user_id || !req.body.story_id) {
         return res.status(404).json({ message: "Missing required fields", data: req.body });
     }
 
@@ -21,14 +21,20 @@ router.post('/first_chapter', async (req, res) => {
     story_details = req.body.story_details;
     extra_details = req.body.extra_details;
     story_outline = req.body.story_outline;
+    user_id = req.body.user_id;
+    story_id = req.body.story_id;
 
     try {
         //Send data 
         details = "Story Name:\n"+ story_name + "\nStory Details:\n" + story_details + "\nExtra Details:\n" + extra_details
 
         to_prompt_admin = {
-            "details": details,
-            "story_outline": story_outline
+            "user_id": user_id,
+            "story_id": story_id,
+            prompt_info: {
+                "details": details,
+                "story_outline": story_outline
+            }
         }
 
         prompt_admin_response = await axios.post(APP_URL + '/prompt_admin/first_chapter/', to_prompt_admin);
@@ -66,7 +72,7 @@ router.post('/courier_response', (req, res) => {
 router.post('/story_outline', async (req, res) => {
 
     //Validate required fields
-    if (!req.body.chapter_count || !req.body.story_name || !req.body.story_details) {
+    if (!req.body.chapter_count || !req.body.story_name || !req.body.story_details || !req.body.user_id || !req.body.story_id) {
         return res.status(404).json({ message: "Missing required fields", data: req.body });
     }
 
@@ -75,6 +81,8 @@ router.post('/story_outline', async (req, res) => {
     story_name = req.body.story_name;
     story_details = req.body.story_details;
     extra_details = req.body.extra_details;
+    user_id = req.body.user_id;
+    story_id = req.body.story_id;
 
     //Validate data type of chapter_count
     if (isNaN(chapter_count)) {
@@ -86,8 +94,12 @@ router.post('/story_outline', async (req, res) => {
         details = "Story Details:\n" + story_details + "\nExtra Details:\n" + extra_details
 
         to_prompt_admin = {
-            "details": details,
-            "chapter_count": chapter_count
+            "user_id": user_id,
+            "story_id": story_id,
+            prompt_info: {
+                "deatails": details,
+                "chapter_count": chapter_count
+            }
         }
 
         prompt_admin_response = await axios.post(APP_URL + '/prompt_admin/story_outline/', to_prompt_admin);
@@ -110,7 +122,7 @@ router.post('/story_outline', async (req, res) => {
 router.post('/next_chapter', async (req, res) => {
 
     //Validate required fields
-    if (!req.body.story_name || !req.body.story_details || !req.body.previous_chapters || !req.body.story_outline) {
+    if (!req.body.story_name || !req.body.story_details || !req.body.previous_chapters || !req.body.story_outline || !req.body.user_id || !req.body.story_id) {
         return res.status(404).json({ message: "Missing required fields", data: req.body });
     }
 
@@ -120,6 +132,8 @@ router.post('/next_chapter', async (req, res) => {
     extra_details = req.body.extra_details;
     previous_chapters = req.body.previous_chapters;
     story_outline = req.body.story_outline;
+    user_id = req.body.user_id;
+    story_id = req.body.story_id;
 
     //Validate that previous_chapters is not empty
     if (previous_chapters.length == 0) {
@@ -131,9 +145,13 @@ router.post('/next_chapter', async (req, res) => {
         details = "Story Name:\n"+ story_name + "\nStory Details:\n" + story_details + "\nExtra Details:\n" + extra_details
 
         to_prompt_admin = {
-            "details": details,
-            "previous_chapters": previous_chapters,
-            "story_outline": story_outline
+            "user_id": user_id,
+            "story_id": story_id,
+            prompt_info: {
+                "details": details,
+                "previous_chapters": previous_chapters,
+                "story_outline": story_outline
+            }
         }
 
         prompt_admin_response = await axios.post(APP_URL + '/prompt_admin/next_chapter/', to_prompt_admin);
@@ -151,5 +169,58 @@ router.post('/next_chapter', async (req, res) => {
         return res.status(500).json({ message: "Failed to fetch courier response", error: error.message });
     }
 });
+
+//next_chapter will receive the previous chapters, story name, story details, extra details, and story outline, and send back the story name and generated chapter
+router.post('/regenerate_chapter', async (req, res) => {
+
+    //Validate required fields
+    if (!req.body.story_name || !req.body.story_details || !req.body.previous_chapters || !req.body.story_outline || !req.body.user_id || !req.body.story_id) {
+        return res.status(404).json({ message: "Missing required fields", data: req.body });
+    }
+
+    // Store story data
+    story_name = req.body.story_name;
+    story_details = req.body.story_details;
+    extra_details = req.body.extra_details;
+    previous_chapters = req.body.previous_chapters;
+    story_outline = req.body.story_outline;
+    user_id = req.body.user_id;
+    story_id = req.body.story_id;
+
+    //Validate that previous_chapters is not empty
+    if (previous_chapters.length == 0) {
+        return res.status(400).json({ message: "Invalid Data Type: previous_chapters is empty", data: req.body.previous_chapters });
+    }
+
+    try {
+        //Send data 
+        details = "Story Name:\n"+ story_name + "\nStory Details:\n" + story_details + "\nExtra Details:\n" + extra_details
+
+        to_prompt_admin = {
+            "user_id": user_id,
+            "story_id": story_id,
+            prompt_info: {
+                "details": details,
+                "previous_chapters": previous_chapters,
+                "story_outline": story_outline
+            }
+        }
+
+        prompt_admin_response = await axios.post(APP_URL + '/prompt_admin/regenerate_chapter/', to_prompt_admin);
+
+        to_frontend = {
+            "title": story_name,
+            "courier_response": courier_response,
+        }
+
+        //Send successful response to frontend
+        return res.status(200).json({message: "Story Contents Received Successfully", data: to_frontend});
+
+    } catch (error) {
+        console.error("Error fetching courier response:", error.message);
+        return res.status(500).json({ message: "Failed to fetch courier response", error: error.message });
+    }
+});
+
 
 module.exports = router;
