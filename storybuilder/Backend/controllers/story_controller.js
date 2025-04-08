@@ -245,6 +245,47 @@ exports.story_chapter_edit_post = asyncHandler(async (req, res, next) => {
     res.status(200).json({ message: "Chapter updated successfully", story });
 });
 
+exports.story_agent_chapter_edit_post = asyncHandler(async (req, res, next) => {
+    const { user_id, story_id, agent_id, chapter_number } = req.params; // Story ID and UserID
+    const { content } = req.body;
+
+    if (!content) {
+        return res.status(400).json({ error: "Content is required." });
+    }
+
+    // Find the user and ensure they exist
+    const user = await User.findById(user_id);
+    if (!user) {
+        return res.status(404).json({ error: "User not found" });
+    }
+    
+    // Find the story
+    const story = await Story.findById(story_id);
+    if (!story) return res.status(404).json({ error: "Story not found" });
+
+    // Find the agent in the agents array
+    const agentEntry = story.agents.find(agentObj => agentObj.agent.toString() === agent_id);
+    
+    if (!agentEntry) {
+        return res.status(404).json({ error: "Agent not found in this story" });
+    }
+
+    // Find the chapter in the agent's chapters
+    const chapter = agentEntry.chapters.find(ch => ch.chapter_number === Number(chapter_number));
+    
+    if (!chapter) {
+        return res.status(404).json({ error: "Chapter not found" });
+    }
+
+    // Update the chapter content
+    chapter.content = content;
+
+    // Save the updated story
+    await story.save();
+
+    res.status(200).json({ message: "Chapter updated successfully", story });
+});
+
 // Add voted chapter to main story
 exports.story_add_chapter_post = asyncHandler(async (req, res, next) => {
     const { user_id, story_id } = req.params;

@@ -55,6 +55,9 @@ router.post("/story/:user_id/:story_id/add_chapter", story_controller.story_add_
 // POST request to edit a final chapter specific to a story (update story_content chapter content)
 router.post("/story/:user_id/:story_id/:story_chapter_number/edit_chapter", story_controller.story_chapter_edit_post);
 
+// POST request to edit agent-specific chapter content
+router.post("/story/:user_id/:story_id/:agent_id/:chapter_number/edit_agent_chapter", story_controller.story_agent_chapter_edit_post);
+
 // POST request to add a critique to an existing chapter
 router.post("/story/:user_id/:story_id/:agent_id/:chapter_number/add_critique", story_controller.story_add_critique_post);
 
