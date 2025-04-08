@@ -189,6 +189,12 @@ exports.story_add_agent_chapter_post = asyncHandler(async (req, res, next) => {
     const agentEntry = story.agents.find(agentObj => agentObj.agent.toString() === agentId);
     
     if (agentEntry) {
+        // Check if chapter_number already exists
+        const chapterExists = agentEntry.chapters.some(ch => ch.chapter_number === chapter_number);
+        if (chapterExists) {
+            return res.status(400).json({ error: `Chapter number ${chapter_number} already exists for this agent.` });
+        }
+        
         // Append the chapter to this agent's chapters
         agentEntry.chapters.push({ chapter_number, content });
     } else {
@@ -203,4 +209,86 @@ exports.story_add_agent_chapter_post = asyncHandler(async (req, res, next) => {
     await story.save();
 
     res.status(200).json({ message: "Chapter added successfully", story });
+});
+
+
+exports.story_add_critique_post = asyncHandler(async (req, res, next) => {
+    const { user_id, story_id, agent_id, chapter_number } = req.params; // Story ID and User ID and Chapter ID
+    const { critique } = req.body;
+
+    if (!critique) {
+        return res.status(400).json({ error: "Critique is required." });
+    }
+
+    // Find the user and ensure they exist
+    const user = await User.findById(user_id);
+    if (!user) {
+        return res.status(404).json({ error: "User not found" });
+    }
+    
+    // Find the story
+    const story = await Story.findById(story_id);
+    if (!story) {
+        return res.status(404).json({ error: "Story not found" });
+    }
+    
+    // Log all agent IDs in the story for debugging
+    const agentIdsInStory = story.agents.map(agentObj => agentObj.agent.toString());
+    
+    const agentEntry = story.agents.find(agentObj => agentObj.agent.toString() === agent_id);
+    // console.log(`Checking agent in story: ${agentObj.agent.toString()}`);
+    if (!agentEntry) {
+        return res.status(404).json({ error: "Agent not found in this story" });
+    }
+    
+    // Find the chapter in the agent's chapters
+    const chapter = agentEntry.chapters.find(ch => ch.chapter_number === Number(chapter_number));
+    if (!chapter) {
+        return res.status(404).json({ error: "Chapter not found" });
+    }
+    
+    // Check if the critique already exists
+    const existingCritique = chapter.critique;
+    if (existingCritique) {
+        return res.status(400).json({ error: "Critique already exists for this chapter" });
+    }  
+
+    // Add critique to the chapter
+    chapter.critique = critique;
+    
+
+    // Save the updated story
+    await story.save();
+
+    res.status(200).json({ message: "Critique added successfully", story });
+});
+
+exports.story_agent_chapter_votes = asyncHandler(async (req, res, next) => {
+    const { user_id, story_id, agent_id, chapter_number } = req.params; // Story ID and User ID and Chapter ID
+
+    // Find the user and ensure they exist
+    const user = await User.findById(user_id);
+    if (!user) {
+        return res.status(404).json({ error: "User not found" });
+    }
+    
+    // Find the story
+    const story = await Story.findById(story_id);
+    if (!story) {
+        return res.status(404).json({ error: "Story not found" });
+    }
+    
+    // Find the agent in the agents array
+    const agentEntry = story.agents.find(agentObj => agentObj.agent.toString() === agent_id);
+    if (!agentEntry) {
+        return res.status(404).json({ error: "Agent not found in this story" });
+    }
+    
+    // Find the chapter in the agent's chapters
+    const chapter = agentEntry.chapters.find(ch => ch.chapter_number === Number(chapter_number));
+    if (!chapter) {
+        return res.status(404).json({ error: "Chapter not found" });
+    }
+
+    res.status(200).json({ votes: chapter.votes });
 });
