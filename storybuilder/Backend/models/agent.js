@@ -9,7 +9,7 @@ const agentSchema = new mongoose.Schema({
     },
     agent_responses: [{
         response: { type: String, required: true },
-        story: { type: mongoose.Schema.Types.ObjectId, ref: 'Story', required: true },
+        story_id: { type: mongoose.Schema.Types.ObjectId, ref: 'Story', required: true },
     }]
 });
 
