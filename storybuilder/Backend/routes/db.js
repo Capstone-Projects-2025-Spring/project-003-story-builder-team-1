@@ -65,6 +65,7 @@ router.post("/story/:user_id/:story_id/:agent_id/:chapter_number/add_critique", 
 router.get("/story/:user_id/:story_id/:agent_id/:chapter_number/get_critique", story_controller.story_get_critique);
 
 // POST request for vetoing
+router.post("/story/:user_id/:story_id/:chapter_number/veto", story_controller.story_agent_chapter_veto_post);
 
 // GET request for getting the number of votes for an agent's chapter version
 router.get("/story/:user_id/:story_id/:agent_id/:chapter_number/get_votes", story_controller.story_agent_chapter_votes);
@@ -81,39 +82,23 @@ router.get("/story/:user_id/:story_id/get_outline", story_controller.story_get_o
 router.post("/agent/create", agent_controller.agent_create_post);
 
 
-/*
-
-// STORY ROUTES - CHAPTER (VETO, VOTING)
-
-
-// POST request to edit a chapter specific to a story (update chapter content)
-router.post("/story/:id/:chapter_number/edit", story_controller.story_chapter_edit_post);
-
-// POST request to choose an agent's version of a chapter to be the main chapter content
-router.post("/story/:id/:chapter_number/veto/:agent_id", story_controller.story_chapter_veto_post);
-
-// STORY ROUTES - OUTLINE
-
-// POST request for creating outline for a specific story
-router.post("/story/:id/outline/create", story_controller.story_outline_create_post);
-
-// GET request to retrieve the outline specific to a story
-router.get("/story/:id/outline", story_controller.story_outline);
-
 /// AGENT ROUTES ///
 
-// GET request for list of all Agents
-router.get("/agents", agent_controller.agent_list);
+// post and get store last response
+
 
 // GET request for one Agent
-router.get("/agent/:id", agent_controller.agent_detail);
+router.get("/agent/:name", agent_controller.agent_detail);
 
+// POST request for creating a new instance of an Agent
+router.post("/agent/:id/create", agent_controller.agent_create_post);
 
 // POST request for deleting an instance of an Agent
 router.post("/agent/:id/delete", agent_controller.agent_delete_post);
 
 // POST request for updating the agent_prompt of an Agent
 router.post("/agent/:id/update", agent_controller.agent_update_post);
-*/
+
+// AGENT_LIST ROUTES
 
 module.exports = router;

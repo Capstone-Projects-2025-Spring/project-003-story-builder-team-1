@@ -403,6 +403,56 @@ exports.story_get_critique = asyncHandler(async (req, res, next) => {
     res.status(200).json({ critique: chapter.critique });
 });
 
+exports.story_agent_chapter_veto_post = asyncHandler(async (req, res, next) => {
+    const { user_id, story_id, chapter_number } = req.params; // Story ID and User ID and Chapter ID
+    const { agent_name } = req.body;
+    if (!agent_name) {
+        return res.status(400).json({ error: "Agent name is required." });
+    }
+    
+    // Find the user and ensure they exist
+    const user = await User.findById(user_id);
+    if (!user) {
+        return res.status(404).json({ error: "User not found" });
+    }
+    
+    // Find the story
+    const story = await Story.findById(story_id);
+    if (!story) {
+        return res.status(404).json({ error: "Story not found" });
+    }
+    
+    // Find the agent in the agents array
+    const agentEntry = story.agents.find(agentObj => agentObj.agent_name === agent_name);
+    if (!agentEntry) {
+        return res.status(404).json({ error: "Agent not found in this story" });
+    }
+    
+    // Find the chapter in the agent's chapters
+    const agentChapter = agentEntry.chapters.find(ch => ch.chapter_number === Number(chapter_number));
+    if (!agentChapter) {
+        return res.status(404).json({ error: "Chapter not found in agent's chapters" });
+    }
+
+    // Overwrite or add the chapter in story_content with the given story_chapter_number and agent's chapter content
+    const storyChapter = {
+        story_chapter_number: Number(chapter_number),
+        text: agentChapter.content
+    };
+
+    // Remove any existing chapter with the same story_chapter_number
+    story.story_content = story.story_content.filter(ch => ch.story_chapter_number !== Number(chapter_number));
+
+    // Add the new chapter
+    story.story_content.push(storyChapter);
+
+    // Save the updated story
+    await story.save();
+
+    res.status(200).json({ message: "Story content updated with agent's chapter content", story });
+    
+});
+
 exports.story_agent_chapter_votes = asyncHandler(async (req, res, next) => {
     const { user_id, story_id, agent_id, chapter_number } = req.params; // Story ID and User ID and Chapter ID
 
