@@ -292,7 +292,7 @@ exports.story_add_chapter_post = asyncHandler(async (req, res, next) => {
     const { story_chapter_number, text } = req.body;
     
     if (story_chapter_number == null || !text) {
-        return res.status(400).json({ error: "chapter_number and content are required." });
+        return res.status(400).json({ error: "story_chapter_number and text are required." });
     }
 
     // Find the user and ensure they exist
@@ -305,9 +305,9 @@ exports.story_add_chapter_post = asyncHandler(async (req, res, next) => {
     const story = await Story.findById(story_id);
     if (!story) return res.status(404).json({ error: "Story not found" });
 
-    const chapter_exists = story.story_content.some(ch => ch.story_chapter_number === chapter_number);
+    const chapter_exists = story.story_content.some(ch => ch.story_chapter_number === story_chapter_number);
     if (chapter_exists) {
-        return res.status(400).json({ error: `Chapter number ${chapter_number} already exists in the story content.` });
+        return res.status(400).json({ error: `Chapter number ${story_chapter_number} already exists in the story content.` });
     }
     // Append the chapter to the story_content
     
