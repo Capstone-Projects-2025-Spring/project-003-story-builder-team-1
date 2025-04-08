@@ -19,7 +19,7 @@ const storySchema = new mongoose.Schema({
             chapter_number: { type: Number },
             content: { type: String },
             votes: { type: Number, default: 0 },
-            critiques: { type: String }
+            critique: { type: String }
         }]
     }],
 }, { timestamps: true });
