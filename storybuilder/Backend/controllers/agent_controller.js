@@ -41,7 +41,8 @@ exports.agent_create_post = asyncHandler(async (req, res, next) => {
 
 // Handle Agent delete on POST, removes a document from MongoDB.
 exports.agent_delete_post = asyncHandler(async (req, res, next) => {
-    const agent = await Agent.findById(req.params.id);
+    const { agent_id } = req.params;
+    const agent = await Agent.findById(agent_id);
 
     if (!agent) {
         return res.status(404).json({ error: "Agent not found" });
@@ -52,19 +53,30 @@ exports.agent_delete_post = asyncHandler(async (req, res, next) => {
 
 // Handle Agent update on POST, finds an agent by ID and updates its fields.
 exports.agent_update_post = asyncHandler(async (req, res, next) => {
-    const { name, agent_prompt } = req.body;
+    const { agent_id } = req.params;
+    const { name, story_details, chapter_count, extra_details = null } = req.body;
 
-    const agent = await Agent.findById(req.params.id).exec();
+    const agent = await Agent.findById(agent_id).exec();
     if (!agent) {
         return res.status(404).json({ error: "Agent not found" });
     }
 
-    if (name) agent.name = name;
-    if (agent_prompt) agent.agent_prompt = agent_prompt;
+    // Validate required fields for full overwrite
+    if (!name || !story_details || chapter_count == null) {
+        return res.status(400).json({ error: "Name, story details, and chapter count are required to update agent." });
+    }
+
+    agent.name = name;
+    agent.agent_prompt = {
+        story_details,
+        chapter_count,
+        extra_details
+    };
 
     await agent.save();
     res.json({ message: "Agent updated", agent });
 });
+
 
 exports.agent_update_last_response_post = asyncHandler(async (req, res, next) => {
     const { agent_id, story_id } = req.params;
