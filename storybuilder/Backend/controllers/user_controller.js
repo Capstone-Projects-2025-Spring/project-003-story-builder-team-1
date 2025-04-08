@@ -51,6 +51,7 @@ exports.user_login_post = asyncHandler(async (req, res, next) => {
     res.status(200).json({ message: "Login successful", user_id: existingUser._id });
 });
 
+// Delete a user
 exports.user_delete_post = asyncHandler(async (req, res, next) => {
     const { user_id } = req.params;
 

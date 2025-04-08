@@ -9,6 +9,7 @@ exports.agent_list = asyncHandler(async (req, res, next) => {
     res.json(agents);
 });
 
+// Return information about a specific agent
 exports.agent_detail = asyncHandler(async (req, res, next) => {
     const agent = await Agent.findOne({ name: req.params.name }).exec();
     if (!agent) {
@@ -77,7 +78,7 @@ exports.agent_update_post = asyncHandler(async (req, res, next) => {
     res.json({ message: "Agent updated", agent });
 });
 
-
+// Update the last response of an agent
 exports.agent_update_last_response_post = asyncHandler(async (req, res, next) => {
     const { agent_id, story_id } = req.params;
     const { response } = req.body;
@@ -97,6 +98,7 @@ exports.agent_update_last_response_post = asyncHandler(async (req, res, next) =>
     res.json({ message: "Last response updated", agent });
 });
 
+// Return the last response of an agent
 exports.agent_get_last_response = asyncHandler(async (req, res, next) => {
     const { agent_id, story_id } = req.params;
 
@@ -125,6 +127,7 @@ exports.agent_get_last_response = asyncHandler(async (req, res, next) => {
 });
 
 // AGENT LIST
+// Return a list of all agents
 exports.agent_list = asyncHandler(async (req, res, next) => {
     const agents = await Agent_List.find().exec();
     res.status(200).json(agents);

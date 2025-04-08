@@ -78,12 +78,6 @@ router.get("/story/:user_id/:story_id/get_outline", story_controller.story_get_o
 
 /// AGENT ROUTES ///
 
-// POST request for creating new instance of an Agent
-router.post("/agent/create", agent_controller.agent_create_post);
-
-
-/// AGENT ROUTES ///
-
 // GET request for one Agent
 router.get("/agent/:name", agent_controller.agent_detail);
 

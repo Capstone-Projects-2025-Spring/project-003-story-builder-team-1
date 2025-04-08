@@ -66,6 +66,7 @@ exports.story_detail = asyncHandler(async (req, res, next) => {
     res.json(story);
 });
 
+// Delete a story
 exports.story_delete_post = asyncHandler(async (req, res, next) => {
     const { user_id, story_id } = req.params;
 
@@ -211,6 +212,7 @@ exports.story_add_agent_chapter_post = asyncHandler(async (req, res, next) => {
     res.status(200).json({ message: "Chapter added successfully", story });
 });
 
+// Edit a final chapter specific to a story (update story_content chapter content)
 exports.story_chapter_edit_post = asyncHandler(async (req, res, next) => {
     const { user_id, story_id, story_chapter_number } = req.params; // Story ID and UserID
     const { text } = req.body;
@@ -245,6 +247,7 @@ exports.story_chapter_edit_post = asyncHandler(async (req, res, next) => {
     res.status(200).json({ message: "Chapter updated successfully", story });
 });
 
+// Edit agent-specific chapter content
 exports.story_agent_chapter_edit_post = asyncHandler(async (req, res, next) => {
     const { user_id, story_id, agent_id, chapter_number } = req.params; // Story ID and UserID
     const { content } = req.body;
@@ -322,6 +325,7 @@ exports.story_add_chapter_post = asyncHandler(async (req, res, next) => {
     res.status(200).json({ message: "Voted chapter added successfully", story });
 });
 
+// Add critique to agent-specific chapter
 exports.story_add_critique_post = asyncHandler(async (req, res, next) => {
     const { user_id, story_id, agent_id, chapter_number } = req.params; // Story ID and User ID and Chapter ID
     const { critique } = req.body;
@@ -373,6 +377,7 @@ exports.story_add_critique_post = asyncHandler(async (req, res, next) => {
     res.status(200).json({ message: "Critique added successfully", story });
 });
 
+// Get critique for agent-specific chapter
 exports.story_get_critique = asyncHandler(async (req, res, next) => {
     const { user_id, story_id, agent_id, chapter_number } = req.params; // Story ID and User ID and Chapter ID
 
@@ -403,6 +408,7 @@ exports.story_get_critique = asyncHandler(async (req, res, next) => {
     res.status(200).json({ critique: chapter.critique });
 });
 
+// Assign an agent's chapter as the main story content
 exports.story_agent_chapter_veto_post = asyncHandler(async (req, res, next) => {
     const { user_id, story_id, chapter_number } = req.params; // Story ID and User ID and Chapter ID
     const { agent_name } = req.body;
@@ -453,6 +459,7 @@ exports.story_agent_chapter_veto_post = asyncHandler(async (req, res, next) => {
     
 });
 
+// Get the number of votes for an agent's chapter version
 exports.story_agent_chapter_votes = asyncHandler(async (req, res, next) => {
     const { user_id, story_id, agent_id, chapter_number } = req.params; // Story ID and User ID and Chapter ID
 
@@ -483,6 +490,7 @@ exports.story_agent_chapter_votes = asyncHandler(async (req, res, next) => {
     res.status(200).json({ votes: chapter.votes });
 });
 
+// Add outline to a story
 exports.story_add_outline_post = asyncHandler(async (req, res, next) => {
     const { user_id, story_id } = req.params; // Story ID and User ID
     const { outline } = req.body;
@@ -517,6 +525,7 @@ exports.story_add_outline_post = asyncHandler(async (req, res, next) => {
     res.status(200).json({ message: "Outline added successfully", story });
 });
 
+// Get outline for a story
 exports.story_get_outline = asyncHandler(async (req, res, next) => {
     const { user_id, story_id } = req.params; // Story ID and User ID
 
