@@ -88,7 +88,7 @@ router.post("/agent/create", agent_controller.agent_create_post);
 router.get("/agent/:name", agent_controller.agent_detail);
 
 // POST request for creating a new instance of an Agent
-router.post("/agent/:id/create", agent_controller.agent_create_post);
+router.post("/agent/create", agent_controller.agent_create_post);
 
 // POST request for deleting an instance of an Agent
 router.post("/agent/:id/delete", agent_controller.agent_delete_post);

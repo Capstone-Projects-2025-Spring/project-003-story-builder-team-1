@@ -19,17 +19,25 @@ exports.agent_detail = asyncHandler(async (req, res, next) => {
 
 // Handle Agent create on POST, inserts a new document into MongoDB.
 exports.agent_create_post = asyncHandler(async (req, res, next) => {
-    const { name, agent_prompt} = req.body;
+    const { name, story_details, chapter_count, extra_details = null } = req.body;
 
-    if (!name || !agent_prompt) {
-        return res.status(400).json({ error: "Name prompt, and story are required" });
+    if (!name || !story_details || chapter_count == null) {
+        return res.status(400).json({ error: "Name, story details, and chapter count are required" });
     }
 
+    const agent_prompt = {
+        story_details,
+        chapter_count,
+        extra_details
+    };
+
     const newAgent = new Agent({ name, agent_prompt });
+
     await newAgent.save();
 
     res.status(200).json({ message: "Agent created", agent: newAgent });
 });
+
 
 // Handle Agent delete on POST, removes a document from MongoDB.
 exports.agent_delete_post = asyncHandler(async (req, res, next) => {
