@@ -63,19 +63,19 @@ async function createAgent(index, name, agent_prompt) {
 async function createUsers() {
     console.log("Adding users");
     await Promise.all([
-        createUser(0, "test_user1", "password123"),
-        createUser(1, "test_user2", "password456"),
+        createUser(0, "test_user3", "password123"),
+        createUser(1, "test_user4", "password456"),
     ]);
 }
 
 async function createAgents() {
     console.log("Adding agents");
     await Promise.all([
-        createAgent(0, "Agent A", {
+        createAgent(0, "Agent C", {
             chapter_count: 5,
             story_details: "Agent A specializes in fantasy story arcs and character development."
         }),
-        createAgent(1, "Agent B", {
+        createAgent(1, "Agent D", {
             chapter_count: 3,
             story_details: "Agent B prefers mystery narratives with plot twists."
         }),
@@ -87,7 +87,7 @@ async function createStoriesAndChapters() {
     console.log("Adding stories with chapters and agents");
     const storyData = [
     {
-        story_name: "Story One",
+        story_name: "Story 3",
         user: users[0]._id,
         prompt: {
         story_details: "Once upon a time...",
@@ -104,6 +104,8 @@ async function createStoriesAndChapters() {
             {
                 chapter_number: 1,
                 content: "Agent A's version of Chapter 1",
+                votes: 0,
+                critique: null // critiques left empty for now
                 // votes and critiques left empty for now
             }
             ]
@@ -113,14 +115,16 @@ async function createStoriesAndChapters() {
             chapters: [
             {
                 chapter_number: 1,
-                content: "Agent B's version of Chapter 1"
+                content: "Agent B's version of Chapter 1",
+                votes: 0,
+                critique: null // critiques left empty for now
             }
             ]
         }
         ]
     },
     {
-        story_name: "Story Two",
+        story_name: "Story 4",
         user: users[1]._id,
         prompt: {
         story_details: "In a land far away...",
@@ -136,7 +140,9 @@ async function createStoriesAndChapters() {
             chapters: [
             {
                 chapter_number: 1,
-                content: "Agent A's version of Chapter 1"
+                content: "Agent A's version of Chapter 1",
+                votes: 0,
+                critique: null // critiques left empty for now
             }
             ]
         },
@@ -145,7 +151,9 @@ async function createStoriesAndChapters() {
             chapters: [
             {
                 chapter_number: 1,
-                content: "Agent B's version of Chapter 1"
+                content: "Agent B's version of Chapter 1",
+                votes: 0,
+                critique: null // critiques left empty for now                
             }
             ]
         }
