@@ -263,6 +263,36 @@ exports.story_add_critique_post = asyncHandler(async (req, res, next) => {
     res.status(200).json({ message: "Critique added successfully", story });
 });
 
+exports.story_get_critique = asyncHandler(async (req, res, next) => {
+    const { user_id, story_id, agent_id, chapter_number } = req.params; // Story ID and User ID and Chapter ID
+
+    // Find the user and ensure they exist
+    const user = await User.findById(user_id);
+    if (!user) {
+        return res.status(404).json({ error: "User not found" });
+    }
+    
+    // Find the story
+    const story = await Story.findById(story_id);
+    if (!story) {
+        return res.status(404).json({ error: "Story not found" });
+    }
+    
+    // Find the agent in the agents array
+    const agentEntry = story.agents.find(agentObj => agentObj.agent.toString() === agent_id);
+    if (!agentEntry) {
+        return res.status(404).json({ error: "Agent not found in this story" });
+    }
+    
+    // Find the chapter in the agent's chapters
+    const chapter = agentEntry.chapters.find(ch => ch.chapter_number === Number(chapter_number));
+    if (!chapter) {
+        return res.status(404).json({ error: "Chapter not found" });
+    }
+
+    res.status(200).json({ critique: chapter.critique });
+});
+
 exports.story_agent_chapter_votes = asyncHandler(async (req, res, next) => {
     const { user_id, story_id, agent_id, chapter_number } = req.params; // Story ID and User ID and Chapter ID
 
