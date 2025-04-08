@@ -322,3 +322,55 @@ exports.story_agent_chapter_votes = asyncHandler(async (req, res, next) => {
 
     res.status(200).json({ votes: chapter.votes });
 });
+
+exports.story_add_outline_post = asyncHandler(async (req, res, next) => {
+    const { user_id, story_id } = req.params; // Story ID and User ID
+    const { outline } = req.body;
+
+    if (!outline) {
+        return res.status(400).json({ error: "Outline is required." });
+    }
+
+    // Find the user and ensure they exist
+    const user = await User.findById(user_id);
+    if (!user) {
+        return res.status(404).json({ error: "User not found" });
+    }
+    
+    // Find the story
+    const story = await Story.findById(story_id);
+    if (!story) {
+        return res.status(404).json({ error: "Story not found" });
+    }
+    
+    // Check if the outline already exists
+    if (story.outline) {
+        return res.status(400).json({ error: "Outline already exists for this story." });
+    }
+
+    // Add outline to the story
+    story.outline = outline;
+
+    // Save the updated story
+    await story.save();
+
+    res.status(200).json({ message: "Outline added successfully", story });
+});
+
+exports.story_get_outline = asyncHandler(async (req, res, next) => {
+    const { user_id, story_id } = req.params; // Story ID and User ID
+
+    // Find the user and ensure they exist
+    const user = await User.findById(user_id);
+    if (!user) {
+        return res.status(404).json({ error: "User not found" });
+    }
+    
+    // Find the story
+    const story = await Story.findById(story_id);
+    if (!story) {
+        return res.status(404).json({ error: "Story not found" });
+    }
+
+    res.status(200).json({ outline: story.outline });
+});

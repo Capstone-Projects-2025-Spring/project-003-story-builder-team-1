@@ -94,6 +94,7 @@ async function createStoriesAndChapters() {
         extra_details: null,
         chapter_count: 3
         },
+        outline : "This is the outline of story 3.",
         story_content: [
         { story_chapter_number: 1, text: "The beginning of an adventure..." }
         ],
@@ -131,6 +132,7 @@ async function createStoriesAndChapters() {
         extra_details: null,
         chapter_count: 4
         },
+        outline : "This is the outline of story 4.",
         story_content: [
         { story_chapter_number: 1, text: "A new land full of mysteries..." }
         ],

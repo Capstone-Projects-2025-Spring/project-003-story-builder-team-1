@@ -60,8 +60,11 @@ router.get("/story/:user_id/:story_id/:agent_id/:chapter_number/get_critique", s
 // GET request for getting the number of votes for an agent's chapter version
 router.get("/story/:user_id/:story_id/:agent_id/:chapter_number/get_votes", story_controller.story_agent_chapter_votes);
 
+// POST request for adding an outline
+router.post("/story/:user_id/:story_id/add_outline", story_controller.story_add_outline_post);
 
-
+// GET request for getting the outline related to a chapter
+router.get("/story/:user_id/:story_id/get_outline", story_controller.story_get_outline);
 
 /// AGENT ROUTES ///
 
