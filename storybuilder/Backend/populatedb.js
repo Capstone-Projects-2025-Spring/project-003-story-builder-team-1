@@ -153,7 +153,7 @@ async function createStoriesAndChapters() {
         },
         {
             agent: agents[1]._id,
-            agent_name: "Shakespeare",
+            agent_name: "JK Rowling",
             chapters: [
             {
                 chapter_number: 1,
