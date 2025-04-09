@@ -1,6 +1,6 @@
-const promptadmin = require('../promptformatter.js');
+const prompt_admin = require('../prompt_formatter.js');
 
-describe('binarystream', () => {
+describe('binary_stream', () => {
     it('Creates a JSON prompt with the binary stream altered to "true" from "false"', () => {
         let prompt = {
             model: "llama3.1-8b", 
@@ -9,7 +9,7 @@ describe('binarystream', () => {
             ],
             stream: false, 
         };
-        var promptstream = promptadmin.setstream(prompt, true);
-        expect(promptstream.stream).toEqual(true);
+        var prompt_stream = prompt_admin.set_stream(prompt, true);
+        expect(prompt_stream.stream).toEqual(true);
       });
 })

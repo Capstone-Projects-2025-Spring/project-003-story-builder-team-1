@@ -1,11 +1,11 @@
-const promptadmin = require('../promptformatter.js');
+const prompt_admin = require('../prompt_formatter.js');
 
-describe('promptforming', () => {
+describe('prompt_forming', () => {
       it('Should build a JSON prompt which contains a prompt with the user input placed inside, specifying the model type and the stream binary.', () => {
         let prompt = "Write a story about pirates.";
         let outline = "X";
-        var firstchapter = promptadmin.firstchapter(prompt, outline);
-        expect(firstchapter).toEqual({
+        var first_chapter = prompt_admin.first_chapter(prompt, outline);
+        expect(first_chapter).toEqual({
           model: "llama3.1-8b", // Use model names from API documentation for model provider
           messages: [
               { "role": "system", "content": `You are a helpful assistant. You will work in a Mechanical Turks style with other assistants to compose stories for users following a certain set of steps. The story will be written in chapters, and you will write the first chapter.`},
@@ -19,7 +19,7 @@ describe('promptforming', () => {
         let prompt = "Z";
         let outline = "Y";
         let story = "X";
-        var crit = promptadmin.critique(prompt, story, outline);
+        var crit = prompt_admin.critique(prompt, story, outline);
         expect(crit).toEqual({
           model: "llama3.1-8b", 
           messages: [
@@ -35,7 +35,7 @@ describe('promptforming', () => {
         let chapter = "X";
         let critique = "Y";
         let outline = "A";
-        var crit = promptadmin.rewrite(prompt, chapter, critique, outline);
+        var crit = prompt_admin.rewrite(prompt, chapter, critique, outline);
         expect(crit).toEqual({
           model: "llama3.1-8b", 
           messages: [
@@ -47,10 +47,10 @@ describe('promptforming', () => {
       });
       
       it('Should build a JSON prompt that parses the stories in the storybank and places them in the prompt template.', () => {
-        let promptinfo = "Write a story about pirates.";
-        var storybank = [{story_index: 1, story: "X"}, {story_index: 2, story: "Y"}, {story_index: 3, story: "Z"}];
-        var judgelist = promptadmin.judge(storybank, promptinfo);
-        expect(judgelist).toEqual({
+        let prompt_info = "Write a story about pirates.";
+        var story_bank = [{story_index: 1, story: "X"}, {story_index: 2, story: "Y"}, {story_index: 3, story: "Z"}];
+        var judge_list = prompt_admin.judge(story_bank, prompt_info);
+        expect(judge_list).toEqual({
           model: "llama3.1-8b", // Use model names from API documentation for model provider
           messages: [
               { "role": "system", "content": `Your job now is to judge all of these stories as objectively as you can based on the initial prompt information. You will choose the best story. Do not return an explanation for your decision and don't return the stories themselves, just return the story's index number.` },
@@ -64,8 +64,8 @@ describe('promptforming', () => {
           let prompt = "Write a story about pirates.";
           let chapter = "X";
           let outline = "Y"
-          let chaptercount = 2;
-          var next = promptadmin.nextchapter(prompt, outline, chapter, chaptercount);
+          let chapter_count = 2;
+          var next = prompt_admin.next_chapter(prompt, outline, chapter, chapter_count);
           expect(next).toEqual({
             model: "llama3.1-8b", 
             messages: [
@@ -78,8 +78,8 @@ describe('promptforming', () => {
 
         it('Should build a JSON prompt that asks the LLM to fill an array of chapter outlines, with each chapter having an entry. Each outline will be no longer than a couple of sentences, and it should be easily searchable.', () => {
           let prompt = "Write a story about pirates";
-          let chaptercount = 3;
-          var next = promptadmin.storyoutline(chaptercount, prompt);
+          let chapter_count = 3;
+          var next = prompt_admin.story_outline(chapter_count, prompt);
           expect(next).toEqual({
             model: "llama3.1-8b", 
             messages: [
