@@ -2,14 +2,42 @@
 Allows for fast, organized prompt formatting. Templates for drafting, critiquing and judging stories.
 */
 
-function judge(story_bank, prompt_info) {
+function judge_stories(story_bank, prompt_info) {
     //creates string from storybank object clearly delineating each story from each other
-    var outline_string = story_bank.map(entry => `Story index number ${entry.story_index}: ${entry.story}`).join("\n\n");
+    var story_string = story_bank.map(entry => `Story index number ${entry.story_index}: ${entry.story}`).join("\n\n");
     var judge = {
         model: "llama3.1-8b", // Use model names from API documentation for model provider
         messages: [
-            { "role": "system", "content": `Your job now is to judge all of these stories as objectively as you can based on the initial prompt information. You will choose the best story. Do not return an explanation for your decision and don't return the stories themselves, just return the story's index number.` },
-            { "role": "user", "content": `${prompt_info}\n\n${outline_string}` },
+            { "role": "system", "content": `Your job now is to judge all of these stories as objectively as you can based on the initial prompt information. You will choose the best story. Do not return an explanation for your decision and don't return the stories themselves, just return the story's index number. It's extremely important that you ONLY return the index number of the story you prefer and absolutely nothing else.` },
+            { "role": "user", "content": `${prompt_info}\n\n${story_string}` },
+        ],
+        stream: false, 
+    };
+    return judge;
+}
+
+function judge_outlines(outline_bank, prompt_info) {
+    //creates string from storybank object clearly delineating each story from each other
+    var outline_string = outline_bank.map(entry => `Outline index number ${entry.outline_index}: ${entry.outline}`).join("\n\n");
+    var judge = {
+        model: "llama3.1-8b", // Use model names from API documentation for model provider
+        messages: [
+            { "role": "system", "content": `Your job is to judge the outlines sent to you and decide on the best one. These outlines will be used to generate stories, with LLMs generating entire chapters based on each 1-2 sentence synopsis you see corresponding to each chapter. You will choose the best outline, and you will make your decision based on the logical continuity of the outline as well as its originality and artistic merit. Do not return an explanation for your decision and don't return the outlines themselves, just return the outline's index number. It's extremely important that you ONLY return the index number of the outline you prefer and absolutely notihng else.` },
+            { "role": "user", "content": `This is the prompt you will use to judge the outlines:${prompt_info}\n\nAnd these are the outlines:\n${outline_string}` },
+        ],
+        stream: false, 
+    };
+    return judge;
+}
+
+function judge_chapters(chapter_bank, prompt_info, previous_chapters) {
+    //creates string from storybank object clearly delineating each story from each other
+    var chapter_string = chapter_bank.map(entry => `Chapter index number ${entry.chapter_index}: ${entry.chapter}`).join("\n\n");
+    var judge = {
+        model: "llama3.1-8b", // Use model names from API documentation for model provider
+        messages: [
+            { "role": "system", "content": `Your job now is to judge all of these chapters as objectively as you can based on the initial prompt information. You will choose the best chapter based on its grammatical correctness and artistic merit, in addition to how well it fits with the previous chapters in the story. Do not return an explanation for your decision and don't return the stories themselves, just return the story's index number. It's extremely important that you ONLY return the index number of the chapter you prefer and absolutely notihng else.` },
+            { "role": "user", "content": `The original prompt:\n${prompt_info}\n\nPrevious chapters in the story you will compare these chapters to: ${previous_chapters}\n\nAll chapters you will judge:\n\n${chapter_string}` },
         ],
         stream: false, 
     };
@@ -24,7 +52,7 @@ function first_chapter(prompt_info, outline) {
     var draft = {
         model: "llama3.1-8b", // Use model names from API documentation for model provider
         messages: [
-            { "role": "system", "content": `You are a helpful assistant. You will work in a Mechanical Turks style with other assistants to compose stories for users following a certain set of steps. The story will be written in chapters, and you will write the first chapter.`},
+            { "role": "system", "content": `You are a helpful assistant. You will work in a Mechanical Turks style with other assistants to compose stories for users following a certain set of steps. The story will be written in chapters, and you will write the first chapter. It's very important that you don't return anything except for the chapter itself.`},
             { "role": "user", "content": `This is the prompt: ${prompt_info}\nThis is the story outline: ${outline}. \n\nYou will write the first chapter based on the chapter 1 summary above.`},
         ],
         stream: false, // Ensures a single response instead of a streamed response
@@ -36,12 +64,24 @@ function first_chapter(prompt_info, outline) {
 This function will generate a critique of any chapter sent to it. It will NOT rewrite the chapter, it will only generate strategies for it 
 to be rewritten. It takes in the initial prompt, the chapter that is being critiqued, and the full story outline.
 */
-function critique(prompt_info, chapter, outline) {
+function critique_chapter(prompt_info, chapter, outline) {
     var crit =  {
         model: "llama3.1-8b", 
         messages: [
-            { "role": "system", "content": `You are now being fed a chapter written by another agent. You will critique the drafting of this story based on grammatical correctness as well as its faithfulness to the style parameters that were specified. Do not rewrite the chapter.`},
+            { "role": "system", "content": `You are now being fed a chapter written by another agent. You will critique the drafting of this chapter based on grammatical correctness as well as its faithfulness to the style parameters that were specified, and the previous chapters. Do not rewrite the chapter. It's very important that you ONLY return the critique and nothing else.`},
             { "role": "user", "content":  `${prompt_info}: Synopsis: ${outline}\n\nChapter: ${chapter}`},
+        ],
+        stream: false, 
+    };
+    return crit;
+    }
+
+function critique_outline(prompt_info, chapter, outline) {
+    var crit =  {
+        model: "llama3.1-8b", 
+        messages: [
+            { "role": "system", "content": `You are now being fed an outline written by another agent. You will critique this outline based on grammatical correctness as well as its faithfulness to the style parameters that were specified. Do not rewrite the outline. It is very important that you ONLY return the critique of the outline and nothing else.`},
+            { "role": "user", "content":  `${prompt_info}: Synopsis: ${outline}`},
         ],
         stream: false, 
     };
@@ -56,7 +96,7 @@ function rewrite(prompt_info, chapter, critique, outline) {
         var rewrite =  {
             model: "llama3.1-8b", 
             messages: [
-                { "role": "system", "content": `You are now being fed a chapter written by another agent, along with a critique of that chapter and the original prompt information. Rewrite the chapter, improving it based upon the critique's observations. Make sure it's a similar chapter length, and do not change anything if it doesn't violate the critique parameters. Just return the rewritten chapter and nothing else.`},
+                { "role": "system", "content": `You are now being fed a chapter written by another agent, along with a critique of that chapter and the original prompt information. Rewrite the chapter, improving it based upon the critique's observations. Make sure it's a similar chapter length, and do not change anything if it doesn't violate the critique parameters. It's very important that you just return the rewritten chapter and nothing else.`},
                 { "role": "user", "content":  `This is the prompt: ${prompt_info}\n\nThis is the critique: ${critique}\n\nThis is the outline of the entire story: ${outline}\n\nAnd this is the chapter: ${chapter}`},
             ],
             stream: false, 
@@ -76,6 +116,18 @@ function next_chapter(prompt_info, outline, chapter, chapter_count) {
         messages: [
             { "role": "system", "content": `You are now being fed a chapter written by another agent. You will continue the story in another chapter of roughly equal length while still following the guidelines established in the original prompt.`},
             { "role": "user", "content": `${prompt_info}\n\nPrevious chapter(s) whose story you're continuing: ${chapter}\n\nStory outline: ${outline}\n\n Write chapter ${chapter_count+1}.`},
+        ],
+        stream: false, 
+    };
+    return chap;
+}
+
+function regenerate(prompt_info, outline, chapter, chapter_count) {
+    var chap =  {
+        model: "llama3.1-8b", 
+        messages: [
+            { "role": "system", "content": `You are now being fed a chapter written by another agent. You will regenerate chapter, keeping the length roughly equal length still following the guidelines established in the original prompt.`},
+            { "role": "user", "content": `${prompt_info}\n\nAll previous chapters. The chapter you're regenerating is chapter ${chapter_count}: ${chapter}\n\nStory outline: ${outline}\n\n`},
         ],
         stream: false, 
     };
@@ -141,4 +193,4 @@ function set_stream(prompt, stream_set) {
 
 
 
-module.exports = {judge, first_chapter, critique, rewrite, next_chapter, story_outline, boost_model, degrade_model, default_model, set_stream};
+module.exports = {judge_stories, judge_outlines, judge_chapters, first_chapter, critique_chapter, critique_outline, rewrite, next_chapter, regenerate, story_outline, boost_model, degrade_model, default_model, set_stream};
