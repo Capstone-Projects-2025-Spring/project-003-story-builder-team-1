@@ -83,7 +83,7 @@ router.post('/regenerate_chapter', async (req, res) => {
     var prompt = prompt_formatter.regenerate(prompt_info, chapter_outline, previous_chapters, chapter_count);
     var story_id = req.body.story_id;
     var user_id = req.body.user_id;
-    var courier_send = {
+    const courier_send = {
         "prompt": prompt,
         "story_id": story_id,
         "user_id": user_id
