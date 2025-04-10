@@ -8,13 +8,17 @@ const APP_URL = PRIVATE_URL.includes("localhost") ? PRIVATE_URL + ":8080" : PRIV
 let body = []
 //story_call
 router.post('/story_call', async (req, res) => {
+    const prompt = req.body.prompt;
+    const story_id = req.body.story_id;
+    const user_id = req.body.user_id;
+
     try {
-        console.log("Request - courier:", req.body.data);
-        body.push({ role: "user", content: req.body.messages });
+        console.log("Request - courier:", prompt);
+        body.push({ role: "user", content: prompt.messages });
 
         const response = await axios.post(
             API_URL + "/agent/generate",
-            req.body.data,
+            prompt,
             { headers: { "Content-Type": "application/json" } }
         );
    
@@ -23,7 +27,12 @@ router.post('/story_call', async (req, res) => {
         // Ensure this request is properly awaited
         await axios.post(
             APP_URL + "/translator/courier_response",
-            { data: response.data.response.content },
+            { 
+                //for now i'm just sending them here, not sure exactly where they go though
+                //we can at least use this later for the frontend and DB
+                story_id,
+                user_id,
+                data: response.data.response.content },
             { headers: { "Content-Type": "application/json" } }
         );
 

@@ -13,15 +13,15 @@ router.post('/first_chapter', async (req, res) => {
     }
 
     //formatting the story & extra details (ignoring story_name and chapter_count for now, also ignores the need for a previous_chapter entry)
-    const prompt_info = JSON.stringify(req.body.prompt_info.details);
-    const story_outline = JSON.stringify(req.body.prompt_info.story_outline);
+    const prompt_info = req.body.prompt_info.details;
+    const story_outline = req.body.prompt_info.story_outline;
     console.log("story_details taken in as promptinfo: "+ prompt_info);
 
     //sends to promptformatter to be organized in an acceptable format for the llama API
-    var prompt = prompt_formatter.first_chapter(prompt_info, story_outline);
-    var story_id = req.body.story_id;
-    var user_id = req.body.user_id;
-    var courier_send = {
+    const prompt = prompt_formatter.first_chapter(prompt_info, story_outline);
+    const story_id = req.body.story_id;
+    const user_id = req.body.user_id;
+    const courier_send = {
         "prompt": prompt,
         "story_id": story_id,
         "user_id": user_id
@@ -49,10 +49,10 @@ router.post('/next_chapter', async (req, res) => {
     var chapter_outline = JSON.stringify(req.body.prompt_info.story_outline);
     var previous_chapters = JSON.stringify(req.body.prompt_info.previous_chapters);
 
-    var prompt = prompt_formatter.next_chapter(prompt_info, chapter_outline, previous_chapters, chapter_count);
-    var story_id = req.body.story_id;
-    var user_id = req.body.user_id;
-    var courier_send = {
+    const prompt = prompt_formatter.next_chapter(prompt_info, chapter_outline, previous_chapters, chapter_count);
+    const story_id = req.body.story_id;
+    const user_id = req.body.user_id;
+    const courier_send = {
         "prompt": prompt,
         "story_id": story_id,
         "user_id": user_id

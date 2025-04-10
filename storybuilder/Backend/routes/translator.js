@@ -158,7 +158,7 @@ router.post('/next_chapter', async (req, res) => {
 
         to_frontend = {
             "title": story_name,
-            "courier_response": courier_response,
+            "courier_response": courier_response.response,
         }
 
         //Send successful response to frontend
