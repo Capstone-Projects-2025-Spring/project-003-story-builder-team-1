@@ -7,9 +7,8 @@ COPY ./Backend/package.json ./Backend/package-lock.json /app/Backend/
 COPY ./Frontend/package.json ./Frontend/package-lock.json /app/Frontend/
 
 
-COPY ./Backend /app/Backend
-COPY ./Frontend /app/Frontend
-
+COPY ./Backend /app/Backend/
+COPY ./Frontend ./Frontend/.env /app/Frontend/
 
 RUN cd /app/Backend/ && npm install
 RUN cd /app/Frontend/ && npm install
