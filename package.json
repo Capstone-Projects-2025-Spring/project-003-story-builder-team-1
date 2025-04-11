@@ -1,7 +1,7 @@
 {
   "name": "project-003-story-builder-team-1",
   "scripts": {
-    "setup": "npm install && cd storybuilder/Backend && npm install && cd ../Frontend && npm install && cd ../agent/agent_container && npm install && docker-compose build",
+    "setup": "npm install && cd storybuilder/Backend && npm install && cd ../Frontend && npm install && cd ../Agent/agent_container && npm install && docker-compose build",
     "start": "npm run start:b & npm run start:f & npm run start:a",
     "start:dev": "concurrently \"npm run start:b\" \"npm run start:a\"",
     "start:con": "concurrently \"npm run start:b\" \"npm run start:a\" > output.log",
