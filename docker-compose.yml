@@ -2,31 +2,57 @@ services:
   agent:
     image: "${AGENT_NAME}-agent"  # Unique image name per agent
     build: 
-      context: storybuilder/Agent/agent_container/  # Path to the agent's build context
-      dockerfile: Dockerfile  # Path to the agent's Dockerfile
+      context: ./storybuilder/Agent/agent_container/  # Path to the agent's build context
+      dockerfile: ./Dockerfile  # Path to the agent's Dockerfile
     container_name: "${AGENT_NAME}-agent"  # Unique container name
     environment:
       - API_KEY=${API_KEY}
       - AGENT_NAME=${AGENT_NAME}
       - DOCKER=true
+    volumes:
+      - ./logs/:/app/logs  # Host ./logs/backend → /app/logs in container
     ports:
-      - "${PORT}:5000"  # Custom external port
+      - "5000:5000"  # Custom external port
     networks:
       - storybuilder-network  # Connect to the shared network
+
+  agent-2:
+    image: "${AGENT_NAME}-agent-2"  # Unique image name for the second agent
+    build:
+      context: ./storybuilder/Agent/agent_container/  # Same build context as the first agent
+      dockerfile: ./Dockerfile  # Same Dockerfile
+    container_name: "${AGENT_NAME}-agent-2"  # Unique container name for the second agent
+    environment:
+      - API_KEY=${API_KEY}
+      - AGENT_NAME=${AGENT_NAME}-2  # Different name for the second agent
+      - DOCKER=true
+    volumes:
+      - ./logs/:/app/logs  # Host ./logs/backend → /app/logs in container
+    ports:
+      - "5001:5000"  # Custom external port for the second agent
+    networks:
+      - storybuilder-network  # Connect to the shared network
+
   backend:
     image: "storybuilder-backend"  # Backend service image
     container_name: "storybuilder-backend"
     build:
-      context: storybuilder/  # Path to the backend Dockerfile
-      dockerfile: Backend/Dockerfile
+      context: ./storybuilder/  # Path to the backend Dockerfile
+      dockerfile: ./Backend/Dockerfile
     environment:
+      - REACT_APP_SERVER_URL=http://35.175.87.28
       - MONGO_URI=${MONGO_URI}  # MongoDB connection string
       - AGENT_URL=http://agent:5000  # URL to access the agent service
       - DOCKER_HOST=0.0.0.0 # Allow backend to listen on all interfaces
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    volumes:
+      - ./logs/:/app/logs  # Host ./logs/backend → /app/logs in container
     ports:
       - "8080:8080"  # Expose backend on port 8080
-    depends_on:
-      - agent  # Ensure agent starts before backend
     networks:
       - storybuilder-network
 
