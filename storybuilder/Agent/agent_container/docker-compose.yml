@@ -7,4 +7,4 @@ services:
       - API_KEY=${API_KEY}
       - AGENT_NAME=${AGENT_NAME}
     ports:
-      - "${PORT}:5000"  # Custom external port
+      - "5000:5000"  # Custom external port
