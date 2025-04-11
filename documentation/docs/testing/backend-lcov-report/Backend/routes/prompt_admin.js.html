@@ -23,16 +23,16 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">26.31% </span>
+                <span class="strong">24.39% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>10/38</span>
+                <span class='fraction'>10/41</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">25% </span>
+                <span class="strong">15.38% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>2/8</span>
+                <span class='fraction'>2/13</span>
             </div>
         
             
@@ -44,9 +44,9 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">26.31% </span>
+                <span class="strong">24.39% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>10/38</span>
+                <span class='fraction'>10/41</span>
             </div>
         
             
@@ -141,7 +141,11 @@
 <a name='L76'></a><a href='#L76'>76</a>
 <a name='L77'></a><a href='#L77'>77</a>
 <a name='L78'></a><a href='#L78'>78</a>
-<a name='L79'></a><a href='#L79'>79</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">2x</span>
+<a name='L79'></a><a href='#L79'>79</a>
+<a name='L80'></a><a href='#L80'>80</a>
+<a name='L81'></a><a href='#L81'>81</a>
+<a name='L82'></a><a href='#L82'>82</a>
+<a name='L83'></a><a href='#L83'>83</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-yes">2x</span>
@@ -155,6 +159,8 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -177,6 +183,9 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -201,8 +210,6 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -210,6 +217,9 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -217,9 +227,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">const express = require('express');
+<span class="cline-any cline-yes">2x</span></td><td class="text"><pre class="prettyprint lang-js">const express = require('express');
 const router = express.Router();
 const axios = require('axios');
 const promptformatter = require('../promptformatter')
@@ -229,15 +237,17 @@ const APP_URL = PRIVATE_URL;
 &nbsp;
 router.post('/first_chapter', <span class="fstat-no" title="function not covered" >as</span>ync (req, res) =&gt; {
     //throws 400 status 
-<span class="cstat-no" title="statement not covered" >    if(!req.body.details) {</span>
+<span class="cstat-no" title="statement not covered" >    if(!req.body.details || !req.body.story_outline) {</span>
 <span class="cstat-no" title="statement not covered" >       return res.status(400).json({message: "No prompt data received", data: req.body});</span>
     }
+&nbsp;
     //formatting the story &amp; extra details (ignoring story_name and chapter_count for now, also ignores the need for a previous_chapter entry)
     const promptinfo = <span class="cstat-no" title="statement not covered" >JSON.stringify(req.body.details);</span>
+    const storyoutline = <span class="cstat-no" title="statement not covered" >JSON.stringify(req.body.story_outline);</span>
 <span class="cstat-no" title="statement not covered" >    console.log("story_details taken in as promptinfo: "+ promptinfo);</span>
 &nbsp;
     //sends to promptformatter to be organized in an acceptable format for the llama API
-    var prompt = <span class="cstat-no" title="statement not covered" >promptformatter.draft(promptinfo);</span>
+    var prompt = <span class="cstat-no" title="statement not covered" >promptformatter.firstchapter(promptinfo, storyoutline);</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >    try {</span>
         //try to send prompt to courier
@@ -252,14 +262,17 @@ router.post('/first_chapter', <span class="fstat-no" title="function not covered
 &nbsp;
 //next chapter
 router.post('/next_chapter', <span class="fstat-no" title="function not covered" >as</span>ync (req, res) =&gt; {
-<span class="cstat-no" title="statement not covered" >    if(!req.body.details) {</span>
+<span class="cstat-no" title="statement not covered" >    if(!req.body.details || !req.body.story_outline || !req.body.previous_chapters) {</span>
 <span class="cstat-no" title="statement not covered" >        return res.status(400).json({message: "No prompt data received", data: req.body});</span>
-     }
+    }
+&nbsp;
+    var chaptercount = <span class="cstat-no" title="statement not covered" >req.body.previous_chapters.length;</span>
+<span class="cstat-no" title="statement not covered" >    console.log("Current chapter count: (Test)" + chaptercount);</span>
     var promptinfo = <span class="cstat-no" title="statement not covered" >JSON.stringify(req.body.details);</span>
     var chapteroutline = <span class="cstat-no" title="statement not covered" >JSON.stringify(req.body.story_outline);</span>
     var previouschapter = <span class="cstat-no" title="statement not covered" >JSON.stringify(req.body.previous_chapters);</span>
 &nbsp;
-    var prompt = <span class="cstat-no" title="statement not covered" >promptformatter.nextchapter(promptinfo, chapteroutline, previouschapter);</span>
+    var prompt = <span class="cstat-no" title="statement not covered" >promptformatter.nextchapter(promptinfo, chapteroutline, previouschapter, chaptercount);</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >    try {</span>
         //try to send prompt to courier
@@ -277,7 +290,8 @@ router.post('/next_chapter', <span class="fstat-no" title="function not covered"
 router.post('/story_outline', <span class="fstat-no" title="function not covered" >as</span>ync (req, res) =&gt; {
 <span class="cstat-no" title="statement not covered" >    if(!req.body.details) {</span>
 <span class="cstat-no" title="statement not covered" >        return res.status(400).json({message: "No prompt data received", data: req.body});</span>
-     }
+    }
+&nbsp;
     //separate request body into two fields to create outline with promptformatter
     var chapter_count = <span class="cstat-no" title="statement not covered" >JSON.stringify(req.body.chapter_count);</span>
     var promptinfo = <span class="cstat-no" title="statement not covered" >JSON.stringify(req.body.details);</span>
@@ -295,16 +309,14 @@ router.post('/story_outline', <span class="fstat-no" title="function not covered
 });
 &nbsp;
 // Export the routers for use in app.js
-module.exports = router;
-&nbsp;
-&nbsp;</pre></td></tr></table></pre>
+module.exports = router;</pre></td></tr></table></pre>
 
                 <div class='push'></div><!-- for sticky footer -->
             </div><!-- /wrapper -->
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-04-03T02:45:33.117Z
+                at 2025-04-06T20:45:59.506Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

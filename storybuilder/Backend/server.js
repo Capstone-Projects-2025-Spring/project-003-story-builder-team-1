@@ -1,13 +1,13 @@
 require('dotenv').config();
 
-console.log("DEBUG: Loaded MONGO_URI:", process.env.MONGO_URI); // Debugging line
+// console.log("DEBUG: Loaded MONGO_URI:", process.env.DB_URI); // Debugging line
 
 //Import the app configuration
 const app = require('./app');
-//const connectDB = require('./db'); //Import db config
+// const connectDB = require('./db'); //Import db config
 
-//Connect to the database
-//connectDB();
+// //Connect to the database
+// connectDB();
 
 const PORT = process.env.PORT || 8080;
 const HOST = process.env.DOCKER_HOST || "0.0.0.0";

@@ -37,7 +37,7 @@ describe("POST /first_chapter", () => {
 
     // Mock axios response
     axios.post.mockResolvedValue({message: "Story Data Received Successfully", status: 200});
-
+    
     const input = {
       "story_name": "Story Name",
       "story_details": "Story Detail",
