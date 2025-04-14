@@ -10,9 +10,11 @@ const app = require('./app');
 // connectDB();
 
 const PORT = process.env.PORT || 8080;
+const HOST = process.env.DOCKER_HOST || "0.0.0.0";
 const SERVER_URL = process.env.SERVER_URL || "http://localhost:8080";
+console.log("SERVER_URL:", SERVER_URL); // Debugging line
 
 //Start the Server
-app.listen(PORT, '127.0.0.1', () => {
-    console.log('Host: ' + SERVER_URL);
+app.listen(PORT, HOST, () => {
+    console.log('Host: ' + HOST);
 });
