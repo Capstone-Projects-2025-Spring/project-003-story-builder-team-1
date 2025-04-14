@@ -14,4 +14,4 @@ ENV PORT=$PORT
 
 EXPOSE 5000
 
-CMD ["node", "agent_server.js"]
+CMD ["node", "agent_server_d.js"]
