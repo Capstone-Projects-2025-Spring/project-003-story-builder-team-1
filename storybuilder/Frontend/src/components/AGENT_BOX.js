@@ -87,8 +87,8 @@ function AGENT_BOX({ name }) {
             </Title>
             {loading && (
               <>
-                <span style={{ color: 'white', fontSize: '14px' }}>Receiving response...</span>
-                <Loader size="xs" color="gray" />
+                <span style={{ color: 'white', fontSize: '14px' }}>Drafting Chapter...</span>
+                <Loader size="xs" color="white" />
               </>
             )}
           </Group>
