@@ -1,12 +1,14 @@
 import { useState, useContext, useEffect } from 'react';
 import { Card, Button, Modal, Textarea, Title, Divider, Group } from '@mantine/core';
 import STORY_CONTEXT from "../context/STORY_CONTEXT";
+import { Loader } from '@mantine/core';
 
 function AGENT_BOX({ name }) {
     const { state, fetch_first_chapter, fetch_next_chapter, api_error } = useContext(STORY_CONTEXT);
     const [opened, set_opened] = useState(false);
     const [chapter_content, set_chapter_content] = useState("Waiting for the agent to generate a response...");
     const [show_cont_button, set_show_cont_button] = useState(true);
+    const [loading, set_loading] = useState(false);
 
     useEffect(() => {
       if (state.current_story?.chapters?.length > 0) {
@@ -18,34 +20,31 @@ function AGENT_BOX({ name }) {
     }, [state.current_story]);
 
     const handle_continue = async () => {
-      // Handle continue button click
-      console.log("Continue button clicked");
-
-      // if chapters length is 1, only outline is available, so fetch first chapter
+      set_loading(true); // Start loading
       if (state.current_story.chapters.length === 1) {
-          const first_chapter_success = await fetch_first_chapter(state.current_story.title, state.current_story.story_details, state.current_story.extra_details, state.current_story.chapters[0]);
-          if (first_chapter_success) {
-              console.log("Successfully fetched first chapter");
-          }
-          else {
-              console.log("First Chapter error");
-              console.log("API ERROR: ", api_error)
-          }
+        const first_chapter_success = await fetch_first_chapter(
+          state.current_story.title,
+          state.current_story.story_details,
+          state.current_story.extra_details,
+          state.current_story.chapters[0]
+        );
+        if (!first_chapter_success) {
+          console.log("API ERROR: ", api_error);
+        }
+      } else {
+        const next_chapter_success = await fetch_next_chapter(
+          state.current_story.title,
+          state.current_story.story_details,
+          state.current_story.extra_details,
+          state.current_story.chapters.slice(1),
+          state.current_story.chapters[0]
+        );
+        if (!next_chapter_success) {
+          console.log("API ERROR: ", api_error);
+        }
       }
-      // chapters contains more than outline and 1st chapter, so fetch next chapter
-      else {
-          console.log("previous chapters: ", state.current_story.chapters.slice(1));
-          const next_chapter_success = await fetch_next_chapter(state.current_story.title, state.current_story.story_details, state.current_story.extra_details, state.current_story.chapters.slice(1), state.current_story.chapters[0]);
-          if (next_chapter_success) {
-              console.log("Successfully fetched next chapter");
-
-          }
-          else {
-              console.log("Next Chapter error");
-              console.log("API ERROR: ", api_error)
-          }
-      }
-    }
+      set_loading(false); // Done loading
+    };
 
     return (
         <>
@@ -82,7 +81,17 @@ function AGENT_BOX({ name }) {
           <Card shadow="sm" padding="md" radius="md" withBorder>
             {/* Header */}
             <div style={{ padding: '10px', borderRadius: '5px 5px 0 0' }}>
-              <Title order={4} style={{ color: 'white', margin: 0 }}>{name}</Title>
+            <Group gap="xs" align="center">
+            <Title order={4} style={{ color: 'white', margin: 0 }}>
+              {name}
+            </Title>
+            {loading && (
+              <>
+                <span style={{ color: 'white', fontSize: '14px' }}>Receiving response...</span>
+                <Loader size="xs" color="gray" />
+              </>
+            )}
+          </Group>
             </div>
     
             {/* Divider Line */}
