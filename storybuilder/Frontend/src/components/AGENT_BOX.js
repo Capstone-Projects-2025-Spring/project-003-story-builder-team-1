@@ -1,7 +1,6 @@
 import { useState, useContext, useEffect } from 'react';
-import { Card, Button, Modal, Textarea, Title, Divider, Group } from '@mantine/core';
+import { Card, Button, Modal, Textarea, Title, Divider, Group, Loader } from '@mantine/core';
 import STORY_CONTEXT from "../context/STORY_CONTEXT";
-import { Loader } from '@mantine/core';
 
 function AGENT_BOX({ name }) {
     const { state, fetch_first_chapter, fetch_next_chapter, api_error } = useContext(STORY_CONTEXT);
@@ -81,17 +80,11 @@ function AGENT_BOX({ name }) {
           <Card shadow="sm" padding="md" radius="md" withBorder>
             {/* Header */}
             <div style={{ padding: '10px', borderRadius: '5px 5px 0 0' }}>
-            <Group gap="xs" align="center">
-            <Title order={4} style={{ color: 'white', margin: 0 }}>
-              {name}
-            </Title>
-            {loading && (
-              <>
-                <span style={{ color: 'white', fontSize: '14px' }}>Drafting Chapter...</span>
-                <Loader size="xs" color="white" />
-              </>
-            )}
-          </Group>
+              <Group gap="xs" align="center">
+                <Title order={4} style={{ color: 'white', margin: 0 }}>
+                  {name}
+                </Title>
+              </Group>
             </div>
     
             {/* Divider Line */}
@@ -117,11 +110,23 @@ function AGENT_BOX({ name }) {
               <Button size="sm" variant="light" onClick={() => set_opened(true)}>
                 View
               </Button>
-                {show_cont_button && (
-                    <Button size="sm" variant="light" color="teal" onClick={() => handle_continue()}>
-                    Continue
-                    </Button>
-                )}
+              {show_cont_button && (
+                <Button
+                  size="sm"
+                  variant="light"
+                  color={!loading ? "teal" : undefined} // green-ish before loading
+                  disabled={loading}
+                  onClick={handle_continue}
+                  leftSection={loading && <Loader size="xs" color="green" />}
+                  style={{
+                    backgroundColor: loading ? 'rgba(0, 255, 128, 0.1)' : '',
+                    color: loading ? '#66ffb2' : '',
+                    cursor: loading ? 'not-allowed' : 'pointer',
+                  }}
+                >
+                  {loading ? "Drafting Chapter" : "Continue"}
+                </Button>
+              )}
             </Group>
           </Card>
         </>
