@@ -62,7 +62,7 @@ function BEST_RESPONSE() {
                 }}
             />
 
-            <Group justify="center" style={{ marginTop: '10px' }}>
+            <Group justify="flex-end" style={{ marginTop: '10px' }}>
               {show_cont_button && (
                 <Button
                   size="sm"
