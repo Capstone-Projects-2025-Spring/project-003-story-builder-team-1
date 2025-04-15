@@ -23,7 +23,7 @@ describe('AGENT_BOX Component', () => {
 
     // Agent 1 still hardcoded in STORY_AGENTS_VIEW.js, will need to be changed
     expect(screen.getByText('Agent 1')).toBeInTheDocument();
-    expect(screen.getByText('Chapter 1 Mock Data')).toBeInTheDocument();
+    expect(screen.getByText('Chapter 2 Mock Data')).toBeInTheDocument();
   });
 
   test('should render the View button', () => {
@@ -43,6 +43,6 @@ describe('AGENT_BOX Component', () => {
     );
     fireEvent.click(screen.getByText('View'));
     expect(screen.getByText('Agent 1')).toBeInTheDocument();
-    expect(screen.getByText('Chapter 1 Mock Data')).toBeInTheDocument();
+    expect(screen.getByText('Chapter 2 Mock Data')).toBeInTheDocument();
   });
 });
