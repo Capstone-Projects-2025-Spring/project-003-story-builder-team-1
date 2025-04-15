@@ -51,31 +51,68 @@ function AGENT_BOX({ name }) {
           <Modal
             opened={opened}
             onClose={() => set_opened(false)}
-            size="50%" // width remains unchanged
+            size="50%"
             radius="md"
+            padding="md"
             styles={{
               content: {
-                height: '90vh', // You can tweak this to get your desired vertical size
+                height: '90vh',
                 display: 'flex',
                 flexDirection: 'column',
               },
+              body: {
+                flex: 1,
+                display: 'flex',
+                flexDirection: 'column',
+                padding: 0,
+              },
             }}
+            title={
+              <Title
+                order={1}
+                style={{
+                  fontSize: '24px',
+                  fontWeight: 600,
+                  textAlign: 'center',
+                  marginLeft: '15px',
+                }}
+              >
+                {name}
+              </Title>
+            }
           >
+            <div style={{ flex: 1, display: 'flex' }}>
+
             {/* Scrollable Text Area */}
             <Textarea
               value={chapter_content}
               readOnly
-              autosize
-              minRows={10}
-              maxRows={10}
+              autosize={false}
               styles={{
                 input: {
-                  fontSize: '18px' // 18px = 1.125rem = mantine size "lg"
+                  padding: "16px",
+                  fontSize: '18px',
+                  resize: 'none',
+                  overflow: 'auto',
+                  flex: 1,
+                },
+                root: {
+                  flex: 1,
+                  display: 'flex',
+                },
+                wrapper: {
+                  flex: 1,
+                  display: 'flex',
                 },
               }}
-              style={{ width: '100%' }}
+              style={{
+                flex: 1,
+                width: '100%',
+                padding: '16px'
+              }}
             />
-            </Modal>
+            </div>
+          </Modal>
 
             {/* Agent Box */}
           <Card shadow="sm" padding="md" radius="md" withBorder>
@@ -115,7 +152,7 @@ function AGENT_BOX({ name }) {
                 <Button
                   size="sm"
                   variant="light"
-                  color={!loading ? "teal" : undefined} // green-ish before loading
+                  color={!loading ? "teal" : undefined}
                   disabled={loading}
                   onClick={handle_continue}
                   leftSection={loading && <Loader size="xs" color="green" />}
