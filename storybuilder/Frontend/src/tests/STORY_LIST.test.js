@@ -10,6 +10,8 @@ jest.mock('react-router', () => ({
   useNavigate: jest.fn(),
 }));
 
+// Story 1 still hardcoded in STORY_LIST.js, will need to be changed
+
 describe('STORY_LIST Component', () => {
   test('renders all stories', () => {
     render(

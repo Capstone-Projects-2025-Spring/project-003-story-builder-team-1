@@ -17,7 +17,7 @@ describe('Courier Routes', () => {
                 data: { key: "value" }
             };
 
-            const mockAgentResponse = { reply: "Agent response" };
+            const mockAgentResponse = { response: { content: "Agent response" }};
             axios.post.mockResolvedValueOnce({ data: mockAgentResponse });
             axios.post.mockResolvedValueOnce({}); // Mock the translator response
 
@@ -39,7 +39,7 @@ describe('Courier Routes', () => {
 
             expect(axios.post).toHaveBeenCalledWith(
                 "http://localhost:8080/translator/courier_response",
-                { data: mockAgentResponse.reply },
+                { data: mockAgentResponse.response.content },
                 { headers: { "Content-Type": "application/json" } }
             );
         });

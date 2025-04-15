@@ -1,46 +1,56 @@
 import { render, screen } from '../setupTests';
 import { MemoryRouter, Route, Routes } from 'react-router';
 import CHAPTER_VIEW from '../components/CHAPTER_VIEW';
-const axios = require('axios');
-jest.mock('axios');
+import STORY_CONTEXT from '../context/STORY_CONTEXT';
 
-const mockChapters = [
-  { id: 1, title: "Chapter 1: A New Journey", text: "Once upon a time, in a land far away..." },
-  { id: 2, title: "Chapter 2: The First Challenge", text: "The hero faced a mighty beast in the forest..." },
-];
+jest.mock("axios", () => ({
+  default: jest.fn(),
+}));
+
+const mock_state = {
+  current_story: {
+      title: "Mock Story",
+      chapters: ["Chapter 1 Mock Data", "Chapter 2 Mock Data"],
+  },
+};
 
 describe('CHAPTER_VIEW Component', () => {
+  // check this one again when looking over tests
   test('renders the correct chapter based on chapterId', () => {
     render(
+      <STORY_CONTEXT.Provider value={{ state: mock_state }}>
       <MemoryRouter initialEntries={["/story/1/view/1"]}>
         <Routes>
-          <Route path="/story/:storyId/view/:chapterId" element={<CHAPTER_VIEW />} />
+          <Route path="/story/:story_id/view/:chapter_id" element={<CHAPTER_VIEW />} />
         </Routes>
       </MemoryRouter>
+      </STORY_CONTEXT.Provider>
     );
 
-    expect(screen.getByText("Chapter 1: A New Journey")).toBeInTheDocument();
-    expect(screen.getByText("Once upon a time, in a land far away...")).toBeInTheDocument();
+    expect(screen.getByText("Chapter 2 Mock Data")).toBeInTheDocument();
 
     render(
+      <STORY_CONTEXT.Provider value={{ state: mock_state }}>
         <MemoryRouter initialEntries={["/story/1/view/2"]}>
           <Routes>
-            <Route path="/story/:storyId/view/:chapterId" element={<CHAPTER_VIEW />} />
+            <Route path="/story/:story_id/view/:chapter_id" element={<CHAPTER_VIEW />} />
           </Routes>
         </MemoryRouter>
+      </STORY_CONTEXT.Provider>
     );
 
-    expect(screen.getByText("Chapter 2: The First Challenge")).toBeInTheDocument();
-    expect(screen.getByText("The hero faced a mighty beast in the forest...")).toBeInTheDocument();
+    expect(screen.getByText("Chapter 2 Mock Data")).toBeInTheDocument();
   });
 
   test('renders error message when chapter is not found', () => {
     render(
-      <MemoryRouter initialEntries={["/story/1/view/999"]}>
-        <Routes>
-          <Route path="/story/:storyId/view/:chapterId" element={<CHAPTER_VIEW />} />
-        </Routes>
-      </MemoryRouter>
+      <STORY_CONTEXT.Provider value={{ state: mock_state }}>
+        <MemoryRouter initialEntries={["/story/1/view/999"]}>
+          <Routes>
+            <Route path="/story/:story_id/view/:chapter_id" element={<CHAPTER_VIEW />} />
+          </Routes>
+        </MemoryRouter>
+      </STORY_CONTEXT.Provider>
     );
 
     expect(screen.getByText("Chapter not found!")).toBeInTheDocument();

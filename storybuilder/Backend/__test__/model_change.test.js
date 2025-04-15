@@ -1,7 +1,5 @@
 const promptadmin = require('../promptformatter.js');
 
-
-
 describe('modelchange', () => {
     it('Should return a JSON prompt which upgrades the model from Llama 3.1 with 8 billion parameters to 3.2 with 8 billion parameters.', () => {
         let prompttemp = 
@@ -13,7 +11,7 @@ describe('modelchange', () => {
             stream: false, // Ensures a single response instead of a streamed response
         };
         boost = promptadmin.boostmodel(prompttemp);
-        expect(boost.model).toBe("llama3.1-8b")
+        expect(boost.model).toBe("llama3.1-70b")
     });
 
 

@@ -2,25 +2,33 @@ import { render, screen, fireEvent } from '../setupTests';
 import { MemoryRouter } from 'react-router';
 import CHAPTER_LIST from '../components/CHAPTER_LIST';
 import { useNavigate } from 'react-router';
+import STORY_CONTEXT from '../context/STORY_CONTEXT';
 
+// mock axios
+jest.mock("axios", () => ({
+  default: jest.fn(),
+}));
+
+// mock navigate
 jest.mock('react-router', () => ({
   ...jest.requireActual('react-router'),
   useNavigate: jest.fn(),
 }));
 
-const mockChapters = [
-  { id: 1, title: "Chapter 1: A New Journey", text: "Once upon a time, in a land far away..." },
-  { id: 2, title: "Chapter 2: The First Challenge", text: "The hero faced a mighty beast in the forest..." },
-  { id: 3, title: "Chapter 3: An Unexpected Ally", text: "A mysterious stranger appeared, offering guidance..." },
-  { id: 4, title: "Chapter 4: The Darkest Hour", text: "The hero ventured into the dark cave, facing danger..." },
-  { id: 5, title: "Chapter 5: The Final Battle", text: "The hero fought valiantly against the ultimate foe..." }
-];
+const mock_state = {
+  current_story: {
+      title: "Mock Story",
+      chapters: ["Outline", "Chapter 1 Mock Data", "Chapter 2 Mock Data"],
+  },
+};
 
 describe('CHAPTER_LIST Component', () => {
   test('should render the View Entire Story button', () => {
     render(
       <MemoryRouter>
-        <CHAPTER_LIST chapters={mockChapters} storyId="1" />
+        <STORY_CONTEXT.Provider value={{ state: mock_state }}>
+          <CHAPTER_LIST/>
+        </STORY_CONTEXT.Provider>
       </MemoryRouter>
     );
     expect(screen.getByText('View Entire Story')).toBeInTheDocument();
@@ -29,40 +37,48 @@ describe('CHAPTER_LIST Component', () => {
   test('should render chapter buttons', () => {
     render(
       <MemoryRouter>
-        <CHAPTER_LIST chapters={mockChapters} storyId="1" />
+        <STORY_CONTEXT.Provider value={{ state: mock_state }}>
+          <CHAPTER_LIST/>
+        </STORY_CONTEXT.Provider>
       </MemoryRouter>
     );
-    expect(screen.getByText('Chapter 1: A New Journey')).toBeInTheDocument();
-    expect(screen.getByText('Chapter 2: The First Challenge')).toBeInTheDocument();
+    // Chapter list automatically puts index + 1 of chapter
+    expect(screen.getByText('Outline')).toBeInTheDocument();
+    expect(screen.getByText('Chapter 1')).toBeInTheDocument();
+    expect(screen.getByText('Chapter 2')).toBeInTheDocument();
   });
 
   test('should navigate to STORY_VIEW when clicking View Entire Story', () => {
-    const mockNavigate = jest.fn();
-    useNavigate.mockReturnValue(mockNavigate);
+    const mock_navigate = jest.fn();
+    useNavigate.mockReturnValue(mock_navigate);
   
     render(
       <MemoryRouter>
-        <CHAPTER_LIST chapters={mockChapters} storyId="1" />
+        <STORY_CONTEXT.Provider value={{ state: mock_state }}>
+          <CHAPTER_LIST/>
+        </STORY_CONTEXT.Provider>
       </MemoryRouter>
     );
   
     fireEvent.click(screen.getByText('View Entire Story'));
   
-    expect(mockNavigate).toHaveBeenCalledWith('/story/1/view');
+    expect(mock_navigate).toHaveBeenCalledWith('/story/1/view');
   });
 
   test('should navigate to CHAPTER_VIEW when clicking Chapter 1: A New Journey', () => {
-    const mockNavigate = jest.fn();
-    useNavigate.mockReturnValue(mockNavigate);
+    const mock_navigate = jest.fn();
+    useNavigate.mockReturnValue(mock_navigate);
   
     render(
       <MemoryRouter>
-        <CHAPTER_LIST chapters={mockChapters} storyId="1" />
+        <STORY_CONTEXT.Provider value={{ state: mock_state }}>
+          <CHAPTER_LIST/>
+        </STORY_CONTEXT.Provider>
       </MemoryRouter>
     );
   
-    fireEvent.click(screen.getByText('Chapter 1: A New Journey'));
+    fireEvent.click(screen.getByText('Chapter 1'));
   
-    expect(mockNavigate).toHaveBeenCalledWith('/story/1/view/1');
+    expect(mock_navigate).toHaveBeenCalledWith('/story/1/view/1');
   });
 });

@@ -8,15 +8,17 @@ const APP_URL = PRIVATE_URL;
 
 router.post('/first_chapter', async (req, res) => {
     //throws 400 status 
-    if(!req.body.data) {
+    if(!req.body.details || !req.body.story_outline) {
        return res.status(400).json({message: "No prompt data received", data: req.body});
     }
+
     //formatting the story & extra details (ignoring story_name and chapter_count for now, also ignores the need for a previous_chapter entry)
-    const promptinfo = JSON.stringify(req.body.data);
+    const promptinfo = JSON.stringify(req.body.details);
+    const storyoutline = JSON.stringify(req.body.story_outline);
     console.log("story_details taken in as promptinfo: "+ promptinfo);
 
     //sends to promptformatter to be organized in an acceptable format for the llama API
-    var prompt = promptformatter.draft(promptinfo);
+    var prompt = promptformatter.firstchapter(promptinfo, storyoutline);
 
     try {
         //try to send prompt to courier
@@ -29,17 +31,19 @@ router.post('/first_chapter', async (req, res) => {
     }
 });
 
-
 //next chapter
 router.post('/next_chapter', async (req, res) => {
-    if(!req.body.data) {
+    if(!req.body.details || !req.body.story_outline || !req.body.previous_chapters) {
         return res.status(400).json({message: "No prompt data received", data: req.body});
-     }
+    }
+
+    var chaptercount = req.body.previous_chapters.length;
+    console.log("Current chapter count: (Test)" + chaptercount);
     var promptinfo = JSON.stringify(req.body.details);
     var chapteroutline = JSON.stringify(req.body.story_outline);
     var previouschapter = JSON.stringify(req.body.previous_chapters);
 
-    var prompt = promptformatter.nextchapter(promptinfo, chapteroutline, previouschapter);
+    var prompt = promptformatter.nextchapter(promptinfo, chapteroutline, previouschapter, chaptercount);
 
     try {
         //try to send prompt to courier
@@ -55,14 +59,15 @@ router.post('/next_chapter', async (req, res) => {
 
 //refine_prompt
 router.post('/story_outline', async (req, res) => {
-    if(!req.body.data) {
+    if(!req.body.details) {
         return res.status(400).json({message: "No prompt data received", data: req.body});
-     }
+    }
+
     //separate request body into two fields to create outline with promptformatter
-    var chaptercount = JSON.stringify(req.body.chaptercount);
+    var chapter_count = JSON.stringify(req.body.chapter_count);
     var promptinfo = JSON.stringify(req.body.details);
     //create outline with two entries, calling promptformatter's storyoutline() function
-    var prompt = promptformatter.storyoutline(chaptercount, promptinfo);
+    var prompt = promptformatter.storyoutline(chapter_count, promptinfo);
     try {
         //try to send prompt to courier
         courier_res = await axios.post('http://localhost:8080/courier/story_call', {data:prompt});
@@ -76,4 +81,3 @@ router.post('/story_outline', async (req, res) => {
 
 // Export the routers for use in app.js
 module.exports = router;
-

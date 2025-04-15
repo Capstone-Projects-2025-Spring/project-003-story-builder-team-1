@@ -11,7 +11,7 @@ router.post("/generate", async (req, res) => {
     }
     console.log("Received API request:", req.body);
     const response = await send_prompt(req);
-    res.status(200).json({ reply: response });
+    res.status(200).json({ response });
 
   } catch (error) {
     console.error("Error in API call:", error);
@@ -22,16 +22,10 @@ router.post("/generate", async (req, res) => {
 // Function to send a prompt to the AI model and get a response
 async function send_prompt(prompt) {
 
-  // const apiRequestJson = {
-  //   model: "llama3.1-8b",
-  //   messages: prompt.body.messages,
-  //   stream: false,
-  // };
-
   try {
     const response = await llama.run(prompt.body);
     console.log("AI response:", response.choices[0].message.content);
-    return response.choices[0].message.content;
+    return response.choices[0].message;
   } catch (error) {
     console.error("API call failed:", error.message);
     throw error;

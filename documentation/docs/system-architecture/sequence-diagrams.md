@@ -11,19 +11,19 @@ sequenceDiagram
     participant Frontend
     participant Backend
     participant Database
-    User->>+Frontend: User clicks "Sign Up"
+    User->>+Frontend: User clicks "Create Account"
     Frontend-->>User: Redirect to Registration page
-    loop Until valid email is provided
+    loop Until valid username is provided
         User->>Frontend: User enters login information
         Frontend->>+Backend: Send credentials for authentication
-        Backend->>+Database: Check Database for email
-        alt if Email exists
-            Database-->>Backend: Returns existing email
+        Backend->>+Database: Check Database for username
+        alt if Username exists
+            Database-->>Backend: Returns existing username
             Backend-->>Frontend: Authentication failure response
             Frontend-->>User: "User already exists error" message
             Frontend-->>User: Prompts User to try again
-        else if Email does not exist
-            Database-->>Backend: Returns no email
+        else if Username does not exist
+            Database-->>Backend: Returns no username
             Backend-->>Frontend: Authentication success response
             Frontend-->>User: "Account successfully created" message
             Frontend-->>User: Redirect to Login Page
@@ -144,8 +144,11 @@ sequenceDiagram
     participant Backend
     participant LLM
     participant Database
-    User->>+Frontend: User selects "Generate Story"
-    Frontend-->>User: Opens up a prompt popup modal
+    User->>+Frontend: User selects "Generate New Story"
+    Frontend-->>User: Redirects to page with Agent Selection modal
+    User->>Frontend: User selects desired agents
+    User-->>Frontend: User clicks "Confirm Agents"
+    Frontend-->>User: Redirects to page with prompt modal
     User->>Frontend: User enters necessary information (number of chapters, story subject/synopsis, any extra criteria)
     Loop For every Agent
     Frontend->>+Backend: Sends generation request allow with inputted information
@@ -154,8 +157,8 @@ sequenceDiagram
     Backend->>+Database: Add Request for newly generated story chapter
     Database-->>-Backend: Returns document containing status of operation
     end
-    Backend-->>-Frontend: Return all Agent chapters
-    Frontend-->>-User: Display all Agent chapters
+    Backend-->>-Frontend: Return all agent chapters
+    Frontend-->>-User: Display all agent chapters
 ```
 
 ## Use Case 8: Agent Voting
