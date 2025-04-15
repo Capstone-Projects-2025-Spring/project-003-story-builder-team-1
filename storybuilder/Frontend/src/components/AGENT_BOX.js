@@ -51,14 +51,15 @@ function AGENT_BOX({ name }) {
           <Modal
             opened={opened}
             onClose={() => set_opened(false)}
-            size="50%"
+            size="50%" // width remains unchanged
             radius="md"
-            style={{ minHeight: '50%' }}
-            title={
-                <Title order={1} style={{ fontSize: '24px', fontWeight: 600, textAlign: 'center', marginLeft: '15px' }}>
-                  {name}
-                </Title>
-            }
+            styles={{
+              content: {
+                height: '90vh', // You can tweak this to get your desired vertical size
+                display: 'flex',
+                flexDirection: 'column',
+              },
+            }}
           >
             {/* Scrollable Text Area */}
             <Textarea
