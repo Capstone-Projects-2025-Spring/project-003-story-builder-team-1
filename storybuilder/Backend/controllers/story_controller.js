@@ -522,7 +522,7 @@ exports.story_add_outline_post = asyncHandler(async (req, res, next) => {
     // Save the updated story
     await story.save();
 
-    res.status(200).json({ message: "Outline added successfully", story });
+    res.status(200).json({ outline: story.outline });
 });
 
 // Get outline for a story
@@ -542,4 +542,259 @@ exports.story_get_outline = asyncHandler(async (req, res, next) => {
     }
 
     res.status(200).json({ outline: story.outline });
+});
+
+// Add critique to a story
+exports.story_add_voted_critique_post = asyncHandler(async (req, res, next) => {
+    const { user_id, story_id } = req.params; // Story ID and User ID
+    const { chapter_number, critique } = req.body;
+
+    if (!chapter_number == null || !critique) {
+        return res.status(400).json({ error: "Chapter number and critique are required." });
+    }
+
+    // Find the user and ensure they exist
+    const user = await User.findById(user_id);
+    if (!user) {
+        return res.status(404).json({ error: "User not found" });
+    }
+    
+    // Find the story by story_id and check if the user_id matches
+    const story = await Story.findOne({ _id: story_id, user: user_id });
+
+    if (!story) {
+        return res.status(404).json({ error: "Story not found or user does not have access to this story" });
+    }
+
+    // Check if the chapter_number already exists in the critiques array
+    const existingCritique = story.critiques.find(ch => ch.chapter_number === Number(chapter_number));
+    
+    if (existingCritique) {
+        return res.status(400).json({ error: `Critique for chapter number ${chapter_number} already exists.` });
+    }
+
+    // Add critique to the critiques array
+    story.critiques.push({ chapter_number, critique });
+
+    // Save the updated story
+    await story.save();
+
+    res.status(200).json({ message: "Critique added successfully", story });
+});
+
+// Translator DB Endpoints
+exports.story_get_generate_outline_details = asyncHandler(async (req, res, next) => {
+    const { user_id, story_id } = req.params; // Story ID and User ID
+
+    const story = await Story.findOne({ _id: story_id, user: user_id }).exec();
+
+    if (!story) {
+        return res.status(404).json({ error: "Story not found or user does not have access to this story" });
+    }
+
+    if (!story.prompt.story_details) {
+        return res.status(404).json({ error: "Story details are required." });
+    }
+
+    const response = {
+        story_name: story.story_name,
+        story_details: story.prompt.story_details,
+        extra_details: story.prompt.extra_details,
+    }
+    res.json(response);
+});
+
+exports.story_get_critique_outline_details = asyncHandler(async (req, res, next) => {
+    const { user_id, story_id } = req.params; // Story ID and User ID
+    const story = await Story.findOne({ _id: story_id, user: user_id }).exec();;
+
+    if (!story) {
+        return res.status(404).json({ error: "Story not found or user does not have access to this story" });
+    }
+
+    if (!story.prompt.story_details) {
+        return res.status(404).json({ error: "Story details are required." });
+    }
+    
+    if (!story.outline) {
+        return res.status(404).json({ error: "Outline is required." });
+    }
+
+    const response = {
+        story_name: story.story_name,
+        story_details: story.prompt.story_details,
+        extra_details: story.prompt.extra_details,
+        story_outline: story.outline
+    }
+    res.json(response);
+});
+
+exports.story_get_rewrite_outline_details = asyncHandler(async (req, res, next) => {
+    const {user_id, story_id} = req.params; // Story ID and User ID
+    const story = await Story.findOne({ _id: story_id, user: user_id }).exec();;
+
+    if (!story) {
+        return res.status(404).json({ error: "Story not found or user does not have access to this story" });
+    }
+
+    if (!story.prompt.story_details) {
+        return res.status(404).json({ error: "Story details are required." });
+    }
+
+    if (!story.outline) {
+        return res.status(404).json({ error: "Outline is required." });
+    }
+
+    if (!story.critiques || story.critiques.length === 0) {
+        return res.status(404).json({ error: "Critiques are required." });
+    }
+
+    const response = {
+        story_name: story.story_name,
+        story_details: story.prompt.story_details,
+        extra_details: story.prompt.extra_details,
+        story_outline: story.outline,
+        outline_critique: story.critiques[0].critique
+    }
+    res.json(response)
+});
+
+exports.story_get_first_chapter_details = asyncHandler(async (req, res, next) => {
+    const { user_id, story_id } = req.params; // Story ID and User ID
+
+    const story = await Story.findOne({ _id: story_id, user: user_id }).exec();;
+
+    if (!story) {
+        return res.status(404).json({ error: "Story not found or user does not have access to this story" });
+    }
+
+    if (!story.prompt.story_details) {
+        return res.status(404).json({ error: "Story details are required." });
+    }
+
+    if (!story.outline) {
+        return res.status(404).json({ error: "Outline is required." });
+    }
+
+    const response = {
+        story_name: story.story_name,
+        story_details: story.prompt.story_details,
+        extra_details: story.prompt.extra_details,
+        story_outline: story.outline,
+    }
+
+    res.json(response);
+});
+
+exports.story_get_next_chapter_details = asyncHandler(async (req, res, next) => {
+    const { user_id, story_id } = req.params; // Story ID and User ID
+
+    const story = await Story.findOne({ _id: story_id, user: user_id }).exec();;
+
+    if (!story) {
+        return res.status(404).json({ error: "Story not found or user does not have access to this story" });
+    }
+
+    if (!story.prompt.story_details) {
+        return res.status(404).json({ error: "Story details are required." });
+    }
+
+    if (!story.outline) {
+        return res.status(404).json({ error: "Outline is required." });
+    }
+
+    if (story.story_content.length === 0) {
+        return res.status(404).json({ error: "Previous chapters are required." });
+    }
+
+    const previous_chapters = story.story_content.map(chapter => ({chapter_number: chapter.story_chapter_number, text: chapter.text}));
+
+    const response = {
+        story_name: story.story_name,
+        story_details: story.prompt.story_details,
+        extra_details: story.prompt.extra_details,
+        story_outline: story.outline,
+        previous_chapters: previous_chapters
+    }
+
+    res.json(response);
+});
+
+exports.story_get_critique_chapter_details = asyncHandler(async (req, res, next) => {
+    const { user_id, story_id } = req.params; // Story ID and User ID
+
+    const story = await Story.findOne({ _id: story_id, user: user_id }).exec();;
+
+    if (!story) {
+        return res.status(404).json({ error: "Story not found or user does not have access to this story" });
+    }
+
+    if (!story.prompt.story_details) {
+        return res.status(404).json({ error: "Story details are required." });
+    }
+
+    if (!story.outline) {
+        return res.status(404).json({ error: "Outline is required." });
+    }
+
+    if (story.story_content.length === 0) {
+        return res.status(404).json({ error: "Previous chapters are required." });
+    }
+
+    const lastChapter = {
+        chapter_number: story.story_content[story.story_content.length - 1].story_chapter_number,
+        text: story.story_content[story.story_content.length - 1].text
+    };
+
+    const response = {
+        story_name: story.story_name,
+        story_details: story.prompt.story_details,
+        extra_details: story.prompt.extra_details,
+        story_outline: story.outline,
+        chapter: lastChapter
+    }
+
+    res.json(response);
+});
+
+exports.story_get_rewrite_chapter_details = asyncHandler(async (req, res, next) => {
+    const { user_id, story_id } = req.params; // Story ID and User ID
+
+    const story = await Story.findOne({ _id: story_id, user: user_id }).exec();;
+
+    if (!story) {
+        return res.status(404).json({ error: "Story not found or user does not have access to this story" });
+    }
+
+    if (!story.prompt.story_details) {
+        return res.status(404).json({ error: "Story details are required." });
+    }
+
+    if (!story.outline) {
+        return res.status(404).json({ error: "Outline is required." });
+    }
+
+    if (story.story_content.length === 0) {
+        return res.status(404).json({ error: "Previous chapters are required." });
+    }
+
+    if (!story.critiques || story.critiques.length <= 1) {
+        return res.status(404).json({ error: "At least one critique is required beyond the outline critique." });
+    }
+
+    const lastChapter = {
+        chapter_number: story.story_content[story.story_content.length - 1].story_chapter_number,
+        text: story.story_content[story.story_content.length - 1].text
+    };
+    const critique = story.critiques[story.critiques.length - 1].critique;
+    
+    const response = {
+        story_name: story.story_name,
+        story_details: story.prompt.story_details,
+        extra_details: story.prompt.extra_details,
+        story_outline: story.outline,
+        chapter: lastChapter,
+        critique: critique
+    }
+    res.json(response);
 });

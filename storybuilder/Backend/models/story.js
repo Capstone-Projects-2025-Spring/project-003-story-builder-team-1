@@ -9,6 +9,10 @@ const storySchema = new mongoose.Schema({
       chapter_count: { type: Number, required: true },
     },
     outline: { type: String },
+    critiques: [{
+        chapter_number: { type: Number, required: true },
+        critique: { type: String, required: true },
+    }],
     story_content: [{
         story_chapter_number: { type: Number, required: true },
         text: { type: String, required: true }
