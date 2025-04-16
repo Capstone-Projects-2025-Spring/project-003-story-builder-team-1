@@ -10,7 +10,7 @@ function MAIN_LAYOUT({ children }) {
     const should_render_chapter_list = location.pathname.includes('/story') && !location.pathname.includes('/agents')&& !location.pathname.includes('/best_response');; 
 
     function handle_logo_click() {
-        navigate('/');
+        navigate('/home');
     }
 
     return (

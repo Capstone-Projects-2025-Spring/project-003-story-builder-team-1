@@ -15,10 +15,10 @@ function App() {
   return (
     <Router>
       <Routes>
-        {/* <Route path="/" element={<LOGIN/>} />
+        <Route path="/" element={<LOGIN/>} />
         <Route path="/account_creation" element={<CREATE_ACCOUNT/>} />
-        <Route path="/home" element={<MAIN_LAYOUT><HOME /></MAIN_LAYOUT>} /> */}
-        <Route path="/" element={<MAIN_LAYOUT><STORY_PROMPT_BOX /></MAIN_LAYOUT>} />
+        <Route path="/home" element={<MAIN_LAYOUT><HOME /></MAIN_LAYOUT>} />
+        <Route path="/prompt" element={<MAIN_LAYOUT><STORY_PROMPT_BOX /></MAIN_LAYOUT>} />
         <Route path="/story/:story_id/best_response" element={<MAIN_LAYOUT><BEST_RESPONSE /></MAIN_LAYOUT>} />
         <Route path="/story/:story_id/view" element={<MAIN_LAYOUT><STORY_VIEW /></MAIN_LAYOUT>} />
         <Route path="/story/:story_id/view/:chapter_id" element={<MAIN_LAYOUT><CHAPTER_VIEW /></MAIN_LAYOUT>} />

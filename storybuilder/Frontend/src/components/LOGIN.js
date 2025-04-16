@@ -13,7 +13,7 @@ function LOGIN() {
         const login_success = await login(username, password);
         if (login_success) {
             console.log("Login Successful")
-            navigate(`/story/1/agents`);
+            navigate(`/home`);
         }
         else {
             console.log("Login Unsuccessful");
