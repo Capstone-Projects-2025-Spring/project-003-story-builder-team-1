@@ -3,12 +3,24 @@ import { z } from "zod";
 import { ChatPromptTemplate } from "@langchain/core/prompts";
 import { ChatDeepSeek } from "@langchain/deepseek";
 import { stream_handler } from "../stream_handler.js";
+import { ChatOpenAI } from "@langchain/openai";
+import { AIMessage } from "@langchain/core/messages";
 
-export default function outline_tools(llm: ChatDeepSeek) {
+export default function outline_tools(llm: ChatOpenAI | ChatDeepSeek) {
         
+    // 1) Define the exact shape you want:
+    const outline_schema = z.object({
+        chapters: z.array(
+        z.object({
+            title: z.string(),
+            summary: z.string(),
+        })
+        ),
+        totalChapters: z.number(),
+    });
     // Prompt
     const outline_prompt = ChatPromptTemplate.fromTemplate(`
-        You are a helpful assistant that creates story outlines.
+        You are a helpful assistant that creates story outlines. You will only ever make one tool call
         Create a detailed outline where you decide the number of chapters based on the following idea:
 
         "{promptinfo}"
@@ -19,9 +31,7 @@ export default function outline_tools(llm: ChatDeepSeek) {
         Critique the following outline based on the provided prompt information.
         Make sure to check for grammatical correctness and adherence to the prompt information.
 
-        Prompt information: "{promptinfo}"
-
-        
+        Prompt information: "{promptinfo}"        
 
         Outline: "{outline}"
     `);
@@ -41,7 +51,11 @@ export default function outline_tools(llm: ChatDeepSeek) {
             const messages = await outline_prompt.formatMessages({ promptinfo });
 
             const res = await llm.invoke(messages);
-            return res.content;
+
+        // Construct a new AIMessage using the res.content
+        return new AIMessage({
+            content: res.content,
+        });
         },
         {
         name: "story_outline",
@@ -57,7 +71,9 @@ export default function outline_tools(llm: ChatDeepSeek) {
             const messages = await critique_prompt.formatMessages({ promptinfo, outline });
 
             const res = await llm.invoke(messages);
-            return res.content;
+            return new AIMessage({
+                content: res.content,
+            });
         },
         {
         name: "critique_outline",
@@ -74,7 +90,9 @@ export default function outline_tools(llm: ChatDeepSeek) {
             const messages = await revise_prompt.formatMessages({ critique , outline });
 
             const res = await llm.invoke(messages);
-            return res.content;
+            return new AIMessage({
+                content: res.content,
+            });
         },
         {
         name: "revise_outline",

@@ -2,6 +2,8 @@ import express from "express";
 import { stream_handler } from "../stream_handler.js";
 import { BaseCallbackHandler } from "@langchain/core/callbacks/base";
 import { ChatDeepSeek } from "@langchain/deepseek";
+import { graph } from "../scratchwork/outline_agent_graph.ts"
+import { outline_agent } from "../scratchwork/agents.ts"
 
 export default function courier_routes(llm) {
   const router = express.Router();
@@ -77,6 +79,34 @@ router.post("/stream", async (req, res) => {
   // }
 });
 
+router.post("/stream_graph", async (req, res) => {
+  if (!req.body.messages) {
+    return res.status(400).json({ error: "Messages are required" });
+  }
+  res.setHeader("Content-Type", "text/event-stream");
+  res.setHeader("Cache-Control", "no-cache");
+  res.setHeader("Connection", "keep-alive");
+  res.flushHeaders?.();
+
+  const outline_agent_graph = outline_agent;
+
+  try {
+    const agent_response = await outline_agent_graph.stream({messages: req.body.messages}, {callbacks: [stream_handler(res)]});
+    while (!agent_response.done) {
+      // Wait for the next chunk of data
+      await new Promise(resolve => setTimeout(resolve, 100)); // Adjust delay as needed
+    }
+    console.log("Agent response:", agent_response);
+    res.end(); // End the response when done
+  } catch (err) {
+    console.error(err);
+    if (!res.writableEnded) {
+      res.write(`data: ERROR: ${err.message}\n\n`);
+      res.end();
+    }
+  }
+});
+
 router.post("/stream-agent", async (req, res) => {
   res.setHeader("Content-Type", "text/event-stream");
   res.setHeader("Cache-Control", "no-cache");
@@ -99,7 +129,6 @@ router.post("/stream-agent", async (req, res) => {
     }
   }
 });
-
 
 // Function to send a prompt to the AI model and get a response
 async function send_prompt(prompt) {

@@ -2,6 +2,7 @@ import { Annotation, StateGraph } from "@langchain/langgraph";
 import { ToolNode, createReactAgent } from "@langchain/langgraph/prebuilt";
 import { BaseMessage, HumanMessage } from "@langchain/core/messages";
 import { ChatDeepSeek } from "@langchain/deepseek";
+import { ChatOpenAI } from "@langchain/openai";
 import { z } from "zod";
 import outline_tools from "../tools/zod_out_tools.ts";
 import { stream_handler } from "../stream_handler.js";
@@ -22,9 +23,16 @@ const llm = new ChatDeepSeek({
     callbacks: callbacks,
 });
 
-const tools = outline_tools(llm);
+const openai = new ChatOpenAI({
+    streaming: true,
+    openAIApiKey: process.env.OPENAI_API_KEY,
+    modelName: "gpt-4o",
+    callbacks: callbacks,
+});
 
-const llm_with_tools = llm.bindTools(tools, {tool_choice :"required"});
+const tools = outline_tools(openai);
+
+const llm_with_tools = llm.bindTools(tools, {tool_choice :"auto"});
 
 const storybuilder_prompt = ChatPromptTemplate.fromTemplate(`
     You are an imaginative author planning and developing a story. You have access to the following creative tools:
@@ -86,18 +94,17 @@ const supervisorPrompt = ChatPromptTemplate.fromMessages([
 const reactAgent = await createReactAgent({
     llm: llm_with_tools,  // Define your LLM (like DeepSeek here)
     tools: tools,      // Bind your creative tools (outline, critique, revise, etc.)
-    prompt: storybuilder_prompt,       // Set up the prompt template for React agent interaction
   });
   
   // Create a LangGraph node that will invoke the agent
 const react_agent_node =  async (state) => {
     const input = {
-      input: state.input,
+      input: state.input ?? "",
       outline: state.outline ?? "",
       critique: state.critique ?? "",
       agent_scratchpad: state.messages ?? [],
-      tools: tools.map((t) => `- ${t.name}`).join("\n"), // List available tools
-      tool_names: tools.map((tool) => tool.name).join(", "), // Comma-separated tool names
+      tools: tools.map((t) => `- ${t.name}`).join("\n") ?? "", // List available tools
+      tool_names: tools.map((tool) => tool.name).join(", ") ?? "", // Comma-separated tool names
     };
 
     const output = await reactAgent.invoke(input as any); // Cast to 'any' to bypass type mismatch
@@ -136,10 +143,12 @@ const inputs = await storybuilder_prompt.format({
     agent_scratchpad: "I need to write a story about a dragon and a princess. I will start with an outline.",
 })
 
+console.log(inputs)
+
 const graph = graph_builder
     .addNode("react_agent", react_agent_node)
     .addNode("supervisor", supervisor_node)
-    .addEdge("__start__", "react_agent")
+    .addEdge("__start__", "supervisor")
     .addConditionalEdges("react_agent", (state) => {
         const { messages } = state;
         const lastMessage = messages[messages.length - 1];
@@ -154,7 +163,5 @@ const graph = graph_builder
     .compile();
 
 const result = await graph.invoke({
-    input: inputs,
-    messages: [],
-    last_tool_output: "",
+    input: inputs
 });

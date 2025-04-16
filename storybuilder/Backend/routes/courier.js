@@ -2,12 +2,13 @@ const express = require('express');
 const axios = require('axios');
 const { Agent } = require('http');
 const router = express.Router();
-
+const stream_handler = require('../../Agent/agent_container/stream_handler'); // Import the stream handler
 const PRIVATE_URL = process.env.PRIVATE_URL || "http://localhost";
 const API_URL = process.env.AGENT_URL || PRIVATE_URL;
 const APP_URL = PRIVATE_URL.includes("localhost") ? PRIVATE_URL + ":8080" : PRIVATE_URL;
 console.log( "DEBUG: API_URL:", API_URL); // Debugging line
 //story_call
+
 router.post('/story_call', async (req, res) => {
     try {
         const AUTHOR_NAME = req.body.author_name;
@@ -40,6 +41,63 @@ router.post('/story_call', async (req, res) => {
     }
 });
 
+router.post('/aggregate', async (req, res) => {
+    const input = req.body.messages;
+    console.log("Aggregate request received with input:", input);
+    const agentEndpoints = [
+        'http://localhost:5000/agent/stream_graph',
+        'http://localhost:5001/agent/stream_graph', // Example endpoint for Jane Austen agent
+    ];      
+    // Store responses and votes
+    const responses = {};
+    const votes = {};
+  
+    try {
+        // For each agent, open the stream and read ALL data
+        const agentResults = await Promise.all(
+            agentEndpoints.map(async (agent, idx) => {
+                const response = await axios.post(
+                    agent,
+                    { messages: input },
+                    { headers: { "Content-Type": "application/json" }, responseType: 'stream' }
+                );
+                return new Promise((resolve, reject) => {
+                    let data = [];
+
+                    response.data.on('data', chunk => {
+                        const str = chunk.toString();
+                        // Optionally: parse each SSE chunk here.
+                        data.push(str);
+                    });
+                    response.data.on('end', () => {
+                        // Optionally: parse out just the relevant story from data
+                        // For now, just return all received SSE data
+                        data = data.slice(0, -1); // Remove the last empty chunk or DONE chunk
+                        data = data.map(
+                            event => event
+                            .replace(/^data: /, '') // Remove "data: " prefix
+                            .slice(0, -2)) // Remove "\n\n" suffix
+                            .join(''); // Join the array into a single string
+                        resolve({ agent, data });
+                    });
+                    response.data.on('error', err => reject(err));
+                });
+            })
+        );
+        // At this point, all agent SSE streams are OVER and you have all data
+        // We need to develop the logic to determine the best response from our results
+        const bestResult = agentResults.find(r => r.data && r.data.length > 0);
+        console.log("Best result from agents:", bestResult);
+        res.json({
+            bestResponse: bestResult,
+            allResults: agentResults,
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Error occurred while aggregating responses.');
+    }
+});
+
 router.post('/story_stream', async (req, res) => {
     res.setHeader('Content-Type', 'text/event-stream');
     res.setHeader('Cache-Control', 'no-cache');
@@ -50,21 +108,19 @@ router.post('/story_stream', async (req, res) => {
   
     try {
       const agent_response = await axios.post(
-        API_URL + AGENT_PORT + "/agent/stream",
+        API_URL + AGENT_PORT + "/agent/stream_graph",
         req.body.data,
         { responseType: "stream", headers: { "Content-Type": "application/json" } }
       );
-  
-      // 2️⃣ Pipe directly to client
-      agent_response.data.pipe(res);               // ← stream chunks through
-      agent_response.data.on('end', () => res.end());
-      agent_response.data.on('error', () => res.end());
+      console.log("Agent response:", agent_response);
+      if (!res.writableEnded) res.end(); // <------ ADD THIS 
+
     } catch (error) {
       console.error("Error:", error);
       res.write(`data: ERROR: ${error.message}\n\n`);
       res.end();
     }
-  });
+});
 
 //story_push
 router.post('/story_push', (req, res) => {

@@ -17,9 +17,23 @@ import outline_tools from "../tools/zod_out_tools.ts";
 import * as fs from 'fs';
 import { pull } from "langchain/hub";
 import { model } from "mongoose";
+import { ChatOpenAI } from "@langchain/openai";
+
 const prompt = await pull<PromptTemplate>("hwchase17/react");
 
 
+    
+
+// 1) Define the exact shape you want:
+const outline_schema = z.object({
+    chapters: z.array(
+      z.object({
+        title: z.string().describe("The title of the chapter in markdown format."),
+        summary: z.string().describe("A brief summary of the chapter's content in markdown format."),
+      })
+    ),
+    totalChapters: z.number(),
+});
 
 const outline_prompt = ChatPromptTemplate.fromTemplate(`
     You are a helpful assistant that creates story outlines.
@@ -36,14 +50,21 @@ ChatDeepSeek.prototype.getNumTokens = async function (_text) {
     return Math.ceil(_text.length / 4);
 };
 
-const llm = new ChatDeepSeek({
+// const llm = new ChatDeepSeek({
+//     streaming: true,
+//     apiKey: process.env.DEEPSEEK_API_KEY,
+//     modelName: "deepseek-chat",
+//     callbacks: callbacks,
+// });
+
+const openai = new ChatOpenAI({
     streaming: true,
-    apiKey: process.env.DEEPSEEK_API_KEY,
-    modelName: "deepseek-chat",
-    callbacks: callbacks,
+    openAIApiKey: process.env.OPENAI_API_KEY,
+    model: "gpt-4o-mini",
 });
 
-const tools = outline_tools(llm);
+const tools = outline_tools(openai);
+
 
 const storybuilder_prompt = ChatPromptTemplate.fromTemplate(`
     You are an imaginative author planning and developing a story. You have access to the following creative tools:
@@ -56,9 +77,6 @@ const storybuilder_prompt = ChatPromptTemplate.fromTemplate(`
     
     Goal: the current task you're trying to accomplish (e.g., write an outline, critique an outline, revise the outline based on critique)  
     Thought: reflect on what the story needs next  
-    Decision: which tool will help you most right now? Choose one from [{tool_names}]  
-    Tool Input: what you’ll give the tool to help it do its job  
-    Result: the tool’s output  
     --- repeat this only one time needed ---
     
     Final Reflection: conclude what you’ve accomplished, or what the next steps are
@@ -75,6 +93,7 @@ const AnnotationWithReducer = Annotation.Root({
     input: Annotation<string>,
     outline: Annotation<string>,
     critique: Annotation<string>,
+    last_tool_call: Annotation<string>,
     messages: Annotation<BaseMessage[]>({
       // Different types are allowed for updates
       reducer: (left: BaseMessage[], right: BaseMessage | BaseMessage[]) => {
@@ -87,7 +106,31 @@ const AnnotationWithReducer = Annotation.Root({
     }),
 });
 
-const llm_with_tools = llm.bindTools(tools, {tool_choice :"auto"});
+const input_prompt = ChatPromptTemplate.fromTemplate(`
+    You are a helpful assistant that creates story outlines.
+    Create a detailed outline where you decide the number of chapters based on the following idea:
+    
+    
+    "{input}"    
+    
+    The outline should be in the following format:
+    
+    - Chapter 1: [Chapter Title]
+    - Chapter 2: [Chapter Title]
+    - Chapter 3: [Chapter Title]
+    - Chapter 4: [Chapter Title]
+    - Chapter 5: [Chapter Title]
+
+    Increase or reduce the number of chapters based on the story idea.
+    `);
+
+const llm_with_tools = openai.bindTools(tools, {tool_choice :"auto"});
+
+
+
+const structured_llm = openai.withStructuredOutput(outline_schema);
+
+//const output = structured_llm.invoke("Write a short story outline about a princess");
 
 const graph_builder = new StateGraph(AnnotationWithReducer);
 
@@ -99,35 +142,36 @@ const revise_node = new ToolNode([tools[2]]);
 const react_agent = createReactAgent(
     {
         tools: tools,
-        llm: llm,
+        llm: openai,
     },
 )
 
 const call_model = async (state: typeof MessagesAnnotation.State) => {
-    const input = (state as any).input; // Temporary cast to bypass type error
+    const input = state.messages[0]; // Temporary cast to bypass type error
+      // get the last tool call (if any)
+    const lastToolCall = (state as any).last_tool_call
+    const toolName = lastToolCall?.name;
+
+    // build up the new state updates
+    const updates: any = {
+        lastToolCall,
+        input,
+    };
     const response = await llm_with_tools.invoke(await storybuilder_prompt.formatMessages({
         input: input,
         agent_scratchpad: state.messages,
         tools: tools.map(t => `- ${t.name}`).join("\n"),
         tool_names: tools.map(tool => tool.name).join(", "),
     }));
-    // Extract only necessary fields
-    const cleanResponse = new AIMessage({
-        content: response.content,
-        tool_calls: response.tool_calls,
-        additional_kwargs: {
-            // Only keep critical metadata if needed
-            finish_reason: response.response_metadata?.finish_reason
-        }
-    });
-    console.log("state at agent call: ", state);
-    return { messages: [cleanResponse] };
-}
+    console.log("LC KWARGS: ", response.lc_kwargs.additional_kwargs);
+    updates.messages = [...state.messages, response]; // Append the new tool call message to the messages array
+
+  return updates;
+};
 
 // 4. Improved Conditional Edges
 const should_continue = (state: typeof MessagesAnnotation.State) => {
     const { messages } = state;
-    console.log("Response: ", state);
     const lastMessage = messages[messages.length - 1];
     if ("tool_calls" in lastMessage && Array.isArray(lastMessage.tool_calls) && lastMessage.tool_calls?.length) {
         const lastToolCall = lastMessage.tool_calls[lastMessage.tool_calls.length - 1];
@@ -168,9 +212,17 @@ const dot = graphviz.drawMermaid();
 
 console.log(dot);
 
-const response = await graph.invoke({input: "Write a story about a princress"});
+const formatted = await storybuilder_prompt.formatMessages(
+    {
+        input: "Write a superrrrrrr short story about a princress",
+        agent_scratchpad: [],
+        tools: tools.map(t => `- ${t.name}`).join("\n"),
+        tool_names: tools.map(tool => tool.name).join(", "),
+    }
+)
 
-console.log(response); //, stream: true
+//const response = await graph.stream({messages: formatted}, {callbacks: callbacks});
 
+export { graph };
 
 

@@ -17,6 +17,7 @@
     "dependencies": {
         "@langchain/core": "^0.3.43",
         "@langchain/langgraph": "^0.2.57",
+        "@langchain/langgraph-supervisor": "^0.0.11",
         "@langchain/openai": "^0.5.2",
         "ai_agent": "file:",
         "axios": "^1.7.9",
