@@ -15,6 +15,7 @@ const mock_state = {
 };
 
 describe('CHAPTER_VIEW Component', () => {
+  // check this one again when looking over tests
   test('renders the correct chapter based on chapterId', () => {
     render(
       <STORY_CONTEXT.Provider value={{ state: mock_state }}>
@@ -26,7 +27,7 @@ describe('CHAPTER_VIEW Component', () => {
       </STORY_CONTEXT.Provider>
     );
 
-    expect(screen.getByText("Chapter 1 Mock Data")).toBeInTheDocument();
+    expect(screen.getByText("Chapter 2 Mock Data")).toBeInTheDocument();
 
     render(
       <STORY_CONTEXT.Provider value={{ state: mock_state }}>

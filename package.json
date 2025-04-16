@@ -14,7 +14,9 @@
     "test:a": "cd storybuilder/agent/agent_container && npm test",
     "test:b": "cd storybuilder/Backend && npm test",
     "test:bc": "cd storybuilder/Backend && npm run Ctest",
-    "build:f": "cd storybuilder/Frontend && npm run build"
+    "build:f": "cd storybuilder/Frontend && npm run build",
+    "test:f": "cd storybuilder/Frontend && npm test",
+    "test:fc": "cd storybuilder/Frontend && npm run Ctest"
   },
   "dependencies": {
     "jest": "^29.7.0",

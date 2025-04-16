@@ -2,6 +2,7 @@ import { render, screen, fireEvent } from '../setupTests';
 import STORY_PROMPT_BOX from '../components/STORY_PROMPT_BOX';
 import { useNavigate } from 'react-router';
 import { MemoryRouter } from 'react-router';
+import { waitFor } from '@testing-library/react';
 import STORY_CONTEXT from '../context/STORY_CONTEXT';
 
 // mock axios
@@ -15,10 +16,10 @@ jest.mock('react-router', () => ({
   useNavigate: jest.fn(),
 }));
 
-test('renders STORY_PROMPT_BOX component and accepts input', () => {
+test('renders STORY_PROMPT_BOX component and accepts input', async () => {
   const mock_navigate = jest.fn();
   useNavigate.mockReturnValue(mock_navigate);
-  const mock_submit_story_prompt = jest.fn();
+  const mock_submit_story_prompt = jest.fn().mockResolvedValue(true);
   render(
     <STORY_CONTEXT.Provider value={{ submit_story_prompt: mock_submit_story_prompt }}>
       <MemoryRouter>
@@ -51,5 +52,7 @@ test('renders STORY_PROMPT_BOX component and accepts input', () => {
 
   // Simulate button click *** this is still hardcoded to story 1, must change in STORY_PROMPT_BOX once multiple stories are supported
   fireEvent.click(send_button);
-  expect(mock_navigate).toHaveBeenCalledWith('/story/1/agents');
+  await waitFor(() => {
+    expect(mock_navigate).toHaveBeenCalledWith('/story/1/best_response');
+  });
 });

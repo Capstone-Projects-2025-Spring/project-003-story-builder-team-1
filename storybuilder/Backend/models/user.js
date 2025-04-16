@@ -7,6 +7,12 @@ const UserSchema = new mongoose.Schema({
     stories: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Story' }]
 }, { timestamps: true });
 
+// Virtual property to generate the URL for a user profile
+UserSchema.virtual("url").get(function () {
+    return `/user/${this._id}`;
+    // This provides a standardized way to generate a user's profile link.
+});
+
 // Hash password before saving to DB
 UserSchema.pre('save', async function (next) {
     if (!this.isModified('password')) return next();  // Only hash if password is modified
