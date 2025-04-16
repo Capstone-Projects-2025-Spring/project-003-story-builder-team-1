@@ -15,7 +15,8 @@ function USE_AXIOS() {
 
             return { data: response.data, error: null };
         } catch (error) {
-            const message = error.response?.data?.message || 'Something went wrong';
+            console.log("error: ", error)
+            const message = error.response?.data?.error || 'Something went wrong';
             return { data: null, error: message };
         }
     };
