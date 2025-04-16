@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import USE_AXIOS from './USE_AXIOS';
 
+const SERVER_URL = process.env.REACT_APP_SERVER_URL || "http://localhost:8080";
+
 function USE_LOGIN() {
     const [is_error, set_is_error] = useState(false);
     const [user_error, set_user_error] = useState('');
@@ -28,7 +30,7 @@ function USE_LOGIN() {
 
         // if no error, api call to backend
         if (!is_error) {
-            const { data, error } = await use_axios('/api/login', 'POST', { username, password });
+            const { data, error } = await use_axios(SERVER_URL + '/db/account_login', 'POST', { username, password });
             if (data === null) {
                 set_api_error(error);
                 set_is_error(true);
