@@ -82,29 +82,39 @@ function AGENT_BOX({ name }) {
               </Title>
             }
           >
-            <div style={{ flex: 1, display: 'flex' }}>
-
-            {/* Scrollable Text Area */}
-            <div style={{
-                flex: 1,
-                overflowY: 'auto',
-                padding: '16px',
-                backgroundColor: 'transparent',
-                color: '#adb5bd',
-                borderRadius: '8px'
-              }}>
+            <div style={{ flex: 1, display: 'flex', padding: '12px' }}> {/* Outer padding wrapper */}
+              {/* Scrollable Text Area */}
+              <div
+                style={{
+                  flex: 1,
+                  overflowY: 'auto',
+                  padding: '16px',
+                  backgroundColor: '#2d2d2d',
+                  color: '#white',
+                  borderRadius: '8px',
+                  marginBottom: '20px',
+                }}
+              >
                 <ReactMarkdown
                   children={chapter_content}
                   components={{
-                    p: ({ node, ...props }) => <p style={{ fontSize: '18px', marginBottom: '1em' }} {...props} />,
+                    p: ({ node, ...props }) => (
+                      <p style={{ fontSize: '18px', marginBottom: '1em' }} {...props} />
+                    ),
                   }}
                 />
               </div>
             </div>
           </Modal>
 
-            {/* Agent Box */}
-          <Card shadow="sm" padding="md" radius="md" withBorder>
+          {/* Agent Box */}
+          <Card
+            shadow="sm"
+            padding="md"
+            radius="md"
+            withBorder
+            style={{ backgroundColor: '#242424' }} // Same as page background
+          >
             {/* Header */}
             <div style={{ padding: '10px', borderRadius: '5px 5px 0 0' }}>
               <Group gap="xs" align="center">
@@ -113,29 +123,32 @@ function AGENT_BOX({ name }) {
                 </Title>
               </Group>
             </div>
-    
+
             {/* Divider Line */}
-            <Divider my="sm" mt={1}/>
-    
-            {/* Scrollable Text Area */}
-            <div style={{
-              maxHeight: '150px',
-              overflowY: 'auto',
-              backgroundColor: '#f9f9f9',
-              padding: '12px',
-              backgroundColor: 'transparent',
-              borderRadius: '6px',
-              color: '#adb5bd'
-              }}>
+            <Divider my="sm" mt={1} />
+
+            {/* Inner Lighter Box */}
+            <div
+              style={{
+                backgroundColor: '#2d2d2d', // Lighter than outer card
+                borderRadius: '8px',
+                padding: '16px',
+                color: '#white',
+                maxHeight: '150px',
+                overflowY: 'auto',
+              }}
+            >
               <ReactMarkdown
                 children={chapter_content}
                 components={{
-                  p: ({ node, ...props }) => <p style={{ fontSize: '16px', marginBottom: '0.75em' }} {...props} />,
+                  p: ({ node, ...props }) => (
+                    <p style={{ fontSize: '16px', marginBottom: '0.75em' }} {...props} />
+                  ),
                 }}
               />
             </div>
-    
-            {/* View Button */}
+
+            {/* View & Continue Buttons */}
             <Group justify="space-between" style={{ marginTop: '10px' }}>
               <Button size="sm" variant="light" onClick={() => set_opened(true)}>
                 View
@@ -144,7 +157,7 @@ function AGENT_BOX({ name }) {
                 <Button
                   size="sm"
                   variant="light"
-                  color={!loading ? "teal" : undefined}
+                  color={!loading ? 'teal' : undefined}
                   disabled={loading}
                   onClick={handle_continue}
                   leftSection={loading && <Loader size="xs" color="green" />}
@@ -154,7 +167,7 @@ function AGENT_BOX({ name }) {
                     cursor: loading ? 'not-allowed' : 'pointer',
                   }}
                 >
-                  {loading ? "Drafting Chapter" : "Continue"}
+                  {loading ? 'Drafting Chapter' : 'Continue'}
                 </Button>
               )}
             </Group>

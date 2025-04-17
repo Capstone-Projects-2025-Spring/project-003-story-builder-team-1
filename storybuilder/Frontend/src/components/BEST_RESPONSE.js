@@ -19,7 +19,7 @@ function BEST_RESPONSE() {
     }, [state.current_story]);
 
     const handle_continue = async () => {
-        setIsLoading(true); // Show loading spinner
+        setIsLoading(true);
 
         if (state.current_story.chapters.length === 1) {
             const first_chapter_success = await fetch_first_chapter(
@@ -46,32 +46,36 @@ function BEST_RESPONSE() {
             }
         }
 
-        setIsLoading(false); // Hide spinner once done
+        setIsLoading(false);
     };
 
     return (
         <Card
-        shadow="sm"
-        padding="md"
-        radius="md"
-        withBorder
-        style={{
-            height: '100%',
-            display: 'flex',
-            flexDirection: 'column',
-            overflowY: 'auto',
-        }}
-        >
-        <div style={{ flexGrow: 1, overflowY: 'auto', paddingRight: '0.5rem' }}>
-            <ReactMarkdown
-            children={best_res}
-            components={{
-                p: ({ node, ...props }) => <p style={{ fontSize: '18px', marginBottom: '1em' }} {...props} />,
+            shadow="none"
+            p="md"
+            radius="md"
+            style={{
+                backgroundColor: '#242424',
+                border: '1px solid #3a3a3a', // thin outline around the entire box
+                maxWidth: 800,
+                margin: '0 auto'
             }}
-            />
-        </div>
+        >
+            <div
+                style={{
+                    backgroundColor: '#2d2d2d',
+                    borderRadius: '8px',
+                    padding: '16px',
+                    border: '1px solid #3a3a3a', // inner thin border for content
+                    color: 'white',
+                    fontSize: '16px',
+                    lineHeight: '1.6'
+                }}
+            >
+                <ReactMarkdown>{best_res}</ReactMarkdown>
+            </div>
 
-        <Group justify="flex-end" style={{ marginTop: '10px' }}>
+            <Group justify="flex-end" style={{ marginTop: '10px' }}>
             {show_cont_button && (
             <Button
                 size="sm"

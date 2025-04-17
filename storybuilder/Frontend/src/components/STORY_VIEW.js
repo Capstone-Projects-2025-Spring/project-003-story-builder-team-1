@@ -28,7 +28,7 @@ function STORY_VIEW({ }) {
           <div
             style={{
               padding: '16px',
-              color: '#adb5bd', // ← your default grey
+              color: '#white',
               fontSize: '18px',
               lineHeight: 1.6,
               whiteSpace: 'pre-wrap',
