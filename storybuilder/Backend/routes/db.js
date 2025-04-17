@@ -80,6 +80,8 @@ router.post("/story/:user_id/:story_id/story_add_voted_critique_post", story_con
 
 router.get("/story/:user_id/:story_id/story_agent_list", story_controller.story_agents_list);
 
+router.post("/story/:user_id/:story_id/:chapter_number/veto_critique", story_controller.story_veto_critique);
+
 // Translator routes
 router.get("/story/:user_id/:story_id/get_generated_outline_details", story_controller.story_get_generate_outline_details);
 
@@ -118,6 +120,5 @@ router.get("/agent/:agent_id/:story_id/get_last_response", agent_controller.agen
 // AGENT LIST ROUTES //
 // GET request for getting the list of all agents
 router.get("/agents", agent_controller.agent_list);
-
 
 module.exports = router;
