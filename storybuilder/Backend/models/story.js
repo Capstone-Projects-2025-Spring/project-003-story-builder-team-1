@@ -20,6 +20,7 @@ const storySchema = new mongoose.Schema({
     agents: [{
         agent: { type: mongoose.Schema.Types.ObjectId, ref: 'Agent' },
         agent_name: { type: String, required: true },
+        outline: { type: String },
         chapters: [{
             chapter_number: { type: Number },
             content: { type: String },
