@@ -16,6 +16,9 @@ function STORY_LIST() {
 
   return (
     <Stack spacing="xs" mt="xs">
+      <Button variant="outline" color="orange" fullWidth  >
+        Generate New Story
+      </Button>
       {stories.map((story) => (
         <div key={story.id}>
           {/* Story Button */}
