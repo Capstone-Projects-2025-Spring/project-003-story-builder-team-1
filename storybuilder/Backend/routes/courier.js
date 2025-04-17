@@ -2,7 +2,6 @@ const express = require('express');
 const axios = require('axios');
 const { Agent } = require('http');
 const router = express.Router();
-const stream_handler = require('../../Agent/agent_container/stream_handler'); // Import the stream handler
 const PRIVATE_URL = process.env.PRIVATE_URL || "http://localhost";
 const API_URL = process.env.AGENT_URL || PRIVATE_URL;
 const APP_URL = PRIVATE_URL.includes("localhost") ? PRIVATE_URL + ":8080" : PRIVATE_URL;
@@ -42,11 +41,14 @@ router.post('/story_call', async (req, res) => {
 });
 
 router.post('/aggregate', async (req, res) => {
+    console.log("Aggregate request received:", req.body);
     const input = req.body.messages;
     console.log("Aggregate request received with input:", input);
     const agentEndpoints = [
         'http://localhost:5000/agent/stream_graph',
         'http://localhost:5001/agent/stream_graph', // Example endpoint for Jane Austen agent
+        //'http://localhost:5002/agent/stream_graph', // Example endpoint for Tolkien agent
+        //'http://localhost:5003/agent/stream_graph', // Example endpoint for another agent
     ];      
     // Store responses and votes
     const responses = {};
@@ -65,9 +67,14 @@ router.post('/aggregate', async (req, res) => {
                     let data = [];
 
                     response.data.on('data', chunk => {
-                        const str = chunk.toString();
+                        let str = chunk.toString();
+                        str = str.replace(/^data: /, ''); // Remove "data: " prefix
+                        str = str.slice(0, -2); // Remove "\n\n" suffix
+                        res.write(`-agent ${idx + 1} ${str}`); 
+                        str = `data: ${str}\n\n`; // Format for SSE
                         // Optionally: parse each SSE chunk here.
                         data.push(str);
+                        console.log(str);
                     });
                     response.data.on('end', () => {
                         // Optionally: parse out just the relevant story from data
@@ -78,7 +85,9 @@ router.post('/aggregate', async (req, res) => {
                             .replace(/^data: /, '') // Remove "data: " prefix
                             .slice(0, -2)) // Remove "\n\n" suffix
                             .join(''); // Join the array into a single string
-                        resolve({ agent, data });
+
+                        agent_name = `agent ${idx + 1}`;
+                        resolve({ agent_name, data });
                     });
                     response.data.on('error', err => reject(err));
                 });
@@ -88,10 +97,14 @@ router.post('/aggregate', async (req, res) => {
         // We need to develop the logic to determine the best response from our results
         const bestResult = agentResults.find(r => r.data && r.data.length > 0);
         console.log("Best result from agents:", bestResult);
-        res.json({
+        // res.json({
+        //     bestResponse: bestResult,
+        //     allResults: agentResults,
+        // }); // Send the best response to the client
+        res.write(JSON.stringify({
             bestResponse: bestResult,
             allResults: agentResults,
-        });
+        })); // Send the best response to the client
     } catch (error) {
         console.error(error);
         res.status(500).send('Error occurred while aggregating responses.');

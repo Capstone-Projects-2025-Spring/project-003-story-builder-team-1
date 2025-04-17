@@ -103,8 +103,43 @@ router.post('/translate', async (req, res) => {
             default:
                 return res.status(400).json({ message: "Invalid step provided." });
         }
+        const courier_response = await axios.post(
+            `${APP_URL}/courier/aggregate`, 
+            { messages: req.body.messages },
+            { headers: { "Content-Type": "application/json" }, responseType: 'stream' }
+        );
 
-        return res.status(200).json({ message: "Step data generated successfully", data });
+        return new Promise((resolve, reject) => {
+            let buffer = [];
+            courier_response.data.on('data', chunk => {
+                if (chunk.toString().startsWith("{\"best")) {
+                    buffer = buffer.slice(0, -1); // Remove the last empty chunk or DONE chunk
+                    buffer = buffer.map(
+                        event => event
+                        .replace(/^data: /, '') // Remove "data: " prefix
+                        .slice(0, -2)) // Remove "\n\n" suffix
+                        .join(''); // Join the array into a single string
+                    console.log("Buffer on end:", buffer);
+                    resolve(res.status(200).json({ message: "Data Received Successfully", data: { ...data, response: buffer } }));
+                }
+                else
+                    buffer.push(chunk.toString());
+            });
+            courier_response.data.on('end', () => {
+                console.log("Buffer on end:", buffer);
+                buffer = buffer.slice(0, -1); // Remove the last empty chunk or DONE chunk
+                buffer = buffer.map(
+                    event => event
+                    .replace(/^data: /, '') // Remove "data: " prefix
+                    .slice(0, -2)) // Remove "\n\n" suffix
+                    .join(''); // Join the array into a single string
+                resolve({ buffer });
+            });
+            courier_response.data.on('error', err => {
+                console.error("Error in courier response stream:", err);
+                reject(err);
+            });
+        });
     } catch (error) {
         console.error("Error fetching step data:", error.message);
         return res.status(500).json({ message: "Failed to get step data", error: error.message });

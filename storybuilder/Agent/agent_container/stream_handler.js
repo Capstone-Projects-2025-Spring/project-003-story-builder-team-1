@@ -2,6 +2,7 @@ import { BaseCallbackHandler } from "@langchain/core/callbacks/base";
 
 const stream_handler = (res = null) => BaseCallbackHandler.fromMethods({
   parentRunId: null, // Store the parent run ID to determine if this is the outermost run
+
   handleLLMNewToken: async (t) => {
     if (res) res.write(`data: ${t}\n\n`);
     process.stdout.write(t);
@@ -22,8 +23,7 @@ const stream_handler = (res = null) => BaseCallbackHandler.fromMethods({
     //if (res) res.write(`data: [chain end: ${JSON.stringify(parentRunId)}]\n\n`);
     //process.stdout.write(`Chain ended: ${JSON.stringify(parentRunId)}\n`);
     if (!parentRunId) {
-      res.write("data: [DONE]\n\n");
-      res.end();
+      res.end(); // End the stream for the outermost run
       console.log('\n');
     }
   },
