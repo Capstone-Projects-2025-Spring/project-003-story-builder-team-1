@@ -1,6 +1,7 @@
 const Story = require("../models/story");
 const User = require("../models/user");
 const Agent = require("../models/agent"); 
+const Persona = require("../models/persona");
 const asyncHandler = require("express-async-handler");
 
 // Handle Story create on POST
