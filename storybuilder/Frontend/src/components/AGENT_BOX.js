@@ -1,6 +1,7 @@
 import { useState, useContext, useEffect } from 'react';
-import { Card, Button, Modal, Textarea, Title, Divider, Group, Loader } from '@mantine/core';
+import { Card, Button, Modal, Title, Divider, Group, Loader } from '@mantine/core';
 import STORY_CONTEXT from "../context/STORY_CONTEXT";
+import ReactMarkdown from 'react-markdown';
 
 function AGENT_BOX({ name }) {
     const { state, fetch_first_chapter, fetch_next_chapter, api_error } = useContext(STORY_CONTEXT);
@@ -84,33 +85,21 @@ function AGENT_BOX({ name }) {
             <div style={{ flex: 1, display: 'flex' }}>
 
             {/* Scrollable Text Area */}
-            <Textarea
-              value={chapter_content}
-              readOnly
-              autosize={false}
-              styles={{
-                input: {
-                  padding: "16px",
-                  fontSize: '18px',
-                  resize: 'none',
-                  overflow: 'auto',
-                  flex: 1,
-                },
-                root: {
-                  flex: 1,
-                  display: 'flex',
-                },
-                wrapper: {
-                  flex: 1,
-                  display: 'flex',
-                },
-              }}
-              style={{
+            <div style={{
                 flex: 1,
-                width: '100%',
-                padding: '16px'
-              }}
-            />
+                overflowY: 'auto',
+                padding: '16px',
+                backgroundColor: 'transparent',
+                color: '#adb5bd',
+                borderRadius: '8px'
+              }}>
+                <ReactMarkdown
+                  children={chapter_content}
+                  components={{
+                    p: ({ node, ...props }) => <p style={{ fontSize: '18px', marginBottom: '1em' }} {...props} />,
+                  }}
+                />
+              </div>
             </div>
           </Modal>
 
@@ -129,19 +118,22 @@ function AGENT_BOX({ name }) {
             <Divider my="sm" mt={1}/>
     
             {/* Scrollable Text Area */}
-            <Textarea
-              value={chapter_content}
-              readOnly
-              autosize
-              minRows={3}
-              maxRows={5}
-              style={{ width: '100%' }}
-              styles={{
-                input: {
-                  fontSize: '18px'
-                },
-              }}
-            />
+            <div style={{
+              maxHeight: '150px',
+              overflowY: 'auto',
+              backgroundColor: '#f9f9f9',
+              padding: '12px',
+              backgroundColor: 'transparent',
+              borderRadius: '6px',
+              color: '#adb5bd'
+              }}>
+              <ReactMarkdown
+                children={chapter_content}
+                components={{
+                  p: ({ node, ...props }) => <p style={{ fontSize: '16px', marginBottom: '0.75em' }} {...props} />,
+                }}
+              />
+            </div>
     
             {/* View Button */}
             <Group justify="space-between" style={{ marginTop: '10px' }}>

@@ -1,9 +1,9 @@
 import React from 'react';
 import { useState, useContext, useEffect } from 'react';
 import { useParams } from 'react-router';
-import { Container, Title, Text } from '@mantine/core';
+import { Container, Text } from '@mantine/core';
+import ReactMarkdown from 'react-markdown';
 import STORY_CONTEXT from "../context/STORY_CONTEXT";
-
 
 function CHAPTER_VIEW() {
     const { state } = useContext(STORY_CONTEXT);
@@ -31,11 +31,7 @@ function CHAPTER_VIEW() {
 
             {/* Chapter Text */}
             <Text size="lg" style={{ textAlign: 'justify', lineHeight: 1.6 }}>
-            <div
-                dangerouslySetInnerHTML={{
-                    __html: chapters[curr_chapter].replace(/\n/g, '<br />')
-                }}
-            />
+                <ReactMarkdown children={chapters[curr_chapter]} />
             </Text>
         </Container>
     );
