@@ -582,6 +582,34 @@ exports.story_add_voted_critique_post = asyncHandler(async (req, res, next) => {
     res.status(200).json({ message: "Critique added successfully", story });
 });
 
+exports.story_agents_list = asyncHandler(async (req, res, next) => {
+    const { user_id, story_id } = req.params; // Story ID and User ID
+
+    // Find the user and ensure they exist
+    const user = await User.findById(user_id);
+    if (!user) {
+        return res.status(404).json({ error: "User not found" });
+    }
+    
+    // Find the story by story_id and check if the user_id matches
+    const story = await Story.findOne({ _id: story_id, user: user_id });
+
+    if (!story) {
+        return res.status(404).json({ error: "Story not found or user does not have access to this story" });
+    }
+
+    if (story.agents.length === 0) {
+        return res.status(404).json({ error: "No agents found for this story" });
+    }
+
+    const story_agents = story.agents.map(agent_entry => ({
+        agent_id: agent_entry._id,
+        agent_name: agent_entry.agent_name
+    }));
+
+    res.json({ story_agents });
+});
+
 // Translator DB Endpoints
 exports.story_get_generate_outline_details = asyncHandler(async (req, res, next) => {
     const { user_id, story_id } = req.params; // Story ID and User ID
