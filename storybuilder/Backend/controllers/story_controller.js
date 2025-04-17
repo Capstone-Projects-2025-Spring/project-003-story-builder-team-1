@@ -411,10 +411,7 @@ exports.story_get_critique = asyncHandler(async (req, res, next) => {
 // Assign an agent's chapter as the main story content
 exports.story_agent_chapter_veto_post = asyncHandler(async (req, res, next) => {
     const { user_id, story_id, chapter_number } = req.params; // Story ID and User ID and Chapter ID
-    const { agent_name } = req.body;
-    if (!agent_name) {
-        return res.status(400).json({ error: "Agent name is required." });
-    }
+    const { text } = req.body;
     
     // Find the user and ensure they exist
     const user = await User.findById(user_id);
@@ -422,41 +419,27 @@ exports.story_agent_chapter_veto_post = asyncHandler(async (req, res, next) => {
         return res.status(404).json({ error: "User not found" });
     }
     
-    // Find the story
-    const story = await Story.findById(story_id);
+    const story = await Story.findOne({ _id: story_id, user: user_id }).exec();;
+
     if (!story) {
-        return res.status(404).json({ error: "Story not found" });
-    }
-    
-    // Find the agent in the agents array
-    const agentEntry = story.agents.find(agentObj => agentObj.agent_name === agent_name);
-    if (!agentEntry) {
-        return res.status(404).json({ error: "Agent not found in this story" });
-    }
-    
-    // Find the chapter in the agent's chapters
-    const agentChapter = agentEntry.chapters.find(ch => ch.chapter_number === Number(chapter_number));
-    if (!agentChapter) {
-        return res.status(404).json({ error: "Chapter not found in agent's chapters" });
+        return res.status(404).json({ error: "Story not found or user does not have access to this story" });
     }
 
-    // Overwrite or add the chapter in story_content with the given story_chapter_number and agent's chapter content
-    const storyChapter = {
-        story_chapter_number: Number(chapter_number),
-        text: agentChapter.content
-    };
+    // Find and update or insert the chapter
+    const story_chapter = story.story_content.find(
+        ch => ch.story_chapter_number === Number(chapter_number)
+    );
 
-    // Remove any existing chapter with the same story_chapter_number
-    story.story_content = story.story_content.filter(ch => ch.story_chapter_number !== Number(chapter_number));
+    if (!story_chapter) {
+        return res.status(404).json({ error: "Chapter not found for this chapter" });
+    }
 
-    // Add the new chapter
-    story.story_content.push(storyChapter);
+    // Update the text of the chapter
+    story_chapter.text = text;
 
-    // Save the updated story
     await story.save();
 
-    res.status(200).json({ message: "Story content updated with agent's chapter content", story });
-    
+    res.status(200).json({ message: "Chapter updated", story_chapter });
 });
 
 // Get the number of votes for an agent's chapter version
@@ -610,9 +593,48 @@ exports.story_agents_list = asyncHandler(async (req, res, next) => {
     res.json({ story_agents });
 });
 
+exports.story_veto_critique = asyncHandler(async (req, res, next) => {
+    const { user_id, story_id, chapter_number } = req.params;
+    const { text } = req.body;
+
+    // Find the user
+    const user = await User.findById(user_id);
+    if (!user) {
+        return res.status(404).json({ error: "User not found" });
+    }
+
+    // Find the story
+    const story = await Story.findOne({ _id: story_id, user: user_id }).exec();
+    if (!story) {
+        return res.status(404).json({ error: "Story not found or user does not have access to this story" });
+    }
+
+    // Find the critique to update
+    const critique = story.critiques.find(
+        critique => critique.chapter_number === Number(chapter_number)
+    );
+
+    if (!critique) {
+        return res.status(404).json({ error: "Critique not found for this chapter" });
+    }
+
+    // Update the text of the critique
+    critique.critique = text;
+
+    await story.save();
+
+    res.status(200).json({ message: "Critique updated", critique });
+});
+
 // Translator DB Endpoints
 exports.story_get_generate_outline_details = asyncHandler(async (req, res, next) => {
     const { user_id, story_id } = req.params; // Story ID and User ID
+
+    // Find the user and ensure they exist
+    const user = await User.findById(user_id);
+    if (!user) {
+        return res.status(404).json({ error: "User not found" });
+    }
 
     const story = await Story.findOne({ _id: story_id, user: user_id }).exec();
 
@@ -634,6 +656,13 @@ exports.story_get_generate_outline_details = asyncHandler(async (req, res, next)
 
 exports.story_get_critique_outline_details = asyncHandler(async (req, res, next) => {
     const { user_id, story_id } = req.params; // Story ID and User ID
+
+    // Find the user and ensure they exist
+    const user = await User.findById(user_id);
+    if (!user) {
+        return res.status(404).json({ error: "User not found" });
+    }
+
     const story = await Story.findOne({ _id: story_id, user: user_id }).exec();;
 
     if (!story) {
@@ -659,6 +688,13 @@ exports.story_get_critique_outline_details = asyncHandler(async (req, res, next)
 
 exports.story_get_rewrite_outline_details = asyncHandler(async (req, res, next) => {
     const {user_id, story_id} = req.params; // Story ID and User ID
+
+    // Find the user and ensure they exist
+    const user = await User.findById(user_id);
+    if (!user) {
+        return res.status(404).json({ error: "User not found" });
+    }
+
     const story = await Story.findOne({ _id: story_id, user: user_id }).exec();;
 
     if (!story) {
@@ -690,6 +726,12 @@ exports.story_get_rewrite_outline_details = asyncHandler(async (req, res, next) 
 exports.story_get_first_chapter_details = asyncHandler(async (req, res, next) => {
     const { user_id, story_id } = req.params; // Story ID and User ID
 
+    // Find the user and ensure they exist
+    const user = await User.findById(user_id);
+    if (!user) {
+        return res.status(404).json({ error: "User not found" });
+    }
+
     const story = await Story.findOne({ _id: story_id, user: user_id }).exec();;
 
     if (!story) {
@@ -716,6 +758,12 @@ exports.story_get_first_chapter_details = asyncHandler(async (req, res, next) =>
 
 exports.story_get_next_chapter_details = asyncHandler(async (req, res, next) => {
     const { user_id, story_id } = req.params; // Story ID and User ID
+
+    // Find the user and ensure they exist
+    const user = await User.findById(user_id);
+    if (!user) {
+        return res.status(404).json({ error: "User not found" });
+    }
 
     const story = await Story.findOne({ _id: story_id, user: user_id }).exec();;
 
@@ -750,6 +798,12 @@ exports.story_get_next_chapter_details = asyncHandler(async (req, res, next) => 
 
 exports.story_get_critique_chapter_details = asyncHandler(async (req, res, next) => {
     const { user_id, story_id } = req.params; // Story ID and User ID
+
+    // Find the user and ensure they exist
+    const user = await User.findById(user_id);
+    if (!user) {
+        return res.status(404).json({ error: "User not found" });
+    }
 
     const story = await Story.findOne({ _id: story_id, user: user_id }).exec();;
 
@@ -787,6 +841,12 @@ exports.story_get_critique_chapter_details = asyncHandler(async (req, res, next)
 
 exports.story_get_rewrite_chapter_details = asyncHandler(async (req, res, next) => {
     const { user_id, story_id } = req.params; // Story ID and User ID
+
+    // Find the user and ensure they exist
+    const user = await User.findById(user_id);
+    if (!user) {
+        return res.status(404).json({ error: "User not found" });
+    }
 
     const story = await Story.findOne({ _id: story_id, user: user_id }).exec();;
 
