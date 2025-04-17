@@ -1,5 +1,5 @@
 const Agent = require("../models/agent");
-const Agent_List = require("../models/agent_list");
+const Persona = require("../models/persona");
 const Story = require("../models/story");
 const asyncHandler = require("express-async-handler");
 
@@ -129,6 +129,6 @@ exports.agent_get_last_response = asyncHandler(async (req, res, next) => {
 // AGENT LIST
 // Return a list of all agents
 exports.agent_list = asyncHandler(async (req, res, next) => {
-    const agents = await Agent_List.find().exec();
+    const agents = await Persona.find().exec();
     res.status(200).json(agents);
 });
