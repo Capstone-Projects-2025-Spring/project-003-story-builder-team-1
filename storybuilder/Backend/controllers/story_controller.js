@@ -37,7 +37,9 @@ exports.story_create_post = asyncHandler(async (req, res, next) => {
     // update user's stories array
     await User.findByIdAndUpdate(user_id, { $push: { stories: new_story._id } });
 
-    res.status(200).json({ message: "Story created", story: new_story._id });
+    const agent_ids = new_story.agents.map(agent => agent._id);
+
+    res.status(200).json({ message: "Story created", story: new_story._id, agent_ids: agent_ids });
 });
 
 // Handle Story list get on GET
