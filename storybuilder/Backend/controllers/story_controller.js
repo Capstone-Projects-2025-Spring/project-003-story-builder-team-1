@@ -770,12 +770,6 @@ exports.story_get_next_chapter_details = asyncHandler(async (req, res, next) => 
         return res.status(404).json({ error: "Chapter number is required." });
     }
 
-    // Find the user and ensure they exist
-    const user = await User.findById(user_id);
-    if (!user) {
-        return res.status(404).json({ error: "User not found" });
-    }
-
     const story = await Story.findOne({ _id: story_id, user: user_id }).exec();;
 
     if (!story) {
@@ -824,12 +818,6 @@ exports.story_get_critique_chapter_details = asyncHandler(async (req, res, next)
 
     if (chapter_number == null) {
         return res.status(404).json({ error: "Chapter number is required." });
-    }
-
-    // Find the user and ensure they exist
-    const user = await User.findById(user_id);
-    if (!user) {
-        return res.status(404).json({ error: "User not found" });
     }
 
     const story = await Story.findOne({ _id: story_id, user: user_id }).exec();;
@@ -885,12 +873,6 @@ exports.story_get_rewrite_chapter_details = asyncHandler(async (req, res, next) 
 
     if (chapter_number == null) {
         return res.status(404).json({ error: "Chapter number is required." });
-    }
-
-    // Find the user and ensure they exist
-    const user = await User.findById(user_id);
-    if (!user) {
-        return res.status(404).json({ error: "User not found" });
     }
 
     const story = await Story.findOne({ _id: story_id, user: user_id }).exec();;
