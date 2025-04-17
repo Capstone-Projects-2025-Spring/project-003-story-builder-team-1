@@ -6,7 +6,6 @@ const SERVER_URL = process.env.REACT_APP_SERVER_URL || "http://localhost:8080";
 function USE_LOGIN() {
     const [user_error, set_user_error] = useState('');
     const [pass_error, set_pass_error] = useState('');
-    const [api_error, set_api_error] = useState('');
     const { use_axios } = USE_AXIOS();
 
     const login = async (username, password) => {
@@ -14,7 +13,6 @@ function USE_LOGIN() {
         let has_error = false;
         set_user_error('');
         set_pass_error('');
-        set_api_error('');
 
         // input handling
         // if any inputs are empty
@@ -31,7 +29,6 @@ function USE_LOGIN() {
         if (!has_error) {
             const { data, error } = await use_axios(SERVER_URL + '/db/account_login', 'POST', { username, password });
             if (data === null) {
-                set_api_error(error);
                 return { login_success: false, error: error };
             }
             // if no error return true

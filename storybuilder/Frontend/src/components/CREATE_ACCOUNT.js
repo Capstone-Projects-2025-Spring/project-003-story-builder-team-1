@@ -48,7 +48,8 @@ function CREATE_ACCOUNT() {
     const [username, set_username] = useState('');
     const [password, set_password] = useState('');
     const [confirm_password, set_confirm_password] = useState('');
-    const { create_account, user_error, pass_error, confirm_pass_error, api_error } = USE_CREATE_ACCOUNT();
+    const { create_account, user_error, pass_error, confirm_pass_error } = USE_CREATE_ACCOUNT();
+    const [api_error, set_api_error] = useState('');
     const [popover_opened, set_popover_opened] = useState(false);
     const [modal_opened, set_modal_opened] = useState(false);
     const checks = requirements.map((requirement, index) => (
@@ -60,14 +61,17 @@ function CREATE_ACCOUNT() {
 
     const handle_create_account = async () => {
         // send account info to backend for creation
-        const create_success = await create_account(username, password, confirm_password, strength);
+        const { create_success, error } = await create_account(username, password, confirm_password, strength);
         if (create_success) {
+            console.log("create_success: ", create_success);
+            console.log("error: ", error)
             console.log("Account Creation Successful");
             set_modal_opened(true);
         }
         else {
             console.log("Account Creation Unsuccessful");
             console.log("API ERROR: ", api_error)
+            set_api_error(error);
         }
     }
 
