@@ -7,8 +7,8 @@ import { z } from "zod";
 import axios from "axios";
 import { stream_handler } from "../stream_handler.js";
 import { ChatPromptTemplate } from "@langchain/core/prompts";
-import outline_tools from "../tools/zod_out_tools.ts";
-import chapter_tools from "../tools/zod_chap_tools.ts";
+import outline_tools from "../tools/zod_out_tools.js";
+import chapter_tools from "../tools/zod_chap_tools.js";
 import { BaseMessage, HumanMessage, SystemMessage } from "@langchain/core/messages";
 import { model } from "mongoose";
 import { ChatOpenAI } from "@langchain/openai";
@@ -120,11 +120,6 @@ const chaptoolsList = chapter_tools_list
   .join("\n");
 const chaptoolNames = chapter_tools_list.map((t) => t.name).join(", ");
 
-const boundPrompt = await storybuilder_prompt.partial({
-  tools: toolsList,
-  tool_names: toolNames,
-});
-
 const outline_step_agent = createReactAgent({
     llm: llm,
     tools: my_tools_node,
@@ -153,8 +148,7 @@ const critique_agent = createReactAgent({
     llm: llm,
     tools: critique_node,
     name: "critique_agent",
-    prompt: storybuilder_prompt,
-    
+    prompt: storybuilder_prompt,    
 });
 
 const revise_agent = createReactAgent({
@@ -273,7 +267,7 @@ const config = {
 
 
 // Define the human message
-const formatted_input = await storybuilder_prompt.formatMessages(input);
+//const formatted_input = await storybuilder_prompt.formatMessages(input);
 //console.log(formatted_input);
 //const response = await supervisor_graph.invoke({messages: formatted_input}, {configurable: config, callbacks: callbacks});
 //const response = await outline_agent.invoke({messages: formatted_input}, {configurable: config, callbacks: callbacks})

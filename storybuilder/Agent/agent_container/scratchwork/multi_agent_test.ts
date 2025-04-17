@@ -4,7 +4,7 @@ import { BaseMessage, HumanMessage } from "@langchain/core/messages";
 import { ChatDeepSeek } from "@langchain/deepseek";
 import { ChatOpenAI } from "@langchain/openai";
 import { z } from "zod";
-import outline_tools from "../tools/zod_out_tools.ts";
+import outline_tools from "../tools/zod_out_tools.js";
 import { stream_handler } from "../stream_handler.js";
 import { ChatPromptTemplate } from "@langchain/core/prompts";
 

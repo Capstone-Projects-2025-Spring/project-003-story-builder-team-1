@@ -2,8 +2,7 @@ import express from "express";
 import { stream_handler } from "../stream_handler.js";
 import { BaseCallbackHandler } from "@langchain/core/callbacks/base";
 import { ChatDeepSeek } from "@langchain/deepseek";
-import { graph } from "../scratchwork/outline_agent_graph.ts"
-import { outline_agent } from "../scratchwork/agents.ts"
+import { outline_agent } from "../scratchwork/agents.js"
 
 export default function courier_routes(llm) {
   const router = express.Router();

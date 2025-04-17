@@ -7,7 +7,9 @@ services:
       dockerfile: ./Dockerfile  # Path to the agent's Dockerfile
     container_name: "${AGENT_NAME}-agent"  # Unique container name
     environment:
-      - API_KEY=${API_KEY}
+      - OPENAI_API_KEY=${OPENAI_API_KEY}  # OpenAI API key for the agent
+      - DEEPSEEK_API_KEY=${DEEPSEEK_API_KEY}  # DeepSeek API key for the agent
+      - API_KEY=${DEEPSEEK_API_KEY}
       - AGENT_NAME=${AGENT_NAME}
       - DOCKER=true
     volumes:
@@ -24,7 +26,9 @@ services:
       dockerfile: ./Dockerfile  # Same Dockerfile
     container_name: "${AGENT_NAME}-agent-2"  # Unique container name for the second agent
     environment:
-      - API_KEY=${API_KEY}
+      - OPENAI_API_KEY=${OPENAI_API_KEY}  # OpenAI API key for the agent
+      - DEEPSEEK_API_KEY=${DEEPSEEK_API_KEY}  # DeepSeek API key for the agent
+      - API_KEY=${DEEPSEEK_API_KEY}
       - AGENT_NAME=${AGENT_NAME}-2  # Different name for the second agent
       - DOCKER=true
     volumes:
@@ -41,7 +45,7 @@ services:
       context: ./storybuilder/  # Path to the backend Dockerfile
       dockerfile: ./Backend/Dockerfile
     environment:
-      - MONGO_URI=${MONGO_URI}  # MongoDB connection string
+      - DB_URI=${DB_URI}  # MongoDB connection string
       - AGENT_URL=http://agent:5000  # URL to access the agent service
       - DOCKER_HOST=0.0.0.0 # Allow backend to listen on all interfaces
     logging:

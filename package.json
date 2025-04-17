@@ -24,6 +24,7 @@
     "project-003-story-builder-team-1": "file:"
   },
   "devDependencies": {
-    "concurrently": "^9.1.2"
+    "concurrently": "^9.1.2",
+    "typescript": "^5.8.3"
   }
 }

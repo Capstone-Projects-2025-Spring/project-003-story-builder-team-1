@@ -13,7 +13,7 @@ import { AIMessageChunk,
          HumanMessage,
          BaseMessage, 
          AIMessage} from '@langchain/core/messages';
-import outline_tools from "../tools/zod_out_tools.ts";
+import outline_tools from "../tools/zod_out_tools.js";
 import * as fs from 'fs';
 import { pull } from "langchain/hub";
 import { model } from "mongoose";
