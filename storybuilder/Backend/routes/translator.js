@@ -16,6 +16,7 @@ router.post('/translate', async (req, res) => {
         user_id,
         story_id,
         step,
+        story_agents: [],
         generate_outline: { story_name: "", story_details: "", extra_details: "" },
         critique_outline: { story_name: "", story_details: "", extra_details: "", story_outline: "" },
         rewrite_outline: { story_name: "", story_details: "", extra_details: "", story_outline: "", outline_critique: "" },
@@ -24,6 +25,18 @@ router.post('/translate', async (req, res) => {
         critique_chapter: { story_name: "", story_details: "", extra_details: "", story_outline: "", chapter: "" },
         rewrite_chapter: { story_name: "", story_details: "", extra_details: "", story_outline: "", chapter: "", chapter_critique: "" }
     };
+
+    try {
+        response = await axios.get(`${APP_URL}/db/story/${user_id}/${story_id}/story_agent_list`);
+        if (!response.data || !response.data.story_agents) {
+            return res.status(404).json({ message: "Agent list unobtainable" });
+        }
+        
+        data.story_agents = response.data.story_agents;
+    } catch (err) {
+        console.error("Error fetching story agent list:", err);
+        return res.status(500).json({ message: "Server error retrieving agent list" });
+    }
 
     try {
         let response;

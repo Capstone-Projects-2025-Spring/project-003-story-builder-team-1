@@ -78,6 +78,9 @@ router.get("/story/:user_id/:story_id/get_outline", story_controller.story_get_o
 
 router.post("/story/:user_id/:story_id/story_add_voted_critique_post", story_controller.story_add_voted_critique_post);
 
+router.get("/story/:user_id/:story_id/story_agent_list", story_controller.story_agents_list);
+
+// Translator routes
 router.get("/story/:user_id/:story_id/get_generated_outline_details", story_controller.story_get_generate_outline_details);
 
 router.get("/story/:user_id/:story_id/get_critique_outline_details", story_controller.story_get_critique_outline_details);
