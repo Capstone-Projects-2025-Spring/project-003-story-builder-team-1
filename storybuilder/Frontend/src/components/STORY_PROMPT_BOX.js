@@ -40,12 +40,17 @@ function STORY_PROMPT_BOX() {
                 />
                 <TextInput
                     label="Number of Chapters"
-                    placeholder="Ex. 1, 2, 3 ..." required
-                    type="number"
+                    placeholder="Ex. 1, 2, 3 ..."
+                    required
+                    type="text" // Change to text to handle validation manually
                     value={chapter_count}
                     onChange={(e) => {
-                        const intValue = parseInt(e.target.value, 10);
-                        if (!isNaN(intValue)) set_chapter_count(intValue);
+                        const value = e.target.value;
+                        
+                        // Check if the value is empty or contains only digits (no "e")
+                        if (value === '' || /^[0-9]+$/.test(value)) {
+                            set_chapter_count(value);
+                        }
                     }}
                     error={chapter_count_error || api_error}
                 />
