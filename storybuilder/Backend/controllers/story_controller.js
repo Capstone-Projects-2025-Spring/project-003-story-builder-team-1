@@ -37,7 +37,9 @@ exports.story_create_post = asyncHandler(async (req, res, next) => {
     // update user's stories array
     await User.findByIdAndUpdate(user_id, { $push: { stories: new_story._id } });
 
-    res.status(200).json({ message: "Story created", story: new_story._id });
+    const agent_ids = new_story.agents.map(agent => agent._id);
+
+    res.status(200).json({ message: "Story created", story: new_story._id, agent_ids: agent_ids });
 });
 
 // Handle Story list get on GET
@@ -757,7 +759,16 @@ exports.story_get_first_chapter_details = asyncHandler(async (req, res, next) =>
 });
 
 exports.story_get_next_chapter_details = asyncHandler(async (req, res, next) => {
-    const { user_id, story_id } = req.params; // Story ID and User ID
+    const { user_id, story_id, chapter_number } = req.params; // Story ID and User ID
+    // Find the user and ensure they exist
+    const user = await User.findById(user_id);
+    if (!user) {
+        return res.status(404).json({ error: "User not found" });
+    }
+
+    if (chapter_number == null) {
+        return res.status(404).json({ error: "Chapter number is required." });
+    }
 
     // Find the user and ensure they exist
     const user = await User.findById(user_id);
@@ -783,7 +794,13 @@ exports.story_get_next_chapter_details = asyncHandler(async (req, res, next) => 
         return res.status(404).json({ error: "Previous chapters are required." });
     }
 
-    const previous_chapters = story.story_content.map(chapter => ({chapter_number: chapter.story_chapter_number, text: chapter.text}));
+    // Filter all chapters where the chapter number is strictly less than the requested chapter number
+    const previous_chapters = story.story_content
+        .filter(chapter => Number(chapter.story_chapter_number) < chapter_number)
+        .map(chapter => ({
+            chapter_number: chapter.story_chapter_number,
+            text: chapter.text
+        }));
 
     const response = {
         story_name: story.story_name,
@@ -797,7 +814,17 @@ exports.story_get_next_chapter_details = asyncHandler(async (req, res, next) => 
 });
 
 exports.story_get_critique_chapter_details = asyncHandler(async (req, res, next) => {
-    const { user_id, story_id } = req.params; // Story ID and User ID
+    const { user_id, story_id, chapter_number } = req.params; // Story ID and User ID
+
+    // Find the user and ensure they exist
+    const user = await User.findById(user_id);
+    if (!user) {
+        return res.status(404).json({ error: "User not found" });
+    }
+
+    if (chapter_number == null) {
+        return res.status(404).json({ error: "Chapter number is required." });
+    }
 
     // Find the user and ensure they exist
     const user = await User.findById(user_id);
@@ -823,9 +850,17 @@ exports.story_get_critique_chapter_details = asyncHandler(async (req, res, next)
         return res.status(404).json({ error: "Previous chapters are required." });
     }
 
-    const lastChapter = {
-        chapter_number: story.story_content[story.story_content.length - 1].story_chapter_number,
-        text: story.story_content[story.story_content.length - 1].text
+    // Find the chapter with the given chapter_number
+    const chapter = story.story_content.find(chap => chap.story_chapter_number === Number(chapter_number));
+
+    if (!chapter) {
+        return res.status(404).json({ error: `Chapter ${chapter_number} not found.` });
+    }
+
+    // Only include chapter_number and text in the response
+    const chapter_details = {
+        chapter_number: chapter.story_chapter_number,
+        text: chapter.text
     };
 
     const response = {
@@ -833,14 +868,24 @@ exports.story_get_critique_chapter_details = asyncHandler(async (req, res, next)
         story_details: story.prompt.story_details,
         extra_details: story.prompt.extra_details,
         story_outline: story.outline,
-        chapter: lastChapter
+        chapter: chapter_details
     }
 
     res.json(response);
 });
 
 exports.story_get_rewrite_chapter_details = asyncHandler(async (req, res, next) => {
-    const { user_id, story_id } = req.params; // Story ID and User ID
+    const { user_id, story_id, chapter_number } = req.params; // Story ID and User ID
+
+    // Find the user and ensure they exist
+    const user = await User.findById(user_id);
+    if (!user) {
+        return res.status(404).json({ error: "User not found" });
+    }
+
+    if (chapter_number == null) {
+        return res.status(404).json({ error: "Chapter number is required." });
+    }
 
     // Find the user and ensure they exist
     const user = await User.findById(user_id);
@@ -870,19 +915,36 @@ exports.story_get_rewrite_chapter_details = asyncHandler(async (req, res, next) 
         return res.status(404).json({ error: "At least one critique is required beyond the outline critique." });
     }
 
-    const lastChapter = {
-        chapter_number: story.story_content[story.story_content.length - 1].story_chapter_number,
-        text: story.story_content[story.story_content.length - 1].text
+    // Find the chapter with the given chapter_number
+    const chapter = story.story_content.find(chap => chap.story_chapter_number === Number(chapter_number));
+
+    if (!chapter) {
+        return res.status(404).json({ error: `Chapter ${chapter_number} not found.` });
+    }
+
+    const critique = story.critiques.find(c => c.chapter_number === Number(chapter_number));
+
+    if (!critique) {
+        return res.status(404).json({ error: `Critique for Chapter ${chapter_number} not found.` });
+    }
+
+    const chapter_details = {
+        chapter_number: chapter.story_chapter_number,
+        text: chapter.text
     };
-    const critique = story.critiques[story.critiques.length - 1].critique;
-    
+
+    const critique_details = {
+        chapter_number: critique.chapter_number,
+        critique: critique.critique
+    }
+
     const response = {
         story_name: story.story_name,
         story_details: story.prompt.story_details,
         extra_details: story.prompt.extra_details,
         story_outline: story.outline,
-        chapter: lastChapter,
-        critique: critique
+        chapter: chapter_details,
+        critique: critique_details
     }
     res.json(response);
 });

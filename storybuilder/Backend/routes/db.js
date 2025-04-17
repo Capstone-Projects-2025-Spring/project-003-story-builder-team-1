@@ -91,11 +91,11 @@ router.get("/story/:user_id/:story_id/get_rewrite_outline_details", story_contro
 
 router.get("/story/:user_id/:story_id/get_first_chapter_details", story_controller.story_get_first_chapter_details);
 
-router.get("/story/:user_id/:story_id/get_next_chapter_details", story_controller.story_get_next_chapter_details);
+router.get("/story/:user_id/:story_id/:chapter_number/get_next_chapter_details", story_controller.story_get_next_chapter_details);
 
-router.get("/story/:user_id/:story_id/get_critique_chapter_details", story_controller.story_get_critique_chapter_details);
+router.get("/story/:user_id/:story_id/:chapter_number/get_critique_chapter_details", story_controller.story_get_critique_chapter_details);
 
-router.get("/story/:user_id/:story_id/get_rewrite_chapter_details", story_controller.story_get_rewrite_chapter_details);
+router.get("/story/:user_id/:story_id/:chapter_number/get_rewrite_chapter_details", story_controller.story_get_rewrite_chapter_details);
 
 /// AGENT ROUTES ///
 
