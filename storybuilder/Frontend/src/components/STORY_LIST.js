@@ -16,7 +16,7 @@ function STORY_LIST() {
 
   return (
     <Stack spacing="xs" mt="xs">
-      <Button variant="outline" color="orange" fullWidth  >
+      <Button variant="outline" color="orange" fullWidth  onClick={() => navigate(`/agent_selection`)}>
         Generate New Story
       </Button>
       {stories.map((story) => (
