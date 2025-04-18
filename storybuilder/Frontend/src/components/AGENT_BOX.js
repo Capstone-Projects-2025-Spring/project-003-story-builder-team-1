@@ -1,6 +1,7 @@
 import { useState, useContext, useEffect } from 'react';
-import { Card, Button, Modal, Textarea, Title, Divider, Group, Loader } from '@mantine/core';
+import { Card, Button, Modal, Title, Divider, Group, Loader } from '@mantine/core';
 import STORY_CONTEXT from "../context/STORY_CONTEXT";
+import ReactMarkdown from 'react-markdown';
 
 function AGENT_BOX({ name }) {
     const { state, fetch_first_chapter, fetch_next_chapter, api_error } = useContext(STORY_CONTEXT);
@@ -81,41 +82,39 @@ function AGENT_BOX({ name }) {
               </Title>
             }
           >
-            <div style={{ flex: 1, display: 'flex' }}>
-
-            {/* Scrollable Text Area */}
-            <Textarea
-              value={chapter_content}
-              readOnly
-              autosize={false}
-              styles={{
-                input: {
-                  padding: "16px",
-                  fontSize: '18px',
-                  resize: 'none',
-                  overflow: 'auto',
+            <div style={{ flex: 1, display: 'flex', padding: '12px' }}> {/* Outer padding wrapper */}
+              {/* Scrollable Text Area */}
+              <div
+                style={{
                   flex: 1,
-                },
-                root: {
-                  flex: 1,
-                  display: 'flex',
-                },
-                wrapper: {
-                  flex: 1,
-                  display: 'flex',
-                },
-              }}
-              style={{
-                flex: 1,
-                width: '100%',
-                padding: '16px'
-              }}
-            />
+                  overflowY: 'auto',
+                  padding: '16px',
+                  backgroundColor: '#2d2d2d',
+                  color: '#white',
+                  borderRadius: '8px',
+                  marginBottom: '20px',
+                }}
+              >
+                <ReactMarkdown
+                  children={chapter_content}
+                  components={{
+                    p: ({ node, ...props }) => (
+                      <p style={{ fontSize: '18px', marginBottom: '1em' }} {...props} />
+                    ),
+                  }}
+                />
+              </div>
             </div>
           </Modal>
 
-            {/* Agent Box */}
-          <Card shadow="sm" padding="md" radius="md" withBorder>
+          {/* Agent Box */}
+          <Card
+            shadow="sm"
+            padding="md"
+            radius="md"
+            withBorder
+            style={{ backgroundColor: '#242424' }} // Same as page background
+          >
             {/* Header */}
             <div style={{ padding: '10px', borderRadius: '5px 5px 0 0' }}>
               <Group gap="xs" align="center">
@@ -124,26 +123,32 @@ function AGENT_BOX({ name }) {
                 </Title>
               </Group>
             </div>
-    
+
             {/* Divider Line */}
-            <Divider my="sm" mt={1}/>
-    
-            {/* Scrollable Text Area */}
-            <Textarea
-              value={chapter_content}
-              readOnly
-              autosize
-              minRows={3}
-              maxRows={5}
-              style={{ width: '100%' }}
-              styles={{
-                input: {
-                  fontSize: '18px'
-                },
+            <Divider my="sm" mt={1} />
+
+            {/* Inner Lighter Box */}
+            <div
+              style={{
+                backgroundColor: '#2d2d2d', // Lighter than outer card
+                borderRadius: '8px',
+                padding: '16px',
+                color: '#white',
+                maxHeight: '150px',
+                overflowY: 'auto',
               }}
-            />
-    
-            {/* View Button */}
+            >
+              <ReactMarkdown
+                children={chapter_content}
+                components={{
+                  p: ({ node, ...props }) => (
+                    <p style={{ fontSize: '16px', marginBottom: '0.75em' }} {...props} />
+                  ),
+                }}
+              />
+            </div>
+
+            {/* View & Continue Buttons */}
             <Group justify="space-between" style={{ marginTop: '10px' }}>
               <Button size="sm" variant="light" onClick={() => set_opened(true)}>
                 View
@@ -152,7 +157,7 @@ function AGENT_BOX({ name }) {
                 <Button
                   size="sm"
                   variant="light"
-                  color={!loading ? "teal" : undefined}
+                  color={!loading ? 'teal' : undefined}
                   disabled={loading}
                   onClick={handle_continue}
                   leftSection={loading && <Loader size="xs" color="green" />}
@@ -162,7 +167,7 @@ function AGENT_BOX({ name }) {
                     cursor: loading ? 'not-allowed' : 'pointer',
                   }}
                 >
-                  {loading ? "Drafting Chapter" : "Continue"}
+                  {loading ? 'Drafting Chapter' : 'Continue'}
                 </Button>
               )}
             </Group>
