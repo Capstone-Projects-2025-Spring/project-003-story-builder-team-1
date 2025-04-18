@@ -1,6 +1,8 @@
 const express = require('express');
 const axios = require('axios');
 const { Agent } = require('http');
+const { error } = require('console');
+const { db } = require('../models/story');
 const router = express.Router();
 const PRIVATE_URL = process.env.PRIVATE_URL || "http://localhost";
 const API_URL = process.env.AGENT_URL || PRIVATE_URL;
@@ -44,6 +46,12 @@ router.post('/aggregate', async (req, res) => {
     console.log("Aggregate request received:", req.body);
     const input = req.body.messages;
     console.log("Aggregate request received with input:", input);
+    const data = req.body.data;
+    const agent_data = data.story_agents;
+    const agent_names = agent_data.map(agent => agent.agent_name);
+    const agent_ids = agent_data.map(agent => agent.agent_id);
+    console.log("Agent data:", agent_data, "Agent names:", agent_names, "Agent IDs:", agent_ids);
+
     const agentEndpoints = [
         'http://localhost:5000/agent/stream_graph',
         'http://localhost:5001/agent/stream_graph', // Example endpoint for Jane Austen agent
@@ -51,13 +59,12 @@ router.post('/aggregate', async (req, res) => {
         //'http://localhost:5003/agent/stream_graph', // Example endpoint for another agent
     ];      
     // Store responses and votes
-    const responses = {};
     const votes = {};
   
     try {
         // For each agent, open the stream and read ALL data
         const agentResults = await Promise.all(
-            agentEndpoints.map(async (agent, idx) => {
+            agentEndpoints.map(async (agent , idx) => {
                 const response = await axios.post(
                     agent,
                     { messages: input },
@@ -70,11 +77,10 @@ router.post('/aggregate', async (req, res) => {
                         let str = chunk.toString();
                         str = str.replace(/^data: /, ''); // Remove "data: " prefix
                         str = str.slice(0, -2); // Remove "\n\n" suffix
-                        res.write(`-agent ${idx + 1} ${str}`); 
+                        res.write(`${agent_names[idx]} ${agent_ids[idx]} ${str}`); 
                         str = `data: ${str}\n\n`; // Format for SSE
                         // Optionally: parse each SSE chunk here.
                         data.push(str);
-                        console.log(str);
                     });
                     response.data.on('end', () => {
                         // Optionally: parse out just the relevant story from data
@@ -86,8 +92,9 @@ router.post('/aggregate', async (req, res) => {
                             .slice(0, -2)) // Remove "\n\n" suffix
                             .join(''); // Join the array into a single string
 
-                        agent_name = `agent ${idx + 1}`;
-                        resolve({ agent_name, data });
+                        const agent_name = `${agent_names[idx]}`;
+                        const agent_id = `${agent_ids[idx]}`;
+                        resolve({ agent_name, agent_id, data,});
                     });
                     response.data.on('error', err => reject(err));
                 });
@@ -97,6 +104,19 @@ router.post('/aggregate', async (req, res) => {
         // We need to develop the logic to determine the best response from our results
         const bestResult = agentResults.find(r => r.data && r.data.length > 0);
         console.log("Best result from agents:", bestResult);
+
+        const agent_votes = [
+            { agent_name: "King", agent_id: "6801acea06a91982122cd951", votes: 8},
+            { agent_name: "shakespeare", agent_id: "6801acea06a91982122cd952", votes: 8}
+        ]
+        
+        const db_data = {
+                bestResponse: bestResult,
+                allResults: agentResults,
+                votes: agent_votes
+        }
+
+        await db_store(req.body.data.step, req.body.data.user_id, req.body.data.story_id, req.body.data.chapter_number, db_data);
         // res.json({
         //     bestResponse: bestResult,
         //     allResults: agentResults,
@@ -110,6 +130,47 @@ router.post('/aggregate', async (req, res) => {
         res.status(500).send('Error occurred while aggregating responses.');
     }
 });
+
+async function db_store(step, user_id, story_id, chapter_number, responses) {
+    console.log("allResults", responses.allResults);
+    try {
+        switch(step) {
+            case "generate_outline":
+                await axios.post(`${APP_URL}/db/story/${user_id}/${story_id}/add_outline`, { outline: responses.bestResponse.data });
+                await axios.post(`${APP_URL}/db/story/${user_id}/${story_id}/add_agent_outlines`, { outlines: responses.allResults, votes: responses.votes });
+                break;
+            case "critique_outline":
+                await axios.post(`${APP_URL}/db/story/${user_id}/${story_id}/story_add_voted_critique_post`, { chapter_number: chapter_number, critique: responses.bestResponse.data });
+                await axios.post(`${APP_URL}/db/story/${user_id}/${story_id}/add_agent_critiques`, { chapter_number: chapter_number, critiques: responses.allResults, votes: responses.votes });
+                break;
+            case "rewrite_outline":
+                await axios.post(`${APP_URL}/db/story/${user_id}/${story_id}/add_outline`, { outline: responses.bestResponse.data });
+                await axios.post(`${APP_URL}/db/story/${user_id}/${story_id}/add_agent_outlines`, { outlines: responses.allResults, votes: responses.votes });
+                break;
+            case "generate_first_chapter":
+                await axios.post(`${APP_URL}/db/story/${user_id}/${story_id}/add_chapter`, {story_chapter_number: chapter_number, text: responses.bestResponse.data});
+                await axios.post(`${APP_URL}/db/story/${user_id}/${story_id}/add_agent_chapter`, {chapter_number: chapter_number, content: responses.allResults, votes: responses.votes});
+                break;
+            case "generate_next_chapter":
+                await axios.post(`${APP_URL}/db/story/${user_id}/${story_id}/add_chapter`, {story_chapter_number: chapter_number, text: responses.bestResponse.data});
+                await axios.post(`${APP_URL}/db/story/${user_id}/${story_id}/add_agent_chapter`, {chapter_number: chapter_number, content: responses.allResults, votes: responses.votes});
+                break;
+            case "critique_chapter":
+                await axios.post(`${APP_URL}/db/story/${user_id}/${story_id}/story_add_voted_critique_post`, { chapter_number: chapter_number, critique: responses.bestResponse.data });
+                await axios.post(`${APP_URL}/db/story/${user_id}/${story_id}/add_agent_critiques`, { chapter_number: chapter_number, critiques: responses.allResults, votes: responses.votes });
+                break;
+            case "rewrite_chapter":
+                await axios.post(`${APP_URL}/db/story/${user_id}/${story_id}/add_chapter`, {story_chapter_number: chapter_number, text: responses.bestResponse.data});
+                await axios.post(`${APP_URL}/db/story/${user_id}/${story_id}/add_agent_chapter`, {chapter_number: chapter_number, content: responses.allResults, votes: responses.votes});
+                break;
+            default:
+                return res.status(400).json({ message: "Invalid step provided." });
+        }
+    } catch (error) {
+        console.error("Error adding agent data to database:", error.message);
+        return res.status(500).json({ message: "Failed to add agent data to database", error: error.message });
+    }
+}
 
 router.post('/story_stream', async (req, res) => {
     res.setHeader('Content-Type', 'text/event-stream');

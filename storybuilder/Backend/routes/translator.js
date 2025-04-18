@@ -122,7 +122,7 @@ router.post('/translate', async (req, res) => {
         }
         const courier_response = await axios.post(
             `${APP_URL}/courier/aggregate`, 
-            { messages: req.body.messages },
+            { data, messages: req.body.messages },
             { headers: { "Content-Type": "application/json" }, responseType: 'stream' }
         );
 
@@ -136,7 +136,7 @@ router.post('/translate', async (req, res) => {
                         .replace(/^data: /, '') // Remove "data: " prefix
                         .slice(0, -2)) // Remove "\n\n" suffix
                         .join(''); // Join the array into a single string
-                    console.log("Buffer on end:", buffer);
+                    //console.log("Buffer on end:", buffer);
                     resolve(res.status(200).json({ message: "Data Received Successfully", data: { ...data, response: buffer } }));
                 }
                 else

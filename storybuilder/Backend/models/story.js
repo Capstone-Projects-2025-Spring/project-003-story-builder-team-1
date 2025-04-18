@@ -10,8 +10,8 @@ const storySchema = new mongoose.Schema({
     },
     outline: { type: String },
     critiques: [{
-        chapter_number: { type: Number, required: true },
-        critique: { type: String, required: true },
+        chapter_number: { type: Number},
+        critique: { type: String }
     }],
     story_content: [{
         story_chapter_number: { type: Number, required: true },
@@ -20,12 +20,12 @@ const storySchema = new mongoose.Schema({
     agents: [{
         agent: { type: mongoose.Schema.Types.ObjectId, ref: 'Agent' },
         agent_name: { type: String, required: true },
-        outline: { type: String },
         chapters: [{
             chapter_number: { type: Number },
             content: { type: String },
-            votes: { type: Number, default: 0 },
-            critique: { type: String }
+            chapter_votes: { type: Number, default: 0 },
+            critique: { type: String },
+            critique_votes: { type: Number, default: 0 }
         }]
     }],
 }, { timestamps: true });

@@ -46,9 +46,6 @@ router.post("/story/:user_id/:story_id/update", story_controller.story_update_po
 // POST request to get the number of chapters
 router.get("/story/:user_id/:story_id/get_number_of_chapters", story_controller.story_get_number_of_chapters);
 
-// POST request to add chapter to agent-specfic version
-router.post("/story/:user_id/:story_id/add_agent_chapter", story_controller.story_add_agent_chapter_post);
-
 // POST request to add a chapter to the main story
 router.post("/story/:user_id/:story_id/add_chapter", story_controller.story_add_chapter_post);
 
@@ -81,6 +78,12 @@ router.post("/story/:user_id/:story_id/story_add_voted_critique_post", story_con
 router.get("/story/:user_id/:story_id/story_agent_list", story_controller.story_agents_list);
 
 router.post("/story/:user_id/:story_id/:chapter_number/veto_critique", story_controller.story_veto_critique);
+
+router.post("/story/:user_id/:story_id/add_agent_outlines", story_controller.story_add_agent_outlines_post);
+
+router.post("/story/:user_id/:story_id/add_agent_critiques", story_controller.story_add_agent_critiques_post)
+
+router.post("/story/:user_id/:story_id/add_agent_chapter", story_controller.story_add_agent_chapter_post);
 
 // Translator routes
 router.get("/story/:user_id/:story_id/get_generated_outline_details", story_controller.story_get_generate_outline_details);

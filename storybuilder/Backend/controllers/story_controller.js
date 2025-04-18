@@ -171,50 +171,6 @@ exports.story_get_number_of_chapters = asyncHandler(async (req, res, next) => {
     res.status(200).json({ number_of_chapters });
 });
 
-// Add chapter to agent-specfic version
-exports.story_add_agent_chapter_post = asyncHandler(async (req, res, next) => {
-    const { user_id, story_id } = req.params; // Story ID and UserID
-    const { agentId, chapter_number, content } = req.body;
-
-    if (!agentId || chapter_number == null || !content) {
-        return res.status(400).json({ error: "agentId, chapter_number, and content are required." });
-    }
-
-    // Find the user and ensure they exist
-    const user = await User.findById(user_id);
-    if (!user) {
-        return res.status(404).json({ error: "User not found" });
-    }
-    // Find the story
-    const story = await Story.findById(story_id);
-    if (!story) return res.status(404).json({ error: "Story not found" });
-
-    // Find the agent in the agents array
-    const agentEntry = story.agents.find(agentObj => agentObj.agent.toString() === agentId);
-    
-    if (agentEntry) {
-        // Check if chapter_number already exists
-        const chapterExists = agentEntry.chapters.some(ch => ch.chapter_number === chapter_number);
-        if (chapterExists) {
-            return res.status(400).json({ error: `Chapter number ${chapter_number} already exists for this agent.` });
-        }
-        
-        // Append the chapter to this agent's chapters
-        agentEntry.chapters.push({ chapter_number, content });
-    } else {
-        // If agent not found, add a new agent with the chapter
-        story.agents.push({
-            agent: agentId,
-            chapters: [{ chapter_number, content }]
-        });
-    }
-
-    // Save the updated story
-    await story.save();
-
-    res.status(200).json({ message: "Chapter added successfully", story });
-});
-
 // Edit a final chapter specific to a story (update story_content chapter content)
 exports.story_chapter_edit_post = asyncHandler(async (req, res, next) => {
     const { user_id, story_id, story_chapter_number } = req.params; // Story ID and UserID
@@ -301,6 +257,10 @@ exports.story_add_chapter_post = asyncHandler(async (req, res, next) => {
         return res.status(400).json({ error: "story_chapter_number and text are required." });
     }
 
+    if (Number(story_chapter_number) === 0) {
+        return res.status(400).json({error: "Trying to edit outline in chapter section"})
+    }
+
     // Find the user and ensure they exist
     const user = await User.findById(user_id);
     if (!user) {
@@ -308,22 +268,25 @@ exports.story_add_chapter_post = asyncHandler(async (req, res, next) => {
     }
 
     // Find the story
-    const story = await Story.findById(story_id);
-    if (!story) return res.status(404).json({ error: "Story not found" });
-
-    const chapter_exists = story.story_content.some(ch => ch.story_chapter_number === story_chapter_number);
-    if (chapter_exists) {
-        return res.status(400).json({ error: `Chapter number ${story_chapter_number} already exists in the story content.` });
+    const story = await Story.findOne({ _id: story_id, user: user_id }).exec();
+    if (!story) {
+        return res.status(404).json({ error: "Story not found or user does not have access to this story" });
     }
-    // Append the chapter to the story_content
+
     
-    const new_chapter = {
-        story_chapter_number: story_chapter_number,
-        text: text
+    const chapter_number = Number(story_chapter_number);
+
+    const existing_chapter = story.story_content.find(ch => ch.story_chapter_number === chapter_number);
+    
+    if (existing_chapter) {
+        existing_chapter.text = text;
+    } else {
+        story.story_content.push({
+            story_chapter_number: chapter_number,
+            text: text
+        });
     }
 
-    story.story_content.push(new_chapter);
-    // Save the updated story
     await story.save();
     res.status(200).json({ message: "Voted chapter added successfully", story });
 });
@@ -497,11 +460,6 @@ exports.story_add_outline_post = asyncHandler(async (req, res, next) => {
         return res.status(404).json({ error: "Story not found" });
     }
     
-    // Check if the outline already exists
-    if (story.outline) {
-        return res.status(400).json({ error: "Outline already exists for this story." });
-    }
-
     // Add outline to the story
     story.outline = outline;
 
@@ -535,7 +493,7 @@ exports.story_add_voted_critique_post = asyncHandler(async (req, res, next) => {
     const { user_id, story_id } = req.params; // Story ID and User ID
     const { chapter_number, critique } = req.body;
 
-    if (!chapter_number == null || !critique) {
+    if (chapter_number == null || !critique) {
         return res.status(400).json({ error: "Chapter number and critique are required." });
     }
 
@@ -552,15 +510,16 @@ exports.story_add_voted_critique_post = asyncHandler(async (req, res, next) => {
         return res.status(404).json({ error: "Story not found or user does not have access to this story" });
     }
 
-    // Check if the chapter_number already exists in the critiques array
+    // Find the existing critique for the chapter
     const existingCritique = story.critiques.find(ch => ch.chapter_number === Number(chapter_number));
     
     if (existingCritique) {
-        return res.status(400).json({ error: `Critique for chapter number ${chapter_number} already exists.` });
+        // Update the critique
+        existingCritique.critique = critique;
+    } else {
+        // Add a new critique
+        story.critiques.push({ chapter_number, critique });
     }
-
-    // Add critique to the critiques array
-    story.critiques.push({ chapter_number, critique });
 
     // Save the updated story
     await story.save();
@@ -627,6 +586,178 @@ exports.story_veto_critique = asyncHandler(async (req, res, next) => {
     await story.save();
 
     res.status(200).json({ message: "Critique updated", critique });
+});
+
+exports.story_add_agent_outlines_post = asyncHandler(async (req, res, next) => {
+    const { user_id, story_id } = req.params;
+    const { outlines, votes } = req.body;
+
+    // Find the user
+    const user = await User.findById(user_id);
+    if (!user) {
+        return res.status(404).json({ error: "User not found" });
+    }
+
+    // Find the story
+    const story = await Story.findOne({ _id: story_id, user: user_id }).exec();
+    if (!story) {
+        return res.status(404).json({ error: "Story not found or user does not have access to this story" });
+    }
+
+    if (!outlines || outlines.length === 0) {
+        return res.status(404).json({ error: "Outlines are required." });
+    }
+
+    if (!votes || votes.length === 0) {
+        return res.status(404).json({ error: "Votes are required." });
+    }
+
+    for (const r of outlines) {
+        const agent = story.agents.find(agent => agent._id.toString() === r.agent_id);
+
+        const existing_outline = agent.chapters.find(ch => ch.chapter_number === 0);
+
+        const vote_entry = votes.find(v => v.agent_id === r.agent_id);
+
+        if (!vote_entry) {
+            return res.status(400).json({ error: `No vote entry found for an agent ID` });
+        }
+
+        const vote_value = vote_entry.votes;
+
+        if (existing_outline) {
+            existing_outline.content = r.data;
+            existing_outline.chapter_votes = vote_value;
+        } else {
+            agent.chapters.push({
+                chapter_number: 0,
+                content: r.data,
+                chapter_votes: vote_value
+            });
+        }
+    }
+
+    await story.save();
+
+    res.status(200).json({ message: "Agent outlines updated successfully." });
+});
+
+exports.story_add_agent_critiques_post = asyncHandler(async (req, res, next) => {
+    const { user_id, story_id } = req.params;
+    const { chapter_number, critiques, votes } = req.body;
+
+    if (chapter_number == null || !critiques || critiques.length === 0) {
+        return res.status(400).json({ error: "Chapter number and critiques are required." });
+    }
+
+    if (!votes || votes.length === 0) {
+        return res.status(404).json({ error: "Votes are required." });
+    }
+
+    // Find the user
+    const user = await User.findById(user_id);
+    if (!user) {
+        return res.status(404).json({ error: "User not found" });
+    }
+
+    // Find the story
+    const story = await Story.findOne({ _id: story_id, user: user_id }).exec();
+    if (!story) {
+        return res.status(404).json({ error: "Story not found or user does not have access to this story" });
+    }
+
+    // Check if the chapter exists for each agent before proceeding
+    for (const r of critiques) {
+        const agent = story.agents.find(agent => agent._id.toString() === r.agent_id);
+
+        const existing_chapter = agent.chapters.find(ch => ch.chapter_number === Number(chapter_number));
+        if (!existing_chapter) {
+            return res.status(400).json({ error: `Chapter ${chapter_number} does not exist for this agent.` });
+        }
+    }
+
+    for (const r of critiques) {
+        const agent = story.agents.find(agent => agent._id.toString() === r.agent_id);
+
+        const existing_critique = agent.chapters.find(ch => ch.chapter_number === Number(chapter_number));
+
+        if (!existing_critique) {
+            return res.status(400).json({ error: `Chapter ${chapter_number} does not exist for this agent.` });
+        }
+
+        const vote_entry = votes.find(v => v.agent_id === r.agent_id);
+
+        if (!vote_entry) {
+            return res.status(400).json({ error: `No vote entry found for an agent ID` });
+        }
+
+        const vote_value = vote_entry.votes;
+
+        existing_critique.critique = r.data;
+        existing_critique.critique_votes = vote_value;
+    }
+
+    await story.save();
+    res.status(200).json({ message: "Agent critiques updated successfully." });
+});
+
+exports.story_add_agent_chapter_post = asyncHandler(async (req, res, next) => {
+    const { user_id, story_id } = req.params; // Story ID and UserID
+    const { chapter_number, content, votes } = req.body;
+
+    if (chapter_number == null || !content || content.length === 0) {
+        return res.status(400).json({ error: "Chapter number and chapters are required" });
+    }
+
+    if (Number(chapter_number) === 0) {
+        return res.status(400).json({error: "Trying to edit outline in chapter section"})
+    }
+
+    if (!votes || votes.length === 0) {
+        return res.status(404).json({ error: "Votes are required." });
+    }
+
+    // Find the user
+    const user = await User.findById(user_id);
+    if (!user) {
+        return res.status(404).json({ error: "User not found" });
+    }
+
+    // Find the story
+    const story = await Story.findOne({ _id: story_id, user: user_id }).exec();
+    if (!story) {
+        return res.status(404).json({ error: "Story not found or user does not have access to this story" });
+    }
+
+    for (const r of content) {
+        const agent = story.agents.find(agent => agent._id.toString() === r.agent_id);
+
+        const existing_chapter = agent.chapters.find(ch => ch.chapter_number === Number(chapter_number));
+
+        const vote_entry = votes.find(v => v.agent_id === r.agent_id);
+
+        if (!vote_entry) {
+            return res.status(400).json({ error: `No vote entry found for an agent ID` });
+        }
+
+        const vote_value = vote_entry.votes;
+
+        if (existing_chapter) {
+            existing_chapter.content = r.data;
+            existing_chapter.chapter_votes = vote_value;
+        } else {
+            agent.chapters.push({
+                chapter_number: Number(chapter_number),
+                content: r.data,
+                chapter_votes: vote_value
+            });
+        }
+    }
+
+    // Save the updated story
+    await story.save();
+
+    res.status(200).json({ message: "Chapter added successfully", story });
 });
 
 // Translator DB Endpoints
@@ -716,12 +847,18 @@ exports.story_get_rewrite_outline_details = asyncHandler(async (req, res, next) 
         return res.status(404).json({ error: "Critiques are required." });
     }
 
+    const outline_critique_entry = story.critiques.find(c => c.chapter_number === 0);
+
+    if (!outline_critique_entry) {
+        return res.status(404).json({ error: "Outline critique (chapter 0) not found." });
+    }
+
     const response = {
         story_name: story.story_name,
         story_details: story.prompt.story_details,
         extra_details: story.prompt.extra_details,
         story_outline: story.outline,
-        outline_critique: story.critiques[0].critique
+        outline_critique: outline_critique_entry.critiques
     }
     res.json(response)
 });
@@ -791,7 +928,7 @@ exports.story_get_next_chapter_details = asyncHandler(async (req, res, next) => 
 
     // Filter all chapters where the chapter number is strictly less than the requested chapter number
     const previous_chapters = story.story_content
-        .filter(chapter => Number(chapter.story_chapter_number) < chapter_number)
+        .filter(chapter => Number(chapter.story_chapter_number) < Number(chapter_number))
         .map(chapter => ({
             chapter_number: chapter.story_chapter_number,
             text: chapter.text
