@@ -5,150 +5,161 @@ const router = express.Router();
 const PRIVATE_URL = process.env.PRIVATE_URL || "http://localhost:8080";
 const APP_URL = PRIVATE_URL;
 
-//Global Variables to store data related to the story
-var courier_response;
-
-//first_chapter will receive the story name, story details, and extra details from the frontend, and send back the story name and generated chapter
-router.post('/first_chapter', async (req, res) => {
-
-    //Validate required fields
-    if (!req.body.story_name || !req.body.story_details || !req.body.story_outline) {
+router.post('/translate', async (req, res) => {
+    const { user_id, story_id, step, chapter_number } = req.body;
+    
+    if (!user_id || !story_id || !step || chapter_number == null) {
         return res.status(404).json({ message: "Missing required fields", data: req.body });
     }
 
-    // Store story data
-    story_name = req.body.story_name;
-    story_details = req.body.story_details;
-    extra_details = req.body.extra_details;
-    story_outline = req.body.story_outline;
+    let data = {
+        user_id,
+        story_id,
+        step,
+        chapter_number,
+        story_agents: [],
+        generate_outline: { story_name: "", story_details: "", extra_details: "" },
+        critique_outline: { story_name: "", story_details: "", extra_details: "", story_outline: "" },
+        rewrite_outline: { story_name: "", story_details: "", extra_details: "", story_outline: "", outline_critique: "" },
+        generate_first_chatper: { story_name: "", story_details: "", extra_details: "", story_outline: "" },
+        generate_next_chapter: { story_name: "", story_details: "", extra_details: "", story_outline: "", previous_chapters: [] },
+        critique_chapter: { story_name: "", story_details: "", extra_details: "", story_outline: "", chapter: "" },
+        rewrite_chapter: { story_name: "", story_details: "", extra_details: "", story_outline: "", chapter: "", chapter_critique: "" }
+    };
 
     try {
-        //Send data 
-        details = "Story Name:\n"+ story_name + "\nStory Details:\n" + story_details + "\nExtra Details:\n" + extra_details
-
-        to_prompt_admin = {
-            "details": details,
-            "story_outline": story_outline
+        response = await axios.get(`${APP_URL}/db/story/${user_id}/${story_id}/story_agent_list`);
+        if (!response.data || !response.data.story_agents) {
+            return res.status(404).json({ message: "Agent list unobtainable" });
         }
-
-        prompt_admin_response = await axios.post(APP_URL + '/prompt_admin/first_chapter/', to_prompt_admin);
-
-        to_frontend = {
-            "title": story_name,
-            "courier_response": courier_response
-        }
-
-        //Send successful response to frontend
-        return res.status(200).json({message: "Story Contents Received Successfully", data: to_frontend});
-
-    } catch (error) {
-        console.error("Error fetching courier response:", error.message);
-        return res.status(500).json({ message: "Failed to fetch courier response", error: error.message });
-    }
-});
-
-//courier_response will store the response from a courier instance
-router.post('/courier_response', (req, res) => {
-
-    //If data was not received successfully
-    if (!req.body.data){
-        return res.status(404).json({message: "Courier Response not Received", data: req.body});
-    }
-
-    //Storing courier response
-    courier_response = req.body.data
-
-    //Send Successful Response Back to courier
-    return res.status(200).json({message: "Courier Response Received Successfully", data: req.body});
-});
-
-//story_outline will receive the requested chapters, story name, story details, and extra details from the frontend, and send back the story name, number of chapters and generated story outline
-router.post('/story_outline', async (req, res) => {
-
-    //Validate required fields
-    if (!req.body.chapter_count || !req.body.story_name || !req.body.story_details) {
-        return res.status(404).json({ message: "Missing required fields", data: req.body });
-    }
-
-    // Store story data
-    chapter_count = Number(req.body.chapter_count);
-    story_name = req.body.story_name;
-    story_details = req.body.story_details;
-    extra_details = req.body.extra_details;
-
-    //Validate data type of chapter_count
-    if (isNaN(chapter_count)) {
-        return res.status(400).json({ message: "Invalid Data Type: chapter_count must be a number", data: req.body.chapter_count });
+        
+        data.story_agents = response.data.story_agents;
+    } catch (err) {
+        console.error("Error fetching story agent list:", err);
+        return res.status(500).json({ message: "Server error retrieving agent list" });
     }
 
     try {
-        //Send data 
-        details = "Story Details:\n" + story_details + "\nExtra Details:\n" + extra_details
+        let response;
+        switch (step) {
+            case "generate_outline":
+                response = await axios.get(`${APP_URL}/db/story/${user_id}/${story_id}/get_generated_outline_details`);
+                data.generate_outline = { 
+                    story_name: response.data.story_name,
+                    story_details: response.data.story_details,
+                    extra_details: response.data.extra_details || ""
+                };
+                break;
 
-        to_prompt_admin = {
-            "details": details,
-            "chapter_count": chapter_count
+            case "critique_outline":
+                response = await axios.get(`${APP_URL}/db/story/${user_id}/${story_id}/get_critique_outline_details`);
+                data.critique_outline = { 
+                    story_name: response.data.story_name, 
+                    story_details: response.data.story_details, 
+                    extra_details: response.data.extra_details || "",
+                    story_outline: response.data.story_outline
+                };
+                break;
+            
+            case "rewrite_outline":
+                response = await axios.get(`${APP_URL}/db/story/${user_id}/${story_id}/get_rewrite_outline_details`);
+                data.rewrite_outline = {
+                    story_name: response.data.story_name,
+                    story_details: response.data.story_details,
+                    extra_details: response.data.extra_details || "",
+                    story_outline: response.data.story_outline,
+                    outline_critique: response.data.outline_critique
+                };
+                break;
+
+            case "generate_first_chapter":
+                response = await axios.get(`${APP_URL}/db/story/${user_id}/${story_id}/get_first_chapter_details`);
+                data.generate_first_chatper = {
+                    story_name: response.data.story_name,
+                    story_details: response.data.story_details,
+                    extra_details: response.data.extra_details || "",
+                    story_outline: response.data.story_outline
+                };
+                break;  
+
+            case "generate_next_chapter":
+                console.log("Chapter number:", chapter_number);
+                response = await axios.get(`${APP_URL}/db/story/${user_id}/${story_id}/${chapter_number}/get_next_chapter_details`);
+                data.generate_next_chapter = {
+                    story_name: response.data.story_name,
+                    story_details: response.data.story_details,
+                    extra_details: response.data.extra_details || "",
+                    story_outline: response.data.story_outline,
+                    previous_chapters: response.data.previous_chapters
+                };
+                break;
+            
+            case "critique_chapter":
+                response = await axios.get(`${APP_URL}/db/story/${user_id}/${story_id}/${chapter_number}/get_critique_chapter_details`);
+                data.critique_chapter = {
+                    story_name: response.data.story_name,
+                    story_details: response.data.story_details,
+                    extra_details: response.data.extra_details || "",
+                    story_outline: response.data.story_outline,
+                    chapter: response.data.chapter
+                };
+                break;
+
+            case "rewrite_chapter":
+                response = await axios.get(`${APP_URL}/db/story/${user_id}/${story_id}/${chapter_number}/get_rewrite_chapter_details`);
+                data.rewrite_chapter = {
+                    story_name: response.data.story_name,
+                    story_details: response.data.story_details,
+                    extra_details: response.data.extra_details || "",
+                    story_outline: response.data.story_outline,
+                    chapter: response.data.chapter,
+                    chapter_critique: response.data.critique
+                };
+                break;
+
+            default:
+                return res.status(400).json({ message: "Invalid step provided." });
         }
+        const courier_response = await axios.post(
+            `${APP_URL}/courier/aggregate`, 
+            { data, messages: req.body.messages },
+            { headers: { "Content-Type": "application/json" }, responseType: 'stream' }
+        );
 
-        prompt_admin_response = await axios.post(APP_URL + '/prompt_admin/story_outline/', to_prompt_admin);
-
-        to_frontend = {
-            "title": story_name,
-            "courier_response": courier_response
-        }
-
-        //Send successful response to frontend
-        return res.status(200).json({message: "Story Contents Received Successfully", data: to_frontend});
-
+        return new Promise((resolve, reject) => {
+            let buffer = [];
+            courier_response.data.on('data', chunk => {
+                if (chunk.toString().startsWith("{\"best")) {
+                    buffer = buffer.slice(0, -1); // Remove the last empty chunk or DONE chunk
+                    buffer = buffer.map(
+                        event => event
+                        .replace(/^data: /, '') // Remove "data: " prefix
+                        .slice(0, -2)) // Remove "\n\n" suffix
+                        .join(''); // Join the array into a single string
+                    //console.log("Buffer on end:", buffer);
+                    resolve(res.status(200).json({ message: "Data Received Successfully", data: { ...data, response: buffer } }));
+                }
+                else
+                    buffer.push(chunk.toString());
+            });
+            courier_response.data.on('end', () => {
+                console.log("Buffer on end:", buffer);
+                buffer = buffer.slice(0, -1); // Remove the last empty chunk or DONE chunk
+                buffer = buffer.map(
+                    event => event
+                    .replace(/^data: /, '') // Remove "data: " prefix
+                    .slice(0, -2)) // Remove "\n\n" suffix
+                    .join(''); // Join the array into a single string
+                resolve({ buffer });
+            });
+            courier_response.data.on('error', err => {
+                console.error("Error in courier response stream:", err);
+                reject(err);
+            });
+        });
     } catch (error) {
-        console.error("Error fetching courier response:", error.message);
-        return res.status(500).json({ message: "Failed to fetch courier response", error: error.message });
-    }
-});
-
-//next_chapter will receive the previous chapters, story name, story details, extra details, and story outline, and send back the story name and generated chapter
-router.post('/next_chapter', async (req, res) => {
-
-    //Validate required fields
-    if (!req.body.story_name || !req.body.story_details || !req.body.previous_chapters || !req.body.story_outline) {
-        return res.status(404).json({ message: "Missing required fields", data: req.body });
-    }
-
-    // Store story data
-    story_name = req.body.story_name;
-    story_details = req.body.story_details;
-    extra_details = req.body.extra_details;
-    previous_chapters = req.body.previous_chapters;
-    story_outline = req.body.story_outline;
-
-    //Validate that previous_chapters is not empty
-    if (previous_chapters.length == 0) {
-        return res.status(400).json({ message: "Invalid Data Type: previous_chapters is empty", data: req.body.previous_chapters });
-    }
-
-    try {
-        //Send data 
-        details = "Story Name:\n"+ story_name + "\nStory Details:\n" + story_details + "\nExtra Details:\n" + extra_details
-
-        to_prompt_admin = {
-            "details": details,
-            "previous_chapters": previous_chapters,
-            "story_outline": story_outline
-        }
-
-        prompt_admin_response = await axios.post(APP_URL + '/prompt_admin/next_chapter/', to_prompt_admin);
-
-        to_frontend = {
-            "title": story_name,
-            "courier_response": courier_response,
-        }
-
-        //Send successful response to frontend
-        return res.status(200).json({message: "Story Contents Received Successfully", data: to_frontend});
-
-    } catch (error) {
-        console.error("Error fetching courier response:", error.message);
-        return res.status(500).json({ message: "Failed to fetch courier response", error: error.message });
+        console.error("Error fetching step data:", error.message);
+        return res.status(500).json({ message: "Failed to get step data", error: error.message });
     }
 });
 

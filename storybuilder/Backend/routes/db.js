@@ -46,9 +46,6 @@ router.post("/story/:user_id/:story_id/update", story_controller.story_update_po
 // POST request to get the number of chapters
 router.get("/story/:user_id/:story_id/get_number_of_chapters", story_controller.story_get_number_of_chapters);
 
-// POST request to add chapter to agent-specfic version
-router.post("/story/:user_id/:story_id/add_agent_chapter", story_controller.story_add_agent_chapter_post);
-
 // POST request to add a chapter to the main story
 router.post("/story/:user_id/:story_id/add_chapter", story_controller.story_add_chapter_post);
 
@@ -76,6 +73,33 @@ router.post("/story/:user_id/:story_id/add_outline", story_controller.story_add_
 // GET request for getting the outline related to a chapter
 router.get("/story/:user_id/:story_id/get_outline", story_controller.story_get_outline);
 
+router.post("/story/:user_id/:story_id/story_add_voted_critique_post", story_controller.story_add_voted_critique_post);
+
+router.get("/story/:user_id/:story_id/story_agent_list", story_controller.story_agents_list);
+
+router.post("/story/:user_id/:story_id/:chapter_number/veto_critique", story_controller.story_veto_critique);
+
+router.post("/story/:user_id/:story_id/add_agent_outlines", story_controller.story_add_agent_outlines_post);
+
+router.post("/story/:user_id/:story_id/add_agent_critiques", story_controller.story_add_agent_critiques_post)
+
+router.post("/story/:user_id/:story_id/add_agent_chapter", story_controller.story_add_agent_chapter_post);
+
+// Translator routes
+router.get("/story/:user_id/:story_id/get_generated_outline_details", story_controller.story_get_generate_outline_details);
+
+router.get("/story/:user_id/:story_id/get_critique_outline_details", story_controller.story_get_critique_outline_details);
+
+router.get("/story/:user_id/:story_id/get_rewrite_outline_details", story_controller.story_get_rewrite_outline_details);
+
+router.get("/story/:user_id/:story_id/get_first_chapter_details", story_controller.story_get_first_chapter_details);
+
+router.get("/story/:user_id/:story_id/:chapter_number/get_next_chapter_details", story_controller.story_get_next_chapter_details);
+
+router.get("/story/:user_id/:story_id/:chapter_number/get_critique_chapter_details", story_controller.story_get_critique_chapter_details);
+
+router.get("/story/:user_id/:story_id/:chapter_number/get_rewrite_chapter_details", story_controller.story_get_rewrite_chapter_details);
+
 /// AGENT ROUTES ///
 
 // GET request for one Agent
@@ -99,6 +123,5 @@ router.get("/agent/:agent_id/:story_id/get_last_response", agent_controller.agen
 // AGENT LIST ROUTES //
 // GET request for getting the list of all agents
 router.get("/agents", agent_controller.agent_list);
-
 
 module.exports = router;
