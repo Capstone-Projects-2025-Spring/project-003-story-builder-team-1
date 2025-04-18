@@ -2,22 +2,30 @@ import { Anchor, Button, Container, Paper, PasswordInput, Text, TextInput, Title
 import { useState } from 'react';
 import USE_LOGIN from '../hooks/USE_LOGIN';
 import { useNavigate } from 'react-router';
+import { USE_AUTH } from '../context/AUTH_CONTEXT';
 
 function LOGIN() {
     const navigate = useNavigate();
     const [username, set_username] = useState('');
     const [password, set_password] = useState('');
-    const { login, user_error, pass_error, api_error } = USE_LOGIN();
+    const { login, user_error, pass_error } = USE_LOGIN();
+    const [api_error, set_api_error] = useState('');
+    const { login_auth } = USE_AUTH();
 
     const handle_login = async () => {
-        const login_success = await login(username, password);
+        const { login_success, user_data, error } = await login(username, password);
         if (login_success) {
             console.log("Login Successful")
-            navigate(`/story/1/agents`);
+            console.log("response: ", user_data)
+            login_auth(user_data);
+            navigate(`/home`);
         }
         else {
             console.log("Login Unsuccessful");
-            console.log(api_error)
+            console.log("login_success: ", login_success)
+            console.log("response: ", user_data)
+            console.log("api_error: ", error)
+            set_api_error(error);
         }
     }
 
