@@ -161,25 +161,25 @@ const boundPrompt = await storybuilder_prompt.partial({
 //Create agents & supervisors with previously-made tool-bound LLMs and nodes
 
 const generate_outline_agent = createReactAgent({
-    llm: generate_outline_llm,
+    llm: llm,
     tools: generate_outline_node,
     name: "generate_outline_agent",
 });
 
 const critique_outline_agent = createReactAgent({
-    llm: critique_outline_llm,
+    llm: llm,
     tools: critique_outline_node,
     name: "critique_outline_agent",
 });
 
 const vote_critique_outline_agent = createReactAgent({
-  llm: vote_outline_critique_llm,
+  llm: llm,
   tools: vote_critique_outline_node,
   name: "vote_critique_outline_agent",
 });
 
 const revise_outline_agent = createReactAgent({
-  llm: revise_llm,
+  llm: llm,
   tools: revise_outline_node,
   name: "revise_outline_agent",
 });
@@ -188,37 +188,37 @@ const revise_outline_agent = createReactAgent({
 //chapters
 
 const first_chapter_agent = createReactAgent({
-    llm: first_chapter_llm,
+    llm: llm,
     tools: first_chapter_node,
     name: "first_chapter_agent",
 });
 
 const next_chapter_agent = createReactAgent({
-  llm: next_chapter_llm,
+  llm: llm,
   tools: next_chapter_node,
   name: "next_chapter_agent",
 });
 
 const critique_chapter_agent = createReactAgent({
-  llm: critique_chapter_llm,
+  llm: llm,
   tools: critique_chapter_node,
   name: "critique_chapter_agent",
 });
 
 const vote_critique_chapter_agent = createReactAgent({
-  llm: vote_critique_chapter_llm,
+  llm: llm,
   tools: vote_critique_chapter_node,
   name: "vote_critique_chapter_agent",
 });
 
 const rewrite_chapter_agent = createReactAgent({
-  llm: rewrite_chapter_llm,
+  llm: llm,
   tools: rewrite_chapter_node,
   name: "rewrite_chapter_agent",
 });
 
 const vote_chapter_agent = createReactAgent({
-  llm: vote_chapter_llm,
+  llm: llm,
   tools: vote_chapter_node,
   name: "vote_chapter_agent",
 });
