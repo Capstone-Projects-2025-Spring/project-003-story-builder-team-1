@@ -88,6 +88,7 @@ const chapter_tools_list = chapter_tools(llm);
 const tools = [outline_tools_list[0], outline_tools_list[1], outline_tools_list[2], outline_tools_list[3], chapter_tools_list[0], chapter_tools_list[1],  chapter_tools_list[2],  chapter_tools_list[3],  chapter_tools_list[4],  chapter_tools_list[5]]; 
 
 //LLM Tools to be used outside of agentic work (potentially)
+/*
 const outline_llm = llm.bindTools([outline_tools_list], {tool_choice :"auto"});
 
 const generate_outline_llm = llm.bindTools([outline_tools_list[0]], {tool_choice :"auto"});
@@ -103,6 +104,8 @@ const critique_chapter_llm = llm.bindTools([chapter_tools_list[2]], {tool_choice
 const vote_critique_chapter_llm = llm.bindTools([chapter_tools_list[3]], {tool_choice :"auto"});
 const rewrite_chapter_llm = llm.bindTools([chapter_tools_list[4]], {tool_choice :"auto"});
 const vote_chapter_llm = llm.bindTools([chapter_tools_list[5]], {tool_choice :"auto"});
+
+*/
 
 
 
@@ -228,13 +231,13 @@ const vote_chapter_agent = createReactAgent({
 
 const outline_supervisor = createSupervisor({
     agents: [generate_outline_agent, critique_outline_agent, vote_critique_outline_agent, revise_outline_agent],
-    llm: outline_llm,
+    llm: llm,
     tools: outline_tools_list,
 });
 
 const chapter_supervisor = createSupervisor({
     agents: [first_chapter_agent, next_chapter_agent, critique_chapter_agent, vote_critique_chapter_agent, rewrite_chapter_agent, vote_chapter_agent],
-    llm: chapter_llm,
+    llm: llm,
     tools: chapter_tools_list,
 });
 
