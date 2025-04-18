@@ -22,7 +22,7 @@ export default function outline_tools(llm: ChatOpenAI | ChatDeepSeek) {
     const generate_outline_prompt = ChatPromptTemplate.fromTemplate(`
         You are a helpful assistant that creates story outlines. You will only ever make one tool call. Don't return anything except for the outline and absolutely nothing else.
         You will ensure the results are compatible with the style of this persona: "{persona}".
-        Create a detailed outline where you decide the number of chapters based on the following idea:
+        Create a detailed outline where you decide the number of chapters. Don't return anything before or after the outline, and don't return any supplementary commentary or reflections or any acknowledgement of the prompt itself. Just return the outline based on the following idea:
 
         "{prompt_info}"
     `);
@@ -44,9 +44,9 @@ export default function outline_tools(llm: ChatOpenAI | ChatDeepSeek) {
     const rewrite_outline_prompt = ChatPromptTemplate.fromTemplate(`
         You are a helpful assistant that revises story outlines.
         Rewrite the following outline based on the provided critique. Don't return anything except for the rewritten outline and absolutely nothing else.
-        Make sure to check for grammatical correctness, plot continuity, and adherence to the prompt information.
+        Make sure to check for grammatical correctness, plot continuity, and adherence to the prompt information. Don't return anything before or after the rewritten outline, and don't return any supplementary commentary or reflections or any acknowledgement of the prompt itself.
         You will ensure the results
-        are compatible with the style of "{persona}".
+        are compatible with the style of this persona: "{persona}".
 
         Critique: "{critique}"
 
@@ -85,9 +85,10 @@ export default function outline_tools(llm: ChatOpenAI | ChatDeepSeek) {
         },
         {
         name: "story_outline",
-        description: "Generates a story outline based on the provided prompt information. The outline will include chapter titles and a brief description of each chapter. Decide length of the story yourself. Do not say anything else to the user. ",
+        description: "Generates a story outline based on the provided prompt information. The outline will include chapter titles and a brief description of each chapter. Decide length of the story yourself. Do not say anything else to the user, and do not return any acknowledgement of the prompt itself. ",
         schema: z.object({
-            promptinfo: z.string().describe("Information about the story prompt to guide the drafting process.")
+            persona: z.string().describe("Information about the style the story has to implement."), 
+            prompt_info: z.string().describe("Information about the story prompt to guide the drafting process.")
         })
         }
     );
@@ -105,7 +106,8 @@ export default function outline_tools(llm: ChatOpenAI | ChatDeepSeek) {
         name: "critique_outline",
         description: "Provides a critique of a given outline, analyzing grammatical correctness and adherence to the promptinfo. This critique will help in revising the outline to improve its quality.",
         schema: z.object({
-            promptinfo: z.string().describe("The outline that is to be followed."),
+            persona: z.string().describe("Information about the style the story has to implement."),
+            prompt_info: z.string().describe("The outline that is to be followed."),
             outline: z.string().describe("The outline to be critiqued.")
         })
         }
@@ -124,7 +126,9 @@ export default function outline_tools(llm: ChatOpenAI | ChatDeepSeek) {
         name: "revise_outline",
         description: "Revises a given outline to improve its quality based on feedback or critique.",
         schema: z.object({
+            persona: z.string().describe("Information about the style the story has to implement."),
             critique: z.string().describe("The critique to be applied to the outline."),
+            prompt_info: z.string().describe("The outline that is to be followed."),
             outline: z.string().describe("The outline to be revised.")
         })
         }
@@ -141,8 +145,9 @@ export default function outline_tools(llm: ChatOpenAI | ChatDeepSeek) {
         name: "vote_outline",
         description: "Votes on the different collected outlines. Outlines are stored as a 2-dimensional array, with rows corresponding to stories and columns corresponding to chapter summaries. The result will rank whichever row has the best sequence according to the parameters established in the agent information and initial prompt info. It does not return anything except for the index number of the winning outline.",
         schema: z.object({
-            critique: z.string().describe("The critique to be applied to the outline."),
-            outline: z.string().describe("The outline to be revised.")
+            persona: z.string().describe("Information about the style the story has to implement."),
+            prompt_info: z.string().describe("The outline that is to be followed."),
+            outline_bank: z.string().describe("The collection of outlines to be judged.")
         })
         }
     );
