@@ -9,7 +9,7 @@ exports.story_create_post = asyncHandler(async (req, res, next) => {
     const { story_name, prompt, agents } = req.body;
     const { user_id } = req.params; 
 
-    if (!story_name || !prompt || !prompt.story_details || !prompt.extra_details || !prompt.chapter_count || !agents) {
+    if (!story_name || !prompt || !prompt.story_details || !prompt.extra_details || !agents) {
         return res.status(400).json({ error: "All fields are required" });
     }
 
@@ -20,7 +20,7 @@ exports.story_create_post = asyncHandler(async (req, res, next) => {
     }
 
     // check if agents exist
-    const agents_exist = await Agent.find({ name: { $in: agents.map(agent => agent.agent_name) } });
+    const agents_exist = await Persona.find({ name: { $in: agents.map(agent => agent.agent_name) } });
     if (agents_exist.length !== agents.length) {
         return res.status(404).json({ error: "One or more agents do not exist" });
     }
@@ -222,11 +222,12 @@ exports.story_agent_chapter_edit_post = asyncHandler(async (req, res, next) => {
     }
     
     // Find the story
-    const story = await Story.findById(story_id);
-    if (!story) return res.status(404).json({ error: "Story not found" });
-
+    const story = await Story.findOne({ _id: story_id, user: user_id }).exec();
+    if (!story) {
+        return res.status(404).json({ error: "Story not found or user does not have access to this story" });
+    }
     // Find the agent in the agents array
-    const agentEntry = story.agents.find(agentObj => agentObj.agent.toString() === agent_id);
+    const agentEntry = story.agents.find(agentObj => agentObj._id.toString() === agent_id);
     
     if (!agentEntry) {
         return res.status(404).json({ error: "Agent not found in this story" });
@@ -246,6 +247,50 @@ exports.story_agent_chapter_edit_post = asyncHandler(async (req, res, next) => {
     await story.save();
 
     res.status(200).json({ message: "Chapter updated successfully", story });
+});
+
+// Edit agent-specfic chapter critique
+exports.story_agent_critique_edit_post = asyncHandler(async (req, res, next) => {
+    const { user_id, story_id, agent_id, chapter_number } = req.params; // Story ID and UserID
+    const { critique } = req.body;
+
+    if (!critique) {
+        return res.status(400).json({ error: "Content is required." });
+    }
+
+    // Find the user and ensure they exist
+    const user = await User.findById(user_id);
+    if (!user) {
+        return res.status(404).json({ error: "User not found" });
+    }
+
+    // Find the story
+    const story = await Story.findOne({ _id: story_id, user: user_id }).exec();
+    if (!story) {
+        return res.status(404).json({ error: "Story not found or user does not have access to this story" });
+    }
+
+    // Find the agent in the agents array
+    const agentEntry = story.agents.find(agentObj => agentObj._id.toString() === agent_id);
+    
+    if (!agentEntry) {
+        return res.status(404).json({ error: "Agent not found in this story" });
+    }
+
+    // Find the chapter in the agent's chapters
+    const chapter = agentEntry.chapters.find(ch => ch.chapter_number === Number(chapter_number));
+    
+    if (!chapter) {
+        return res.status(404).json({ error: "Chapter not found" });
+    }
+
+    // Update the chapter content
+    chapter.critique = critique;
+
+    // Save the updated story
+    await story.save();
+
+    res.status(200).json({ message: "Chapter Critique updated successfully", story });
 });
 
 // Add voted chapter to main story
