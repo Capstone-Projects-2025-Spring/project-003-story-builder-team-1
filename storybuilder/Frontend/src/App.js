@@ -24,12 +24,12 @@ function App() {
         <Route path="/" element={<LOGIN/>} />
         <Route path="/account_creation" element={<CREATE_ACCOUNT/>} />
         <Route path="/home" element={<PROTECTED_ROUTE><MAIN_LAYOUT><HOME /></MAIN_LAYOUT></PROTECTED_ROUTE>} />   {/* testing the protected routes */}
-        <Route path="/agent_selection" element={<MAIN_LAYOUT><AGENT_SELECTION /></MAIN_LAYOUT>} />
-        <Route path="/prompt" element={<MAIN_LAYOUT><STORY_PROMPT_BOX /></MAIN_LAYOUT>} />
-        <Route path="/story/:story_id/best_response" element={<MAIN_LAYOUT><BEST_RESPONSE /></MAIN_LAYOUT>} />
-        <Route path="/story/:story_id/view" element={<MAIN_LAYOUT><STORY_VIEW /></MAIN_LAYOUT>} />
-        <Route path="/story/:story_id/view/:chapter_id" element={<MAIN_LAYOUT><CHAPTER_VIEW /></MAIN_LAYOUT>} />
-        <Route path="/story/:story_id/agents" element={<MAIN_LAYOUT><STORY_AGENTS_VIEW /></MAIN_LAYOUT>} />
+        <Route path="/agent_selection" element={<PROTECTED_ROUTE><MAIN_LAYOUT><AGENT_SELECTION /></MAIN_LAYOUT></PROTECTED_ROUTE>} />
+        <Route path="/prompt" element={<PROTECTED_ROUTE><MAIN_LAYOUT><STORY_PROMPT_BOX /></MAIN_LAYOUT></PROTECTED_ROUTE>} />
+        <Route path="/story/:story_id/best_response" element={<PROTECTED_ROUTE><MAIN_LAYOUT><BEST_RESPONSE /></MAIN_LAYOUT></PROTECTED_ROUTE>} />
+        <Route path="/story/:story_id/view" element={<PROTECTED_ROUTE><MAIN_LAYOUT><STORY_VIEW /></MAIN_LAYOUT></PROTECTED_ROUTE>} />
+        <Route path="/story/:story_id/view/:chapter_id" element={<PROTECTED_ROUTE><MAIN_LAYOUT><CHAPTER_VIEW /></MAIN_LAYOUT></PROTECTED_ROUTE>} />
+        <Route path="/story/:story_id/agents" element={<PROTECTED_ROUTE><MAIN_LAYOUT><STORY_AGENTS_VIEW /></MAIN_LAYOUT></PROTECTED_ROUTE>} />
       </Routes>
     </Router>
     </USER_PROVIDER>
