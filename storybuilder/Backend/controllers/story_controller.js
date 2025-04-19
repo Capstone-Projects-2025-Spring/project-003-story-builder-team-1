@@ -9,7 +9,7 @@ exports.story_create_post = asyncHandler(async (req, res, next) => {
     const { story_name, prompt, agents } = req.body;
     const { user_id } = req.params; 
 
-    if (!story_name || !prompt || !prompt.story_details || !prompt.extra_details || !agents) {
+    if (!story_name || !prompt || !prompt.story_details || !agents) {
         return res.status(400).json({ error: "All fields are required" });
     }
 
@@ -20,15 +20,18 @@ exports.story_create_post = asyncHandler(async (req, res, next) => {
     }
 
     // check if agents exist
-    const agents_exist = await Persona.find({ name: { $in: agents.map(agent => agent.agent_name) } });
-    if (agents_exist.length !== agents.length) {
+    const agent_names = agents.map(agent => agent.agent_name);
+    const agents_exist = await Persona.find({ name: { $in: agent_names } });
+    const available_names = agents_exist.map(a => a.name);
+    const all_exist = agent_names.every(name => available_names.includes(name));
+    if (!all_exist) {
         return res.status(404).json({ error: "One or more agents do not exist" });
     }
 
     // create array of agent objects
     const agent_objects = agents.map(agent => {
-        const found_agent = agents_exist.find(a => a.name === agent.agent_name);
-        return { agent: found_agent._id, agent_name: agent.agent_name, chapters: [] };
+        const persona = agents_exist.find(a => a.name === agent.agent_name);
+        return { agent: persona._id, agent_name: agent.agent_name, chapters: [] };
     });
 
     // create and save new story
@@ -51,7 +54,7 @@ exports.user_stories_list = asyncHandler(async (req, res, next) => {
         return res.status(404).json({ error: "User not found" });
     }
 
-    const stories = await Story.find({ user: user_id }).select('story_name story_content').exec();
+    const stories = await Story.find({ user: user_id }).select('story_name story_content agents').exec();
 
     res.status(200).json({ stories });
 });
