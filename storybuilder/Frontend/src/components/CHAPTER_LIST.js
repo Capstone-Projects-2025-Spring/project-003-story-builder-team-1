@@ -1,14 +1,12 @@
-import { useState, useContext, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Button, Stack } from '@mantine/core';
 import { useNavigate, useParams } from 'react-router';
 import { USE_USER } from '../context/USER_CONTEXT';
-import STORY_CONTEXT from "../context/STORY_CONTEXT";
 
-function CHAPTER_LIST({ }) {
+function CHAPTER_LIST() {
   const navigate = useNavigate();
   const { story_id } = useParams();
   const [chapters, set_chapters] = useState([]);
-  const [current_story, set_current_story] = useState(null);
   const { user_stories } = USE_USER();
 
   useEffect(() => {
@@ -17,7 +15,6 @@ function CHAPTER_LIST({ }) {
         (story) => story._id === story_id
       );
       if (current_story) {
-        set_current_story(current_story);
         set_chapters(current_story.story_content || []);
       }
     }

@@ -10,18 +10,14 @@ const auth_context = createContext({
 });
 
 export const AUTH_PROVIDER = ({ children }) => {
-  console.log("auth_context: ", auth_context);
   const [user, set_user] = useState(null); // null means not logged in
 
   const login_auth = (user_data) => {
     const userId = user_data?.user_id;
     set_user(userId);
-    console.log("user data: ", user_data);
-    console.log("user auth: ", user);
   };
 
   useEffect(() => {
-    console.log("user auth (after update):", user);
   }, [user]);
 
   const logout_auth = () => {

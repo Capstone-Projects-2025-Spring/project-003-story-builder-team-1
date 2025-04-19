@@ -1,4 +1,4 @@
-import { useState, useEffect, useContext } from 'react';
+import { useState, useEffect } from 'react';
 import { Button, Collapse, Stack } from '@mantine/core';
 import { useNavigate } from 'react-router';
 import { USE_USER } from '../context/USER_CONTEXT';
@@ -12,8 +12,6 @@ function STORY_LIST() {
   useEffect(() => {
         set_stories(user_stories.stories);
   }, [user_stories]);
-
-  console.log("STORY_LIST: ", user_stories);
 
   const toggleExpand = (story_id) => {
     set_expanded_story(expanded_story === story_id ? null : story_id);
@@ -31,13 +29,13 @@ function STORY_LIST() {
             variant="default"
             color="gray"
             fullWidth
-            onClick={() => toggleExpand(story.id)}
+            onClick={() => toggleExpand(story._id)}
           >
             {story.story_name}
           </Button>
 
           {/* Expandable Section */}
-          <Collapse in={expanded_story === story.id}>
+          <Collapse in={expanded_story === story._id}>
             <Stack spacing="xs" mt="xs">
               <Button variant="filled" color="gray" fullWidth onClick={() => navigate(`/story/${story._id}/view`)}>
                 View Story

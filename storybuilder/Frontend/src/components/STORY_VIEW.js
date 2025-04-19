@@ -1,16 +1,13 @@
-import { useState, useContext, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Container, Title, Text } from "@mantine/core";
 import { useParams } from 'react-router';
-import STORY_CONTEXT from "../context/STORY_CONTEXT";
 import { USE_USER } from '../context/USER_CONTEXT';
 
-function STORY_VIEW({ }) {
+function STORY_VIEW() {
   const { story_id } = useParams();
   const [story_title, set_story_title] = useState("Story Title");
   const [chapters, set_chapters] = useState([]);
   const { user_stories } = USE_USER();
-
-  console.log("story view user_stories:", user_stories);
 
   useEffect(() => {
     if (!story_id || !user_stories?.stories) return;

@@ -6,7 +6,7 @@ const SERVER_URL = process.env.REACT_APP_SERVER_URL || "http://localhost:8080";
 
 const STORY_CONTEXT = createContext();
 
-export const Story_Provider = ({ children }) => {
+export const STORY_PROVIDER = ({ children }) => {
     const { use_axios } = USE_AXIOS();
     const { user } = USE_AUTH();
     const [story_id, set_story_id] = useState(null);

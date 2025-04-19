@@ -1,6 +1,5 @@
-import { createContext, useContext, useState, useEffect, useCallback } from "react";
+import { createContext, useContext, useState, useCallback } from "react";
 import USE_AXIOS from '../hooks/USE_AXIOS';
-import { USE_AUTH } from "./AUTH_CONTEXT";
 
 const SERVER_URL = process.env.REACT_APP_SERVER_URL || "http://localhost:8080";
 
@@ -20,11 +19,8 @@ export const USER_PROVIDER = ({ children }) => {
 
         // get list of stories for user
         const { data: story_list_data, error: story_list_error } = await use_axios(SERVER_URL + `/db/story/${user_id}/get_stories`, "GET");
-        console.log("story_list_data", story_list_data);
         if (story_list_data) {  
             set_user_stories(story_list_data);
-            console.log("user_stories", user_stories);
-
         } else {
             set_error(story_list_error);
         }
@@ -40,12 +36,6 @@ export const USER_PROVIDER = ({ children }) => {
 
         set_loading(false);
     },[use_axios]);
-
-    // useEffect(() => {
-    //     if (user && user.user_id) {
-    //         fetch_user_data(user.user_id);
-    //     }
-    // }, [user, fetch_user_data]);
 
     return (
         <USER_CONTEXT.Provider value={{ user_stories, agent_list, fetch_user_data, loading, error }}>
