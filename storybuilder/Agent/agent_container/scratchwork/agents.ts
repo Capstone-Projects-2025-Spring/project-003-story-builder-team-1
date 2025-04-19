@@ -7,8 +7,8 @@ import { z } from "zod";
 import axios from "axios";
 import { stream_handler } from "../stream_handler.js";
 import { ChatPromptTemplate } from "@langchain/core/prompts";
-import outline_tools from "../tools/zod_out_tools.ts";
-import chapter_tools from "../tools/zod_chapter_tools.ts";
+import outline_tools from "../tools/zod_out_tools.js";
+import chapter_tools from "../tools/zod_chapter_tools.js";
 import { BaseMessage, HumanMessage, SystemMessage } from "@langchain/core/messages";
 import { model } from "mongoose";
 import { ChatOpenAI } from "@langchain/openai";
@@ -18,6 +18,8 @@ import { RunnableSequence } from "@langchain/core/runnables";
 const callbacks = [stream_handler()];
 
 // 1) Define the exact shape you want:
+
+/*
 const outline_schema = z.object({
     outline: z.array(
       z.object({
@@ -38,26 +40,27 @@ const chapter_schema = z.object({
   totalChapters: z.number(),
 });
 
+*/
+
 
 const storybuilder_prompt = ChatPromptTemplate.fromTemplate(`
-  You are an imaginative author planning and developing a story. You have access to the following creative tools - Do not ever repeat back the exact tool responses, just use them:
+   You are an imaginative author planning and developing a story. You have access to the following creative tools - After using a tool you will reflect on the output and decide what to do next.
 
   {tools}
-  
-  Each tool helps with a different part of your storytelling process.
-  
+    
   Use this structure to guide your thinking:
   
-  Goal: the current task you're trying to accomplish (e.g., write an outline, critique an outline, revise the based on critique, write a chapter, critique a chapter, revise based on the critique, generate the next chapter and do the same process until chapters are all written and revised)  
+  Goal: the current task you're trying to accomplish
+
   Thought: reflect on what the story needs next  
-  Decision: Use the {tool_names} tools to help you with your task then move on to Final Reflection.
   
-  Final Reflection: conlude as an author would what might be done next
+  Final Reflection: Act as if you are an author reflecting on their work. Dont ever return the exact response of a tool, if anything give a short summary of your thoughts on the output of said tool. After this you are done with the current task and can complete
   
-  Begin!
+  IT IS IMPERATIVE YOU NEVER RETURN THE EXACT CONTENT OF A TOOL CALL AS THEY ARE ALREADY STREAMED TO THE USER. YOU ARE NEVER TO PROCEED WITH A NEXT STEP, ONLY EVER DO ONE STEP AND THEN STOP.
+
+  -------  Begin!  --------
   
   Goal: {input}  
-  Thought:{agent_scratchpad}
 `);
 
 // Patch the prototype so it never errors
@@ -150,10 +153,12 @@ const chaptoolsList = chapter_tools_list
   .join("\n");
 const chaptoolNames = chapter_tools_list.map((t) => t.name).join(", ");
 
-const outlineToolsList = chapter_tools_list
+const outlineToolsList = outline_tools_list
   .map((t) => `- ${t.name}: ${t.description ?? ""}`)
   .join("\n");
-const chapToolNames = chapter_tools_list.map((t) => t.name).join(", ");
+const chapToolNames = outline_tools_list.map((t) => t.name).join(", ");
+
+
 
 const boundPrompt = await storybuilder_prompt.partial({
   tools: toolsList,
@@ -326,11 +331,8 @@ here Whiskers shall find his wings.`;
 
 const input = {
     input: "A story about a cat who learns to fly",
-    tools: tools[0].name + " - " + tools[0].description,
+    tools: toolsList,
     tool_names: tools[0].name,
-    outline: whiskersoutline,
-    critique: "",
-    agent_scratchpad: "",
 };
 
 const config = {
@@ -342,7 +344,7 @@ const config = {
 
 
 // Define the human message
-const formatted_input = await storybuilder_prompt.formatMessages(input);
+//const formatted_input = await storybuilder_prompt.`formatMessage`s(input);
 //console.log(formatted_input);
 //const response = await supervisor_graph.invoke({messages: formatted_input}, {configurable: config, callbacks: callbacks});
 //const response = await outline_agent.invoke({messages: formatted_input}, {configurable: config, callbacks: callbacks})
