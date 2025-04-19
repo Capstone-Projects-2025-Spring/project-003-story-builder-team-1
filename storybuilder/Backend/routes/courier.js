@@ -105,16 +105,17 @@ router.post('/aggregate', async (req, res) => {
         const bestResult = agentResults.find(r => r.data && r.data.length > 0);
         console.log("Best result from agents:", bestResult);
 
-        const agent_votes = [
-            { agent_name: "King", agent_id: "6801acea06a91982122cd951", votes: 8},
-            { agent_name: "shakespeare", agent_id: "6801acea06a91982122cd952", votes: 8}
-        ]
+        const agent_votes = agent_data.map((agent) => ({
+            agent_name: agent.agent_name,
+            agent_id: agent.agent_id,
+            votes: 13
+        }));
         
         const db_data = {
                 bestResponse: bestResult,
                 allResults: agentResults,
                 votes: agent_votes
-        }
+        };
 
         await db_store(req.body.data.step, req.body.data.user_id, req.body.data.story_id, req.body.data.chapter_number, db_data);
         // res.json({
