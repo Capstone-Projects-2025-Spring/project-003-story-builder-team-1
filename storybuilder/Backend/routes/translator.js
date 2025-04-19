@@ -12,6 +12,20 @@ router.post('/translate', async (req, res) => {
         return res.status(404).json({ message: "Missing required fields", data: req.body });
     }
 
+    const valid_steps = new Set([
+        "generate_outline",
+        "critique_outline",
+        "rewrite_outline",
+        "generate_first_chapter",
+        "generate_next_chapter",
+        "critique_chapter",
+        "rewrite_chapter",
+      ]);
+
+    if (!valid_steps.has(step)) {
+        return res.status(400).json({ message: "Invalid step provided.", data: step });
+      }
+
     let data = {
         user_id,
         story_id,
