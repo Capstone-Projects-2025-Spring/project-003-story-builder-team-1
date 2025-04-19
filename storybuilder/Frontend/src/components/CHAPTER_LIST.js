@@ -1,27 +1,33 @@
-import { useState, useContext, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Button, Stack } from '@mantine/core';
-import { useNavigate } from 'react-router';
-import STORY_CONTEXT from "../context/STORY_CONTEXT";
+import { useNavigate, useParams } from 'react-router';
+import { USE_USER } from '../context/USER_CONTEXT';
 
-function CHAPTER_LIST({ }) {
+function CHAPTER_LIST() {
   const navigate = useNavigate();
-  const { state } = useContext(STORY_CONTEXT);
+  const { story_id } = useParams();
   const [chapters, set_chapters] = useState([]);
+  const { user_stories } = USE_USER();
 
   useEffect(() => {
-    if (state.current_story) {
-        set_chapters(state.current_story.chapters);
+    if (story_id && user_stories?.stories) {
+      const current_story = user_stories.stories.find(
+        (story) => story._id === story_id
+      );
+      if (current_story) {
+        set_chapters(current_story.story_content || []);
+      }
     }
-  }, [state.current_story]);
+  }, [story_id, user_stories]);
 
   // hardcoded for 1 story for now MUST CHANGE
   const handle_chapter_click = (index) => {
-    navigate(`/story/1/view/${index}`);
+    navigate(`/story/${story_id}/view/${index}`);
   };
 
   // hardcoded for 1 story for now MUST CHANGE
   const handle_view_entire_story = () => {
-    navigate(`/story/1/view`);
+    navigate(`/story/${story_id}/view`);
   };
 
   return (

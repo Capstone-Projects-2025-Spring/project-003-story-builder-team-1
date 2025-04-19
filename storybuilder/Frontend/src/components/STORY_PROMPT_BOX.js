@@ -1,26 +1,31 @@
 import React, { useState, useContext } from 'react';
-import { useNavigate } from 'react-router';
+import { useNavigate, useLocation } from 'react-router';
 import { TextInput, Paper, Button, Textarea, Stack, Loader } from "@mantine/core";
 import STORY_CONTEXT from "../context/STORY_CONTEXT";
+import { USE_USER } from "../context/USER_CONTEXT";
+import { USE_AUTH } from '../context/AUTH_CONTEXT';
 
 function STORY_PROMPT_BOX() {
     const navigate = useNavigate();
-    const { submit_story_prompt, story_name_error, chapter_count_error, story_details_error, api_error } = useContext(STORY_CONTEXT);
-
+    const location = useLocation();
+    const { user } = USE_AUTH();
+    const { fetch_user_data } = USE_USER();
+    const { state, submit_story_prompt, story_name_error, story_details_error, api_error } = useContext(STORY_CONTEXT);
     const [story_name, set_story_name] = useState("");
-    const [chapter_count, set_chapter_count] = useState("");
     const [story_details, set_story_details] = useState("");
     const [extra_details, set_extra_details] = useState("");
     const [loading, setLoading] = useState(false);
+    const selected_agents = location.state?.selected_agents || [];
 
     const handle_submit = async () => {
         setLoading(true); // Disable and change text immediately
-        const submit_success = await submit_story_prompt(story_name, chapter_count, story_details, extra_details);
+        const submit_success = await submit_story_prompt(story_name, story_details, extra_details, selected_agents);
         console.log("submit_success: ", submit_success);
 
         if (submit_success) {
             console.log("Story Successfully Submitted");
-            navigate(`/story/1/best_response`);
+            await fetch_user_data(user); // Fetch user data again to update the context
+            navigate(`/story/${state?.story_id}/agents`);
         } else {
             console.log("Story NOT submitted");
             console.log("API ERROR: ", api_error);
@@ -37,17 +42,6 @@ function STORY_PROMPT_BOX() {
                     value={story_name}
                     onChange={(e) => set_story_name(e.target.value)}
                     error={story_name_error || api_error}
-                />
-                <TextInput
-                    label="Number of Chapters"
-                    placeholder="Ex. 1, 2, 3 ..." required
-                    type="number"
-                    value={chapter_count}
-                    onChange={(e) => {
-                        const intValue = parseInt(e.target.value, 10);
-                        if (!isNaN(intValue)) set_chapter_count(intValue);
-                    }}
-                    error={chapter_count_error || api_error}
                 />
                 <Textarea
                     label="Story Prompt"

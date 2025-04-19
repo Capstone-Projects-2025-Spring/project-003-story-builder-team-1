@@ -1,9 +1,11 @@
 import { useState } from 'react';
 import { CloseButton, Combobox, Input, InputBase, useCombobox, Paper, Button, Stack, Group, Title } from "@mantine/core";
 import { USE_USER } from '../context/USER_CONTEXT';
+import { useNavigate } from 'react-router';
 
 function AGENT_SELECTION() {
     const { agent_list } = USE_USER();
+    const navigate = useNavigate();
 
     // Pre-create 5 stores at the top level
     const comboboxStores = [
@@ -18,6 +20,7 @@ function AGENT_SELECTION() {
 
     const handle_confirm = () => {
         console.log("Agents Confirmed:", selected_agents);
+        navigate("/prompt", { state: { selected_agents } });
     };
 
     const handle_agent_change = (index, value) => {
