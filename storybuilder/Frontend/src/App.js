@@ -13,12 +13,14 @@ import { AUTH_PROVIDER } from './context/AUTH_CONTEXT';
 import PROTECTED_ROUTE from './components/PROTECTED_ROUTE';
 import { USER_PROVIDER } from './context/USER_CONTEXT';
 import AGENT_SELECTION from './components/AGENT_SELECTION';
+import { Story_Provider } from './context/STORY_CONTEXT';
 import '@mantine/core/styles.css';
 
 function App() {
   return (
     <AUTH_PROVIDER>
     <USER_PROVIDER>
+    <Story_Provider>
     <Router>
       <Routes>
         <Route path="/" element={<LOGIN/>} />
@@ -32,6 +34,7 @@ function App() {
         <Route path="/story/:story_id/agents" element={<PROTECTED_ROUTE><MAIN_LAYOUT><STORY_AGENTS_VIEW /></MAIN_LAYOUT></PROTECTED_ROUTE>} />
       </Routes>
     </Router>
+    </Story_Provider>
     </USER_PROVIDER>
     </AUTH_PROVIDER>
   );

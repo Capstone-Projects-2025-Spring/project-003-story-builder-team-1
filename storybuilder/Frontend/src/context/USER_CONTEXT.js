@@ -7,7 +7,7 @@ const SERVER_URL = process.env.REACT_APP_SERVER_URL || "http://localhost:8080";
 const USER_CONTEXT = createContext();
 
 export const USER_PROVIDER = ({ children }) => {
-    const { user } = USE_AUTH();
+    // const { user } = USE_AUTH();
     const [user_stories, set_user_stories] = useState(null);
     const [agent_list, set_agent_list] = useState(null);
     const [loading, set_loading] = useState(false);
@@ -41,11 +41,11 @@ export const USER_PROVIDER = ({ children }) => {
         set_loading(false);
     },[use_axios]);
 
-    useEffect(() => {
-        if (user && user.user_id) {
-            fetch_user_data(user.user_id);
-        }
-    }, [user, fetch_user_data]);
+    // useEffect(() => {
+    //     if (user && user.user_id) {
+    //         fetch_user_data(user.user_id);
+    //     }
+    // }, [user, fetch_user_data]);
 
     return (
         <USER_CONTEXT.Provider value={{ user_stories, agent_list, fetch_user_data, loading, error }}>

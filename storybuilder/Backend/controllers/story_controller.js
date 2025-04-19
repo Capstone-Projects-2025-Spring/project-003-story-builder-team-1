@@ -10,6 +10,7 @@ exports.story_create_post = asyncHandler(async (req, res, next) => {
     const { user_id } = req.params; 
 
     if (!story_name || !prompt || !prompt.story_details || !prompt.extra_details || !agents) {
+        console.log("Missing required fields:", { story_name, prompt, agents });
         return res.status(400).json({ error: "All fields are required" });
     }
 
@@ -21,6 +22,8 @@ exports.story_create_post = asyncHandler(async (req, res, next) => {
 
     // check if agents exist
     const agents_exist = await Persona.find({ name: { $in: agents.map(agent => agent.agent_name) } });
+    console.log("agents_exist", agents_exist);
+    console.log("agents", agents);
     if (agents_exist.length !== agents.length) {
         return res.status(404).json({ error: "One or more agents do not exist" });
     }
