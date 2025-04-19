@@ -8,6 +8,8 @@ const APP_URL = PRIVATE_URL.includes("localhost") ? PRIVATE_URL + ":8080" : PRIV
 console.log( "DEBUG: API_URL:", API_URL); // Debugging line
 //story_call
 
+
+/*
 router.post('/story_call', async (req, res) => {
     try {
         const AUTHOR_NAME = req.body.author_name;
@@ -39,28 +41,88 @@ router.post('/story_call', async (req, res) => {
         return res.status(500).json({ error: "Internal Server Error", details: error.message });
     }
 });
+*/
 
 router.post('/aggregate', async (req, res) => {
     console.log("Aggregate request received:", req.body);
-    const input = req.body.messages;
+    const { data, messages } = req.body;
+
     console.log("Aggregate request received with input:", input);
     const agentEndpoints = [
-        'http://localhost:5000/agent/stream_graph',
-        'http://localhost:5001/agent/stream_graph', // Example endpoint for Jane Austen agent
+        'http://localhost:5000/agent_routes/generate_outline',
+        'http://localhost:5001/agent_routes/generate_critique_outline',
+        'http://localhost:5002/agent_routes/rewrite_outline',
+        'http://localhost:5003/agent_routes/first_chapter',
+        'http://localhost:5004/agent_routes/next_chapter',
+        'http://localhost:5005/agent_routes/critique_chapter',
+        'http://localhost:5006/agent_routes/rewrite_chapter',
+        // Example endpoint for Jane Austen agent
         //'http://localhost:5002/agent/stream_graph', // Example endpoint for Tolkien agent
         //'http://localhost:5003/agent/stream_graph', // Example endpoint for another agent
     ];      
     // Store responses and votes
     const responses = {};
     const votes = {};
-  
+    const step = data.step;
+    let agent_send = {
+        persona,
+        prompt_info,
+        outline,
+        critique,
+        chapter,
+        critique_bank,
+        chapter_bank
+    };
+    const persona = data.story_agents[0];
+    
+    switch(step) {
+        case "generate_outline":
+            agent_send.persona = `${persona}`.trim();
+            agent_send.prompt_info = `${data.generate_outline.story_details} ${data.generate_outline.extra_details}`.trim();
+            break;
+        case "critique_outline":
+            agent_send.persona = persona;
+            agent_send.prompt_info = `${data.critique_outline.story_details} ${data.critique_outline.extra_details}`.trim();
+            agent_send.outline = `${data.critique_outline_story_outline}`;
+            break;
+
+        case "rewrite_outline":
+            agent_send.persona = persona;
+            agent_send.prompt_info = `${data.rewrite_outline.story_details} ${data.rewrite_outline.extra_details}`.trim();
+            agent_send.outline = data.rewrite_outline.story_outline;
+            break;
+        case "generate_first_chapter":
+            agent_send.persona = persona;
+            agent_send.prompt_info = `${data.generate_first_chapter.story_details} ${data.generate_first_chapter.extra_details}`.trim();
+            agent_send.outline = data.generate_first_chapter.story_outline;
+            break;
+        case "generate_next_chapter":
+            agent_send.persona = persona;
+            agent_send.prompt_info = `${data.generate_next_chapter.story_details} ${data.generate_next_chapter.extra_details}`.trim();
+            agent_send.chapter = data.generate_next_chapter.previous_chapters;
+            agent_send.outline = data.generate_next_chapter.story_outline;
+            break;
+        case "critique_chapter":
+            agent_send.persona = persona;
+            agent_send.prompt_info = `${data.critique_chapter.story_details} ${data.critique_chapter.extra_details}`.trim();
+            agent_send.chapter = data.critique_chapter.chapter;
+            agent_send.outline = data.critique_chapter.story_outline;
+            break;
+        case "rewrite_chapter": 
+            agent_send.persona = persona;
+            agent_send.prompt_info = `${data.rewrite_chapter.story_details} ${data.rewrite_chapter.extra_details}`.trim();
+            agent_send.critique = data.rewrite_chapter.chapter;
+            agent_send.outline = data.rewrite_chapter.story_outline;
+            agent_send.chapter = data.rewrite_chapter.chapter;
+            break;
+    }
     try {
         // For each agent, open the stream and read ALL data
         const agentResults = await Promise.all(
             agentEndpoints.map(async (agent, idx) => {
                 const response = await axios.post(
                     agent,
-                    { messages: input },
+                    { messages: agent_send },
                     { headers: { "Content-Type": "application/json" }, responseType: 'stream' }
                 );
                 return new Promise((resolve, reject) => {
@@ -110,6 +172,15 @@ router.post('/aggregate', async (req, res) => {
         res.status(500).send('Error occurred while aggregating responses.');
     }
 });
+
+
+
+
+
+
+
+
+
 
 router.post('/story_stream', async (req, res) => {
     res.setHeader('Content-Type', 'text/event-stream');
