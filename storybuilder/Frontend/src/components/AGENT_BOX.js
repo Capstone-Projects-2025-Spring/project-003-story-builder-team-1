@@ -117,11 +117,23 @@ function AGENT_BOX({ name }) {
           >
             {/* Header */}
             <div style={{ padding: '10px', borderRadius: '5px 5px 0 0' }}>
-              <Group gap="xs" align="center">
-                <Title order={4} style={{ color: 'white', margin: 0 }}>
-                  {name}
-                </Title>
-              </Group>
+            <Group gap="xs" align="center" style={{ flexWrap: 'nowrap' }}>
+            <img
+              src="/twain.svg"
+              alt="Twain Icon"
+              style={{
+                width: '120px',
+                height: '120px',
+                backgroundColor: 'white',
+                border: '1px solid black',
+                borderRadius: '4px',
+                padding: '2px', 
+              }}
+            />
+              <Title order={4} style={{ color: 'white', margin: 0 }}>
+                {name}
+              </Title>
+            </Group>
             </div>
 
             {/* Divider Line */}
