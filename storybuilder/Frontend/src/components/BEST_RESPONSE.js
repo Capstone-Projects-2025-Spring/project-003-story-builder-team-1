@@ -3,6 +3,7 @@ import { useState, useContext, useEffect } from 'react';
 import STORY_CONTEXT from "../context/STORY_CONTEXT";
 import { useParams } from 'react-router';
 import { USE_USER } from "../context/USER_CONTEXT";
+import ReactMarkdown from 'react-markdown';
 
 function BEST_RESPONSE() {
     const { state, fetch_first_chapter, fetch_next_chapter, api_error } = useContext(STORY_CONTEXT);
@@ -57,38 +58,50 @@ function BEST_RESPONSE() {
     };
 
     return (
-        <Card shadow="sm" padding="md" radius="md" withBorder style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
-            <Textarea
-                value={best_res}
-                readOnly
-                style={{ flexGrow: 1 }}
-                styles={{
-                    input: {
-                        fontSize: '18px',
-                        height: '79vh',
-                    },
+        <Card
+            shadow="none"
+            p="md"
+            radius="md"
+            style={{
+                backgroundColor: '#242424',
+                border: '1px solid #3a3a3a', // thin outline around the entire box
+                maxWidth: 800,
+                margin: '0 auto'
+            }}
+        >
+            <div
+                style={{
+                    backgroundColor: '#2d2d2d',
+                    borderRadius: '8px',
+                    padding: '16px',
+                    border: '1px solid #3a3a3a', // inner thin border for content
+                    color: 'white',
+                    fontSize: '16px',
+                    lineHeight: '1.6'
                 }}
-            />
+            >
+                <ReactMarkdown>{best_res}</ReactMarkdown>
+            </div>
 
             <Group justify="flex-end" style={{ marginTop: '10px' }}>
-              {show_cont_button && (
-                <Button
-                  size="sm"
-                  variant="light"
-                  color={!loading ? "teal" : undefined} // green-ish before loading
-                  disabled={loading}
-                  onClick={handle_continue}
-                  leftSection={loading && <Loader size="xs" color="green" />}
-                  style={{
-                    backgroundColor: loading ? 'rgba(0, 255, 128, 0.1)' : '',
-                    color: loading ? '#66ffb2' : '',
-                    cursor: loading ? 'not-allowed' : 'pointer',
-                  }}
-                >
-                  {loading ? "Drafting Chapter" : "Continue"}
-                </Button>
-              )}
-            </Group>
+            {show_cont_button && (
+            <Button
+                size="sm"
+                variant="light"
+                color={!loading ? "teal" : undefined}
+                disabled={loading}
+                onClick={handle_continue}
+                leftSection={loading && <Loader size="xs" color="green" />}
+                style={{
+                backgroundColor: loading ? 'rgba(0, 255, 128, 0.1)' : '',
+                color: loading ? '#66ffb2' : '',
+                cursor: loading ? 'not-allowed' : 'pointer',
+                }}
+            >
+                {loading ? "Drafting Chapter" : "Continue"}
+            </Button>
+            )}
+        </Group>
         </Card>
     );
 }
