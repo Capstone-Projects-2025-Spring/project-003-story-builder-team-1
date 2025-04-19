@@ -1,5 +1,7 @@
-import { createContext, useReducer, useState } from "react";
+import { createContext, useReducer, useState, useContext } from "react";
 import USE_AXIOS from '../hooks/USE_AXIOS';
+import { USE_USER } from './USER_CONTEXT';
+import { USE_AUTH } from "./AUTH_CONTEXT";
 
 // Create Context
 const STORY_CONTEXT = createContext();
@@ -50,13 +52,15 @@ function story_reducer(state, action) {
 
 // StoryProvider Component
 export function Story_Provider({ children }) {
-    const [is_error, set_is_error] = useState(false);
     const [story_name_error, set_story_name_error] = useState('');
     const [chapter_count_error, set_chapter_count_error] = useState('');
     const [story_details_error, set_story_details_error] = useState('');
     const [api_error, set_api_error] = useState('');
     const [state, dispatch] = useReducer(story_reducer, initial_state);
     const { use_axios } = USE_AXIOS();
+    const auth = USE_AUTH();
+    const user = auth?.user;
+    const agent_list = auth?.agent_list;
 
     // Function to submit a new story prompt
     const submit_story_prompt = async (story_name, chapter_count, story_details, extra_details) => {
@@ -65,49 +69,82 @@ export function Story_Provider({ children }) {
         set_chapter_count_error('');
         set_story_details_error('');
         set_api_error('');
-        set_is_error(false);
+        let has_error = false;
 
         // Check if chapter_count is not a number
         if (isNaN(chapter_count)) {
             set_chapter_count_error('Number of Chapters must be a valid number');
-            set_is_error(true);
+            has_error = true;
         }
 
         // if any required inputs are empty
         if (story_name === '') {
             set_story_name_error('Story Title must not be empty');
-            set_is_error(true);
+            has_error = true;
         }
         if (chapter_count === '') {
             set_chapter_count_error('Number of Chapters must not be empty');
-            set_is_error(true);
+            has_error = true;
         }
         if (story_details === '') {
             set_story_details_error('Story Prompt must not be empty');
-            set_is_error(true);
+            has_error = true;
         }
 
-        if (!is_error) {
+        if (!has_error) {
             dispatch({ type: "SUBMIT_PROMPT" });
-            const { data, error } = await use_axios(SERVER_URL + "/translator/story_outline", "POST", {
-                "story_name": story_name,
-                "chapter_count": chapter_count,
-                "story_details": story_details,
-                "extra_details": extra_details
+            const { data: create_data, error: create_error } = await use_axios(SERVER_URL + `/story/${user.user_id}/create`, "POST", {
+                    "story_name": story_name,
+                    "prompt": {
+                        "story_details": story_details,
+                        "extra_details": extra_details,
+                        "chapter_count": chapter_count
+                    },
+                    "agents": agent_list
                 }
             );
 
             // if there is an api_error, dispatch FETCH_ERROR w/ error message
-            if (data === null) {
-                dispatch({ type: "FETCH_ERROR", payload: error });
-                set_api_error(error);
-                set_is_error(true);
+            if (create_data === null) {
+                dispatch({ type: "FETCH_ERROR", payload: create_error });
+                set_api_error(create_error);
+                has_error = true;
+                return false;
+            }
+
+            // no error, save story ids and agent ids to context
+
+
+            // if no error on first call, call translator
+            const { data: gen_outline_data, error: gen_outline_error } = await use_axios(SERVER_URL + `/translator/translate`, "POST", {
+                "user_id": user.user_id,
+                "story_id": "6801acea06a91982122cd950",
+                "step": "generate_outline",
+                "chapter_number": 0,
+                "messages": [
+                {   
+                    "role": "system",
+                    "content": "You summarize sports on a televison show"
+                },
+                { 
+                    "role": "user", "content": "Summarize the events of the most recent football game you know of"
+                }
+                ],
+                "stream": true
+                }
+            );
+
+            // if there is an api_error, dispatch FETCH_ERROR w/ error message
+            if (gen_outline_data === null) {
+                dispatch({ type: "FETCH_ERROR", payload: gen_outline_error });
+                set_api_error(gen_outline_error);
+                has_error = true;
                 return false;
             }
 
             // if no error, dispatch FETCH_SUCCESS
-            const title = data?.data?.title;
-            const chapter = data?.data?.courier_response;
+            const title = gen_outline_data?.data?.title;
+            const chapter = gen_outline_data?.data?.courier_response;
 
             dispatch({ type: "FETCH_SUCCESS", payload: {
                         title: title,
@@ -125,6 +162,7 @@ export function Story_Provider({ children }) {
     const fetch_first_chapter = async (story_name, story_details, extra_details, story_outline) => {
         // reset errors
         set_api_error('');
+        let has_error = false;
 
         console.log("Name: ", story_name);
         console.log("Details: ", story_details);
@@ -142,7 +180,7 @@ export function Story_Provider({ children }) {
         // if data is null there is an error
         if (data === null) {
             set_api_error(error);
-            set_is_error(true);
+            has_error = true;
             return false
         }
 
@@ -158,6 +196,7 @@ export function Story_Provider({ children }) {
     const fetch_next_chapter = async (story_name, story_details, extra_details, previous_chapters, story_outline) => {
         // reset errors
         set_api_error('');
+        let has_error = false;
 
         console.log("NEXT CHAPTER:");
         console.log("Name: ", story_name);
@@ -177,7 +216,7 @@ export function Story_Provider({ children }) {
         // if data is null there is an error
         if (data === null) {
             set_api_error(error);
-            set_is_error(true);
+            has_error = true;
             return false
         }
 

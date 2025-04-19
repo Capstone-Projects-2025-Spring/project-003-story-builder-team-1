@@ -1,14 +1,17 @@
-import { useState } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import { Button, Collapse, Stack } from '@mantine/core';
 import { useNavigate } from 'react-router';
+import { USE_USER } from '../context/USER_CONTEXT';
 
 function STORY_LIST() {
   const navigate = useNavigate();
   const [expanded_story, set_expanded_story] = useState(null);
+  const { id, user_stories } = USE_USER();
+  const [stories, set_stories] = useState([]);
 
-  const stories = [
-    { id: 1, title: 'Story 1' },
-  ];
+  useEffect(() => {
+        set_stories(user_stories.stories);
+  }, [user_stories]);
 
   const toggleExpand = (story_id) => {
     set_expanded_story(expanded_story === story_id ? null : story_id);
