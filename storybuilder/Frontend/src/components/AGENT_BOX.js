@@ -1,6 +1,8 @@
 import { useState, useContext, useEffect } from 'react';
 import { Card, Button, Modal, Textarea, Title, Divider, Group, Loader } from '@mantine/core';
 import STORY_CONTEXT from "../context/STORY_CONTEXT";
+import { useParams } from 'react-router';
+import { USE_USER } from '../context/USER_CONTEXT';
 
 function AGENT_BOX({ name }) {
     const { state, fetch_first_chapter, fetch_next_chapter, api_error } = useContext(STORY_CONTEXT);
@@ -9,14 +11,24 @@ function AGENT_BOX({ name }) {
     const [show_cont_button, set_show_cont_button] = useState(true);
     const [loading, set_loading] = useState(false);
 
+    const { story_id } = useParams();
+    const { user_stories } = USE_USER();
+
     useEffect(() => {
-      if (state.current_story?.chapters?.length > 0) {
-          set_chapter_content(state.current_story.chapters[state.current_story.chapters.length - 1]); // recent chapter
+      if (!user_stories?.stories) return;
+      
+      const current_story = user_stories.stories.find(story => story._id === story_id);
+      
+      if (current_story) {
+          // Use this story's agents and chapters
+          set_chapter_content(current_story.story_content[current_story.story_content.length - 1]);  // Get most recent chapter
+          
+          // Check if we need to show the 'Continue' button
+          if (current_story.story_content.length > current_story.chapter_count) {
+              set_show_cont_button(false);
+          }
       }
-      if (state.current_story.chapters.length > state.current_story.chapter_count) {
-        set_show_cont_button(false);
-      }
-    }, [state.current_story]);
+  }, [story_id, user_stories]);
 
     const handle_continue = async () => {
       set_loading(true); // Start loading

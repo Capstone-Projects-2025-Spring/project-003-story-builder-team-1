@@ -2,10 +2,14 @@ import React, { useState, useContext } from 'react';
 import { useNavigate, useLocation } from 'react-router';
 import { TextInput, Paper, Button, Textarea, Stack, Loader } from "@mantine/core";
 import STORY_CONTEXT from "../context/STORY_CONTEXT";
+import { USE_USER } from "../context/USER_CONTEXT";
+import { USE_AUTH } from '../context/AUTH_CONTEXT';
 
 function STORY_PROMPT_BOX() {
     const navigate = useNavigate();
     const location = useLocation();
+    const { user } = USE_AUTH();
+    const { fetch_user_data } = USE_USER();
     const { state, submit_story_prompt, story_name_error, story_details_error, api_error } = useContext(STORY_CONTEXT);
     const [story_name, set_story_name] = useState("");
     const [story_details, set_story_details] = useState("");
@@ -20,7 +24,8 @@ function STORY_PROMPT_BOX() {
 
         if (submit_success) {
             console.log("Story Successfully Submitted");
-            navigate(`/story/${state?.story_id}/best_response`);
+            await fetch_user_data(user); // Fetch user data again to update the context
+            navigate(`/story/${state?.story_id}/agents`);
         } else {
             console.log("Story NOT submitted");
             console.log("API ERROR: ", api_error);

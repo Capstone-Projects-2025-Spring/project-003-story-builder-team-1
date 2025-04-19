@@ -38,8 +38,7 @@ function USE_LOGIN() {
 
             // update auth context
             login_auth(data);
-            console.log("data: ", data);
-            console.log("user id: ", data.user_id);
+            
             // get db calls for user context when login success
             await fetch_user_data(data.user_id);
 

@@ -1,21 +1,29 @@
 import { Card, Textarea, Button, Group, Loader } from '@mantine/core';
 import { useState, useContext, useEffect } from 'react';
 import STORY_CONTEXT from "../context/STORY_CONTEXT";
+import { useParams } from 'react-router';
+import { USE_USER } from "../context/USER_CONTEXT";
 
 function BEST_RESPONSE() {
     const { state, fetch_first_chapter, fetch_next_chapter, api_error } = useContext(STORY_CONTEXT);
     const [best_res, set_best_res] = useState("Waiting for the agents to choose the best response...");
     const [show_cont_button, set_show_cont_button] = useState(true);
     const [loading, setIsLoading] = useState(false);
+    const { story_id } = useParams();
+    const { user_stories } = USE_USER();
+    const [current_story, set_current_story] = useState(null);
 
     useEffect(() => {
-        if (state.current_story) {
-            set_best_res(state.current_story.chapters[state.current_story.chapters.length - 1]);
-            if (state.current_story.chapters.length > state.current_story.chapter_count) {
-                set_show_cont_button(false);
+        if (story_id && user_stories?.stories?.length) {
+            const curr_story = user_stories.stories.find(story => story._id === story_id);
+            if (curr_story) {
+                set_current_story(curr_story);
+                const chapters = curr_story.story_content || [];
+                set_best_res(chapters[chapters.length - 1]);
+                set_show_cont_button(chapters.length <= (curr_story.chapter_count ?? Infinity));
             }
         }
-    }, [state.current_story]);
+    }, [story_id, user_stories]);
 
     const handle_continue = async () => {
         setIsLoading(true); // Show loading spinner
