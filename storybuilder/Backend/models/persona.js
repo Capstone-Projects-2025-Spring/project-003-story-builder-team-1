@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 
 const personaSchema = new mongoose.Schema({
     name: { type: String, required: true },
-    agent_info: { type: String, required: true }
+    persona_info: { type: String, required: true }
 });
 
 // Virtual property to generate the URL for an agent
