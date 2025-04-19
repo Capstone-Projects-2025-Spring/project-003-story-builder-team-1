@@ -108,7 +108,7 @@ router.post('/aggregate', async (req, res) => {
         const agent_votes = agent_data.map((agent) => ({
             agent_name: agent.agent_name,
             agent_id: agent.agent_id,
-            votes: 13,
+            votes: 13
         }));
         
         const db_data = {
