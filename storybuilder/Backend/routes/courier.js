@@ -78,7 +78,7 @@ router.post('/aggregate', async (req, res) => {
                         let str = chunk.toString();
                         str = str.replace(/^data: /, ''); // Remove "data: " prefix
                         str = str.slice(0, -2); // Remove "\n\n" suffix
-                        res.write(`${agent_names[idx]} ${agent_ids[idx]} ${str}`); 
+                        res.write(`${agent_names[idx]}|${agent_ids[idx]}|${str}`); 
                         str = `data: ${str}\n\n`; // Format for SSE
                         // Optionally: parse each SSE chunk here.
                         data.push(str);

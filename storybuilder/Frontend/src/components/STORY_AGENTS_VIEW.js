@@ -44,26 +44,61 @@ function STORY_AGENTS_VIEW() {
       //console.log("SSE connection opened");
     };
 
+    let buffer = [];
     eventSource.onmessage = (event) => {
-      try {
-        const [agent_name, agent_id, tool_call_str, ...token_parts] = event.data.split(" ");
-        const tool_call = tool_call_str === "true";
-        const token = token_parts.join(" ");
-    
-        set_agent_responses((prev) => {
-          const prevText = prev[agent_id] || "";
-          const updated = {
-            ...prev,
-            [agent_id]: prevText + token,
-          };
-          return updated;
-        });
-    
-        // Optional: log the parsed info only
-        console.log("Chunk received:", { agent_id, token });
-      } catch (err) {
-        console.error("Failed to parse SSE event:", err);
+      let raw = event.data;
+      let restored = raw.replace(/\[\[NL\]\]/g, '\n'); // Restore actual newlines
+      console.log("raw event:", event.data);
+      console.log("escaped event:", event.data.replace(/\n/g, "\\n"));
+      console.log("JSON escaped:", JSON.stringify(event.data));
+      //console.log("chunk1: ", event.data.toString());
+      if (restored.toString().startsWith("{\"best")) {
+        buffer = buffer.slice(0, -1); // Remove the last empty chunk or DONE chunk
+        buffer = buffer.map(
+            event => event
+            .replace(/^data: /, '') // Remove "data: " prefix
+            .slice(0, -2)) // Remove "\n\n" suffix
+            .join(''); // Join the array into a single string
+        //console.log("Buffer on end:", buffer);
+        //resolve(res.status(200).json({ message: "Data Received Successfully", data: { ...data, response: buffer } }));
+        
       }
+      else
+          //console.log("chunk2: ", event.data.toString());
+          //buffer.push(event.data.toString());
+          try {
+            const parts = restored.split("|");
+            const agent_name = parts[0];
+            const agent_id = parts[1];
+            let tool_call = false;
+            let token = parts.slice(2).join("|"); // Rejoin in case token itself contains pipes
+
+            console.log("parts 2:", parts[2]);
+            console.log("parts 2 JSON:", JSON.stringify(parts[2]));
+            console.log("TOKEN:", token);
+            console.log("TOKEN JSON:", JSON.stringify(token));
+          
+            // Check for tool_call
+            if (token.startsWith("tool_call:")) {
+              tool_call = true;
+              token = token.replace("tool_call:", "");
+            }
+        
+            set_agent_responses((prev) => {
+              const prevText = prev[agent_id] || "";
+              const updated = {
+                ...prev,
+                [agent_id]: prevText + token,
+              };
+              return updated;
+            });
+        
+            // Optional: log the parsed info only
+            console.log("split data:", { agent_name, agent_id, tool_call, token });
+          } catch (err) {
+            console.error("Failed to parse SSE event:", err);
+          }
+
     };
 
     // Clean up SSE connection when component unmounts
