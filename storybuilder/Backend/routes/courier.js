@@ -76,46 +76,46 @@ router.post('/aggregate', async (req, res) => {
     const persona = data.story_agents[0];
 
     //url to be filled by switch statement
-    let endpoint = APP_URL + "http://";
+    let endpoint = 'http://localhost:5000/';
 
     //switch 
     switch(step) {
         case "generate_outline":
             agent_send.persona = `${persona}`.trim();
             agent_send.prompt_info = `${data.generate_outline.story_details} ${data.generate_outline.extra_details}`.trim();
-            endpoint += "agent_container/agent_routes/generate_outline";
+            endpoint += "agent/generate_outline";
             break;
         case "critique_outline":
             agent_send.persona = persona;
             agent_send.prompt_info = `${data.critique_outline.story_details} ${data.critique_outline.extra_details}`.trim();
             agent_send.outline = `${data.critique_outline_story_outline}`;
-            endpoint += "agent_container/agent_routes/critique_outline";
+            endpoint += "agent/critique_outline";
             break;
         case "rewrite_outline":
             agent_send.persona = persona;
             agent_send.prompt_info = `${data.rewrite_outline.story_details} ${data.rewrite_outline.extra_details}`.trim();
             agent_send.outline = data.rewrite_outline.story_outline;
-            endpoint += "agent_container/agent_routes/rewrite_outline";
+            endpoint += "agent/rewrite_outline";
             break;
         case "generate_first_chapter":
             agent_send.persona = persona;
             agent_send.prompt_info = `${data.generate_first_chapter.story_details} ${data.generate_first_chapter.extra_details}`.trim();
             agent_send.outline = data.generate_first_chapter.story_outline;
-            endpoint += "agent_container/agent_routes/generate_first_chapter";
+            endpoint += "agent/generate_first_chapter";
             break;
         case "generate_next_chapter":
             agent_send.persona = persona;
             agent_send.prompt_info = `${data.generate_next_chapter.story_details} ${data.generate_next_chapter.extra_details}`.trim();
             agent_send.chapter = data.generate_next_chapter.previous_chapters;
             agent_send.outline = data.generate_next_chapter.story_outline;
-            endpoint += "agent_container/agent_routes/generate_next_chapter";
+            endpoint += "agent/generate_next_chapter";
             break;
         case "critique_chapter":
             agent_send.persona = persona;
             agent_send.prompt_info = `${data.critique_chapter.story_details} ${data.critique_chapter.extra_details}`.trim();
             agent_send.chapter = data.critique_chapter.chapter;
             agent_send.outline = data.critique_chapter.story_outline;
-            endpoint += "agent_container/agent_routes/critique_chapter";
+            endpoint += "agent/critique_chapter";
             break;
         case "rewrite_chapter": 
             agent_send.persona = persona;
@@ -123,7 +123,7 @@ router.post('/aggregate', async (req, res) => {
             agent_send.critique = data.rewrite_chapter.chapter;
             agent_send.outline = data.rewrite_chapter.story_outline;
             agent_send.chapter = data.rewrite_chapter.chapter;
-            endpoint += "agent_container/agent_routes/rewrite_chapter";
+            endpoint += "agent/rewrite_chapter";
             break;
     }
     try {
