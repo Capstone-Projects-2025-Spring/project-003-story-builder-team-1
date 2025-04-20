@@ -19,6 +19,7 @@
     "test:fc": "cd storybuilder/Frontend && npm run Ctest"
   },
   "dependencies": {
+    "eventsource": "^3.0.6",
     "jest": "^29.7.0",
     "mongoose": "^8.13.0",
     "project-003-story-builder-team-1": "file:"

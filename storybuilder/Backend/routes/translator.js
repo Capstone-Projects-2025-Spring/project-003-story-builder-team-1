@@ -5,12 +5,19 @@ const router = express.Router();
 const PRIVATE_URL = process.env.PRIVATE_URL || "http://localhost:8080";
 const APP_URL = PRIVATE_URL;
 
-router.post('/translate', async (req, res) => {
-    const { user_id, story_id, step, chapter_number } = req.body;
+router.get('/translate', async (req, res) => {
+    const { user_id, story_id, step, chapter_number } = req.query;
+    console.log("req.query in translate", req.query);
     
     if (!user_id || !story_id || !step || chapter_number == null) {
-        return res.status(404).json({ message: "Missing required fields", data: req.body });
+        return res.status(400).json({ message: "Missing required fields", data: req.query });
     }
+
+    // // Set the necessary SSE headers
+    res.setHeader("Content-Type", "text/event-stream");
+    res.setHeader("Cache-Control", "no-cache");
+    res.setHeader("Connection", "keep-alive");
+    res.flushHeaders?.();
 
     const valid_steps = new Set([
         "generate_outline",
@@ -35,7 +42,7 @@ router.post('/translate', async (req, res) => {
         generate_outline: { story_name: "", story_details: "", extra_details: "" },
         critique_outline: { story_name: "", story_details: "", extra_details: "", story_outline: "" },
         rewrite_outline: { story_name: "", story_details: "", extra_details: "", story_outline: "", outline_critique: "" },
-        generate_first_chatper: { story_name: "", story_details: "", extra_details: "", story_outline: "" },
+        generate_first_chapter: { story_name: "", story_details: "", extra_details: "", story_outline: "" },
         generate_next_chapter: { story_name: "", story_details: "", extra_details: "", story_outline: "", previous_chapters: [] },
         critique_chapter: { story_name: "", story_details: "", extra_details: "", story_outline: "", chapter: "" },
         rewrite_chapter: { story_name: "", story_details: "", extra_details: "", story_outline: "", chapter: "", chapter_critique: "" }
@@ -141,34 +148,44 @@ router.post('/translate', async (req, res) => {
         );
 
         return new Promise((resolve, reject) => {
-            let buffer = [];
+            // let buffer = [];
+            // courier_response.data.on('data', chunk => {
+            //     if (chunk.toString().startsWith("{\"best")) {
+            //         buffer = buffer.slice(0, -1); // Remove the last empty chunk or DONE chunk
+            //         buffer = buffer.map(
+            //             event => event
+            //             .replace(/^data: /, '') // Remove "data: " prefix
+            //             .slice(0, -2)) // Remove "\n\n" suffix
+            //             .join(''); // Join the array into a single string
+            //         //console.log("Buffer on end:", buffer);
+            //         //resolve(res.status(200).json({ message: "Data Received Successfully", data: { ...data, response: buffer } }));
+            //     }
+            //     else
+            //         buffer.push(chunk.toString());
+            // });
+            // courier_response.data.on('end', () => {
+            //     console.log("Buffer on end:", buffer);
+            //     buffer = buffer.slice(0, -1); // Remove the last empty chunk or DONE chunk
+            //     buffer = buffer.map(
+            //         event => event
+            //         .replace(/^data: /, '') // Remove "data: " prefix
+            //         .slice(0, -2)) // Remove "\n\n" suffix
+            //         .join(''); // Join the array into a single string
+            //     resolve({ buffer });
+            // });
+            // courier_response.data.on('error', err => {
+            //     console.error("Error in courier response stream:", err);
+            //     reject(err);
+            // });
+
             courier_response.data.on('data', chunk => {
-                if (chunk.toString().startsWith("{\"best")) {
-                    buffer = buffer.slice(0, -1); // Remove the last empty chunk or DONE chunk
-                    buffer = buffer.map(
-                        event => event
-                        .replace(/^data: /, '') // Remove "data: " prefix
-                        .slice(0, -2)) // Remove "\n\n" suffix
-                        .join(''); // Join the array into a single string
-                    //console.log("Buffer on end:", buffer);
-                    resolve(res.status(200).json({ message: "Data Received Successfully", data: { ...data, response: buffer } }));
-                }
-                else
-                    buffer.push(chunk.toString());
+                console.log("Raw chunk:", chunk.toString());
+                res.write(`data: ${chunk.toString()}\n\n`); // SSE stream already open
             });
+            
             courier_response.data.on('end', () => {
-                console.log("Buffer on end:", buffer);
-                buffer = buffer.slice(0, -1); // Remove the last empty chunk or DONE chunk
-                buffer = buffer.map(
-                    event => event
-                    .replace(/^data: /, '') // Remove "data: " prefix
-                    .slice(0, -2)) // Remove "\n\n" suffix
-                    .join(''); // Join the array into a single string
-                resolve({ buffer });
-            });
-            courier_response.data.on('error', err => {
-                console.error("Error in courier response stream:", err);
-                reject(err);
+                res.write("event: done\ndata: [DONE]\n\n");
+                res.end(); // Close SSE stream
             });
         });
     } catch (error) {

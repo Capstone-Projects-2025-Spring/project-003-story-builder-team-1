@@ -79,8 +79,9 @@ router.post("/stream", async (req, res) => {
 });
 
 router.post("/stream_graph", async (req, res) => {
-  if (!req.body.messages) {
-    return res.status(400).json({ error: "Messages are required" });
+  console.log("steam_graph", req.body);
+  if (!req.body.data) {
+    return res.status(400).json({ error: "Data is required" });
   }
   res.setHeader("Content-Type", "text/event-stream");
   res.setHeader("Cache-Control", "no-cache");
@@ -90,7 +91,7 @@ router.post("/stream_graph", async (req, res) => {
   const outline_agent_graph = outline_agent;
 
   try {
-    const agent_response = await outline_agent_graph.stream({messages: req.body.messages}, {callbacks: [stream_handler(res)]});
+    const agent_response = await outline_agent_graph.stream({messages: JSON.stringify(req.body.data.generate_outline)}, {callbacks: [stream_handler(res)]});
     while (!agent_response.done) {
       // Wait for the next chunk of data
       await new Promise(resolve => setTimeout(resolve, 100)); // Adjust delay as needed

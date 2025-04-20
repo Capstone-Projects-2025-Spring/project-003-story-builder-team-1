@@ -64,31 +64,41 @@ export const STORY_PROVIDER = ({ children }) => {
         set_story_id(create_data.story);
         set_agent_ids(create_data.agent_ids);
 
-        // second api call to generate outline
-        const { data: gen_outline_data, error: gen_outline_error } = await use_axios(`${SERVER_URL}/translator/translate`, "POST", {
-            "user_id": user,
-            "story_id": story_id,
-            "step": "generate_outline",
-            "chapter_number": 0,
-        });
+        // everything works, return true
+        set_loading(false);
+        return true;
+    };
 
-        // if data is null, set error and return false
+    const generate_outline = async (curr_story_id) => {
+        set_api_error('');
+        set_loading(true);
+    
+        const { data: gen_outline_data, error: gen_outline_error } = await use_axios(
+            `${SERVER_URL}/translator/translate?user_id=${user}&story_id=${curr_story_id}&step=generate_outline&chapter_number=0`,
+            "GET",
+            // {
+            //     user_id: user,
+            //     story_id: curr_story_id,
+            //     step: "generate_outline",
+            //     chapter_number: 0,
+            // }
+        );
+
         if (gen_outline_data === null) {
             set_api_error(gen_outline_error);
             set_loading(false);
             return false;
         }
 
-        // everything works, return true
-        set_loading(false);
         return true;
-    };
+    }
 
     return (
         <STORY_CONTEXT.Provider value={{
             story_id,
             agent_ids,
             submit_story_prompt,
+            generate_outline,
             story_name_error,
             story_details_error,
             api_error,

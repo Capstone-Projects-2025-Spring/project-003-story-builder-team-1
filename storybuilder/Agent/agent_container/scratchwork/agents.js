@@ -18,25 +18,24 @@ const outline_schema = z.object({
     totalChapters: z.number(),
 });
 const storybuilder_prompt = ChatPromptTemplate.fromTemplate(`
-  You are an imaginative author planning and developing a story. You have access to the following creative tools - Do not ever repeat back the exact tool responses, just use them:
-
-  {tools}
+    You are an imaginative author planning and developing a story. You have access to the following creative tools - After using a tool you will reflect on the output and decide what to do next.
   
-  Each tool helps with a different part of your storytelling process.
+    {tools}
+      
+    Use this structure to guide your thinking:
+    
+    Goal: the current task you're trying to accomplish
   
-  Use this structure to guide your thinking:
+    Thought: reflect on what the story needs next  
+    
+    Final Reflection: Act as if you are an author reflecting on their work. Dont ever return the exact response of a tool, if anything give a short summary of your thoughts on the output of said tool. After this you are done with the current task and can complete
+    
+    IT IS IMPERATIVE YOU NEVER RETURN THE EXACT CONTENT OF A TOOL CALL AS THEY ARE ALREADY STREAMED TO THE USER. YOU ARE NEVER TO PROCEED WITH A NEXT STEP, ONLY EVER DO ONE STEP AND THEN STOP.
   
-  Goal: the current task you're trying to accomplish (e.g., write, critique, revise the based on critique)  
-  Thought: reflect on what the story needs next  
-  Decision: Use the {tool_names} tools to help you with your task then move on to Final Reflection.
-  
-  Final Reflection: conlude as an author would what might be done next
-  
-  Begin!
-  
-  Goal: {input}  
-  Thought:{agent_scratchpad}
-`);
+    -------  Begin!  --------
+    
+    Goal: {input}  
+  `);
 // Patch the prototype so it never errors
 ChatDeepSeek.prototype.getNumTokens = async function (_text) {
     // crude approximation, no errors
@@ -87,6 +86,7 @@ const chapter_tools_node = new ToolNode(chapter_tools_list);
 const chapter_draft_node = new ToolNode([chapter_tools_list[0]]);
 const chapter_critique_node = new ToolNode([chapter_tools_list[1]]);
 const chapter_revise_node = new ToolNode([chapter_tools_list[2]]);
+
 const toolsList = tools
     .map((t) => `- ${t.name}: ${t.description ?? ""}`)
     .join("\n");

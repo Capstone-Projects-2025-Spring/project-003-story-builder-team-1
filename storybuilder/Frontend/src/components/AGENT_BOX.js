@@ -4,11 +4,15 @@ import STORY_CONTEXT from "../context/STORY_CONTEXT";
 import { useParams } from 'react-router';
 import { USE_USER } from '../context/USER_CONTEXT';
 import ReactMarkdown from 'react-markdown';
+import { USE_AUTH } from '../context/AUTH_CONTEXT';
+import { EventSource } from 'eventsource';
 
-function AGENT_BOX({ name }) {
+const SERVER_URL = process.env.REACT_APP_SERVER_URL || "http://localhost:8080";
+
+function AGENT_BOX({ name, chapter_content }) {
     const { state, fetch_first_chapter, fetch_next_chapter, api_error } = useContext(STORY_CONTEXT);
     const [opened, set_opened] = useState(false);
-    const [chapter_content, set_chapter_content] = useState("Waiting for the agent to generate a response...");
+    // const [chapter_content, set_chapter_content] = useState("Waiting for the agent to generate a response...");
     const [show_cont_button, set_show_cont_button] = useState(true);
     const [loading, set_loading] = useState(false);
     const [edit_modal_open, set_edit_modal_open] = useState(false);
@@ -16,24 +20,7 @@ function AGENT_BOX({ name }) {
 
     const { story_id } = useParams();
     const { user_stories } = USE_USER();
-
-    useEffect(() => {
-      if (!user_stories?.stories) return;
-      
-      const current_story = user_stories.stories.find(story => story._id === story_id);
-      
-      if (current_story) {
-          // Use this story's agents and chapters
-          set_chapter_content(current_story.story_content[current_story.story_content.length - 1]);  // Get most recent chapter
-          
-          // Check if we need to show the 'Continue' button
-          if (current_story.story_content.length > current_story.chapter_count) {
-              set_show_cont_button(false);
-          }
-      }
-
-      console.log("chapter_content: ", chapter_content);
-  }, [story_id, user_stories]);
+    const { user } = USE_AUTH();
 
     const handle_continue = async () => {
       set_loading(true); // Start loading
@@ -133,7 +120,7 @@ function AGENT_BOX({ name }) {
               variant="light"
               color="teal"
               onClick={() => {
-                set_chapter_content(edited_content);
+                //set_chapter_content(edited_content);
                 set_edit_modal_open(false);
               }}
             >

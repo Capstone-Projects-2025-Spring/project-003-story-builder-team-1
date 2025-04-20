@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router';
 import { TextInput, Paper, Button, Textarea, Stack, Loader } from "@mantine/core";
 import STORY_CONTEXT from "../context/STORY_CONTEXT";
@@ -10,22 +10,40 @@ function STORY_PROMPT_BOX() {
     const location = useLocation();
     const { user } = USE_AUTH();
     const { fetch_user_data } = USE_USER();
-    const { state, submit_story_prompt, story_name_error, story_details_error, api_error } = useContext(STORY_CONTEXT);
+    const { story_id, submit_story_prompt, generate_outline, story_name_error, story_details_error, api_error } = useContext(STORY_CONTEXT);
     const [story_name, set_story_name] = useState("");
     const [story_details, set_story_details] = useState("");
     const [extra_details, set_extra_details] = useState("");
     const [loading, setLoading] = useState(false);
     const selected_agents = location.state?.selected_agents || [];
+    const [submit_success, set_submit_success] = useState(false);
+
+    // useEffect watches for story_id to change after a successful submit
+    useEffect(() => {
+        if (submit_success && story_id) {
+            navigate(`/story/${story_id}/agents`);
+            generate_outline(story_id).then((success) => {
+                if (success) {
+                    console.log("Outline generated");
+                } else {
+                    console.log("Outline Generation Failed");
+                    console.log("API ERROR: ", api_error);
+                }
+            });
+        }
+    }, [submit_success, story_id]);
 
     const handle_submit = async () => {
         setLoading(true); // Disable and change text immediately
+        // submit prompt to create story
         const submit_success = await submit_story_prompt(story_name, story_details, extra_details, selected_agents);
         console.log("submit_success: ", submit_success);
 
+        // if story is successfully created, fetch user data for stories, and navigate to current story agent page
         if (submit_success) {
             console.log("Story Successfully Submitted");
             await fetch_user_data(user); // Fetch user data again to update the context
-            navigate(`/story/${state?.story_id}/agents`);
+            set_submit_success(true); // Set success to true to trigger useEffect
         } else {
             console.log("Story NOT submitted");
             console.log("API ERROR: ", api_error);
