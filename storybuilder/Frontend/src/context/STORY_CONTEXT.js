@@ -15,6 +15,7 @@ export const STORY_PROVIDER = ({ children }) => {
     const [story_details_error, set_story_details_error] = useState('');
     const [api_error, set_api_error] = useState('');
     const [loading, set_loading] = useState(false);
+    const [should_stream, set_should_stream] = useState(false);
 
     const submit_story_prompt = async (story_name, story_details, extra_details, selected_agents) => {
         // reset errors
@@ -63,6 +64,7 @@ export const STORY_PROVIDER = ({ children }) => {
         // if data is not null, set story_id and agent_ids
         set_story_id(create_data.story);
         set_agent_ids(create_data.agent_ids);
+        set_should_stream(true); // allow streaming now
 
         // everything works, return true
         set_loading(false);
@@ -97,6 +99,8 @@ export const STORY_PROVIDER = ({ children }) => {
         <STORY_CONTEXT.Provider value={{
             story_id,
             agent_ids,
+            should_stream,
+            set_should_stream,
             submit_story_prompt,
             generate_outline,
             story_name_error,

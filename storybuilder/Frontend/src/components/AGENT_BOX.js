@@ -1,4 +1,4 @@
-import { useState, useContext, useEffect } from 'react';
+import { useState, useContext, useEffect, useRef } from 'react';
 import { Card, Button, Modal, Textarea, Title, Divider, Group, Loader } from '@mantine/core';
 import STORY_CONTEXT from "../context/STORY_CONTEXT";
 import { useParams } from 'react-router';
@@ -21,6 +21,7 @@ function AGENT_BOX({ name, chapter_content }) {
     const { story_id } = useParams();
     const { user_stories } = USE_USER();
     const { user } = USE_AUTH();
+
 
     const handle_continue = async () => {
       set_loading(true); // Start loading

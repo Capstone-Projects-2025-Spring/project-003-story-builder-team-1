@@ -33,6 +33,8 @@ router.get('/translate', async (req, res) => {
         return res.status(400).json({ message: "Invalid step provided.", data: step });
       }
 
+    
+
     let data = {
         user_id,
         story_id,
@@ -150,7 +152,7 @@ router.get('/translate', async (req, res) => {
         return new Promise((resolve, reject) => {
             let data = [];
             courier_response.data.on('data', chunk => {
-                console.log("translator json chunk: ", JSON.stringify(chunk.toString()));
+                //console.log("translator chunk: ", chunk.toString());
                 let str = chunk.toString();
                 let safe_str = str.replace(/\n/g, "[[NL]]"); // Replace newlines with a safe placeholder
                 res.write(`data: ${safe_str}\n\n`); // Send the raw chunk to the client
@@ -175,6 +177,7 @@ router.get('/translate', async (req, res) => {
                 const agent_name = `${agent_names[idx]}`;
                 const agent_id = `${agent_ids[idx]}`;
                 resolve({ agent_name, agent_id, data,});
+                res.end(); // Close the SSE stream
             });
             courier_response.data.on('error', err => {
                 console.error("Error in courier response stream:", err);

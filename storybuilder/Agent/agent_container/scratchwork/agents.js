@@ -18,24 +18,25 @@ const outline_schema = z.object({
     totalChapters: z.number(),
 });
 const storybuilder_prompt = ChatPromptTemplate.fromTemplate(`
-    You are an imaginative author planning and developing a story. You have access to the following creative tools - After using a tool you will reflect on the output and decide what to do next.
+  You are an imaginative author planning and developing a story. You have access to the following creative tools - After using a tool you will reflect on the output and decide what to do next.
+
+  {tools}
+
+  Goal: {input}  
+    
+  Use this structure to guide your thinking:
   
-    {tools}
-      
-    Use this structure to guide your thinking:
-    
-    Goal: the current task you're trying to accomplish
+  Goal: the current task you're trying to accomplish
+
+  Thought: reflect on what the story needs next  
   
-    Thought: reflect on what the story needs next  
-    
-    Final Reflection: Act as if you are an author reflecting on their work. Dont ever return the exact response of a tool, if anything give a short summary of your thoughts on the output of said tool. After this you are done with the current task and can complete
-    
-    IT IS IMPERATIVE YOU NEVER RETURN THE EXACT CONTENT OF A TOOL CALL AS THEY ARE ALREADY STREAMED TO THE USER. YOU ARE NEVER TO PROCEED WITH A NEXT STEP, ONLY EVER DO ONE STEP AND THEN STOP.
+  Final Reflection: Act as if you are an author reflecting on their work. Dont ever return the exact response of a tool, if anything give a short summary of your thoughts on the output of said tool. After this you are done with the current task and can complete
   
-    -------  Begin!  --------
-    
-    Goal: {input}  
-  `);
+  IT IS IMPERATIVE YOU NEVER RETURN THE EXACT CONTENT OF A TOOL CALL AS THEY ARE ALREADY STREAMED TO THE USER. YOU ARE NEVER TO PROCEED WITH A NEXT STEP, ONLY EVER DO ONE STEP AND THEN STOP.
+
+  -------  Begin!  --------
+  
+`);
 // Patch the prototype so it never errors
 ChatDeepSeek.prototype.getNumTokens = async function (_text) {
     // crude approximation, no errors
@@ -86,7 +87,6 @@ const chapter_tools_node = new ToolNode(chapter_tools_list);
 const chapter_draft_node = new ToolNode([chapter_tools_list[0]]);
 const chapter_critique_node = new ToolNode([chapter_tools_list[1]]);
 const chapter_revise_node = new ToolNode([chapter_tools_list[2]]);
-
 const toolsList = tools
     .map((t) => `- ${t.name}: ${t.description ?? ""}`)
     .join("\n");

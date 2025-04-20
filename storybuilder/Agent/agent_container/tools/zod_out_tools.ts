@@ -13,7 +13,7 @@ export default function outline_tools(llm: ChatOpenAI | ChatDeepSeek) {
         chapters: z.array(
         z.object({
             title: z.string(),
-            summary: z.string(),
+            summary: z.string().describe("A brief description of the chapter. 2-3 bullet points"),
         })
         ),
         totalChapters: z.number(),
@@ -59,7 +59,7 @@ export default function outline_tools(llm: ChatOpenAI | ChatDeepSeek) {
         },
         {
         name: "story_outline",
-        description: "Generates a story outline based on the provided prompt information. The outline will include chapter titles and a brief description of each chapter. Decide length of the story yourself. Do not say anything else to the user. ",
+        description: "Generates a story outline based on the provided prompt information. The outline will include chapter titles and a brief description of each chapter. Decide length of the story yourself. You will use the JSON results from this tool in order to format your mardown response to the user.",
         schema: z.object({
             promptinfo: z.string().describe("Information about the story prompt to guide the drafting process.")
         })
