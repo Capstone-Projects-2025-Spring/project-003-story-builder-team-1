@@ -595,9 +595,19 @@ exports.story_agents_list = asyncHandler(async (req, res, next) => {
         return res.status(404).json({ error: "No agents found for this story" });
     }
 
+    const persona_infos = await Persona.find({
+        name: { $in: story.agents.map(agent => agent.agent_name) }
+    }).lean();
+
+    const persona_map = {};
+    persona_infos.forEach(p => {
+        persona_map[p.name] = p.persona_info;
+    });
+
     const story_agents = story.agents.map(agent_entry => ({
         agent_id: agent_entry._id,
-        agent_name: agent_entry.agent_name
+        agent_name: agent_entry.agent_name,
+        persona: persona_map[agent_entry.agent_name]
     }));
 
     res.json({ story_agents });
