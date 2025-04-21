@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Button, Stack } from '@mantine/core';
+import { Button, Stack, Box } from '@mantine/core';
 import { useNavigate, useParams } from 'react-router';
 import { USE_USER } from '../context/USER_CONTEXT';
 
@@ -31,7 +31,7 @@ function CHAPTER_LIST() {
   };
 
   return (
-    <Stack spacing="xs" mt="xs">
+    <Stack spacing="xs" mt="xs" style={{ height: '100%' }}>
       {/* View Entire Story Button */}
       <Button
         variant="default"
@@ -42,6 +42,13 @@ function CHAPTER_LIST() {
         View Entire Story
       </Button>
 
+      <Box
+        style={{
+          flex: 1,
+          overflowY: 'auto',
+        }}
+      >
+      <Stack spacing="xs" mt="xs">
       {/* Chapter Buttons */}
       {chapters.map((chapter, index) => (
         <Button
@@ -54,6 +61,8 @@ function CHAPTER_LIST() {
           {index === 0 ? "Outline" : `Chapter ${index}`}
         </Button>
       ))}
+      </Stack>
+      </Box>
     </Stack>
   );
 }

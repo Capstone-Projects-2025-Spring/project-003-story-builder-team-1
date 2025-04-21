@@ -16,12 +16,15 @@ function BEST_RESPONSE() {
 
     useEffect(() => {
         if (story_id && user_stories?.stories?.length) {
-            const curr_story = user_stories.stories.find(story => story._id === story_id);
-            if (curr_story) {
-                set_current_story(curr_story);
-                const chapters = curr_story.story_content || [];
-                set_best_res(chapters[chapters.length - 1]);
-                set_show_cont_button(chapters.length <= (curr_story.chapter_count ?? Infinity));
+            const found_story = user_stories.stories.find(
+                (story) => story._id === story_id
+            );
+            if (found_story) {
+                set_current_story(found_story);
+                const last_chapter = found_story.story_content?.at(-1);
+                if (last_chapter?.text) {
+                    set_best_res(last_chapter.text);
+                }
             }
         }
     }, [story_id, user_stories]);

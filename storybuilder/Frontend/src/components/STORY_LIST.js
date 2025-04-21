@@ -1,27 +1,64 @@
 import { useState, useEffect } from 'react';
-import { Button, Collapse, Stack } from '@mantine/core';
+import { Button, Collapse, Stack, Box, Modal, Divider, Text } from '@mantine/core';
 import { useNavigate } from 'react-router';
 import { USE_USER } from '../context/USER_CONTEXT';
+import USE_AXIOS from '../hooks/USE_AXIOS';
+import { USE_AUTH } from '../context/AUTH_CONTEXT';
+
+const SERVER_URL = process.env.REACT_APP_SERVER_URL || "http://localhost:8080";
 
 function STORY_LIST() {
   const navigate = useNavigate();
   const [expanded_story, set_expanded_story] = useState(null);
-  const { user_stories } = USE_USER();
+  const { user_stories, fetch_user_data } = USE_USER();
   const [stories, set_stories] = useState([]);
+  const [delete_modal_opened, set_delete_modal_opened] = useState(false);
+  const [story_to_delete, set_story_to_delete] = useState(null);
+  const { use_axios } = USE_AXIOS();
+  const { user } = USE_AUTH();
 
   useEffect(() => {
         set_stories(user_stories.stories);
   }, [user_stories]);
 
-  const toggleExpand = (story_id) => {
+  const toggle_expand = (story_id) => {
     set_expanded_story(expanded_story === story_id ? null : story_id);
   };
 
+  const handle_delete_click = (storyId) => {
+    set_story_to_delete(storyId);
+    set_delete_modal_opened(true);
+
+    fetch_user_data(user); // Fetch user data to refresh the story list
+  };
+
+  // should be in its own file but i dont have time to reorganize and refactor rn
+  const handle_delete_confirm = async () => {
+    const { data, error } = await use_axios(`${SERVER_URL}/db/story/${user}/${story_to_delete}/delete`, "POST");
+
+    if (data === null) {
+      console.error("Error deleting story:", error);
+    }
+    set_delete_modal_opened(false);
+
+
+  }
+
   return (
-    <Stack spacing="xs" mt="xs">
+    <>
+    <Stack spacing="xs" mt="xs" style={{ height: '100%' }}>
       <Button variant="outline" color="orange" fullWidth  onClick={() => navigate(`/agent_selection`)}>
         Generate New Story
       </Button>
+      
+      {/* Scrollable story list container */}
+      <Box
+        style={{
+          flex: 1,
+          overflowY: 'auto',
+        }}
+      >
+        <Stack spacing="xs" mt="xs">
       {stories.map((story) => (
         <div key={story._id}>
           {/* Story Button */}
@@ -29,7 +66,7 @@ function STORY_LIST() {
             variant="default"
             color="gray"
             fullWidth
-            onClick={() => toggleExpand(story._id)}
+            onClick={() => toggle_expand(story._id)}
           >
             {story.story_name}
           </Button>
@@ -46,11 +83,35 @@ function STORY_LIST() {
               <Button variant="filled" color="gray" fullWidth onClick={() => navigate(`/story/${story._id}/agents`)}>
                 Agents
               </Button>
+              {/* <Button variant="filled" color="red" fullWidth onClick={() => handle_delete_click(story._id)}>
+                Delete Story
+              </Button> */}
             </Stack>
           </Collapse>
         </div>
       ))}
+      </Stack>
+      </Box>
     </Stack>
+
+    {/* Delete Story Modal */}
+    <Modal
+        opened={delete_modal_opened}
+        onClose={() => set_delete_modal_opened(false)}
+        title="Delete Story"
+        centered
+    >
+        {/* Divider Line */}
+        <Divider my="sm" mt={1}/>
+
+        <Text size="md" align="center" mb="md">
+            Are you sure you want to delete this story?
+        </Text>
+        <Button fullWidth mt="md" onClick={handle_delete_confirm}>
+            Confirm
+        </Button>
+    </Modal>
+    </>
   );
 }
 

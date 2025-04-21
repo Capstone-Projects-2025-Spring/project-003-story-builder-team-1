@@ -11,17 +11,16 @@ function STORY_VIEW() {
   const { user_stories } = USE_USER();
 
   useEffect(() => {
-    if (!story_id || !user_stories?.stories) return;
-
-    const current_story = user_stories.stories.find(
-      (story) => story._id === story_id
-    );
-
-    if (current_story) {
-      set_story_title(current_story.story_name || "Untitled Story");
-      set_chapters(current_story.story_content || []);
+    if (story_id && user_stories?.stories?.length) {
+        const found_story = user_stories.stories.find(
+            (story) => story._id === story_id
+        );
+        if (found_story) {
+            set_story_title(found_story.story_name);
+            set_chapters(found_story.story_content);
+        }
     }
-  }, [story_id, user_stories]);
+}, [story_id, user_stories]);
   
   return (
     <Container fluid style={{ display: 'flex', flexDirection: 'column', gap: '24px', maxWidth: '100%', margin: 'auto' }}>
@@ -43,7 +42,7 @@ function STORY_VIEW() {
             }}
           >
             <ReactMarkdown
-              children={chapter}
+              children={chapter.text}
               components={{
                 p: ({ node, ...props }) => <p style={{ marginBottom: '1em' }} {...props} />,
                 strong: ({ node, ...props }) => <strong style={{ color: '#dee2e6' }} {...props} />,

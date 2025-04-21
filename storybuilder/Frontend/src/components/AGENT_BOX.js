@@ -107,13 +107,14 @@ function AGENT_BOX({ name, chapter_content }) {
             onChange={(e) => set_edited_content(e.target.value)}
             style={{
               width: '100%',
-              height: '300px',
+              height: '500px',
               backgroundColor: '#2d2d2d',
               color: 'white',
               border: '1px solid #444',
               padding: '10px',
               borderRadius: '8px',
               fontSize: '16px',
+              resize: 'vertical',
             }}
           />
           <Group justify="right" mt="md">
