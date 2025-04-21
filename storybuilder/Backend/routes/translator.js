@@ -29,6 +29,8 @@ router.get('/translate', async (req, res) => {
         "rewrite_chapter",
       ]);
 
+    console.log("Step: ", step);                   
+
     if (!valid_steps.has(step)) {
         return res.status(400).json({ message: "Invalid step provided.", data: step });
       }
@@ -51,6 +53,8 @@ router.get('/translate', async (req, res) => {
     };
 
     try {
+        console.log("user_id: ", user_id);
+        console.log("story_id: ", story_id);
         response = await axios.get(`${APP_URL}/db/story/${user_id}/${story_id}/story_agent_list`);
         if (!response.data || !response.data.story_agents) {
             return res.status(404).json({ message: "Agent list unobtainable" });
@@ -97,7 +101,7 @@ router.get('/translate', async (req, res) => {
 
             case "generate_first_chapter":
                 response = await axios.get(`${APP_URL}/db/story/${user_id}/${story_id}/get_first_chapter_details`);
-                data.generate_first_chatper = {
+                data.generate_first_chapter = {
                     story_name: response.data.story_name,
                     story_details: response.data.story_details,
                     extra_details: response.data.extra_details || "",

@@ -14,72 +14,12 @@ function STORY_AGENTS_VIEW() {
   const { user_stories, fetch_user_data } = USE_USER();
   const { user } = USE_AUTH();
   const [agents, set_agents] = useState([]);
-  const [agent_responses, set_agent_responses] = useState({});  // State to store responses for each agent
-  const [agent_thoughts, set_agent_thoughts] = useState({});  // State to store thoughts for each agent
-  const { should_stream, set_should_stream } = USE_STORY();
+
+  const { should_stream, set_should_stream, start_event_stream, agent_responses, set_agent_responses, agent_thoughts, set_agent_thoughts } = USE_STORY();
   const [stream_params, set_stream_params] = useState({
     step: "generate_outline",
     chapter_number: 0,
   });
-
-
-  const start_event_stream = (step = "generate_outline", chapter_number = 0) => {
-    const url = `${SERVER_URL}/translator/translate?user_id=${user}&story_id=${story_id}&step=${step}&chapter_number=${chapter_number}`;
-    const eventSource = new EventSource(url);
-
-    eventSource.onmessage = (event) => {
-        const raw = event.data;
-        const restored = raw.replace(/\[\[NL\]\]/g, "\n");
-
-        if (restored.startsWith("{\"best")) {
-            eventSource.close();
-            set_should_stream(false);
-            fetch_user_data(user);
-            return;
-        }
-
-        try {
-            const parts = restored.split("|");
-            const agent_name = parts[0];
-            const agent_id = parts[1];
-            let token = parts.slice(2).join("|");
-
-            if (token.startsWith("tool_call: ")) {
-              token = token.replace("tool_call: ", "");
-              set_agent_thoughts((prev) => ({
-                ...prev,
-                [agent_id]: (prev[agent_id] || "") + token,
-              }));
-            }
-
-            set_agent_responses((prev) => ({
-              ...prev,
-              [agent_id]: (prev[agent_id] || "") + token,
-            }));
-
-            // if (token.startsWith("tool_call: ")) {
-            //   token = token.replace("tool_call: ", "");
-            //   set_agent_thoughts((prev) => ({
-            //     ...prev,
-            //     [agent_id]: (prev[agent_id] || "") + token,
-            //   }));
-            // } else {
-            //   set_agent_responses((prev) => ({
-            //     ...prev,
-            //     [agent_id]: (prev[agent_id] || "") + token,
-            //   }));
-            // }
-
-        } catch (err) {
-            console.error("Failed to parse SSE message", err);
-        }
-    };
-
-    eventSource.onerror = () => {
-        console.error("SSE error");
-        eventSource.close();
-    };
-  };
 
   // use effect to reload context with db data when something changes
   useEffect(() => {
@@ -113,7 +53,7 @@ function STORY_AGENTS_VIEW() {
     if (!should_stream) return;
   
     const { step, chapterNumber } = stream_params;
-    start_event_stream(step, chapterNumber);
+    start_event_stream(user, story_id, step, chapterNumber);
   }, [should_stream]);
 
   return (
@@ -127,12 +67,13 @@ function STORY_AGENTS_VIEW() {
             name={agent.agent_name}
             chapter_content={agent_responses[agent._id] || "Waiting for the agent to generate a response..."}
             agent={agent.agent}
+            start_event_stream={start_event_stream}
           />
           </div>
           <div style={{ flex: 0.3 }}>
           <AGENT_THOUGHTS
           key={agent._id}
-          chapter_thoughts={agent_thoughts[agent._id] || "Waiting for the agent to generate a response..."}
+          chapter_thoughts={agent_thoughts[agent._id] || "Waiting for the agent to gather their thoughts..."}
           />
           </div>
           </Group>

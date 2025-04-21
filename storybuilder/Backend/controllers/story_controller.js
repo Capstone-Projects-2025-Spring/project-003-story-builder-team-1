@@ -54,7 +54,7 @@ exports.user_stories_list = asyncHandler(async (req, res, next) => {
         return res.status(404).json({ error: "User not found" });
     }
 
-    const stories = await Story.find({ user: user_id }).select('story_name story_content agents').exec();
+    const stories = await Story.find({ user: user_id }).select('story_name story_content agents outline').exec();
 
     res.status(200).json({ stories });
 });

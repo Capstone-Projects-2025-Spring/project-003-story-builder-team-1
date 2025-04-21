@@ -35,7 +35,7 @@ function AGENT_THOUGHTS({ name, chapter_thoughts }) {
                 children={
                     chapter_thoughts?.trim()
                     ? chapter_thoughts
-                    : "Waiting for the agent to generate a response..."
+                    : "Waiting for the agent to gather their thoughts..."
                 }
                 components={{
                     p: ({ node, ...props }) => (
@@ -73,7 +73,7 @@ function AGENT_THOUGHTS({ name, chapter_thoughts }) {
                 children={
                 chapter_thoughts?.trim()
                     ? chapter_thoughts
-                    : "Waiting for the agent to generate a response..."
+                    : "Waiting for the agent to gather their thoughts..."
                 }
                 components={{
                 p: ({ node, ...props }) => (

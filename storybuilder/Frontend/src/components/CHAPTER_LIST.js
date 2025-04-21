@@ -9,6 +9,8 @@ function CHAPTER_LIST() {
   const [chapters, set_chapters] = useState([]);
   const { user_stories } = USE_USER();
 
+  console.log("Rendering CHAPTER_LIST")
+
   useEffect(() => {
     if (story_id && user_stories?.stories) {
       const current_story = user_stories.stories.find(
@@ -20,12 +22,10 @@ function CHAPTER_LIST() {
     }
   }, [story_id, user_stories]);
 
-  // hardcoded for 1 story for now MUST CHANGE
   const handle_chapter_click = (index) => {
     navigate(`/story/${story_id}/view/${index}`);
   };
 
-  // hardcoded for 1 story for now MUST CHANGE
   const handle_view_entire_story = () => {
     navigate(`/story/${story_id}/view`);
   };
@@ -58,7 +58,7 @@ function CHAPTER_LIST() {
           fullWidth
           onClick={() => handle_chapter_click(index)}
         >
-          {index === 0 ? "Outline" : `Chapter ${index}`}
+          {index === 0 ? 'Outline' : `Chapter ${index}`}
         </Button>
       ))}
       </Stack>

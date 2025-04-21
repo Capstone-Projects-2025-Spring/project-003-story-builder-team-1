@@ -1,53 +1,45 @@
-import { useState, useContext, useEffect, useRef } from 'react';
-import { Card, Button, Modal, Textarea, Title, Divider, Group, Loader } from '@mantine/core';
-import STORY_CONTEXT from "../context/STORY_CONTEXT";
+import { useState, useEffect } from 'react';
+import { Card, Button, Modal, Title, Divider, Group, Loader } from '@mantine/core';
+import { USE_STORY } from '../context/STORY_CONTEXT';
 import { useParams } from 'react-router';
 import { USE_USER } from '../context/USER_CONTEXT';
 import ReactMarkdown from 'react-markdown';
 import { USE_AUTH } from '../context/AUTH_CONTEXT';
-import { EventSource } from 'eventsource';
 
-const SERVER_URL = process.env.REACT_APP_SERVER_URL || "http://localhost:8080";
-
-function AGENT_BOX({ name, chapter_content }) {
-    const { state, fetch_first_chapter, fetch_next_chapter, api_error } = useContext(STORY_CONTEXT);
+function AGENT_BOX({ name, chapter_content, start_event_stream }) {
+    const { should_stream, set_should_stream } = USE_STORY();
     const [opened, set_opened] = useState(false);
     // const [chapter_content, set_chapter_content] = useState("Waiting for the agent to generate a response...");
     const [show_cont_button, set_show_cont_button] = useState(true);
-    const [loading, set_loading] = useState(false);
     const [edit_modal_open, set_edit_modal_open] = useState(false);
     const [edited_content, set_edited_content] = useState('');
+    const [step, set_step] = useState('');
+    const [chapter_number, set_chapter_number] = useState(0);
 
     const { story_id } = useParams();
     const { user_stories } = USE_USER();
     const { user } = USE_AUTH();
 
-
-    const handle_continue = async () => {
-      set_loading(true); // Start loading
-      if (state.current_story.chapters.length === 1) {
-        const first_chapter_success = await fetch_first_chapter(
-          state.current_story.title,
-          state.current_story.story_details,
-          state.current_story.extra_details,
-          state.current_story.chapters[0]
+    useEffect(() => {
+      if (story_id && user_stories?.stories?.length) {
+        const found_story = user_stories.stories.find(
+            (story) => story._id === story_id
         );
-        if (!first_chapter_success) {
-          console.log("API ERROR: ", api_error);
+        const found_story_len = found_story.story_content?.length || 0;
+        if (found_story_len === 0) {
+            set_step("generate_first_chapter");
+            set_chapter_number(1);
         }
-      } else {
-        const next_chapter_success = await fetch_next_chapter(
-          state.current_story.title,
-          state.current_story.story_details,
-          state.current_story.extra_details,
-          state.current_story.chapters.slice(1),
-          state.current_story.chapters[0]
-        );
-        if (!next_chapter_success) {
-          console.log("API ERROR: ", api_error);
+        else {
+          set_step("generate_next_chapter");
+          set_chapter_number(found_story_len + 1);
         }
       }
-      set_loading(false); // Done loading
+    }, [user_stories, story_id]);
+
+    const handle_continue = async () => {
+      set_should_stream(true); // Show loading spinner
+      start_event_stream(user, story_id, step, chapter_number);
     };
 
     return (
@@ -195,17 +187,17 @@ function AGENT_BOX({ name, chapter_content }) {
               <Button
                 size="sm"
                 variant="light"
-                color={!loading ? 'teal' : undefined}
-                disabled={loading}
+                color={!should_stream ? 'teal' : undefined}
+                disabled={should_stream}
                 onClick={handle_continue}
-                leftSection={loading && <Loader size="xs" color="green" />}
+                leftSection={should_stream && <Loader size="xs" color="green" />}
                 style={{
-                  backgroundColor: loading ? 'rgba(0, 255, 128, 0.1)' : '',
-                  color: loading ? '#66ffb2' : '',
-                  cursor: loading ? 'not-allowed' : 'pointer',
+                  backgroundColor: should_stream ? 'rgba(0, 255, 128, 0.1)' : '',
+                  color: should_stream ? '#66ffb2' : '',
+                  cursor: should_stream ? 'not-allowed' : 'pointer',
                 }}
               >
-                {loading ? 'Drafting Chapter' : 'Continue'}
+                {should_stream ? 'Drafting Chapter' : 'Continue'}
               </Button>
             )}
           </Group>

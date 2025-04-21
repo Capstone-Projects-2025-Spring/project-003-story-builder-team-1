@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Container, Title, Text } from "@mantine/core";
+import { Container, Title } from "@mantine/core";
 import { useParams } from 'react-router';
 import { USE_USER } from '../context/USER_CONTEXT';
 import ReactMarkdown from 'react-markdown';
@@ -17,10 +17,10 @@ function STORY_VIEW() {
         );
         if (found_story) {
             set_story_title(found_story.story_name);
-            set_chapters(found_story.story_content);
+            set_chapters(found_story.story_content.slice(1));
         }
     }
-}, [story_id, user_stories]);
+  }, [story_id, user_stories]);
   
   return (
     <Container fluid style={{ display: 'flex', flexDirection: 'column', gap: '24px', maxWidth: '100%', margin: 'auto' }}>
@@ -38,7 +38,6 @@ function STORY_VIEW() {
               color: '#white',
               fontSize: '18px',
               lineHeight: 1.6,
-              whiteSpace: 'pre-wrap',
             }}
           >
             <ReactMarkdown

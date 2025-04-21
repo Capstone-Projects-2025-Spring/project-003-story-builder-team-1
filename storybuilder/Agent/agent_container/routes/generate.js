@@ -123,7 +123,7 @@ router.post("/stream_graph", async (req, res) => {
   console.log("Formatted input: ", formatted_input);
 
   try {
-    const agent_response = await outline_agent_graph.stream({messages: formatted_input}, {callbacks: [stream_handler(res)]});
+    const agent_response = await outline_agent_graph.stream({messages: formatted_input}, {callbacks: [stream_handler(res, false)]});
     while (!agent_response.done) {
       // Wait for the next chunk of data
       await new Promise(resolve => setTimeout(resolve, 100)); // Adjust delay as needed
