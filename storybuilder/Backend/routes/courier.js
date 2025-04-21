@@ -47,6 +47,7 @@ router.post('/aggregate', async (req, res) => {
     const input = req.body.messages;
     console.log("Aggregate request received with input:", input);
     const data = req.body.data;
+    console.log("Aggregate request received with data:", data);
     const agent_data = data.story_agents;
     const agent_names = agent_data.map(agent => agent.agent_name);
     const agent_ids = agent_data.map(agent => agent.agent_id);
@@ -67,7 +68,7 @@ router.post('/aggregate', async (req, res) => {
             agentEndpoints.map(async (agent , idx) => {
                 const response = await axios.post(
                     agent,
-                    { messages: input },
+                    { data },
                     { headers: { "Content-Type": "application/json" }, responseType: 'stream' }
                 );
                 return new Promise((resolve, reject) => {
@@ -78,12 +79,12 @@ router.post('/aggregate', async (req, res) => {
                         let str = chunk.toString();
                         str = str.replace(/^data: /, ''); // Remove "data: " prefix
                         str = str.slice(0, -2); // Remove "\n\n" suffix
-                        res.write(`${agent_names[idx]} ${agent_ids[idx]} ${str}`);
-                        if (str.startsWith("tool_call: ")) {
-                            str = str.replace(/^tool_call: /, ''); // Remove "tool_call: " prefix
+                        res.write(`${agent_names[idx]}|${agent_ids[idx]}|${str}`);
+                        if (!str.startsWith("tool_call: ")) {
                             thoughts.push(str); // Store thought for this agent
                         }
-                        else if (!str.startsWith("tool_call: ")) {
+                        else if (str.startsWith("tool_call: ")) {
+                            str = str.replace(/^tool_call: /, ''); // Remove "tool_call: " prefix
                             data.push(str); 
                         }
                     });
