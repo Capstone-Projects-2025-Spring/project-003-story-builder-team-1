@@ -36,14 +36,19 @@ function STORY_AGENTS_VIEW() {
 
       // Set up the initial agent responses from their most recent chapters
       const initial_responses = {};
+      const initial_thoughts = {};
       current_story.agents.forEach(agent => {
         const last_chapter = agent.chapters?.[agent.chapters.length - 1];
         if (last_chapter?.content) {
           initial_responses[agent._id] = last_chapter.content;
         }
+        if (last_chapter?.content_thoughts) {
+          initial_thoughts[agent._id] = last_chapter.content_thoughts;
+        }
       });
 
       set_agent_responses(initial_responses);
+      set_agent_thoughts(initial_thoughts);
     }
 
     console.log("Agents: ", current_story.agents);

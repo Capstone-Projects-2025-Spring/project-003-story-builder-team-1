@@ -73,30 +73,32 @@ router.post('/aggregate', async (req, res) => {
                 );
                 return new Promise((resolve, reject) => {
                     let data = [];
+                    let thoughts = [];
 
                     response.data.on('data', chunk => {
                         let str = chunk.toString();
                         str = str.replace(/^data: /, ''); // Remove "data: " prefix
                         str = str.slice(0, -2); // Remove "\n\n" suffix
                         res.write(`${agent_names[idx]}|${agent_ids[idx]}|${str}`);
-                        str = str.replace(/tool_call: /, ''); // Remove any tool call prefix for the coallated data
-                        str = `data: ${str}\n\n`; // Format for SSE
-                        // Optionally: parse each SSE chunk here.
-                        data.push(str);
+                        if (!str.startsWith("tool_call: ")) {
+                            thoughts.push(str); // Store thought for this agent
+                        }
+                        else if (str.startsWith("tool_call: ")) {
+                            str = str.replace(/^tool_call: /, ''); // Remove "tool_call: " prefix
+                            data.push(str); 
+                        }
                     });
                     response.data.on('end', () => {
                         // Optionally: parse out just the relevant story from data
                         // For now, just return all received SSE data
                         data = data.slice(0, -1); // Remove the last empty chunk or DONE chunk
-                        data = data.map(
-                            event => event
-                            .replace(/^data: /, '') // Remove "data: " prefix
-                            .slice(0, -2)) // Remove "\n\n" suffix
-                            .join(''); // Join the array into a single string
+                        data = data.join(''); // Join the array into a single string
+
+                        thoughts = thoughts.join('');
 
                         const agent_name = `${agent_names[idx]}`;
                         const agent_id = `${agent_ids[idx]}`;
-                        resolve({ agent_name, agent_id, data,});
+                        resolve({ agent_name, agent_id, data, thoughts});
                     });
                     response.data.on('error', err => reject(err));
                 });
