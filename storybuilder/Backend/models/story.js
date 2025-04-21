@@ -24,7 +24,9 @@ const storySchema = new mongoose.Schema({
             content: { type: String },
             chapter_votes: { type: Number, default: 0 },
             critique: { type: String },
-            critique_votes: { type: Number, default: 0 }
+            critique_votes: { type: Number, default: 0 },
+            content_thoughts: { type: String },
+            critique_thoughts: { type: String}
         }]
     }],
 }, { timestamps: true });

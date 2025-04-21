@@ -88,9 +88,9 @@ router.post("/stream_graph", async (req, res) => {
   res.flushHeaders?.();
 
   const outline_agent_graph = outline_agent;
-
+  let tool_call = false;
   try {
-    const agent_response = await outline_agent_graph.stream({messages: req.body.messages}, {callbacks: [stream_handler(res)]});
+    const agent_response = await outline_agent_graph.stream({messages: req.body.messages}, {callbacks: [stream_handler(res, tool_call)]});
     while (!agent_response.done) {
       // Wait for the next chunk of data
       await new Promise(resolve => setTimeout(resolve, 100)); // Adjust delay as needed

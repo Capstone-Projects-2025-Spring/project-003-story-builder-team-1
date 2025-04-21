@@ -511,6 +511,17 @@ exports.story_add_outline_post = asyncHandler(async (req, res, next) => {
     // Add outline to the story
     story.outline = outline;
 
+    const existing_chapter = story.story_content.find(ch => ch.story_chapter_number === 0);
+    
+    if (existing_chapter) {
+        existing_chapter.text = outline;
+    } else {
+        story.story_content.push({
+            story_chapter_number: 0,
+            text: outline
+        });
+    }
+
     // Save the updated story
     await story.save();
 
@@ -648,7 +659,7 @@ exports.story_veto_critique = asyncHandler(async (req, res, next) => {
 
 exports.story_add_agent_outlines_post = asyncHandler(async (req, res, next) => {
     const { user_id, story_id } = req.params;
-    const { outlines, votes } = req.body;
+    const { outlines, votes} = req.body;
 
     // Find the user
     const user = await User.findById(user_id);
@@ -686,11 +697,13 @@ exports.story_add_agent_outlines_post = asyncHandler(async (req, res, next) => {
         if (existing_outline) {
             existing_outline.content = r.data;
             existing_outline.chapter_votes = vote_value;
+            existing_outline.content_thoughts = r.thoughts
         } else {
             agent.chapters.push({
                 chapter_number: 0,
                 content: r.data,
-                chapter_votes: vote_value
+                chapter_votes: vote_value,
+                content_thoughts: r.thoughts
             });
         }
     }
@@ -753,6 +766,7 @@ exports.story_add_agent_critiques_post = asyncHandler(async (req, res, next) => 
 
         existing_critique.critique = r.data;
         existing_critique.critique_votes = vote_value;
+        existing_critique.critique_thoughts = r.thoughts
     }
 
     await story.save();
@@ -803,11 +817,13 @@ exports.story_add_agent_chapter_post = asyncHandler(async (req, res, next) => {
         if (existing_chapter) {
             existing_chapter.content = r.data;
             existing_chapter.chapter_votes = vote_value;
+            existing_chapter.content_thoughts = r.thoughts
         } else {
             agent.chapters.push({
                 chapter_number: Number(chapter_number),
                 content: r.data,
-                chapter_votes: vote_value
+                chapter_votes: vote_value,
+                content_thoughts: r.thoughts
             });
         }
     }

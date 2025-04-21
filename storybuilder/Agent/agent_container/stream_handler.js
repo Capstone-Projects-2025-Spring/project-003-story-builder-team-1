@@ -1,12 +1,10 @@
 import { BaseCallbackHandler } from "@langchain/core/callbacks/base";
-let tool_call = false; // Flag to track if a tool call is in progress
-const stream_handler = (res = null) => BaseCallbackHandler.fromMethods({
 
+const stream_handler = (res = null, tool_call) => BaseCallbackHandler.fromMethods({
   handleLLMNewToken: async (t, runId, parentRunId, ...rest) => {
     if (tool_call)
       t = "tool_call: " + t; // Prefix with tool call if in progress
     if (res) res.write(`data: ${t}\n\n`);
-    process.stdout.write(t);
   },
   // handleChainStart: async (c, runId, parentRunId, ...rest) => {
   //   if (res) res.write(`data: [chain start: ${JSON.stringify(c)}]\n\n`);
@@ -28,9 +26,9 @@ const stream_handler = (res = null) => BaseCallbackHandler.fromMethods({
   },
   handleChainEnd: async (o, runId, parentRunId, ...rest) => {
     //if (res) res.write(`data: [chain end: ${JSON.stringify(parentRunId)}]\n\n`);
-    process.stdout.write(`Chain ended: ${JSON.stringify(parentRunId)}\n`);
     if (!parentRunId) {
-      res.end(); // End the stream for the outermost run
+      if(res)
+        res.end(); // End the stream for the outermost run
       console.log('\n');
     }
   },
