@@ -1,5 +1,7 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react'; 
 import { Button, Collapse, Stack, Box, Modal, Divider, Text } from '@mantine/core';
+import { Flex } from '@mantine/core';
+import { IconChevronDown, IconChevronRight } from '@tabler/icons-react';
 import { useNavigate } from 'react-router';
 import { USE_USER } from '../context/USER_CONTEXT';
 import USE_AXIOS from '../hooks/USE_AXIOS';
@@ -18,7 +20,7 @@ function STORY_LIST() {
   const { user } = USE_AUTH();
 
   useEffect(() => {
-        set_stories(user_stories.stories);
+    set_stories(user_stories.stories);
   }, [user_stories]);
 
   const toggle_expand = (story_id) => {
@@ -28,89 +30,95 @@ function STORY_LIST() {
   const handle_delete_click = (storyId) => {
     set_story_to_delete(storyId);
     set_delete_modal_opened(true);
-
-    fetch_user_data(user); // Fetch user data to refresh the story list
+    fetch_user_data(user); // Refresh story list
   };
 
-  // should be in its own file but i dont have time to reorganize and refactor rn
   const handle_delete_confirm = async () => {
     const { data, error } = await use_axios(`${SERVER_URL}/db/story/${user}/${story_to_delete}/delete`, "POST");
-
     if (data === null) {
       console.error("Error deleting story:", error);
     }
     set_delete_modal_opened(false);
-
-
-  }
+  };
 
   return (
     <>
-    <Stack spacing="xs" mt="xs" style={{ height: '100%' }}>
-      <Button variant="outline" color="orange" fullWidth  onClick={() => navigate(`/agent_selection`)}>
-        Generate New Story
-      </Button>
-      
-      {/* Scrollable story list container */}
-      <Box
-        style={{
-          flex: 1,
-          overflowY: 'auto',
-        }}
-      >
-        <Stack spacing="xs" mt="xs">
-      {stories.map((story) => (
-        <div key={story._id}>
-          {/* Story Button */}
-          <Button
-            variant="default"
-            color="gray"
-            fullWidth
-            onClick={() => toggle_expand(story._id)}
-          >
-            {story.story_name}
-          </Button>
+      <Stack spacing="xs" mt="xs" style={{ height: '100%' }}>
+        <Button
+          fullWidth
+          onClick={() => navigate(`/agent_selection`)}
+          style={{
+            backgroundColor: 'rgba(255, 165, 0, 0.15)',
+            color: '#FFA500',
+            border: '1px solid #FFA500',
+          }}
+        >
+          Generate New Story
+        </Button>
 
-          {/* Expandable Section */}
-          <Collapse in={expanded_story === story._id}>
-            <Stack spacing="xs" mt="xs">
-              <Button variant="filled" color="gray" fullWidth onClick={() => navigate(`/story/${story._id}/view`)}>
-                View Story
-              </Button>
-              <Button variant="filled" color="gray" fullWidth onClick={() => navigate(`/story/${story._id}/best_response`)}>
-                Best Response
-              </Button>
-              <Button variant="filled" color="gray" fullWidth onClick={() => navigate(`/story/${story._id}/agents`)}>
-                Agents
-              </Button>
-              {/* <Button variant="filled" color="red" fullWidth onClick={() => handle_delete_click(story._id)}>
-                Delete Story
-              </Button> */}
-            </Stack>
-          </Collapse>
-        </div>
-      ))}
+        {/* Scrollable story list container */}
+        <Box style={{ flex: 1, overflowY: 'auto' }}>
+          <Stack spacing="xs" mt="xs">
+            {stories.map((story) => (
+              <div key={story._id}>
+                {/* Story Button */}
+                <Button
+                  variant="default"
+                  color="gray"
+                  fullWidth
+                  onClick={() => toggle_expand(story._id)}
+                  style={{ justifyContent: 'center', position: 'relative' }}
+                >
+                  <Flex justify="center" align="center" style={{ width: '100%' }}>
+                    <span style={{ margin: '0 auto' }}>{story.story_name}</span>
+                    {expanded_story === story._id ? (
+                      <IconChevronDown size={16} style={{ position: 'absolute', right: 12 }} />
+                    ) : (
+                      <IconChevronRight size={16} style={{ position: 'absolute', right: 12 }} />
+                    )}
+                  </Flex>
+                </Button>
+
+                {/* Expandable Section */}
+                <Collapse in={expanded_story === story._id}>
+                  <Stack spacing="xs" mt="xs">
+                    <Button variant="filled" color="gray" fullWidth onClick={() => navigate(`/story/${story._id}/view`)}>
+                      View Story
+                    </Button>
+                    <Button variant="filled" color="gray" fullWidth onClick={() => navigate(`/story/${story._id}/best_response`)}>
+                      Best Response
+                    </Button>
+                    <Button variant="filled" color="gray" fullWidth onClick={() => navigate(`/story/${story._id}/agents`)}>
+                      Agents
+                    </Button>
+                    {/* 
+                    <Button variant="filled" color="red" fullWidth onClick={() => handle_delete_click(story._id)}>
+                      Delete Story
+                    </Button> 
+                    */}
+                  </Stack>
+                </Collapse>
+              </div>
+            ))}
+          </Stack>
+        </Box>
       </Stack>
-      </Box>
-    </Stack>
 
-    {/* Delete Story Modal */}
-    <Modal
+      {/* Delete Story Modal */}
+      <Modal
         opened={delete_modal_opened}
         onClose={() => set_delete_modal_opened(false)}
         title="Delete Story"
         centered
-    >
-        {/* Divider Line */}
-        <Divider my="sm" mt={1}/>
-
+      >
+        <Divider my="sm" mt={1} />
         <Text size="md" align="center" mb="md">
-            Are you sure you want to delete this story?
+          Are you sure you want to delete this story?
         </Text>
         <Button fullWidth mt="md" onClick={handle_delete_confirm}>
-            Confirm
+          Confirm
         </Button>
-    </Modal>
+      </Modal>
     </>
   );
 }
