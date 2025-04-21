@@ -2,9 +2,11 @@ import express from "express";
 import { stream_handler } from "../stream_handler.js";
 import { BaseCallbackHandler } from "@langchain/core/callbacks/base";
 import { ChatDeepSeek } from "@langchain/deepseek";
-import { generate_outline_agent, critique_outline_agent, vote_critique_outline_agent, revise_outline_agent, first_chapter_agent, next_chapter_agent, critique_chapter_agent, vote_critique_chapter_agent, rewrite_chapter_agent, vote_chapter_agent, outline_supervisor_graph, chapter_supervisor_graph } from "../scratchwork/agents.js"
+import { generate_outline_agent, vote_generate_outline_agent, critique_outline_agent, vote_critique_outline_agent, revise_outline_agent, vote_revise_outline_agent, first_chapter_agent, vote_first_chapter_agent, next_chapter_agent, vote_next_chapter_agent, critique_chapter_agent, vote_critique_chapter_agent, rewrite_chapter_agent, vote_rewrite_chapter_agent} from "../scratchwork/agents.js"
 import { isEqualsGreaterThanToken } from "typescript";
 import { ToolInputParsingException } from "@langchain/core/tools";
+import { ChatPromptTemplate } from "@langchain/core/prompts";
+
 
 export default function agent_routes(llm) {
   const router = express.Router();
@@ -62,6 +64,11 @@ async function send_off(agent_graph, message, stream_handler) {
 
 
 // Set up the API endpoint for chat
+
+
+//outline endpoints
+
+
   router.post("/generate_outline", async (req, res) => {
     if (!req.body.messages) {
       return res.status(400).json({ error: "Messages are required" });
@@ -96,6 +103,40 @@ async function send_off(agent_graph, message, stream_handler) {
     }
   });
 
+  router.post("/vote_generate_outline", async (req, res) => {
+    if (!req.body.messages) {
+      return res.status(400).json({ error: "Messages are required" });
+    }
+    res.setHeader("Content-Type", "text/event-stream");
+    res.setHeader("Cache-Control", "no-cache");
+    res.setHeader("Connection", "keep-alive");
+    res.flushHeaders?.();
+
+    const outline_agent_graph = vote_generate_outline_agent;
+
+    const input = {
+      persona: req.body.persona,
+      prompt_info: req.body.prompt_info,
+      outline_bank: req.body.vote_bank
+  };
+    const formatted_input = await storybuilder_prompt.formatMessages(vote_generate_outline_agent.tools, input);
+    try {
+      const agent_response = await outline_agent_graph.stream({messages: formatted_input}, {callbacks: []});
+      while (!agent_response.done) {
+        // Wait for the next chunk of data
+        await new Promise(resolve => setTimeout(resolve, 100)); // Adjust delay as needed
+      }
+      console.log("Agent response:", agent_response);
+      res.end(); // End the response when done
+    } catch (err) {
+      console.error(err);
+      if (!res.writableEnded) {
+        res.write(`data: ERROR: ${err.message}\n\n`);
+        res.end();
+      }
+    }
+  });
+
   router.post("/generate_critique_outline", async (req, res) => {
     if (!req.body.messages) {
       return res.status(400).json({ error: "Messages are required" });
@@ -115,7 +156,7 @@ async function send_off(agent_graph, message, stream_handler) {
     const formatted_input = await storybuilder_prompt.formatMessages(JSON.stringify(critique_outline_agent.tools), JSON.stringify(input));
 
     try {
-      const agent_response = await outline_agent_graph.stream({messages: input}, {callbacks: [stream_handler(res)]});
+      const agent_response = await outline_agent_graph.stream({messages: formatted_input}, {callbacks: [stream_handler(res)]});
       while (!agent_response.done) {
         // Wait for the next chunk of data
         await new Promise(resolve => setTimeout(resolve, 100)); // Adjust delay as needed
@@ -131,8 +172,7 @@ async function send_off(agent_graph, message, stream_handler) {
     }
   });
 
-
-  router.post("/vote_critique_outline", async (req, res) => {
+  router.post("/vote_generate_critique_outline", async (req, res) => {
     if (!req.body.messages) {
       return res.status(400).json({ error: "Messages are required" });
     }
@@ -146,11 +186,11 @@ async function send_off(agent_graph, message, stream_handler) {
     const input = {
       persona: req.body.persona,
       outline: req.body.outline,
-      critique: req.body.critiques
+      critique_bank: req.body.vote_bank
   };
     const formatted_input = await storybuilder_prompt.formatMessages(vote_critique_outline_agent.tools, input);
     try {
-      const agent_response = await outline_agent_graph.stream({messages: input}, {callbacks: [stream_handler(res)]});
+      const agent_response = await outline_agent_graph.stream({messages: formatted_input}, {callbacks: []});
       while (!agent_response.done) {
         // Wait for the next chunk of data
         await new Promise(resolve => setTimeout(resolve, 100)); // Adjust delay as needed
@@ -165,7 +205,6 @@ async function send_off(agent_graph, message, stream_handler) {
       }
     }
   });
-
 
   router.post("/rewrite_outline", async (req, res) => {
     if (!req.body.messages) {
@@ -188,7 +227,7 @@ async function send_off(agent_graph, message, stream_handler) {
     const formatted_input = await storybuilder_prompt.formatMessages(revise_outline_agent.tools, input);
 
     try {
-      const agent_response = await outline_agent_graph.stream({messages: input}, {callbacks: [stream_handler(res)]});
+      const agent_response = await outline_agent_graph.stream({messages: formatted_input}, {callbacks: [stream_handler(res)]});
       while (!agent_response.done) {
         // Wait for the next chunk of data
         await new Promise(resolve => setTimeout(resolve, 100)); // Adjust delay as needed
@@ -204,7 +243,47 @@ async function send_off(agent_graph, message, stream_handler) {
     }
   });
 
-  router.post("/first_chapter", async (req, res) => {
+  router.post("/vote_rewrite_outline", async (req, res) => {
+    if (!req.body.messages) {
+      return res.status(400).json({ error: "Messages are required" });
+    }
+    res.setHeader("Content-Type", "text/event-stream");
+    res.setHeader("Cache-Control", "no-cache");
+    res.setHeader("Connection", "keep-alive");
+    res.flushHeaders?.();
+
+    const chapter_agent_graph = vote_revise_outline_agent;
+
+    const input = {
+      persona: req.body.persona,
+      prompt_info: req.body.prompt_info,
+      outline_bank: req.body.vote_bank
+  };
+    const formatted_input = await storybuilder_prompt.formatMessages(vote_revise_outline_agent.tools, input);
+    try {
+      const agent_response = await chapter_agent_graph.stream({messages: formatted_input}, {callbacks: []});
+      while (!agent_response.done) {
+        // Wait for the next chunk of data
+        await new Promise(resolve => setTimeout(resolve, 100)); // Adjust delay as needed
+      }
+      console.log("Agent response:", agent_response);
+      res.end(); // End the response when done
+    } catch (err) {
+      console.error(err);
+      if (!res.writableEnded) {
+        res.write(`data: ERROR: ${err.message}\n\n`);
+        res.end();
+      }
+    }
+  });
+
+
+  
+  //chapter endpoints 
+
+
+
+  router.post("/generate_first_chapter", async (req, res) => {
     if (!req.body.messages) {
       return res.status(400).json({ error: "Messages are required" });
     }
@@ -222,7 +301,7 @@ async function send_off(agent_graph, message, stream_handler) {
   };
     const formatted_input = await storybuilder_prompt.formatMessages(first_chapter_agent.tools, input);
     try {
-      const agent_response = await chapter_agent_graph.stream({messages: input}, {callbacks: [stream_handler(res)]});
+      const agent_response = await chapter_agent_graph.stream({messages: formatted_input}, {callbacks: [stream_handler(res)]});
       while (!agent_response.done) {
         // Wait for the next chunk of data
         await new Promise(resolve => setTimeout(resolve, 100)); // Adjust delay as needed
@@ -238,7 +317,42 @@ async function send_off(agent_graph, message, stream_handler) {
     }
   });
 
-  router.post("/next_chapter", async (req, res) => {
+  router.post("/vote_generate_first_chapter", async (req, res) => {
+    if (!req.body.messages) {
+      return res.status(400).json({ error: "Messages are required" });
+    }
+    res.setHeader("Content-Type", "text/event-stream");
+    res.setHeader("Cache-Control", "no-cache");
+    res.setHeader("Connection", "keep-alive");
+    res.flushHeaders?.();
+
+    const chapter_agent_graph = vote_first_chapter_agent;
+
+    const input = {
+      persona: req.body.persona,
+      prompt_info: req.body.prompt_info,
+      chapter_bank: req.body.vote_bank
+  };
+    const formatted_input = await storybuilder_prompt.formatMessages(vote_first_chapter_agent.tools, input);
+    try {
+      const agent_response = await chapter_agent_graph.stream({messages: formatted_input}, {callbacks: []});
+      while (!agent_response.done) {
+        // Wait for the next chunk of data
+        await new Promise(resolve => setTimeout(resolve, 100)); // Adjust delay as needed
+      }
+      console.log("Agent response:", agent_response);
+      res.end(); // End the response when done
+    } catch (err) {
+      console.error(err);
+      if (!res.writableEnded) {
+        res.write(`data: ERROR: ${err.message}\n\n`);
+        res.end();
+      }
+    }
+  });
+
+
+  router.post("/generate_next_chapter", async (req, res) => {
     if (!req.body.messages) {
       return res.status(400).json({ error: "Messages are required" });
     }
@@ -257,7 +371,41 @@ async function send_off(agent_graph, message, stream_handler) {
   };
     const formatted_input = await storybuilder_prompt.formatMessages(next_chapter_agent.tools, input);
     try {
-      const agent_response = await chapter_agent_graph.stream({messages: input}, {callbacks: [stream_handler(res)]});
+      const agent_response = await chapter_agent_graph.stream({messages: formatted_input}, {callbacks: [stream_handler(res)]});
+      while (!agent_response.done) {
+        // Wait for the next chunk of data
+        await new Promise(resolve => setTimeout(resolve, 100)); // Adjust delay as needed
+      }
+      console.log("Agent response:", agent_response);
+      res.end(); // End the response when done
+    } catch (err) {
+      console.error(err);
+      if (!res.writableEnded) {
+        res.write(`data: ERROR: ${err.message}\n\n`);
+        res.end();
+      }
+    }
+  });
+
+  router.post("/vote_generate_next_chapter", async (req, res) => {
+    if (!req.body.messages) {
+      return res.status(400).json({ error: "Messages are required" });
+    }
+    res.setHeader("Content-Type", "text/event-stream");
+    res.setHeader("Cache-Control", "no-cache");
+    res.setHeader("Connection", "keep-alive");
+    res.flushHeaders?.();
+
+    const chapter_agent_graph = vote_next_chapter_agent;
+
+    const input = {
+      persona: req.body.persona,
+      prompt_info: req.body.prompt_info,
+      chapter_bank: req.body.vote_bank
+  };
+    const formatted_input = await storybuilder_prompt.formatMessages(vote_next_chapter_agent.tools, input);
+    try {
+      const agent_response = await chapter_agent_graph.stream({messages: formatted_input}, {callbacks: []});
       while (!agent_response.done) {
         // Wait for the next chunk of data
         await new Promise(resolve => setTimeout(resolve, 100)); // Adjust delay as needed
@@ -292,7 +440,7 @@ async function send_off(agent_graph, message, stream_handler) {
   };
     const formatted_input = await storybuilder_prompt.formatMessages(critique_chapter_agent.tools, input);
     try {
-      const agent_response = await chapter_agent_graph.stream({messages: input}, {callbacks: [stream_handler(res)]});
+      const agent_response = await chapter_agent_graph.stream({messages: formatted_input}, {callbacks: [stream_handler(res)]});
       while (!agent_response.done) {
         // Wait for the next chunk of data
         await new Promise(resolve => setTimeout(resolve, 100)); // Adjust delay as needed
@@ -322,11 +470,11 @@ async function send_off(agent_graph, message, stream_handler) {
     const input = {
       persona: req.body.persona,
       prompt_info: req.body.prompt_info,
-      critique_bank: req.body.critique_bank
+      critique_bank: req.body.vote_bank
   };
     const formatted_input = await storybuilder_prompt.formatMessages(vote_critique_chapter_agent.tools, input);
     try {
-      const agent_response = await chapter_agent_graph.stream({messages: input}, {callbacks: [stream_handler(res)]});
+      const agent_response = await chapter_agent_graph.stream({messages: formatted_input}, {callbacks: []});
       while (!agent_response.done) {
         // Wait for the next chunk of data
         await new Promise(resolve => setTimeout(resolve, 100)); // Adjust delay as needed
@@ -364,7 +512,7 @@ async function send_off(agent_graph, message, stream_handler) {
     const formatted_input = await storybuilder_prompt.formatMessages(rewrite_chapter_agent.tools, input);
 
     try {
-      const agent_response = await chapter_agent_graph.stream({messages: input}, {callbacks: [stream_handler(res)]});
+      const agent_response = await chapter_agent_graph.stream({messages: formatted_input}, {callbacks: [stream_handler(res)]});
       while (!agent_response.done) {
         // Wait for the next chunk of data
         await new Promise(resolve => setTimeout(resolve, 100)); // Adjust delay as needed
@@ -380,7 +528,7 @@ async function send_off(agent_graph, message, stream_handler) {
     }
   });
 
-  router.post("/vote_chapter", async (req, res) => {
+  router.post("/vote_rewrite_chapter", async (req, res) => {
     if (!req.body.messages) {
       return res.status(400).json({ error: "Messages are required" });
     }
@@ -389,16 +537,16 @@ async function send_off(agent_graph, message, stream_handler) {
     res.setHeader("Connection", "keep-alive");
     res.flushHeaders?.();
 
-    const chapter_agent_graph = vote_chapter_agent;
+    const chapter_agent_graph = vote_rewrite_chapter_agent;
 
     const input = {
       persona: req.body.persona,
       prompt_info: req.body.prompt_info,
-      chapter_bank: req.body.chapter_bank
+      chapter_bank: req.body.vote_bank
   };
-    const formatted_input = await storybuilder_prompt.formatMessages(vote_chapter_agent.tools, input);
+    const formatted_input = await storybuilder_prompt.formatMessages(vote_rewrite_chapter_agent.tools, input);
     try {
-      const agent_response = await chapter_agent_graph.stream({messages: input}, {callbacks: [stream_handler(res)]});
+      const agent_response = await chapter_agent_graph.stream({messages: formatted_input}, {callbacks: []});
       while (!agent_response.done) {
         // Wait for the next chunk of data
         await new Promise(resolve => setTimeout(resolve, 100)); // Adjust delay as needed
@@ -424,7 +572,7 @@ async function send_off(agent_graph, message, stream_handler) {
     const handler = new stream_handler(res);
 
     try {
-      await agent_executor.invoke({
+      await agent_executor.stream({
         input: req.body.prompt,
       }, {
         callbacks: [handler],

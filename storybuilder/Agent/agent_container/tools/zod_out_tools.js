@@ -27,7 +27,6 @@ export default function outline_tools(llm) {
 
         "{prompt_info}"
     `);
-
     const vote_generate_outline_prompt = ChatPromptTemplate.fromTemplate(`
         You are a helpful assistant that creates story outlines. You will only ever make one tool call. Don't return anything except for the outline and absolutely nothing else.
         You will ensure the results are compatible with the style of this persona: "{persona}".
@@ -37,7 +36,6 @@ export default function outline_tools(llm) {
 
         "{outline_bank}"
     `);
-
     const critique_outline_prompt = ChatPromptTemplate.fromTemplate(`
         You are a helpful assistant that critiques story outlines.
        You are now being fed an outline written by another agent. 
@@ -51,7 +49,6 @@ export default function outline_tools(llm) {
 
         Outline: "{outline}"
     `);
-
     const vote_outline_critique_prompt = ChatPromptTemplate.fromTemplate(`
         Your job now is to judge all of these critiques to see which one is the most
         thorough. You will return the index number that corresponds to the critique you find
@@ -62,7 +59,6 @@ export default function outline_tools(llm) {
 
         Critiques to vote on: "{critique_bank}"
     `);
-
     const revise_outline_prompt = ChatPromptTemplate.fromTemplate(`
         You are a helpful assistant that revises story outlines.
         Rewrite the following outline based on the provided critique. Don't return anything except for the rewritten outline and absolutely nothing else.
@@ -92,7 +88,6 @@ export default function outline_tools(llm) {
 
         Stories to vote on: "{outline_bank}"
     `);
-  
     const generate_outline = tool(async ({ persona, prompt_info }) => {
         const messages = await generate_outline_prompt.formatMessages({ persona, prompt_info });
         const res = await llm.invoke(messages);
@@ -108,7 +103,6 @@ export default function outline_tools(llm) {
             prompt_info: z.string().describe("Information about the story prompt to guide the drafting process.")
         })
     });
-
     const vote_generate_outline = tool(async ({ persona, prompt_info, outline_bank }) => {
         const messages = await vote_revise_outline_prompt.formatMessages({ persona, prompt_info, outline_bank });
         const res = await llm.withStructuredOutput(vote_revise_outline_output_schema).invoke(messages);
@@ -118,11 +112,10 @@ export default function outline_tools(llm) {
         description: "Votes on the different collected outlines. Outlines are stored as a 2-dimensional array, with rows corresponding to stories and columns corresponding to chapter summaries. The result will rank whichever row has the best sequence according to the parameters established in the agent information and initial prompt info. It does not return anything except for the index number of the winning outline.",
         schema: z.object({
             persona: z.string().describe("Information about the style the story has to implement."),
-            prompt_info: z.string().describe("Information about the story prompt to guide the drafting process."),
+            prompt_info: z.string().describe("The outline that is to be followed."),
             outline_bank: z.string().describe("The collection of outlines to be judged.")
         })
     });
-
     const critique_outline = tool(async ({ persona, prompt_info, outline }) => {
         const messages = await critique_outline_prompt.formatMessages({ persona, prompt_info, outline });
         const res = await llm.invoke(messages);
@@ -134,7 +127,7 @@ export default function outline_tools(llm) {
         description: "Provides a critique of a given outline, analyzing grammatical correctness and adherence to the promptinfo. This critique will help in revising the outline to improve its quality.",
         schema: z.object({
             persona: z.string().describe("Information about the style the story has to implement."),
-            prompt_info: z.string().describe("Information about the story prompt to guide the drafting process."),
+            prompt_info: z.string().describe("The outline that is to be followed."),
             outline: z.string().describe("The outline to be critiqued.")
         })
     });
@@ -147,11 +140,10 @@ export default function outline_tools(llm) {
         description: "Votes on the different collected critiques. Outlines are stored as entries corresponding to chapter summaries. The result will rank whichever entry has the best sequence according to the parameters established in the agent information and initial prompt info. It does not return anything except for the index number of the winning outline.",
         schema: z.object({
             persona: z.string().describe("Information about the style the story has to implement."),
-            prompt_info: z.string().describe("Information about the story prompt to guide the drafting process."),
+            prompt_info: z.string().describe("The outline that is to be followed."),
             critique_bank: z.string().describe("The critiques to be judged.")
         })
     });
-
     const revise_outline = tool(async ({ persona, critique, prompt_info, outline }) => {
         const messages = await revise_outline_prompt.formatMessages({ persona, critique, prompt_info, outline });
         const res = await llm.invoke(messages);
@@ -164,11 +156,10 @@ export default function outline_tools(llm) {
         schema: z.object({
             persona: z.string().describe("Information about the style the story has to implement."),
             critique: z.string().describe("The critique to be applied to the outline."),
-            prompt_info: z.string().describe("Information about the story prompt to guide the drafting process."),
+            prompt_info: z.string().describe("The outline that is to be followed."),
             outline: z.string().describe("The outline to be revised.")
         })
     });
-
     const vote_revise_outline = tool(async ({ persona, prompt_info, outline_bank }) => {
         const messages = await vote_revise_outline_prompt.formatMessages({ persona, prompt_info, outline_bank });
         const res = await llm.withStructuredOutput(vote_revise_outline_output_schema).invoke(messages);
@@ -178,10 +169,9 @@ export default function outline_tools(llm) {
         description: "Votes on the different collected outlines. Outlines are stored as a 2-dimensional array, with rows corresponding to stories and columns corresponding to chapter summaries. The result will rank whichever row has the best sequence according to the parameters established in the agent information and initial prompt info. It does not return anything except for the index number of the winning outline.",
         schema: z.object({
             persona: z.string().describe("Information about the style the story has to implement."),
-            prompt_info: z.string().describe("Information about the story prompt to guide the drafting process."),
+            prompt_info: z.string().describe("The outline that is to be followed."),
             outline_bank: z.string().describe("The collection of outlines to be judged.")
         })
     });
-
     return [generate_outline, vote_generate_outline, critique_outline, vote_critique_outline, revise_outline, vote_revise_outline];
 }
