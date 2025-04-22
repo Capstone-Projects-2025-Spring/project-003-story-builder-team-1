@@ -9,13 +9,9 @@ export default function chapter_tools(llm) {
         })),
         totalChapters: z.number(),
     });
-    const vote_chapter_output_schema = z.object({
-        winningChapterIndex: z.number().describe("The index of the winning chapter in the chapter bank."),
-        voteValue: z.number().describe("The value of the vote, from 0 to 100, where 100 is the best possible chapter."),
-    });
-    const vote_critique_output_schema = z.object({
-        winningChapterIndex: z.number().describe("The index of the winning critique in the critique bank."),
-        voteValue: z.number().describe("The value of the vote, from 0 to 100, where 100 is the best possible critique."),
+    const vote_output_schema = z.object({
+        winning_index: z.number().describe("The index of the winning entry in the vote bank."),
+        vote_value: z.number().describe("The value of the vote, from 0 to 100, where 100 is the best possible entry."),
     });
     // Prompt
     const first_chapter_prompt = ChatPromptTemplate.fromTemplate(`
@@ -149,7 +145,7 @@ export default function chapter_tools(llm) {
     });
     const vote_first_chapter = tool(async ({ persona, prompt_info, chapter_bank }) => {
         const messages = await vote_first_chapter_prompt.formatMessages({ persona, prompt_info, chapter_bank });
-        const res = await llm.withStructuredOutput(vote_chapter_output_schema).invoke(messages);
+        const res = await llm.withStructuredOutput(vote_output_schema).invoke(messages);
         return res;
     }, {
         name: "vote_first_chapter",
@@ -176,7 +172,7 @@ export default function chapter_tools(llm) {
     });
     const vote_next_chapter = tool(async ({ persona, prompt_info, chapter_bank }) => {
         const messages = await vote_next_chapter_prompt.formatMessages({ persona, prompt_info, chapter_bank });
-        const res = await llm.withStructuredOutput(vote_chapter_output_schema).invoke(messages);
+        const res = await llm.withStructuredOutput(vote_output_schema).invoke(messages);
         return res;
     }, {
         name: "vote_next_chapter",
@@ -204,7 +200,7 @@ export default function chapter_tools(llm) {
     });
     const vote_rewrite_chapter = tool(async ({ persona, prompt_info, chapter_bank }) => {
         const messages = await vote_rewrite_chapter_prompt.formatMessages({ persona, prompt_info, chapter_bank });
-        const res = await llm.withStructuredOutput(vote_chapter_output_schema).invoke(messages);
+        const res = await llm.withStructuredOutput(vote_output_schema).invoke(messages);
         return res;
     }, {
         name: "vote_rewrite_chapter",
@@ -244,7 +240,7 @@ export default function chapter_tools(llm) {
     });
     const vote_critique_chapter = tool(async ({ persona, prompt_info, critique_bank }) => {
         const messages = await vote_chapter_critique_prompt.formatMessages({ persona, prompt_info, critique_bank });
-        const res = await llm.withStructuredOutput(vote_critique_output_schema).invoke(messages);
+        const res = await llm.withStructuredOutput(vote_output_schema).invoke(messages);
         return res;
     }, {
         name: "vote_critique_chapter",

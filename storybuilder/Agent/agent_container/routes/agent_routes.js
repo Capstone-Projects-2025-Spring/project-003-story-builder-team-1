@@ -1,16 +1,18 @@
 import express from "express";
 import { stream_handler } from "../stream_handler.js";
 import { BaseCallbackHandler } from "@langchain/core/callbacks/base";
-import { ChatDeepSeek } from "@langchain/deepseek";
 import { generate_outline_agent, vote_generate_outline_agent, critique_outline_agent, vote_critique_outline_agent, revise_outline_agent, vote_revise_outline_agent, first_chapter_agent, vote_first_chapter_agent, next_chapter_agent, vote_next_chapter_agent, critique_chapter_agent, vote_critique_chapter_agent, rewrite_chapter_agent, vote_rewrite_chapter_agent} from "../scratchwork/agents.js"
-import { isEqualsGreaterThanToken } from "typescript";
 import { ToolInputParsingException } from "@langchain/core/tools";
 import { ChatPromptTemplate } from "@langchain/core/prompts";
+import outline_tools from "../tools/zod_out_tools.js";
+import chapter_tools from "../tools/zod_chapter_tools.js";
 
 
 export default function agent_routes(llm) {
   const router = express.Router();
 
+  const outline_tools_list = outline_tools(llm);
+  const chapter_tools_list = chapter_tools(llm);
 //function to use later to clean a lot of duplicate code, wanna make sure the endpoints work by themselves first
 /*
 
@@ -40,6 +42,8 @@ async function send_off(agent_graph, message, stream_handler) {
 
 
 */
+
+
 
 //global storybuilder prompt for agent sendoff
   const storybuilder_prompt = ChatPromptTemplate.fromTemplate(`
@@ -80,11 +84,10 @@ async function send_off(agent_graph, message, stream_handler) {
 
     const outline_agent_graph = generate_outline_agent;
 
-    const input = {
-      persona: req.body.persona,
-      prompt_info: req.body.prompt_info
-    };
-    const formatted_input = await storybuilder_prompt.formatMessages(generate_outline_agent.tools, input);
+    const input = {persona: req.body.messages.persona, input: `prompt_info: ${req.body.messages.prompt_info}`, tools: outline_tools_list[0]};
+
+
+    const formatted_input = await storybuilder_prompt.formatMessages(input);
 
     try {
       const agent_response = await outline_agent_graph.stream({messages: formatted_input}, {callbacks: [stream_handler(res)]});
@@ -107,6 +110,7 @@ async function send_off(agent_graph, message, stream_handler) {
     if (!req.body.messages) {
       return res.status(400).json({ error: "Messages are required" });
     }
+    console.log("In vote generate");
     res.setHeader("Content-Type", "text/event-stream");
     res.setHeader("Cache-Control", "no-cache");
     res.setHeader("Connection", "keep-alive");
@@ -114,12 +118,9 @@ async function send_off(agent_graph, message, stream_handler) {
 
     const outline_agent_graph = vote_generate_outline_agent;
 
-    const input = {
-      persona: req.body.persona,
-      prompt_info: req.body.prompt_info,
-      outline_bank: req.body.vote_bank
-  };
-    const formatted_input = await storybuilder_prompt.formatMessages(vote_generate_outline_agent.tools, input);
+    const input = {persona: req.body.messages.persona, input: `prompt_info: ${req.body.messages.prompt_info} \n\noutline_bank: ${req.body.messages.vote_bank}`, tools: outline_tools_list[1]};
+    
+    const formatted_input = await storybuilder_prompt.formatMessages(input);
     try {
       const agent_response = await outline_agent_graph.stream({messages: formatted_input}, {callbacks: []});
       while (!agent_response.done) {
@@ -148,12 +149,9 @@ async function send_off(agent_graph, message, stream_handler) {
 
     const outline_agent_graph = critique_outline_agent;
 
-    const input = {
-      persona: req.body.persona,
-      prompt_info: req.body.prompt_info,
-      outline: req.body.outline
-  };
-    const formatted_input = await storybuilder_prompt.formatMessages(JSON.stringify(critique_outline_agent.tools), JSON.stringify(input));
+    const input = {persona: req.body.messages.persona, input: `prompt_info: ${req.body.messages.prompt_info} \n\noutline: ${req.body.messages.outline}`, tools: outline_tools_list[2]};
+
+    const formatted_input = await storybuilder_prompt.formatMessages(input);
 
     try {
       const agent_response = await outline_agent_graph.stream({messages: formatted_input}, {callbacks: [stream_handler(res)]});
@@ -183,12 +181,10 @@ async function send_off(agent_graph, message, stream_handler) {
 
     const outline_agent_graph = vote_critique_outline_agent;
 
-    const input = {
-      persona: req.body.persona,
-      outline: req.body.outline,
-      critique_bank: req.body.vote_bank
-  };
-    const formatted_input = await storybuilder_prompt.formatMessages(vote_critique_outline_agent.tools, input);
+    const input = {persona: req.body.messages.persona, input: `prompt_info: ${req.body.messages.prompt_info} \n\ncritique_bank: ${req.body.messages.vote_bank}`, tools: outline_tools_list[3]};
+
+    const formatted_input = await storybuilder_prompt.formatMessages(input);
+
     try {
       const agent_response = await outline_agent_graph.stream({messages: formatted_input}, {callbacks: []});
       while (!agent_response.done) {
@@ -217,14 +213,9 @@ async function send_off(agent_graph, message, stream_handler) {
 
     const outline_agent_graph = revise_outline_agent;
 
-    const input = {
-      persona: req.body.persona,
-      critique: req.body.critique,
-      prompt_info: req.body.prompt_info,
-      outline: req.body.outline,
-  };
+    const input = {persona: req.body.messages.persona, input: `critique: ${req.body.messages.prompt_info} \n\nprompt_info: ${req.body.messages.prompt_info} \n\noutline: ${req.body.messages.outline}`, tools: outline_tools_list[4]};
 
-    const formatted_input = await storybuilder_prompt.formatMessages(revise_outline_agent.tools, input);
+    const formatted_input = await storybuilder_prompt.formatMessages(input);
 
     try {
       const agent_response = await outline_agent_graph.stream({messages: formatted_input}, {callbacks: [stream_handler(res)]});
@@ -254,12 +245,10 @@ async function send_off(agent_graph, message, stream_handler) {
 
     const chapter_agent_graph = vote_revise_outline_agent;
 
-    const input = {
-      persona: req.body.persona,
-      prompt_info: req.body.prompt_info,
-      outline_bank: req.body.vote_bank
-  };
-    const formatted_input = await storybuilder_prompt.formatMessages(vote_revise_outline_agent.tools, input);
+    const input = {persona: req.body.messages.persona, input: `prompt_info: ${req.body.messages.prompt_info} \n\noutline_bank: ${req.body.messages.vote_bank}`, tools: outline_tools_list[5]};
+
+    const formatted_input = await storybuilder_prompt.formatMessages(input);
+
     try {
       const agent_response = await chapter_agent_graph.stream({messages: formatted_input}, {callbacks: []});
       while (!agent_response.done) {
@@ -294,12 +283,10 @@ async function send_off(agent_graph, message, stream_handler) {
 
     const chapter_agent_graph = first_chapter_agent;
 
-    const input = {
-      persona: req.body.persona,
-      prompt_info: req.body.prompt_info,
-      outline: req.body.outline,
-  };
-    const formatted_input = await storybuilder_prompt.formatMessages(first_chapter_agent.tools, input);
+    const input = {persona: req.body.messages.persona, input: `prompt_info: ${req.body.messages.prompt_info} \n\noutline: ${req.body.outline}`, tools: chapter_tools_list[0]};
+  
+    const formatted_input = await storybuilder_prompt.formatMessages(input);
+
     try {
       const agent_response = await chapter_agent_graph.stream({messages: formatted_input}, {callbacks: [stream_handler(res)]});
       while (!agent_response.done) {
@@ -328,11 +315,8 @@ async function send_off(agent_graph, message, stream_handler) {
 
     const chapter_agent_graph = vote_first_chapter_agent;
 
-    const input = {
-      persona: req.body.persona,
-      prompt_info: req.body.prompt_info,
-      chapter_bank: req.body.vote_bank
-  };
+    const input = {persona: req.body.messages.persona, input: `prompt_info: ${req.body.messages.prompt_info} \n\nchapter_bank: ${req.body.vote_bank}`, tools: chapter_tools_list[1]};
+
     const formatted_input = await storybuilder_prompt.formatMessages(vote_first_chapter_agent.tools, input);
     try {
       const agent_response = await chapter_agent_graph.stream({messages: formatted_input}, {callbacks: []});
@@ -362,13 +346,9 @@ async function send_off(agent_graph, message, stream_handler) {
     res.flushHeaders?.();
 
     const chapter_agent_graph = next_chapter_agent;
-
-    const input = {
-      persona: req.body.persona,
-      prompt_info: req.body.prompt_info,
-      chapter: req.body.chapter,
-      outline: req.body.outline,
-  };
+    
+    const input = {persona: req.body.messages.persona, input: `prompt_info: ${req.body.messages.prompt_info} \n\nchapter: ${req.body.messages.chapter} \n\noutline: ${req.body.messages.outline}`, tools: chapter_tools_list[4]};
+ 
     const formatted_input = await storybuilder_prompt.formatMessages(next_chapter_agent.tools, input);
     try {
       const agent_response = await chapter_agent_graph.stream({messages: formatted_input}, {callbacks: [stream_handler(res)]});
@@ -398,11 +378,8 @@ async function send_off(agent_graph, message, stream_handler) {
 
     const chapter_agent_graph = vote_next_chapter_agent;
 
-    const input = {
-      persona: req.body.persona,
-      prompt_info: req.body.prompt_info,
-      chapter_bank: req.body.vote_bank
-  };
+    const input = {persona: req.body.messages.persona, input: `prompt_info: ${req.body.messages.prompt_info} \n\nchapter_bank: ${req.body.vote_bank}`, tools: chapter_tools_list[3]};
+
     const formatted_input = await storybuilder_prompt.formatMessages(vote_next_chapter_agent.tools, input);
     try {
       const agent_response = await chapter_agent_graph.stream({messages: formatted_input}, {callbacks: []});
@@ -432,12 +409,11 @@ async function send_off(agent_graph, message, stream_handler) {
 
     const chapter_agent_graph = critique_chapter_agent;
 
-    const input = {
-      persona: req.body.persona,
-      prompt_info: req.body.prompt_info,
-      chapter: req.body.chapter,
-      outline: req.body.outline,
-  };
+    
+   
+
+    const input = {persona: req.body.messages.persona, input: `prompt_info: ${req.body.messages.prompt_info} \n\nchapter: ${req.body.messages.chapter} \n\noutline: ${req.body.messages.outline}`, tools: chapter_tools_list[4]};
+
     const formatted_input = await storybuilder_prompt.formatMessages(critique_chapter_agent.tools, input);
     try {
       const agent_response = await chapter_agent_graph.stream({messages: formatted_input}, {callbacks: [stream_handler(res)]});
@@ -467,11 +443,8 @@ async function send_off(agent_graph, message, stream_handler) {
 
     const chapter_agent_graph = vote_critique_chapter_agent;
 
-    const input = {
-      persona: req.body.persona,
-      prompt_info: req.body.prompt_info,
-      critique_bank: req.body.vote_bank
-  };
+    const input = {persona: req.body.messages.persona, input: `prompt_info: ${req.body.messages.prompt_info} \n\ncritique_bank: ${req.body.messages.vote_bank}`, tools: chapter_tools_list[5]};
+
     const formatted_input = await storybuilder_prompt.formatMessages(vote_critique_chapter_agent.tools, input);
     try {
       const agent_response = await chapter_agent_graph.stream({messages: formatted_input}, {callbacks: []});
@@ -501,13 +474,8 @@ async function send_off(agent_graph, message, stream_handler) {
 
     const chapter_agent_graph = rewrite_chapter_agent;
 
-    const input = {
-      persona: req.body.persona,
-      prompt_info: req.body.prompt_info,
-      critique: req.body.critique,
-      outline: req.body.outline,
-      chapter: req.body.chapter,
-  };
+
+    const input = {persona: req.body.messages.persona, input: `prompt_info: ${req.body.messages.prompt_info} \n\ncritique: ${req.body.messages.critique} \n\noutline: ${req.body.messages.outline} \n\nchapter: ${req.body.messages.chapter}`, tools: chapter_tools_list[6]};
 
     const formatted_input = await storybuilder_prompt.formatMessages(rewrite_chapter_agent.tools, input);
 
@@ -539,11 +507,8 @@ async function send_off(agent_graph, message, stream_handler) {
 
     const chapter_agent_graph = vote_rewrite_chapter_agent;
 
-    const input = {
-      persona: req.body.persona,
-      prompt_info: req.body.prompt_info,
-      chapter_bank: req.body.vote_bank
-  };
+    const input = {persona: req.body.messages.persona, input: `prompt_info: ${req.body.messages.prompt_info} \n\nchapter_bank: ${req.body.messages.vote_bank}`, tools: chapter_tools_list[7]};
+
     const formatted_input = await storybuilder_prompt.formatMessages(vote_rewrite_chapter_agent.tools, input);
     try {
       const agent_response = await chapter_agent_graph.stream({messages: formatted_input}, {callbacks: []});
@@ -553,30 +518,6 @@ async function send_off(agent_graph, message, stream_handler) {
       }
       console.log("Agent response:", agent_response);
       res.end(); // End the response when done
-    } catch (err) {
-      console.error(err);
-      if (!res.writableEnded) {
-        res.write(`data: ERROR: ${err.message}\n\n`);
-        res.end();
-      }
-    }
-  });
-
-
-  router.post("/stream-agent", async (req, res) => {
-    res.setHeader("Content-Type", "text/event-stream");
-    res.setHeader("Cache-Control", "no-cache");
-    res.setHeader("Connection", "keep-alive");
-    res.flushHeaders?.();
-
-    const handler = new stream_handler(res);
-
-    try {
-      await agent_executor.stream({
-        input: req.body.prompt,
-      }, {
-        callbacks: [handler],
-      });
     } catch (err) {
       console.error(err);
       if (!res.writableEnded) {
