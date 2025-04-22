@@ -30,15 +30,16 @@ function STORY_LIST() {
   const handle_delete_click = (storyId) => {
     set_story_to_delete(storyId);
     set_delete_modal_opened(true);
-    fetch_user_data(user); // Refresh story list
+
   };
 
   const handle_delete_confirm = async () => {
-    const { data, error } = await use_axios(`${SERVER_URL}/db/story/${user}/${story_to_delete}/delete`, "POST");
+    const { data, error } = await use_axios(`${SERVER_URL}/db/story/${user}/${story_to_delete}/delete`, "POST", {user, story_to_delete});
     if (data === null) {
       console.error("Error deleting story:", error);
     }
     set_delete_modal_opened(false);
+    fetch_user_data(user); // Refresh story list
   };
 
   return (
@@ -91,11 +92,11 @@ function STORY_LIST() {
                     <Button variant="filled" color="gray" fullWidth onClick={() => navigate(`/story/${story._id}/agents`)}>
                       Agents
                     </Button>
-                    {/* 
+                                      
                     <Button variant="filled" color="red" fullWidth onClick={() => handle_delete_click(story._id)}>
                       Delete Story
                     </Button> 
-                    */}
+                   
                   </Stack>
                 </Collapse>
               </div>

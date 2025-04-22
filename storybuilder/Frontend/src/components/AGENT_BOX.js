@@ -84,8 +84,7 @@ function AGENT_BOX({ name, chapter_content, start_event_stream }) {
             </div>
           </div>
         </Modal>
-  
-        {/* Edit Modal */}
+        
         <Modal
           opened={edit_modal_open}
           onClose={() => set_edit_modal_open(false)}
@@ -106,7 +105,7 @@ function AGENT_BOX({ name, chapter_content, start_event_stream }) {
               padding: '10px',
               borderRadius: '8px',
               fontSize: '16px',
-              resize: 'vertical',
+              resize: 'none',
             }}
           />
           <Group justify="right" mt="md">
@@ -114,7 +113,7 @@ function AGENT_BOX({ name, chapter_content, start_event_stream }) {
               variant="light"
               color="teal"
               onClick={() => {
-                //set_chapter_content(edited_content);
+                // set_chapter_content(edited_content); //  save logic
                 set_edit_modal_open(false);
               }}
             >
