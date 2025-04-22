@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Container, Title, Text } from "@mantine/core";
+import { Container, Title } from "@mantine/core";
 import { useParams } from 'react-router';
 import { USE_USER } from '../context/USER_CONTEXT';
 import ReactMarkdown from 'react-markdown';
@@ -11,15 +11,14 @@ function STORY_VIEW() {
   const { user_stories } = USE_USER();
 
   useEffect(() => {
-    if (!story_id || !user_stories?.stories) return;
-
-    const current_story = user_stories.stories.find(
-      (story) => story._id === story_id
-    );
-
-    if (current_story) {
-      set_story_title(current_story.story_name || "Untitled Story");
-      set_chapters(current_story.story_content || []);
+    if (story_id && user_stories?.stories?.length) {
+        const found_story = user_stories.stories.find(
+            (story) => story._id === story_id
+        );
+        if (found_story) {
+            set_story_title(found_story.story_name);
+            set_chapters(found_story.story_content.slice(1));
+        }
     }
   }, [story_id, user_stories]);
   
@@ -39,11 +38,10 @@ function STORY_VIEW() {
               color: '#white',
               fontSize: '18px',
               lineHeight: 1.6,
-              whiteSpace: 'pre-wrap',
             }}
           >
             <ReactMarkdown
-              children={chapter}
+              children={chapter.text}
               components={{
                 p: ({ node, ...props }) => <p style={{ marginBottom: '1em' }} {...props} />,
                 strong: ({ node, ...props }) => <strong style={{ color: '#dee2e6' }} {...props} />,

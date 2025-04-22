@@ -93,7 +93,9 @@ router.post('/aggregate', async (req, res) => {
                         // For now, just return all received SSE data
                         data = data.slice(0, -1); // Remove the last empty chunk or DONE chunk
                         data = data.join(''); // Join the array into a single string
+
                         thoughts = thoughts.join('');
+
                         const agent_name = `${agent_names[idx]}`;
                         const agent_id = `${agent_ids[idx]}`;
                         resolve({ agent_name, agent_id, data, thoughts});

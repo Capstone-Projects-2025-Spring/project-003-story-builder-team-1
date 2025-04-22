@@ -30,24 +30,24 @@ const outline_schema = z.object({
 
 
 const storybuilder_prompt = ChatPromptTemplate.fromTemplate(`
-  You are an imaginative author planning and developing a story. You have access to the following creative tools - Do not ever repeat back the exact tool responses, just use them:
+  You are an imaginative author planning and developing a story. You have access to the following creative tools - After using a tool you will reflect on the output and decide what to do next.
 
   {tools}
-  
-  Each tool helps with a different part of your storytelling process.
-  
+
+  Goal: {input}  
+    
   Use this structure to guide your thinking:
   
-  Goal: the current task you're trying to accomplish (e.g., write, critique, revise the based on critique)  
+  Goal: the current task you're trying to accomplish
+
   Thought: reflect on what the story needs next  
-  Decision: Use the {tool_names} tools to help you with your task then move on to Final Reflection.
   
-  Final Reflection: conlude as an author would what might be done next
+  Final Reflection: Act as if you are an author reflecting on their work. Dont ever return the exact response of a tool, if anything give a short summary of your thoughts on the output of said tool. After this you are done with the current task and can complete
   
-  Begin!
+  IT IS IMPERATIVE YOU NEVER RETURN THE EXACT CONTENT OF A TOOL CALL AS THEY ARE ALREADY STREAMED TO THE USER. YOU ARE NEVER TO PROCEED WITH A NEXT STEP, ONLY EVER DO ONE STEP AND THEN STOP.
+
+  -------  Begin!  --------
   
-  Goal: {input}  
-  Thought:{agent_scratchpad}
 `);
 
 // Patch the prototype so it never errors
