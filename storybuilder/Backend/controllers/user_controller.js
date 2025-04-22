@@ -95,51 +95,58 @@ exports.user_delete = asyncHandler(async (req, res, next) => {
 // Updates user
 exports.user_update = asyncHandler(async (req, res, next) => {
      // store info that was passed
-    const { username, password } = req.body;
+     const { user_id } = req.params
+     const { password, username, new_username, new_password } = req.body;
 
     // checks if info for required fields was sent
     if (!username || !password) {
         return res.status(400).json({ error: "Username and password are required" });
     }
 
+    if (!new_username && !new_password) {
+        return res.status(400).json({ error: "No constant specified for update" });
+    }
+
     // looks to see if the user is within the db
-    const user = await User.findById(req.params.user_id).exec();
-    if (!user) {
+    const existing_user = await User.findById(user_id).exec();
+    if (!existing_user) {
         return res.status(404).json({ error: "User not found" });
     }
 
-    // validates requested username
-    if (username) {
-        const existingUser = await User.findOne({ username }).exec();
-        if (existingUser) {
-            return res.status(400).json({ error: "Username already exists" });
-        }
-        if (!/^[a-zA-Z0-9_]+$/.test(username)) {
-            return res.status(400).json({ message: "Username must be alphanumeric" });
-        }
+    // Check if user exists and if the password matches
+    if (!(await bcrypt.compare(password, existing_user.password))) {
+        return res.status(401).json({ error: "Invalid credentials" });
     }
 
+    // validates requested username
+    if (new_username && new_username !== existing_user.username) {
+        const existing_username = await User.findOne({ new_username }).exec();
+        if (existing_username) {
+            return res.status(409).json({ error: "Username already exists" });
+        }
+        if (!/^[a-zA-Z0-9_]+$/.test(new_username)) {
+            return res.status(400).json({ message: "Username must be alphanumeric" });
+        }
+
+        // if a username was sent to be updated then update
+        existing_user.username = new_username;
+    } 
+
     // validates password
-    if (password) {
+    if (new_password) {
         // Check if the password meets the security criteria
         const password_regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*(),.?":{}|<>])[A-Za-z\d!@#$%^&*(),.?":{}|<>]{8,}$/;
         if (!password_regex.test(password)) {
             return res.status(400).json({ message: "Password must meet the security criteria." });
         }
+
+        const salt = await bcrypt.genSalt(10);
+        existing_user.password = await bcrypt.hash(new_password, salt);
     }
 
-    // if a username was sent to be updated then update
-    if (username) user.username = username;
-    
-    // if a password was sent to be updated then update
-    if (password) {
-        const salt = await bcrypt.genSalt(10);
-        user.password = await bcrypt.hash(password, salt);
-    }
-    
     // save to db
-    await user.save();
-    res.status(200).json({ message: "User updated successfully", user });
+    await existing_user.save();
+    res.status(200).json({ message: "User updated successfully", user: existing_user });
 });
 
 // Display detail page for a specific User

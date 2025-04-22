@@ -41,6 +41,9 @@ Body Requirments:
 - username: the username of the user
 - password: the password of the user
     * password must be alphanumeric
+- new_username: The new username they want to have
+- new_password: The new password they want to have
+    * At least one of the two above need to be provided
 */
 router.post("/user/:user_id/update", user_controller.user_update);
 
