@@ -55,7 +55,14 @@ router.get("/user/:user_id", user_controller.user_details);
 
 /// STORY ROUTES ///
 
-// POST request for creating Story
+/*
+Parameter Requirments:
+- user_id: the id of the user within the db
+Body Requirments:
+- story_name: The name of the story
+- prompt: The prompt containing information about the desired story the LLM will use for generation
+- agents: a list of authors the LLM will mimic while generating
+*/
 router.post("/story/:user_id/create", story_controller.story_create_post);
 
 // GET request for q list of all Stories based on the user_id

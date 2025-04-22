@@ -43,7 +43,7 @@ exports.story_create_post = asyncHandler(async (req, res, next) => {
 
     const agent_ids = new_story.agents.map(agent => agent._id);
 
-    res.status(200).json({ message: "Story created", story: new_story._id, agent_ids: agent_ids });
+    res.status(201).json({ message: "Story created", story: new_story._id, agent_ids: agent_ids });
 });
 
 // Handle Story list get on GET
