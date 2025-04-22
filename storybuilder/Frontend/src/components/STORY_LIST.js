@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'; 
-import { Button, Collapse, Stack, Box, Modal, Divider, Text } from '@mantine/core';
+import { Button, Collapse, Stack, Box, Modal, Divider, Text, Title } from '@mantine/core';
 import { Flex } from '@mantine/core';
 import { IconChevronDown, IconChevronRight } from '@tabler/icons-react';
 import { useNavigate } from 'react-router';
@@ -109,7 +109,7 @@ function STORY_LIST() {
       <Modal
         opened={delete_modal_opened}
         onClose={() => set_delete_modal_opened(false)}
-        title="Delete Story"
+        title={<Title component="div" order={3}>Delete Story</Title>}
         centered
       >
         <Divider my="sm" mt={1} />
