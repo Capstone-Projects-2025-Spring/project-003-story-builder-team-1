@@ -154,7 +154,7 @@ router.get('/translate', async (req, res) => {
         );
 
         return new Promise((resolve, reject) => {
-            let data = [];
+            let buffer = [];
             courier_response.data.on('data', chunk => {
                 //console.log("translator chunk: ", chunk.toString());
                 let str = chunk.toString();
@@ -175,7 +175,7 @@ router.get('/translate', async (req, res) => {
                         .slice(0, -2)) // Remove "\n\n" suffix
                         .join(''); // Join the array into a single string
                     //console.log("Buffer on end:", buffer);
-                    resolve(res.status(200).json({ message: "Data Received Successfully", data}));
+                    resolve(res.write(`event: done\ndata: ${JSON.stringify({ message: "Data received successfully" }, {data: buffer})}\n\n`), res.end());
                 } else if (chunk.toString().startsWith("{\"error")) {
                     const errorMessage = JSON.parse(chunk.toString());
                     return res.status(404).json({ error: errorMessage.error });
@@ -186,8 +186,8 @@ router.get('/translate', async (req, res) => {
             courier_response.data.on('end', () => {
                 // Optionally: parse out just the relevant story from data
                 // For now, just return all received SSE data
-                data = data.slice(0, -1); // Remove the last empty chunk or DONE chunk
-                data = data.map(
+                buffer = buffer.slice(0, -1); // Remove the last empty chunk or DONE chunk
+                buffer = buffer.map(
                     event => event
                     .replace(/^data: /, '') // Remove "data: " prefix
                     .slice(0, -2)) // Remove "\n\n" suffix
@@ -195,7 +195,7 @@ router.get('/translate', async (req, res) => {
 
                 const agent_name = `${agent_names[idx]}`;
                 const agent_id = `${agent_ids[idx]}`;
-                resolve({ agent_name, agent_id, data,});
+                resolve({ agent_name, agent_id, buffer,});
                 res.end(); // Close the SSE stream
             });
             courier_response.data.on('error', err => {
