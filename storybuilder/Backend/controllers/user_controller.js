@@ -21,13 +21,13 @@ exports.create_user = asyncHandler(async (req, res, next) => {
 
     // Validate username format
     if (!/^[a-zA-Z0-9_]+$/.test(username)) {
-        return res.status(400).json({ message: "Username must be alphanumeric" });
+        return res.status(400).json({ error: "Username must be alphanumeric" });
     }
 
     // Password validation (minimum 8 characters, etc.)
     const password_regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*(),.?":{}|<>])[A-Za-z\d!@#$%^&*(),.?":{}|<>]{8,}$/;
     if (!password_regex.test(password)) {
-        return res.status(400).json({ message: "Password must meet the security criteria." });
+        return res.status(400).json({ error: "Password must meet the security criteria." });
     }
     
     //creates an account
@@ -35,7 +35,7 @@ exports.create_user = asyncHandler(async (req, res, next) => {
     await newUser.save();
 
     //returns successfull message
-    res.status(200).json({ message: "Account created successfully" });
+    res.status(201).json({ message: "Account created successfully" });
 });
 
 // Checks login credentials of user
