@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Button, Stack } from '@mantine/core';
+import { Button, Stack, Box } from '@mantine/core';
 import { useNavigate, useParams } from 'react-router';
 import { USE_USER } from '../context/USER_CONTEXT';
 
@@ -8,6 +8,8 @@ function CHAPTER_LIST() {
   const { story_id } = useParams();
   const [chapters, set_chapters] = useState([]);
   const { user_stories } = USE_USER();
+
+  console.log("Rendering CHAPTER_LIST")
 
   useEffect(() => {
     if (story_id && user_stories?.stories) {
@@ -20,18 +22,16 @@ function CHAPTER_LIST() {
     }
   }, [story_id, user_stories]);
 
-  // hardcoded for 1 story for now MUST CHANGE
   const handle_chapter_click = (index) => {
     navigate(`/story/${story_id}/view/${index}`);
   };
 
-  // hardcoded for 1 story for now MUST CHANGE
   const handle_view_entire_story = () => {
     navigate(`/story/${story_id}/view`);
   };
 
   return (
-    <Stack spacing="xs" mt="xs">
+    <Stack spacing="xs" mt="xs" style={{ height: '100%' }}>
       {/* View Entire Story Button */}
       <Button
         variant="default"
@@ -42,6 +42,13 @@ function CHAPTER_LIST() {
         View Entire Story
       </Button>
 
+      <Box
+        style={{
+          flex: 1,
+          overflowY: 'auto',
+        }}
+      >
+      <Stack spacing="xs" mt="xs">
       {/* Chapter Buttons */}
       {chapters.map((chapter, index) => (
         <Button
@@ -51,9 +58,11 @@ function CHAPTER_LIST() {
           fullWidth
           onClick={() => handle_chapter_click(index)}
         >
-          {index === 0 ? "Outline" : `Chapter ${index}`}
+          {index === 0 ? 'Outline' : `Chapter ${index}`}
         </Button>
       ))}
+      </Stack>
+      </Box>
     </Stack>
   );
 }
