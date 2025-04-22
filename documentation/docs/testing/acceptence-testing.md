@@ -5,13 +5,16 @@ sidebar_position: 3
 
 | Test ID | Actions/Steps | Notes/Expected Results
 | -------- | ------- | -------
-| 1 | **Invalid Prompt**: Go to the Home Page for Story Builder. Leave one of the required boxes empty and click "Send Prompt". | Check to see if the an error appears.
-| 2 | **Generate an Outline**: Send a prompt with valid information and more than two chapter. Click "Send Prompt" only once and wait for the outline. | Check if redirected to a page with the story outline with the amount of specifed chapters
-| 3 | **Check Agent Tab**: Click on the "Story 1" tab on the top right to open up a menu with other tabs. Click the "Agent" tab and check to see if you are rediected. | A box containing the individual response should be visible and scrollable.
-| 4 | **Check Continue Button on Agent Tab**: Click the "Continue" button to generate the next prompt. | The page should update with the new prompt. Scroll in the box to view the first chapter.
-| 5 | **Check Best Response Tab**: Click on the "Best Response" tab. If not visible click on "Story 1" tab first. Click the "Continue" button to generate chapter two. | Check if chapter 2 is visible within the response box on the screen.
-| 6| **Check Best Response Continue Button**: Navigate to the "Best Response" page. Click the "Continue" button found on the best response page. | The next chapter should appear within the text box.
-| 7 | **Veiw Story**: Click on "Story 1" tab. Then click on "View Story" tab. | The entire story should be on screen.
-| 8 | **View Chapters**: Click on "Story 1" tab. Then click on "View Story" tab. On the right side, click on a chapter tab to view the individual chapter. | The entire generated chapter should be displayed
-| 9 | **View Outline**: Click on "Story 1" tab. Then click on "View Story" tab. On the rightside , click on the "Outline" tab to view the outline. | The generated outline should be displayed.
-| 10| **Check Disappearing Continue Button** Generate chapters one at a time until the amount of chapters originally specified in the prompt have been generated. Navigate to the "Best Response" page and the "Agent" page by clicking their tabs on the left. | Check if the "Continue" button is gone.
+| 1 | **Access Create Account Page**: Click the "Create Account" Button. | See if you are redirected to the Account Creation Page.
+| 2 | **Create Account**: Fill in the fields for the Username, Password, and Confirm Password, and click the button. | See if you received the confirmation popup.
+| 3 | **Login**: Fill in the Login fields with the appropriate information, and press hte button | Ensure you are now on the Home Page.
+| 4 | **Generate New Story**: Click the "Generate New Story" button, and select/remove any Agents you want. | See if the fields for story information appear.
+| 5 | **Agnet Amount LImit**: When selecting agents, ensure that you cannot have more than 5 agents created. | See if the ability to create new agents dissapears after five slots appear.
+| 6 | **Generate Outline**: Fill out the required fields, and press the "Send Prompt" | Agent responses should begin to generate.
+| 7 | **Check Agent Tab**: Ensure you are in the Agent Tab, and view the live response | Boxes containing the individual responses and thoughts should be visible, with larger popups available.
+| 8 | **Check Continue Button on Agent Tab**: Click the "Continue" button to generate the next prompt. | The page should update with the new prompt. Scroll in the box to view the first chapter.
+| 9 | **Check Best Response Tab**: Click on the "Best Response" tab. If not visible click on Story's tab first. Click the "Continue" button to generate chapter two. | Check if chapter 2 is visible within the response box on the screen.
+| 10 | **Veiw Story**: Click on the Story's tab. Then click on "View Story" tab. | The entire story should be on screen.
+| 11 | **View Chapters**: Click on Story's tab. Then click on "View Story" tab. On the right side, click on a chapter tab to view the individual chapter. | The entire generated chapter should be displayed
+| 12 | **View Outline**: Click on Story's tab. Then click on "View Story" tab. On the rightside , click on the "Outline" tab to view the outline. | The generated outline should be displayed.
+| 13| **Check Disappearing Continue Button** Generate chapters one at a time until the amount of chapters originally specified in the prompt have been generated. Navigate to the "Best Response" page and the "Agent" page by clicking their tabs on the left. | Check if the "Continue" button is gone.
