@@ -151,7 +151,10 @@ router.post('/translate', async (req, res) => {
                         .slice(0, -2)) // Remove "\n\n" suffix
                         .join(''); // Join the array into a single string
                     //console.log("Buffer on end:", buffer);
-                    resolve(res.status(200).json({ message: "Data Received Successfully", data: { ...data, response: buffer } }));
+                    resolve(res.status(200).json({ message: "Data Received Successfully", data}));
+                } else if (chunk.toString().startsWith("{\"error")) {
+                    const errorMessage = JSON.parse(chunk.toString());
+                    return res.status(404).json({ error: errorMessage.error });
                 }
                 else
                     buffer.push(chunk.toString());

@@ -119,7 +119,11 @@ router.post('/aggregate', async (req, res) => {
                 votes: agent_votes
         };
 
-        await db_store(req.body.data.step, req.body.data.user_id, req.body.data.story_id, req.body.data.chapter_number, db_data);
+        const db_response = await db_store(req.body.data.step, req.body.data.user_id, req.body.data.story_id, req.body.data.chapter_number, db_data, res);
+
+        if (!db_response) {
+            return; // If db_store failed, do not send res.write
+        };
         // res.json({
         //     bestResponse: bestResult,
         //     allResults: agentResults,
@@ -134,7 +138,7 @@ router.post('/aggregate', async (req, res) => {
     }
 });
 
-async function db_store(step, user_id, story_id, chapter_number, responses) {
+async function db_store(step, user_id, story_id, chapter_number, responses, res) {
     console.log("allResults", responses.allResults);
     try {
         switch(step) {
@@ -167,11 +171,13 @@ async function db_store(step, user_id, story_id, chapter_number, responses) {
                 await axios.post(`${APP_URL}/db/story/${user_id}/${story_id}/add_agent_chapter`, {chapter_number: chapter_number, content: responses.allResults, votes: responses.votes});
                 break;
             default:
-                return res.status(400).json({ message: "Invalid step provided." });
+                throw new Error("Invalid step provided");
         }
+        return true;
     } catch (error) {
-        console.error("Error adding agent data to database:", error.message);
-        return res.status(500).json({ message: "Failed to add agent data to database", error: error.message });
+        const db_error = { error: error.message || "Failed to add agent data to database" };
+        res.write(JSON.stringify(db_error));
+        return false;
     }
 }
 
