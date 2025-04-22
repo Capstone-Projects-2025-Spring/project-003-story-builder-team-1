@@ -151,9 +151,10 @@ exports.user_update = asyncHandler(async (req, res, next) => {
 
 // Display detail page for a specific User
 exports.user_details = asyncHandler(async (req, res, next) => {
-    const user = await User.findById(req.params.user_id).populate("stories").exec();
-    if (!user) {
+    const { user_id } = req.params
+    const existing_user = await User.findById(user_id).populate("stories").exec();
+    if (!existing_user) {
         return res.status(404).json({ error: "User not found" });
     }
-    res.json(user);
+    res.status(200).json(existing_user);
 });
