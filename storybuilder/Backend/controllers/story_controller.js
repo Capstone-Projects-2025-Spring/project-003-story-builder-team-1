@@ -5,7 +5,7 @@ const Persona = require("../models/persona");
 const asyncHandler = require("express-async-handler");
 
 // Handle Story create on POST
-exports.story_create_post = asyncHandler(async (req, res, next) => {
+exports.story_create = asyncHandler(async (req, res, next) => {
     const { story_name, prompt, agents } = req.body;
     const { user_id } = req.params; 
 

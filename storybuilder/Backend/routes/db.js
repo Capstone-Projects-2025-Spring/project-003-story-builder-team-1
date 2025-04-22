@@ -63,7 +63,7 @@ Body Requirments:
 - prompt: The prompt containing information about the desired story the LLM will use for generation
 - agents: a list of authors the LLM will mimic while generating
 */
-router.post("/story/:user_id/create", story_controller.story_create_post);
+router.post("/story/:user_id/create", story_controller.story_create);
 
 // GET request for q list of all Stories based on the user_id
 router.get("/story/:user_id/get_stories", story_controller.user_stories_list);
