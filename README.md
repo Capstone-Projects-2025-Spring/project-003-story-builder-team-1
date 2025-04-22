@@ -28,7 +28,7 @@ The amount of agents running at a time is scalable, and the user will decide how
 
 Many AI clients and web applications exist in order to make it easier for non-technical people to access this technology, such as ChatGPT and Deepseek’s websites. There are also plenty of programs the user can choose to locally host LLMs, like Ollama and Text Generation WebUI. These options usually either require too much setup for casual users or provide fewer customization options in the refinement process. ChatGPT, for example, will provide, at most, two agents at a time, and these agents only return the output without critiquing it themselves first. By including elements from both approaches to LLM interfaces, this application reaps the benefits of a technician-focused user experience with the ease of use of Llama and OpenAI’s web clients.
 
-## Running Instructions:
+Running Instructions:
 1. Ensure that [npm & node](https://nodejs.org/en) and [Docker](https://www.docker.com/products/docker-desktop/) are installed on your system.
 2. Clone the repository.
 3. Ensure that [Docker](https://www.docker.com/products/docker-desktop/) is running on your system and that docker is open.
@@ -36,8 +36,14 @@ Many AI clients and web applications exist in order to make it easier for non-te
 5. Next, in one terminal, run ``npm run build:f``.
 6. Next, in another terminal, run ``node storybuilder/Agent/agent_container/agent_server_d.js``.
 7. Next, in another terminal, run ``PORT=5001 node storybuilder/Agent/agent_container/agent_server_d.js``.
-8. Next, in another terminal, run ``npm run start:b``.
+8. Next, in another terminal, run ``cd storybuilder/Backend``, and then ``node server.js``.
+
 NOTE: Ensure you are using a Git Bash terminal if on Windows
+NOTE: On Windows, if something does not work, run the following command to see if something is occupying Port 5000 or 5001: ``netstat -ano | findstr :500x``. If this is the case, close whatever is open on Port 5000 or Port 5001.
+
+If the previous running instructions still do not work, do the following instead of ``npm run setup``:
+1. Do ``cd storybuilder/Backend/``, and then ``npm install``.
+2. Return to the root directory of the Repository, and then do ``cd storybuilder/Agent/agent_container``, and then ``npm install``
 
 ## Collaborators
 
