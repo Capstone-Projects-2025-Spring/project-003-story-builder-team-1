@@ -17,4 +17,6 @@ sidebar_position: 3
 | 10 | **View Story**: Click on the Story's tab. Then click on "View Story" tab. | The entire story should be on screen.
 | 11 | **View Chapters**: Click on Story's tab. Then click on "View Story" tab. On the right side, click on a chapter tab to view the individual chapter. | The entire generated chapter should be displayed
 | 12 | **View Outline**: Click on Story's tab. Then click on "View Story" tab. On the rightside , click on the "Outline" tab to view the outline. | The generated outline should be displayed.
-| 13| **Check Disappearing Continue Button** Generate chapters one at a time until the amount of chapters originally specified in the prompt have been generated. Navigate to the "Best Response" page and the "Agent" page by clicking their tabs on the left. | Check if the "Continue" button is gone.
+| 13| **Check Disappearing Continue Button**: Generate chapters one at a time until the amount of chapters originally specified in the prompt have been generated. Navigate to the "Best Response" page and the "Agent" page by clicking their tabs on the left. | Check if the "Continue" button is gone.
+| 14 | **Delete Story**: Click on Story's tab. Then click on "View Story" tab. On the rightside , click on the "Delete Story" button and delete the story. | The generated story content should be destroyed.
+
