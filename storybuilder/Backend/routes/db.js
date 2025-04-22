@@ -55,7 +55,7 @@ router.get("/user/:user_id", user_controller.user_details);
 
 /// STORY ROUTES ///
 
-/*
+/* Create a Story
 Parameter Requirments:
 - user_id: the id of the user within the db
 Body Requirments:
