@@ -39,7 +39,10 @@ Running Instructions:
 8. Next, in another terminal, run ``cd storybuilder/Backend``, and then ``node server.js``.
 
 NOTE: Ensure you are using a Git Bash terminal if on Windows
-NOTE: On Windows, if something does not work, run the following command to see if something is occupying Port 5000 or 5001: ``netstat -ano | findstr :500x``. If this is the case, close whatever is open on Port 5000 or Port 5001.
+
+NOTE: On Windows, if something does not work, run the following command to see if something is occupying Port 5000 or 5001: ``netstat -ano | findstr :500x``. If this is the case, close whatever is open on Port 5000 or Port 5001. 
+
+NOTE: The mac equivalent command to check is something is occupying is: ``lsof -i :5000`` or ``lsof -i :5001``.  To kill it run ``kill -9 PID`` replace the PID with the PID identified through the lsof command.
 
 If the previous running instructions still do not work, do the following instead of ``npm run setup``:
 1. Do ``cd storybuilder/Backend/``, and then ``npm install``.
