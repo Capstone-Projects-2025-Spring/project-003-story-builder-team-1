@@ -14,7 +14,7 @@ sidebar_position: 3
 | 7 | **Check Agent Tab**: Ensure you are in the Agent Tab, and view the live response | Boxes containing the individual responses and thoughts should be visible, with larger popups available.
 | 8 | **Check Continue Button on Agent Tab**: Click the "Continue" button to generate the next prompt. | The page should update with the new prompt. Scroll in the box to view the first chapter.
 | 9 | **Check Best Response Tab**: Click on the "Best Response" tab. If not visible click on Story's tab first. Click the "Continue" button to generate chapter two. | Check if chapter 2 is visible within the response box on the screen.
-| 10 | **Veiw Story**: Click on the Story's tab. Then click on "View Story" tab. | The entire story should be on screen.
+| 10 | **View Story**: Click on the Story's tab. Then click on "View Story" tab. | The entire story should be on screen.
 | 11 | **View Chapters**: Click on Story's tab. Then click on "View Story" tab. On the right side, click on a chapter tab to view the individual chapter. | The entire generated chapter should be displayed
 | 12 | **View Outline**: Click on Story's tab. Then click on "View Story" tab. On the rightside , click on the "Outline" tab to view the outline. | The generated outline should be displayed.
 | 13| **Check Disappearing Continue Button** Generate chapters one at a time until the amount of chapters originally specified in the prompt have been generated. Navigate to the "Best Response" page and the "Agent" page by clicking their tabs on the left. | Check if the "Continue" button is gone.
