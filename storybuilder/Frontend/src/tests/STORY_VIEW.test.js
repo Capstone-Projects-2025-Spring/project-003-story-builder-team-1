@@ -10,7 +10,7 @@ jest.mock("axios", () => ({
 const mock_state = {
   current_story: {
       title: "Mock Story",
-      chapters: ["Chapter 1 Mock Data"],
+      chapters: ["Chapter 1 Mock Data", "Chapter 2 Mock Data"],
   },
 };
 
@@ -34,6 +34,6 @@ describe('STORY_VIEW Component', () => {
 
     // Check if the mock data is rendered
     expect(screen.getByText('Mock Story')).toBeInTheDocument();
-    expect(screen.getByText('Chapter 1 Mock Data')).toBeInTheDocument();
+    expect(screen.getByText("Chapter 2 Mock Data")).toBeInTheDocument();
   });
 });

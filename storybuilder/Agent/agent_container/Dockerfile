@@ -1,5 +1,5 @@
 # Use official Node.js image
-FROM node:18
+FROM node:22-alpine
 
 WORKDIR /app
 
@@ -14,4 +14,4 @@ ENV PORT=$PORT
 
 EXPOSE 5000
 
-CMD ["node", "agent_server.js"]
+CMD ["node", "agent_server_d.js"]

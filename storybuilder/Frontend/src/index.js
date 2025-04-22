@@ -2,13 +2,13 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App';
 import { MantineProvider } from '@mantine/core';
-import {Story_Provider} from './context/STORY_CONTEXT';
+import {STORY_PROVIDER} from './context/STORY_CONTEXT';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
     <MantineProvider theme={{colorScheme: 'dark'}} defaultColorScheme="dark" withGlobalStyles withNormalizeCSS>
-        <Story_Provider>
+        <STORY_PROVIDER>
             <App />
-        </Story_Provider>
+        </STORY_PROVIDER>
     </MantineProvider>
 );

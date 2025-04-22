@@ -1,0 +1,12 @@
+services:
+  agent:
+    image: "${AGENT_NAME}-agent"  # Unique image name per agent
+    build: .
+    container_name: "${AGENT_NAME}-agent"  # Unique container name
+    environment:
+      - OPENAI_API_KEY=${OPENAI_API_KEY}  # OpenAI API key for the agent
+      - DEEPSEEK_API_KEY=${DEEPESEEK_API_KEY}  # DeepSeek API key for the agent
+      - API_KEY=${DEEPSEEK_API_KEY}
+      - AGENT_NAME=${AGENT_NAME}
+    ports:
+      - "5000:5000"  # Custom external port

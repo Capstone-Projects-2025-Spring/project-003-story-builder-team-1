@@ -18,7 +18,7 @@ jest.mock('react-router', () => ({
 const mock_state = {
   current_story: {
       title: "Mock Story",
-      chapters: ["Chapter 1 Mock Data", "Chapter 2 Mock Data"],
+      chapters: ["Outline", "Chapter 1 Mock Data", "Chapter 2 Mock Data"],
   },
 };
 
@@ -43,6 +43,7 @@ describe('CHAPTER_LIST Component', () => {
       </MemoryRouter>
     );
     // Chapter list automatically puts index + 1 of chapter
+    expect(screen.getByText('Outline')).toBeInTheDocument();
     expect(screen.getByText('Chapter 1')).toBeInTheDocument();
     expect(screen.getByText('Chapter 2')).toBeInTheDocument();
   });

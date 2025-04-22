@@ -1,20 +1,27 @@
-import { useState, useContext, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Container, Title } from "@mantine/core";
+import { useParams } from 'react-router';
+import { USE_USER } from '../context/USER_CONTEXT';
 import ReactMarkdown from 'react-markdown';
-import STORY_CONTEXT from "../context/STORY_CONTEXT";
 
-function STORY_VIEW({ }) {
-  const { state } = useContext(STORY_CONTEXT);
+function STORY_VIEW() {
+  const { story_id } = useParams();
   const [story_title, set_story_title] = useState("Story Title");
   const [chapters, set_chapters] = useState([]);
+  const { user_stories } = USE_USER();
 
   useEffect(() => {
-    if (state.current_story) {
-      set_story_title(state.current_story.title);
-      set_chapters(state.current_story.chapters.slice(1)); // remove outline
+    if (story_id && user_stories?.stories?.length) {
+        const found_story = user_stories.stories.find(
+            (story) => story._id === story_id
+        );
+        if (found_story) {
+            set_story_title(found_story.story_name);
+            set_chapters(found_story.story_content.slice(1));
+        }
     }
-  }, [state.current_story]);
-
+  }, [story_id, user_stories]);
+  
   return (
     <Container fluid style={{ display: 'flex', flexDirection: 'column', gap: '24px', maxWidth: '100%', margin: 'auto' }}>
       {/* Story Title */}
@@ -31,11 +38,10 @@ function STORY_VIEW({ }) {
               color: '#white',
               fontSize: '18px',
               lineHeight: 1.6,
-              whiteSpace: 'pre-wrap',
             }}
           >
             <ReactMarkdown
-              children={chapter}
+              children={chapter.text}
               components={{
                 p: ({ node, ...props }) => <p style={{ marginBottom: '1em' }} {...props} />,
                 strong: ({ node, ...props }) => <strong style={{ color: '#dee2e6' }} {...props} />,
