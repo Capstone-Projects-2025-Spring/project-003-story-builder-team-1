@@ -32,7 +32,7 @@ const stream_handler = (res = null, tool_call) => BaseCallbackHandler.fromMethod
     if (!parentRunId) {
       if(res)
         res.end(); // End the stream for the outermost run
-      console.log('\n');
+      console.log('\nAgent invocation completed.\n');
     }
     process.stdout.write("\n");
   },
