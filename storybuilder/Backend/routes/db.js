@@ -28,6 +28,9 @@ router.post('/account_login', user_controller.user_login);
 /* Deletes an account
 Parameter Requirments:
 - user_id: the id of the user within the db
+Body Requirments:
+- password: the password of the user
+    * password must be alphanumeric
 */
 router.post("/user/:user_id/delete", user_controller.user_delete);
 

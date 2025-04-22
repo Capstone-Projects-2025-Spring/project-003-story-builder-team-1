@@ -14,8 +14,8 @@ exports.create_user = asyncHandler(async (req, res, next) => {
     }
 
     // checks to see if the username is taken
-    const existingUser = await User.findOne({ username }).exec();
-    if (existingUser) {
+    const existing_user = await User.findOne({ username }).exec();
+    if (existing_user) {
         return res.status(409).json({ error: "Username already exists" });
     }
 
@@ -31,8 +31,8 @@ exports.create_user = asyncHandler(async (req, res, next) => {
     }
     
     //creates an account
-    const newUser = new User({ username, password });
-    await newUser.save();
+    const new_user = new User({ username, password });
+    await new_user.save();
 
     //returns successfull message
     res.status(201).json({ message: "Account created successfully" });
@@ -49,26 +49,32 @@ exports.user_login = asyncHandler(async (req, res, next) => {
     }
 
     //checks the db to see if username exists
-    const existingUser = await User.findOne({ username }).exec();
+    const existing_user = await User.findOne({ username }).exec();
     
     // Check if user exists and if the password matches
-    if (!existingUser || !(await bcrypt.compare(password, existingUser.password))) {
+    if (!existing_user || !(await bcrypt.compare(password, existing_user.password))) {
         return res.status(401).json({ error: "Invalid login credentials" });
     }
 
     // If credentials are correct, return the user_id
-    res.status(200).json({ message: "Login successful", user_id: existingUser._id });
+    res.status(200).json({ message: "Login successful", user_id: existing_user._id });
 });
 
 // Delete an account (user)
 exports.user_delete = asyncHandler(async (req, res, next) => {
     // store info that was passed
     const { user_id } = req.params;
+    const { password } = req.body;
 
     // looks to see if the user is within the db
-    const user = await User.findById(user_id);
-    if (!user) {
+    const existing_user = await User.findById(user_id);
+    if (!existing_user) {
         return res.status(404).json({ error: "User not found" });
+    }
+
+    // Check if user exists and if the password matches
+    if (!(await bcrypt.compare(password, existing_user.password))) {
+        return res.status(401).json({ error: "Invalid credentials" });
     }
     
     try {
@@ -84,7 +90,6 @@ exports.user_delete = asyncHandler(async (req, res, next) => {
         // Handle errors if the deletion fails
         return res.status(500).json({ error: "Something went wrong during deletion" });
     }
-
 });
 
 // Updates user
