@@ -43,32 +43,81 @@ router.post('/story_call', async (req, res) => {
 });
 
 router.post('/aggregate', async (req, res) => {
+    // Pre changes
     console.log("Aggregate request received:", req.body);
-    const input = req.body.messages;
-    console.log("Aggregate request received with input:", input);
-    const data = req.body.data;
+    const { data, messages } = req.body;
+    const story_step = data.step;
     console.log("Aggregate request received with data:", data);
     const agent_data = data.story_agents;
     const agent_names = agent_data.map(agent => agent.agent_name);
     const agent_ids = agent_data.map(agent => agent.agent_id);
     console.log("Agent data:", agent_data, "Agent names:", agent_names, "Agent IDs:", agent_ids);
+    
+    let agentroute = 'http://localhost:{port}/agent/{step}';
+    let agent_endpoints = [];
+    for(let i = 0; i < data.story_agents.length; i++) {
+        let new_route = agentroute.replace(/{port}/, 5000+i);
+        agent_endpoints.push(new_route);
+        agent_endpoints[i] = agent_endpoints[i].replace(/{step}/, story_step);
+    }
+    console.log(agent_endpoints);
 
     const agentEndpoints = [
-        'http://localhost:5000/agent/stream_graph',
-        'http://localhost:5001/agent/stream_graph', // Example endpoint for Jane Austen agent
+        'http://localhost:5000/agent/generate_outline',
+        'http://localhost:5001/agent/generate_outline', // Example endpoint for Jane Austen agent
         //'http://localhost:5002/agent/stream_graph', // Example endpoint for Tolkien agent
         //'http://localhost:5003/agent/stream_graph', // Example endpoint for another agent
     ];      
     // Store responses and votes
-    const votes = {};
-  
+    let agent_send = {};
     try {
         // For each agent, open the stream and read ALL data
-        const agentResults = await Promise.all(
-            agentEndpoints.map(async (agent , idx) => {
+        const agent_results = await Promise.all(
+            //chosen endpoint above send out as a promise
+            agentEndpoints.map(async (agent, idx) => {
+                //grab persona associated with agent
+                const persona = data.story_agents[idx].persona;
+                //begin adding persona (always will be the first input variable in all tools)
+                agent_send = {
+                    persona
+                  };
+              
+                  switch (story_step) {
+                    case "generate_outline":
+                      agent_send.prompt_info = `${data.generate_outline.story_details} ${data.generate_outline.extra_details}`.trim();
+                      break;
+                    case "critique_outline":
+                      agent_send.prompt_info = `${data.critique_outline.story_details} ${data.critique_outline.extra_details}`.trim();
+                      agent_send.outline = data.critique_outline_story_outline;
+                      break;
+                    case "rewrite_outline":
+                      agent_send.prompt_info = `${data.rewrite_outline.story_details} ${data.rewrite_outline.extra_details}`.trim();
+                      agent_send.outline = data.rewrite_outline.story_outline;
+                      break;
+                    case "generate_first_chapter":
+                      agent_send.prompt_info = `${data.generate_first_chapter.story_details} ${data.generate_first_chapter.extra_details}`.trim();
+                      agent_send.outline = data.generate_first_chapter.story_outline;
+                      break;
+                    case "generate_next_chapter":
+                      agent_send.prompt_info = `${data.generate_next_chapter.story_details} ${data.generate_next_chapter.extra_details}`.trim();
+                      agent_send.chapter = data.generate_next_chapter.previous_chapters;
+                      agent_send.outline = data.generate_next_chapter.story_outline;
+                      break;
+                    case "critique_chapter":
+                      agent_send.prompt_info = `${data.critique_chapter.story_details} ${data.critique_chapter.extra_details}`.trim();
+                      agent_send.chapter = data.critique_chapter.chapter;
+                      agent_send.outline = data.critique_chapter.story_outline;
+                      break;
+                    case "rewrite_chapter":
+                      agent_send.prompt_info = `${data.rewrite_chapter.story_details} ${data.rewrite_chapter.extra_details}`.trim();
+                      agent_send.chapter = data.rewrite_chapter.chapter;
+                      agent_send.outline = data.rewrite_chapter.story_outline;
+                      agent_send.critique = data.rewrite_chapter.chapter;
+                      break;
+                  }
                 const response = await axios.post(
                     agent,
-                    { data },
+                    { messages: agent_send },
                     { headers: { "Content-Type": "application/json" }, responseType: 'stream' }
                 );
                 return new Promise((resolve, reject) => {
@@ -93,9 +142,7 @@ router.post('/aggregate', async (req, res) => {
                         // For now, just return all received SSE data
                         data = data.slice(0, -1); // Remove the last empty chunk or DONE chunk
                         data = data.join(''); // Join the array into a single string
-
                         thoughts = thoughts.join('');
-
                         const agent_name = `${agent_names[idx]}`;
                         const agent_id = `${agent_ids[idx]}`;
                         resolve({ agent_name, agent_id, data, thoughts});
@@ -106,8 +153,8 @@ router.post('/aggregate', async (req, res) => {
         );
         // At this point, all agent SSE streams are OVER and you have all data
         // We need to develop the logic to determine the best response from our results
-        const bestResult = agentResults.find(r => r.data && r.data.length > 0);
-        console.log("Best result from agents:", bestResult);
+        const best_result = agent_results.find(r => r.data && r.data.length > 0);
+        console.log("Best result from agents:", best_result);
 
         const agent_votes = agent_data.map((agent) => ({
             agent_name: agent.agent_name,
@@ -116,23 +163,19 @@ router.post('/aggregate', async (req, res) => {
         }));
         
         const db_data = {
-                bestResponse: bestResult,
-                allResults: agentResults,
+                bestResponse: best_result,
+                allResults: agent_results,
                 votes: agent_votes
         };
 
-        const db_response = await db_store(req.body.data.step, req.body.data.user_id, req.body.data.story_id, req.body.data.chapter_number, db_data, res);
-
-        if (!db_response) {
-            return; // If db_store failed, do not send res.write
-        };
+        await db_store(req.body.data.step, req.body.data.user_id, req.body.data.story_id, req.body.data.chapter_number, db_data);
         // res.json({
         //     bestResponse: bestResult,
         //     allResults: agentResults,
         // }); // Send the best response to the client
         res.write(JSON.stringify({
-            bestResponse: bestResult,
-            allResults: agentResults,
+            bestResponse: best_result,
+            allResults: agent_results,
         })); // Send the best response to the client
     } catch (error) {
         console.error(error);
@@ -140,7 +183,7 @@ router.post('/aggregate', async (req, res) => {
     }
 });
 
-async function db_store(step, user_id, story_id, chapter_number, responses, res) {
+async function db_store(step, user_id, story_id, chapter_number, responses) {
     console.log("allResults", responses.allResults);
     try {
         switch(step) {
@@ -173,13 +216,11 @@ async function db_store(step, user_id, story_id, chapter_number, responses, res)
                 await axios.post(`${APP_URL}/db/story/${user_id}/${story_id}/add_agent_chapter`, {chapter_number: chapter_number, content: responses.allResults, votes: responses.votes});
                 break;
             default:
-                throw new Error("Invalid step provided");
+                return res.status(400).json({ message: "Invalid step provided." });
         }
-        return true;
     } catch (error) {
-        const db_error = { error: error.message || "Failed to add agent data to database" };
-        res.write(JSON.stringify(db_error));
-        return false;
+        console.error("Error adding agent data to database:", error.message);
+        return res.status(500).json({ message: "Failed to add agent data to database", error: error.message });
     }
 }
 

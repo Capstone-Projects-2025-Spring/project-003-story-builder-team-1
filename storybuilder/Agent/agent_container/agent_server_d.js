@@ -1,5 +1,5 @@
 import express from "express";
-import agent_routes from "./routes/generate.js"; // Import agent route
+import agent_routes from "./routes/agent_routes.js"; // Import agent route
 import deepseek from "./deepseek_service.js";
 
 const app = express();

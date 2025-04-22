@@ -2,7 +2,6 @@ import { createSupervisor } from "@langchain/langgraph-supervisor";
 import { createReactAgent, ToolNode } from "@langchain/langgraph/prebuilt";
 import { ChatDeepSeek } from "@langchain/deepseek";
 import { Annotation } from "@langchain/langgraph";
-import { z } from "zod";
 import { stream_handler } from "../stream_handler.js";
 import { ChatPromptTemplate } from "@langchain/core/prompts";
 import outline_tools from "../tools/zod_out_tools.js";
@@ -10,19 +9,32 @@ import chapter_tools from "../tools/zod_chap_tools.js";
 import { ChatOpenAI } from "@langchain/openai";
 const callbacks = [stream_handler()];
 // 1) Define the exact shape you want:
+/*
 const outline_schema = z.object({
-    chapters: z.array(z.object({
+    outline: z.array(
+      z.object({
         title: z.string(),
         summary: z.string(),
-    })),
+      })
+    ),
     totalChapters: z.number(),
 });
+
+const chapter_schema = z.object({
+  chapters: z.array(
+    z.object({
+      title: z.string(),
+      content: z.string(),
+    })
+  ),
+  totalChapters: z.number(),
+});
+
+*/
 const storybuilder_prompt = ChatPromptTemplate.fromTemplate(`
-  You are an imaginative author planning and developing a story. You have access to the following creative tools - After using a tool you will reflect on the output and decide what to do next.
+   You are an imaginative author planning and developing a story. You have access to the following creative tools - After using a tool you will reflect on the output and decide what to do next.
 
   {tools}
-
-  Goal: {input}  
     
   Use this structure to guide your thinking:
   
@@ -36,6 +48,7 @@ const storybuilder_prompt = ChatPromptTemplate.fromTemplate(`
 
   -------  Begin!  --------
   
+  Goal: {input}  
 `);
 // Patch the prototype so it never errors
 ChatDeepSeek.prototype.getNumTokens = async function (_text) {
@@ -48,18 +61,35 @@ ChatDeepSeek.prototype.getNumTokens = async function (_text) {
 //     modelName: "deepseek-chat",
 //     callbacks: callbacks,
 // });
+//chatGPT LLM used by agents
 const llm = new ChatOpenAI({
     streaming: true,
     openAIApiKey: process.env.OPENAI_API_KEY,
     model: "gpt-4o-mini",
     temperature: 0.1,
 });
-const tools = outline_tools(llm);
+const outline_tools_list = outline_tools(llm);
 const chapter_tools_list = chapter_tools(llm);
-const llm_with_tools = llm.bindTools(tools, { tool_choice: "auto" });
-const outline_llm = llm.bindTools([tools[0]], { tool_choice: "auto" });
-const critique_llm = llm.bindTools([tools[1]], { tool_choice: "auto" });
-const revise_llm = llm.bindTools([tools[2]], { tool_choice: "auto" });
+const tools = [outline_tools_list[0], outline_tools_list[1], outline_tools_list[2], outline_tools_list[3], outline_tools_list[4], outline_tools_list[5], chapter_tools_list[0], chapter_tools_list[1], chapter_tools_list[2], chapter_tools_list[3], chapter_tools_list[4], chapter_tools_list[5], chapter_tools_list[6], chapter_tools_list[7]];
+//LLM Tools to be used outside of agentic work (potentially)
+/*
+const outline_llm = llm.bindTools([outline_tools_list], {tool_choice :"auto"});
+
+const generate_outline_llm = llm.bindTools([outline_tools_list[0]], {tool_choice :"auto"});
+const critique_outline_llm = llm.bindTools([outline_tools_list[1]], {tool_choice :"auto"});
+const vote_outline_critique_llm = llm.bindTools([outline_tools_list[2]], {tool_choice :"auto"});
+const revise_llm = llm.bindTools([outline_tools_list[3]], {tool_choice :"auto"});
+
+const chapter_llm = llm.bindTools([chapter_tools_list], {tool_choice :"auto"});
+
+const first_chapter_llm = llm.bindTools([chapter_tools_list[0]], {tool_choice :"auto"});
+const next_chapter_llm = llm.bindTools([chapter_tools_list[1]], {tool_choice :"auto"});
+const critique_chapter_llm = llm.bindTools([chapter_tools_list[2]], {tool_choice :"auto"});
+const vote_critique_chapter_llm = llm.bindTools([chapter_tools_list[3]], {tool_choice :"auto"});
+const rewrite_chapter_llm = llm.bindTools([chapter_tools_list[4]], {tool_choice :"auto"});
+const vote_chapter_llm = llm.bindTools([chapter_tools_list[5]], {tool_choice :"auto"});
+
+*/
 const AnnotationWithReducer = Annotation.Root({
     input: (Annotation),
     outline: (Annotation),
@@ -76,67 +106,121 @@ const AnnotationWithReducer = Annotation.Root({
     }),
     last_tool_output: (Annotation),
 });
-const outline_tool = tools[0];
-const critique_tool = tools[1];
-const revise_tool = tools[2];
-const my_tools_node = new ToolNode(tools);
-const outline_node = new ToolNode([tools[0]]);
-const critique_node = new ToolNode([tools[1]]);
-const revise_node = new ToolNode([tools[2]]);
-const chapter_tools_node = new ToolNode(chapter_tools_list);
-const chapter_draft_node = new ToolNode([chapter_tools_list[0]]);
-const chapter_critique_node = new ToolNode([chapter_tools_list[1]]);
-const chapter_revise_node = new ToolNode([chapter_tools_list[2]]);
-const toolsList = tools
-    .map((t) => `- ${t.name}: ${t.description ?? ""}`)
-    .join("\n");
+//Nodes to be used for agents
+//const my_tools_node = new ToolNode(tools);
+const generate_outline_node = new ToolNode([outline_tools_list[0]]);
+const vote_generate_outline_node = new ToolNode([outline_tools_list[1]]);
+const critique_outline_node = new ToolNode([outline_tools_list[2]]);
+const vote_critique_outline_node = new ToolNode([outline_tools_list[2]]);
+const revise_outline_node = new ToolNode([outline_tools_list[3]]);
+const vote_revise_outline_node = new ToolNode([outline_tools_list[4]]);
+const first_chapter_node = new ToolNode([chapter_tools_list[0]]);
+const vote_first_chapter_node = new ToolNode([chapter_tools_list[1]]);
+const next_chapter_node = new ToolNode([chapter_tools_list[2]]);
+const vote_next_chapter_node = new ToolNode([chapter_tools_list[3]]);
+const rewrite_chapter_node = new ToolNode([chapter_tools_list[4]]);
+const vote_rewrite_chapter_node = new ToolNode([chapter_tools_list[5]]);
+const critique_chapter_node = new ToolNode([chapter_tools_list[6]]);
+const vote_critique_chapter_node = new ToolNode([chapter_tools_list[7]]);
+//Creates list of tools to search through 
+const toolsList = tools.map((t) => `- ${t.name}: ${t.description ?? ""}`).join("\n");
 const toolNames = tools.map((t) => t.name).join(", ");
-const chaptoolsList = chapter_tools_list
-    .map((t) => `- ${t.name}: ${t.description ?? ""}`)
-    .join("\n");
-const chaptoolNames = chapter_tools_list.map((t) => t.name).join(", ");
-const outline_step_agent = createReactAgent({
-    llm: llm,
-    tools: my_tools_node,
-    name: "outline_step_agent",
+const chaptoolList = chapter_tools_list
+    .map((t) => `- ${t.name}: ${t.description ?? ""}`);
+const chaptoolNames = chapter_tools_list.map((t) => t.name);
+const outlineToolList = outline_tools_list
+    .map((t) => `- ${t.name}: ${t.description ?? ""}`);
+const outlineToolNames = outline_tools_list.map((t) => t.name);
+const boundPrompt = await storybuilder_prompt.partial({
+    tools: toolsList,
+    //tool_names: toolNames,
 });
-const chapter_step_agent = createReactAgent({
+//Create agents & supervisors with previously-made tool-bound LLMs and nodes
+const generate_outline_agent = createReactAgent({
     llm: llm,
-    tools: chapter_tools_node,
-    name: "chapter_step_agent",
+    tools: generate_outline_node,
+    name: "generate_outline_agent",
 });
-const chapter_draft_agent = createReactAgent({
+const vote_generate_outline_agent = createReactAgent({
     llm: llm,
-    tools: chapter_draft_node,
-    name: "chapter_draft_agent",
+    tools: vote_generate_outline_node,
+    name: "vote_generate_outline_agent",
 });
-const outline_agent = createReactAgent({
+const critique_outline_agent = createReactAgent({
     llm: llm,
-    tools: outline_node,
-    name: "outline_agent",
+    tools: critique_outline_node,
+    name: "critique_outline_agent",
 });
-const critique_agent = createReactAgent({
+const vote_critique_outline_agent = createReactAgent({
     llm: llm,
-    tools: critique_node,
-    name: "critique_agent",
-    prompt: storybuilder_prompt,
+    tools: vote_critique_outline_node,
+    name: "vote_critique_outline_agent",
 });
-const revise_agent = createReactAgent({
+const revise_outline_agent = createReactAgent({
     llm: llm,
-    tools: revise_node,
-    name: "revise_agent",
+    tools: revise_outline_node,
+    name: "revise_outline_agent",
 });
+const vote_revise_outline_agent = createReactAgent({
+    llm: llm,
+    tools: vote_revise_outline_node,
+    name: "vote_revise_outline_agent",
+});
+//chapters
+const first_chapter_agent = createReactAgent({
+    llm: llm,
+    tools: first_chapter_node,
+    name: "first_chapter_agent",
+});
+const vote_first_chapter_agent = createReactAgent({
+    llm: llm,
+    tools: vote_first_chapter_node,
+    name: "vote_first_chapter_agent",
+});
+const next_chapter_agent = createReactAgent({
+    llm: llm,
+    tools: next_chapter_node,
+    name: "next_chapter_agent",
+});
+const vote_next_chapter_agent = createReactAgent({
+    llm: llm,
+    tools: vote_next_chapter_node,
+    name: "vote_next_chapter_agent",
+});
+const critique_chapter_agent = createReactAgent({
+    llm: llm,
+    tools: critique_chapter_node,
+    name: "critique_chapter_agent",
+});
+const vote_critique_chapter_agent = createReactAgent({
+    llm: llm,
+    tools: vote_critique_chapter_node,
+    name: "vote_critique_chapter_agent",
+});
+const rewrite_chapter_agent = createReactAgent({
+    llm: llm,
+    tools: rewrite_chapter_node,
+    name: "rewrite_chapter_agent",
+});
+const vote_rewrite_chapter_agent = createReactAgent({
+    llm: llm,
+    tools: vote_rewrite_chapter_node,
+    name: "vote_rewrite_chapter_agent",
+});
+//supervisors
 const outline_supervisor = createSupervisor({
-    agents: [outline_step_agent],
+    agents: [generate_outline_agent, critique_outline_agent, vote_critique_outline_agent, revise_outline_agent],
     llm: llm,
-    tools: tools,
+    tools: outline_tools_list,
 });
 const chapter_supervisor = createSupervisor({
-    agents: [chapter_step_agent],
+    agents: [first_chapter_agent, vote_first_chapter_agent, next_chapter_agent, vote_next_chapter_agent, critique_chapter_agent, vote_critique_chapter_agent, rewrite_chapter_agent, vote_rewrite_chapter_agent],
     llm: llm,
     tools: chapter_tools_list,
 });
-const supervisor_graph = chapter_supervisor.compile();
+//Creates final graph
+const outline_supervisor_graph = outline_supervisor.compile();
+const chapter_supervisor_graph = chapter_supervisor.compile();
 const whiskersoutline = `
 **Outline for "Whiskers' Whimsical Flight"**
 
@@ -214,12 +298,8 @@ const whiskersoutline = `
 Thus, dear reader, this whimsical tale unfolds, a tapestry woven with threads of dreams, courage, and the sweet embrace of friendship. Each chapter a step upon the path, leading to the skies w
 here Whiskers shall find his wings.`;
 const input = {
-    input: "A story about a cat who learns to fly",
-    tools: tools[0].name + " - " + tools[0].description,
-    tool_names: tools[0].name,
-    outline: whiskersoutline,
-    critique: "",
-    agent_scratchpad: "",
+    input: whiskersoutline,
+    tools: chaptoolList[0],
 };
 const config = {
     configurable: {
@@ -232,6 +312,6 @@ const config = {
 //console.log(formatted_input);
 //const response = await supervisor_graph.invoke({messages: formatted_input}, {configurable: config, callbacks: callbacks});
 //const response = await outline_agent.invoke({messages: formatted_input}, {configurable: config, callbacks: callbacks})
-//const response = await chapter_draft_agent.invoke({messages: formatted_input}, {configurable: config, callbacks: callbacks});
-export { outline_agent, critique_agent, revise_agent, chapter_draft_agent, outline_step_agent, chapter_step_agent, supervisor_graph };
+//const response = await first_chapter_agent.invoke({messages: formatted_input}, {configurable: config, callbacks: callbacks});
+export { generate_outline_agent, vote_generate_outline_agent, critique_outline_agent, vote_critique_outline_agent, revise_outline_agent, vote_revise_outline_agent, first_chapter_agent, vote_first_chapter_agent, next_chapter_agent, vote_next_chapter_agent, critique_chapter_agent, vote_critique_chapter_agent, rewrite_chapter_agent, vote_rewrite_chapter_agent, outline_supervisor_graph, chapter_supervisor_graph };
 //console.log(response.messages.slice(-1).map(m => m.content).join("\n\n"));
