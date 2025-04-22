@@ -53,7 +53,7 @@ exports.user_login = asyncHandler(async (req, res, next) => {
     
     // Check if user exists and if the password matches
     if (!existingUser || !(await bcrypt.compare(password, existingUser.password))) {
-        return res.status(401).json({ error: "Invalid username or password" });
+        return res.status(401).json({ error: "Invalid login credentials" });
     }
 
     // If credentials are correct, return the user_id
