@@ -21,7 +21,6 @@ export const STORY_PROVIDER = ({ children }) => {
     const [should_stream, set_should_stream] = useState(false);
     const [agent_responses, set_agent_responses] = useState({});  // State to store responses for each agent
     const [agent_thoughts, set_agent_thoughts] = useState({});  // State to store thoughts for each agent
-    const [streamingAction, setStreamingAction] = useState(null);
 
     const submit_story_prompt = async (story_name, story_details, extra_details, selected_agents) => {
         // reset errors
@@ -156,8 +155,6 @@ export const STORY_PROVIDER = ({ children }) => {
             agent_ids,
             should_stream,
             set_should_stream,
-            streamingAction,
-            setStreamingAction,
             start_event_stream,
             agent_responses,
             set_agent_responses,
