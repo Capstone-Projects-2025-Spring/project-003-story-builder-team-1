@@ -92,8 +92,8 @@ exports.story_delete = asyncHandler(async (req, res, next) => {
     res.status(200).json({ message: "Story and associated agent responses deleted" });
 });
 
-// Get final version of a specific chapter from story_content
-exports.story_chapter_detail = asyncHandler(async (req, res, next) => {
+// Get the most voted version of a chapter within a story
+exports.story_chapter_details = asyncHandler(async (req, res, next) => {
     const { user_id, story_id, chapter_number } = req.params;
 
     // Find the story and check if the user_id matches the story's user
@@ -112,7 +112,7 @@ exports.story_chapter_detail = asyncHandler(async (req, res, next) => {
     }
 
     // Respond with the chapter details
-    res.json(chapter);
+    res.status(200).json(chapter);
 });
 
 // Handle Story update on POST

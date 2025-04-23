@@ -85,8 +85,14 @@ Parameter Requirments:
 */
 router.post("/story/:user_id/:story_id/delete", story_controller.story_delete);
 
-// GET request for a chapter specific to a story 
-router.get("/story/:user_id/:story_id/:chapter_number/get_chapter", story_controller.story_chapter_detail)
+/* Gets a specific chapter from a specific story
+Parameter Requirments:
+- user_id: the id of the user within the db
+- story_id: the id of the story within the db
+- chapter_number: the desired chapter number
+    * Has to be an integer
+*/
+router.get("/story/:user_id/:story_id/:chapter_number/get_chapter", story_controller.story_chapter_details)
 
 
 // POST request to update Story
