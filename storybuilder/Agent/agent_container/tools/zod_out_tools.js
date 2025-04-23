@@ -103,6 +103,7 @@ export default function outline_tools(llm) {
     const vote_generate_outline = tool(async ({ persona, prompt_info, outline_bank }) => {
         const messages = await vote_generate_outline_prompt.formatMessages({ persona, prompt_info, outline_bank });
         const res = await llm.withStructuredOutput(vote_output_schema).invoke(messages);
+
         return res;
     }, {
         name: "vote_generate_outline",

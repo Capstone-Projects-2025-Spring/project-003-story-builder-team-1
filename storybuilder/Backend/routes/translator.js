@@ -6,16 +6,31 @@ const PRIVATE_URL = process.env.PRIVATE_URL || "http://localhost:8080";
 const APP_URL = PRIVATE_URL;
 
 router.post('/translate', async (req, res) => {
-    const { user_id, story_id, step } = req.body;
-
-    if (!user_id || !story_id || !step) {
+    const { user_id, story_id, step, chapter_number } = req.body;
+    
+    if (!user_id || !story_id || !step || chapter_number == null) {
         return res.status(404).json({ message: "Missing required fields", data: req.body });
     }
+
+    const valid_steps = new Set([
+        "generate_outline",
+        "critique_outline",
+        "rewrite_outline",
+        "generate_first_chapter",
+        "generate_next_chapter",
+        "critique_chapter",
+        "rewrite_chapter",
+      ]);
+
+    if (!valid_steps.has(step)) {
+        return res.status(400).json({ message: "Invalid step provided.", data: step });
+      }
 
     let data = {
         user_id,
         story_id,
         step,
+        chapter_number,
         story_agents: [],
         generate_outline: { story_name: "", story_details: "", extra_details: "" },
         critique_outline: { story_name: "", story_details: "", extra_details: "", story_outline: "" },
@@ -81,8 +96,9 @@ router.post('/translate', async (req, res) => {
                 };
                 break;  
 
-            case "generate_next_chapter":  
-                response = await axios.get(`${APP_URL}/db/story/${user_id}/${story_id}/get_next_chapter_details`);
+            case "generate_next_chapter":
+                console.log("Chapter number:", chapter_number);
+                response = await axios.get(`${APP_URL}/db/story/${user_id}/${story_id}/${chapter_number}/get_next_chapter_details`);
                 data.generate_next_chapter = {
                     story_name: response.data.story_name,
                     story_details: response.data.story_details,
@@ -91,8 +107,9 @@ router.post('/translate', async (req, res) => {
                     previous_chapters: response.data.previous_chapters
                 };
                 break;
+            
             case "critique_chapter":
-                response = await axios.get(`${APP_URL}/db/story/${user_id}/${story_id}/get_critique_chapter_details`);
+                response = await axios.get(`${APP_URL}/db/story/${user_id}/${story_id}/${chapter_number}/get_critique_chapter_details`);
                 data.critique_chapter = {
                     story_name: response.data.story_name,
                     story_details: response.data.story_details,
@@ -101,8 +118,9 @@ router.post('/translate', async (req, res) => {
                     chapter: response.data.chapter
                 };
                 break;
+
             case "rewrite_chapter":
-                response = await axios.get(`${APP_URL}/db/story/${user_id}/${story_id}/get_rewrite_chapter_details`);
+                response = await axios.get(`${APP_URL}/db/story/${user_id}/${story_id}/${chapter_number}/get_rewrite_chapter_details`);
                 data.rewrite_chapter = {
                     story_name: response.data.story_name,
                     story_details: response.data.story_details,
@@ -118,7 +136,7 @@ router.post('/translate', async (req, res) => {
         }
         const courier_response = await axios.post(
             `${APP_URL}/courier/aggregate`, 
-            { messages: req.body.messages },
+            { data, messages: req.body.messages },
             { headers: { "Content-Type": "application/json" }, responseType: 'stream' }
         );
 
@@ -132,8 +150,11 @@ router.post('/translate', async (req, res) => {
                         .replace(/^data: /, '') // Remove "data: " prefix
                         .slice(0, -2)) // Remove "\n\n" suffix
                         .join(''); // Join the array into a single string
-                    console.log("Buffer on end:", buffer);
-                    resolve(res.status(200).json({ message: "Data Received Successfully", data: { ...data, response: buffer } }));
+                    //console.log("Buffer on end:", buffer);
+                    resolve(res.status(200).json({ message: "Data Received Successfully", data}));
+                } else if (chunk.toString().startsWith("{\"error")) {
+                    const errorMessage = JSON.parse(chunk.toString());
+                    return res.status(404).json({ error: errorMessage.error });
                 }
                 else
                     buffer.push(chunk.toString());
