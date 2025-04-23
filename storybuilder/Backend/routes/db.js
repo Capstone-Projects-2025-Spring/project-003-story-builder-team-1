@@ -65,11 +65,18 @@ Body Requirments:
 */
 router.post("/story/:user_id/create", story_controller.story_create);
 
-// GET request for q list of all Stories based on the user_id
+/* Gets a list of all the user's stories
+Parameter Requirments:
+- user_id: the id of the user within the db
+*/
 router.get("/story/:user_id/get_stories", story_controller.user_stories_list);
 
-// GET request for one Story
-router.get("/story/:user_id/:story_id/get_story", story_controller.story_detail);
+/* Gets a single story from the user's list
+Parameter Requirments:
+- user_id: the id of the user within the db
+- story_id: the id of the story within the db
+*/
+router.get("/story/:user_id/:story_id/get_story", story_controller.story_details);
 
 // GET request for a chapter specific to a story 
 router.get("/story/:user_id/:story_id/:chapter_number/get_chapter", story_controller.story_chapter_detail)

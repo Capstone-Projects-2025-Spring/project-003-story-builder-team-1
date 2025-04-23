@@ -4,7 +4,7 @@ const Agent = require("../models/agent");
 const Persona = require("../models/persona");
 const asyncHandler = require("express-async-handler");
 
-// Handle Story create on POST
+// Creates a Story
 exports.story_create = asyncHandler(async (req, res, next) => {
     const { story_name, prompt, agents } = req.body;
     const { user_id } = req.params; 
@@ -46,7 +46,7 @@ exports.story_create = asyncHandler(async (req, res, next) => {
     res.status(201).json({ message: "Story created", story: new_story._id, agent_ids: agent_ids });
 });
 
-// Handle Story list get on GET
+// Gets a list of all user stories
 exports.user_stories_list = asyncHandler(async (req, res, next) => {
     const { user_id } = req.params;
 
@@ -59,8 +59,8 @@ exports.user_stories_list = asyncHandler(async (req, res, next) => {
     res.status(200).json({ stories });
 });
 
-// Handle Story get on GET
-exports.story_detail = asyncHandler(async (req, res, next) => {
+// Get a Specific Story
+exports.story_details = asyncHandler(async (req, res, next) => {
     const { user_id, story_id } = req.params;
     // Find the story by story_id and check if the user_id matches
     const story = await Story.findOne({ _id: story_id, user: user_id }).select('story_name story_content').exec();
@@ -69,7 +69,7 @@ exports.story_detail = asyncHandler(async (req, res, next) => {
         return res.status(404).json({ error: "Story not found or user does not have access to this story" });
     }
 
-    res.json(story);
+    res.status(200).json(story);
 });
 
 // Delete a story
