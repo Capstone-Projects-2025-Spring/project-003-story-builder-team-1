@@ -16,7 +16,7 @@ export default function agent_routes(llm) {
 //function to use later to clean a lot of duplicate code, wanna make sure the endpoints work by themselves first
 /*
 
-async function send_off(agent_graph, message, stream_handler) {
+async function stream_send_off(agent_graph, message, stream_handler) {
   try {
     const agent_response = await agent_graph.stream({messages: message}, {callbacks: [stream_handler(res)]});
     while (!agent_response.done) {
@@ -34,14 +34,44 @@ async function send_off(agent_graph, message, stream_handler) {
   }
 }
 
+async function structured_send_off(agent_graph, message) {
+
+    try {
+      const agent_response = await outline_agent_graph.invoke({
+        messages: formatted_input
+      }, {callbacks: []});
+
+      
+      const tool_message = agent_response.messages.find(
+        msg => msg.constructor?.name === "ToolMessage"
+      );
+
+      if (!tool_message) {
+        return res.status(500).json({ error: "No tool_message found" });
+      }
+      const raw_content = tool_message.lc_kwargs?.content;
+      if (!raw_content) {
+        return res.status(500).json({ error: "No content in tool_message" });
+      }
+      
+      let parsed;
+    
+      try {
+        parsed = JSON.parse(raw_content);
+        //console.log("PARSED\n\n" + parsed);
+        return parsed;
+      } catch (err) {
+        console.error("Failed to parse tool_message content:", raw_content);
+        return res.status(500).json({ error: "Invalid tool_message content" });
+      }
+
+
+
+
+}
 */
 
 
-/*
-
-
-
-*/
 
 
 
@@ -88,7 +118,7 @@ async function send_off(agent_graph, message, stream_handler) {
 
 
     const formatted_input = await storybuilder_prompt.formatMessages(input);
-
+    console.log("formatted generate outline input: \n" + formatted_input);
     try {
       const agent_response = await outline_agent_graph.stream({messages: formatted_input}, {callbacks: [stream_handler(res)]});
       while (!agent_response.done) {
@@ -120,21 +150,21 @@ async function send_off(agent_graph, message, stream_handler) {
 
     const input = {persona: req.body.messages.persona, input: `prompt_info: ${req.body.messages.prompt_info} \n\noutline_bank: ${req.body.messages.vote_bank}`, tools: outline_tools_list[1]};
     
-    const formatted_input = await storybuilder_prompt.formatMessages(input);
+    const prompted_input = await storybuilder_prompt.formatMessages(input);
+    const formatted_input = Array.isArray(prompted_input) ? prompted_input : [prompted_input];
+
     try {
-      const agent_response = await outline_agent_graph.stream({messages: formatted_input}, {callbacks: []});
-      while (!agent_response.done) {
-        // Wait for the next chunk of data
-        await new Promise(resolve => setTimeout(resolve, 100)); // Adjust delay as needed
-      }
-      console.log("Agent response:", agent_response);
-      res.end(); // End the response when done
+      let parsed = await structured_send_off(outline_agent_graph, formatted_input);
+      console.log("Structured output function output: \n\n " + JSON.stringify(parsed));
+      res.write(JSON.stringify({
+        winning_index: parsed.winning_index,
+        vote_value: parsed.vote_value,
+      }));
+      res.end();
     } catch (err) {
       console.error(err);
-      if (!res.writableEnded) {
         res.write(`data: ERROR: ${err.message}\n\n`);
         res.end();
-      }
     }
   });
 
@@ -186,19 +216,17 @@ async function send_off(agent_graph, message, stream_handler) {
     const formatted_input = await storybuilder_prompt.formatMessages(input);
 
     try {
-      const agent_response = await outline_agent_graph.stream({messages: formatted_input}, {callbacks: []});
-      while (!agent_response.done) {
-        // Wait for the next chunk of data
-        await new Promise(resolve => setTimeout(resolve, 100)); // Adjust delay as needed
-      }
-      console.log("Agent response:", agent_response);
-      res.end(); // End the response when done
+      let parsed = await structured_send_off(outline_agent_graph, formatted_input);
+      console.log("Structured output function output: \n\n " + JSON.stringify(parsed));
+      res.write(JSON.stringify({
+        winning_index: parsed.winning_index,
+        vote_value: parsed.vote_value,
+      }));
+      res.end();
     } catch (err) {
       console.error(err);
-      if (!res.writableEnded) {
         res.write(`data: ERROR: ${err.message}\n\n`);
         res.end();
-      }
     }
   });
 
@@ -243,26 +271,24 @@ async function send_off(agent_graph, message, stream_handler) {
     res.setHeader("Connection", "keep-alive");
     res.flushHeaders?.();
 
-    const chapter_agent_graph = vote_revise_outline_agent;
+    const outline_agent_graph = vote_revise_outline_agent;
 
     const input = {persona: req.body.messages.persona, input: `prompt_info: ${req.body.messages.prompt_info} \n\noutline_bank: ${req.body.messages.vote_bank}`, tools: outline_tools_list[5]};
 
     const formatted_input = await storybuilder_prompt.formatMessages(input);
 
     try {
-      const agent_response = await chapter_agent_graph.stream({messages: formatted_input}, {callbacks: []});
-      while (!agent_response.done) {
-        // Wait for the next chunk of data
-        await new Promise(resolve => setTimeout(resolve, 100)); // Adjust delay as needed
-      }
-      console.log("Agent response:", agent_response);
-      res.end(); // End the response when done
+      let parsed = await structured_send_off(outline_agent_graph, formatted_input);
+      console.log("Structured output function output: \n\n " + JSON.stringify(parsed));
+      res.write(JSON.stringify({
+        winning_index: parsed.winning_index,
+        vote_value: parsed.vote_value,
+      }));
+      res.end();
     } catch (err) {
       console.error(err);
-      if (!res.writableEnded) {
         res.write(`data: ERROR: ${err.message}\n\n`);
         res.end();
-      }
     }
   });
 
@@ -319,19 +345,17 @@ async function send_off(agent_graph, message, stream_handler) {
 
     const formatted_input = await storybuilder_prompt.formatMessages(vote_first_chapter_agent.tools, input);
     try {
-      const agent_response = await chapter_agent_graph.stream({messages: formatted_input}, {callbacks: []});
-      while (!agent_response.done) {
-        // Wait for the next chunk of data
-        await new Promise(resolve => setTimeout(resolve, 100)); // Adjust delay as needed
-      }
-      console.log("Agent response:", agent_response);
-      res.end(); // End the response when done
+      let parsed = await structured_send_off(chapter_agent_graph, formatted_input);
+      console.log("Structured output function output: \n\n " + JSON.stringify(parsed));
+      res.write(JSON.stringify({
+        winning_index: parsed.winning_index,
+        vote_value: parsed.vote_value,
+      }));
+      res.end();
     } catch (err) {
       console.error(err);
-      if (!res.writableEnded) {
         res.write(`data: ERROR: ${err.message}\n\n`);
         res.end();
-      }
     }
   });
 
@@ -382,19 +406,17 @@ async function send_off(agent_graph, message, stream_handler) {
 
     const formatted_input = await storybuilder_prompt.formatMessages(vote_next_chapter_agent.tools, input);
     try {
-      const agent_response = await chapter_agent_graph.stream({messages: formatted_input}, {callbacks: []});
-      while (!agent_response.done) {
-        // Wait for the next chunk of data
-        await new Promise(resolve => setTimeout(resolve, 100)); // Adjust delay as needed
-      }
-      console.log("Agent response:", agent_response);
-      res.end(); // End the response when done
+      let parsed = await structured_send_off(chapter_agent_graph, formatted_input);
+      console.log("Structured output function output: \n\n " + JSON.stringify(parsed));
+      res.write(JSON.stringify({
+        winning_index: parsed.winning_index,
+        vote_value: parsed.vote_value,
+      }));
+      res.end();
     } catch (err) {
       console.error(err);
-      if (!res.writableEnded) {
         res.write(`data: ERROR: ${err.message}\n\n`);
         res.end();
-      }
     }
   });
 
@@ -447,19 +469,17 @@ async function send_off(agent_graph, message, stream_handler) {
 
     const formatted_input = await storybuilder_prompt.formatMessages(vote_critique_chapter_agent.tools, input);
     try {
-      const agent_response = await chapter_agent_graph.stream({messages: formatted_input}, {callbacks: []});
-      while (!agent_response.done) {
-        // Wait for the next chunk of data
-        await new Promise(resolve => setTimeout(resolve, 100)); // Adjust delay as needed
-      }
-      console.log("Agent response:", agent_response);
-      res.end(); // End the response when done
+      let parsed = await structured_send_off(chapter_agent_graph, formatted_input);
+      console.log("Structured output function output: \n\n " + JSON.stringify(parsed));
+      res.write(JSON.stringify({
+        winning_index: parsed.winning_index,
+        vote_value: parsed.vote_value,
+      }));
+      res.end();
     } catch (err) {
       console.error(err);
-      if (!res.writableEnded) {
         res.write(`data: ERROR: ${err.message}\n\n`);
         res.end();
-      }
     }
   });
 
@@ -511,19 +531,17 @@ async function send_off(agent_graph, message, stream_handler) {
 
     const formatted_input = await storybuilder_prompt.formatMessages(vote_rewrite_chapter_agent.tools, input);
     try {
-      const agent_response = await chapter_agent_graph.stream({messages: formatted_input}, {callbacks: []});
-      while (!agent_response.done) {
-        // Wait for the next chunk of data
-        await new Promise(resolve => setTimeout(resolve, 100)); // Adjust delay as needed
-      }
-      console.log("Agent response:", agent_response);
-      res.end(); // End the response when done
+      let parsed = await structured_send_off(chapter_agent_graph, formatted_input);
+      console.log("Structured output function output: \n\n " + JSON.stringify(parsed));
+      res.write(JSON.stringify({
+        winning_index: parsed.winning_index,
+        vote_value: parsed.vote_value,
+      }));
+      res.end();
     } catch (err) {
       console.error(err);
-      if (!res.writableEnded) {
         res.write(`data: ERROR: ${err.message}\n\n`);
         res.end();
-      }
     }
   });
 
@@ -541,4 +559,41 @@ async function send_off(agent_graph, message, stream_handler) {
   }
 
   return router;
+}
+
+async function structured_send_off(agent_graph, message) {
+
+  try {
+    const agent_response = await agent_graph.invoke({
+      messages: message
+    }, {callbacks: []});
+
+    
+    const tool_message = agent_response.messages.find(
+      msg => msg.constructor?.name === "ToolMessage"
+    );
+
+    if (!tool_message) {
+      console.log("No tool_message found");
+    }
+    const raw_content = tool_message.lc_kwargs?.content;
+    if (!raw_content) {
+      console.log("No content in tool_message");
+    }
+    
+    let parsed;
+  
+    try {
+      parsed = JSON.parse(raw_content);
+      console.log("PARSED\n\n" + parsed);
+      return parsed;
+    } catch (err) {
+      console.error("Failed to parse tool_message content:", raw_content);
+      return;
+    }
+}
+  catch (err) {
+    console.error(err);
+    return;
+  }
 }

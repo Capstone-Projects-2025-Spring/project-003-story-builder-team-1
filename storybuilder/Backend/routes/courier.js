@@ -9,6 +9,32 @@ const API_URL = process.env.AGENT_URL || PRIVATE_URL;
 const APP_URL = PRIVATE_URL.includes("localhost") ? PRIVATE_URL + ":8080" : PRIVATE_URL;
 console.log( "DEBUG: API_URL:", API_URL); // Debugging line
 
+function determine_best_result(votes) {
+  if (!votes || votes.length === 0) return null;
+
+  //group and sum vote values by winning_index
+  const vote_map = new Map();
+
+  for (const vote of votes) {
+    const current = vote_map.get(vote.winning_index) || 0;
+    vote_map.set(vote.winning_index, current + vote.vote_value);
+  }
+
+  //find max vote value
+  const max_vote_value = Math.max(...vote_map.values());
+
+  //find all indices that have the max vote value
+  const top_indices = [...vote_map.entries()]
+    .filter(([_, value]) => value === max_vote_value)
+    .map(([index, _]) => index);
+
+  // tie breaker if vote value and winning index are the same for all agents
+  const final_winner = top_indices.length === 1
+    ? top_indices[0]
+    : top_indices[Math.floor(Math.random() * top_indices.length)];
+
+  return final_winner;
+}
 
 router.post('/aggregate', async (req, res) => {
     // Pre changes
@@ -29,13 +55,7 @@ router.post('/aggregate', async (req, res) => {
         agent_endpoints[i] = agent_endpoints[i].replace(/{step}/, story_step);
     }
     console.log(agent_endpoints);
-
-    const agentEndpoints = [
-        'http://localhost:5000/agent/generate_outline',
-        'http://localhost:5001/agent/generate_outline', // Example endpoint for Jane Austen agent
-        //'http://localhost:5002/agent/stream_graph', // Example endpoint for Tolkien agent
-        //'http://localhost:5003/agent/stream_graph', // Example endpoint for another agent
-    ];      
+    
     // Store responses and votes
     let agent_send = {};
     //prompt info variable for voting later
@@ -155,7 +175,7 @@ router.post('/aggregate', async (req, res) => {
               try {
                 const response = await axios.post(agent, { messages: vote_send });
                 const { winning_index, vote_value } = response.data;
-          
+                //console.log("REESSSULLLTSSS: " + response.data);
                 return {
                   winning_index,
                   vote_value,
@@ -171,24 +191,32 @@ router.post('/aggregate', async (req, res) => {
             })
           );
         //The final list of votes and their corresponding "weights". Weights (vote_value) can serve as a tie-breaker if the entry in 1st place is disputed.
-        const votes = vote_results.map(result => result.data);
-
+        const votes = vote_results.filter(v => v.winning_index !== undefined && v.vote_value !== undefined);
         
-        console.log("Vote results", votes);
+        const best_result = determine_best_result(votes);
 
-        const agent_votes = agent_data.map((agent) => ({
+        console.log("THE FINAL VOTED OPTION: " + best_result);
+        
+        //Currently, this returns the index number of the agent in agent_results that produced the "winning" story step. If it needs to return the output, this can be changed.
+        const agent_votes = agent_data.map((agent, i) => ({
             agent_name: agent.agent_name,
             agent_id: agent.agent_id,
-            votes: 13
+            votes: vote_results[i].winning_index,
         }));
-        
+        console.log("BEST RESULT: " + JSON.stringify(agent_results[best_result].data));
+
+        //This data structure stores the winning result between all agents in best_response, every response generated in agent_results, and every agent's vote (and vote weight) in votes. This is for the DB.
         const db_data = {
-                best_response: best_result,
+                best_response: agent_results[best_result].data,
                 all_results: agent_results,
                 votes: agent_votes
         };
 
-        await db_store(req.body.data.step, req.body.data.user_id, req.body.data.story_id, req.body.data.chapter_number, db_data);
+        const db_response = await db_store(req.body.data.step, req.body.data.user_id, req.body.data.story_id, req.body.data.chapter_number, db_data, res);
+
+        if (!db_response) {
+            return; // If db_store failed, do not send res.write
+        };
         // res.json({
         //     best_response: bestResult,
         //     all_results: agentResults,
@@ -201,46 +229,48 @@ router.post('/aggregate', async (req, res) => {
         console.error(error);
         res.status(500).send('Error occurred while aggregating responses.');
     }
-    async function db_store(step, user_id, story_id, chapter_number, responses) {
-        console.log("all_results", responses.all_results);
-        try {
-            switch(step) {
-                case "generate_outline":
-                    await axios.post(`${APP_URL}/db/story/${user_id}/${story_id}/add_outline`, { outline: responses.best_response.data });
-                    await axios.post(`${APP_URL}/db/story/${user_id}/${story_id}/add_agent_outlines`, { outlines: responses.all_results, votes: responses.votes });
-                    break;
-                case "critique_outline":
-                    await axios.post(`${APP_URL}/db/story/${user_id}/${story_id}/story_add_voted_critique_post`, { chapter_number: chapter_number, critique: responses.best_response.data });
-                    await axios.post(`${APP_URL}/db/story/${user_id}/${story_id}/add_agent_critiques`, { chapter_number: chapter_number, critiques: responses.all_results, votes: responses.votes });
-                    break;
-                case "rewrite_outline":
-                    await axios.post(`${APP_URL}/db/story/${user_id}/${story_id}/add_outline`, { outline: responses.best_response.data });
-                    await axios.post(`${APP_URL}/db/story/${user_id}/${story_id}/add_agent_outlines`, { outlines: responses.all_results, votes: responses.votes });
-                    break;
-                case "generate_first_chapter":
-                    await axios.post(`${APP_URL}/db/story/${user_id}/${story_id}/add_chapter`, {story_chapter_number: chapter_number, text: responses.best_response.data});
-                    await axios.post(`${APP_URL}/db/story/${user_id}/${story_id}/add_agent_chapter`, {chapter_number: chapter_number, content: responses.all_results, votes: responses.votes});
-                    break;
-                case "generate_next_chapter":
-                    await axios.post(`${APP_URL}/db/story/${user_id}/${story_id}/add_chapter`, {story_chapter_number: chapter_number, text: responses.best_response.data});
-                    await axios.post(`${APP_URL}/db/story/${user_id}/${story_id}/add_agent_chapter`, {chapter_number: chapter_number, content: responses.all_results, votes: responses.votes});
-                    break;
-                case "critique_chapter":
-                    await axios.post(`${APP_URL}/db/story/${user_id}/${story_id}/story_add_voted_critique_post`, { chapter_number: chapter_number, critique: responses.best_response.data });
-                    await axios.post(`${APP_URL}/db/story/${user_id}/${story_id}/add_agent_critiques`, { chapter_number: chapter_number, critiques: responses.all_results, votes: responses.votes });
-                    break;
-                case "rewrite_chapter":
-                    await axios.post(`${APP_URL}/db/story/${user_id}/${story_id}/add_chapter`, {story_chapter_number: chapter_number, text: responses.best_response.data});
-                    await axios.post(`${APP_URL}/db/story/${user_id}/${story_id}/add_agent_chapter`, {chapter_number: chapter_number, content: responses.all_results, votes: responses.votes});
-                    break;
-                default:
-                    return res.status(400).json({ message: "Invalid step provided." });
-            }
-        } catch (error) {
-            console.error("Error adding agent data to database:", error.message);
-            return res.status(500).json({ message: "Failed to add agent data to database", error: error.message });
-        }
-    }
+    async function db_store(step, user_id, story_id, chapter_number, db_data, res) {
+      console.log("all_results", db.data.all_results);
+      try {
+          switch(step) {
+              case "generate_outline":
+                  await axios.post(`${APP_URL}/db/story/${user_id}/${story_id}/add_outline`, { outline: db_data.best_response.data });
+                  await axios.post(`${APP_URL}/db/story/${user_id}/${story_id}/add_agent_outlines`, { outlines: db_data.all_results, votes: db_data.votes });
+                  break;
+              case "critique_outline":
+                  await axios.post(`${APP_URL}/db/story/${user_id}/${story_id}/story_add_voted_critique_post`, { chapter_number: chapter_number, critique: db_data.best_response.data });
+                  await axios.post(`${APP_URL}/db/story/${user_id}/${story_id}/add_agent_critiques`, { chapter_number: chapter_number, critiques: db_data.all_results, votes: db_data.votes });
+                  break;
+              case "rewrite_outline":
+                  await axios.post(`${APP_URL}/db/story/${user_id}/${story_id}/add_outline`, { outline: db_data.best_response.data });
+                  await axios.post(`${APP_URL}/db/story/${user_id}/${story_id}/add_agent_outlines`, { outlines: db_data.all_results, votes: db_data.votes });
+                  break;
+              case "generate_first_chapter":
+                  await axios.post(`${APP_URL}/db/story/${user_id}/${story_id}/add_chapter`, {story_chapter_number: chapter_number, text: db_data.best_response.data});
+                  await axios.post(`${APP_URL}/db/story/${user_id}/${story_id}/add_agent_chapter`, {chapter_number: chapter_number, content: db_data.all_results, votes: db_data.votes});
+                  break;
+              case "generate_next_chapter":
+                  await axios.post(`${APP_URL}/db/story/${user_id}/${story_id}/add_chapter`, {story_chapter_number: chapter_number, text: db_data.best_response.data});
+                  await axios.post(`${APP_URL}/db/story/${user_id}/${story_id}/add_agent_chapter`, {chapter_number: chapter_number, content: db_data.all_results, votes: db_data.votes});
+                  break;
+              case "critique_chapter":
+                  await axios.post(`${APP_URL}/db/story/${user_id}/${story_id}/story_add_voted_critique_post`, { chapter_number: chapter_number, critique: db_data.best_response.data });
+                  await axios.post(`${APP_URL}/db/story/${user_id}/${story_id}/add_agent_critiques`, { chapter_number: chapter_number, critiques: db_data.all_results, votes: db_data.votes });
+                  break;
+              case "rewrite_chapter":
+                  await axios.post(`${APP_URL}/db/story/${user_id}/${story_id}/add_chapter`, {story_chapter_number: chapter_number, text: db_data.best_response.data});
+                  await axios.post(`${APP_URL}/db/story/${user_id}/${story_id}/add_agent_chapter`, {chapter_number: chapter_number, content: db_data.all_results, votes: db_data.votes});
+                  break;
+              default:
+                  throw new Error("Invalid step provided");
+          }
+          return true;
+      } catch (error) {
+          const db_error = { error: error.message || "Failed to add agent data to database" };
+          res.write(JSON.stringify(db_error));
+          return false;
+      }
+  }
     
 });
 
