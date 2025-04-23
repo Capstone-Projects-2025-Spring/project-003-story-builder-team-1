@@ -100,9 +100,10 @@ export const STORY_PROVIDER = ({ children }) => {
         return true;
     }
 
-    const start_event_stream = (user, story_id, step = "generate_outline", chapter_number = 0) => {
+    const start_event_stream = (user, story_id, step, chapter_number) => {
         set_agent_responses({});  // Reset agent responses
         set_agent_thoughts({});  // Reset agent thoughts
+
         const url = `${SERVER_URL}/translator/translate?user_id=${user}&story_id=${story_id}&step=${step}&chapter_number=${chapter_number}`;
         const eventSource = new EventSource(url);
     

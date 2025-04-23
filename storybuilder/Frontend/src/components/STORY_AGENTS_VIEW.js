@@ -11,54 +11,62 @@ const SERVER_URL = process.env.REACT_APP_SERVER_URL || "http://localhost:8080";
 
 function STORY_AGENTS_VIEW() {
   const { story_id } = useParams();
-  const { user_stories, fetch_user_data } = USE_USER();
+  const { user_stories } = USE_USER();
   const { user } = USE_AUTH();
-  const [agents, set_agents] = useState([]);
 
-  const { should_stream, set_should_stream, start_event_stream, agent_responses, set_agent_responses, agent_thoughts, set_agent_thoughts } = USE_STORY();
+  const [agents, set_agents] = useState([]);
   const [stream_params, set_stream_params] = useState({
     step: "generate_outline",
     chapter_number: 0,
   });
 
-  // use effect to reload context with db data when something changes
-  useEffect(() => {
-    console.log("user stories: ", user_stories);
+  const {
+    should_stream,
+    set_should_stream,
+    start_event_stream,
+    agent_responses,
+    set_agent_responses,
+    agent_thoughts,
+    set_agent_thoughts,
+  } = USE_STORY();
 
+  // Setup agents and preload their latest chapter content/thoughts
+  useEffect(() => {
     if (!story_id || !user_stories?.stories) return;
 
-    const current_story = user_stories.stories.find(
-      (story) => story._id === story_id
-    );
+    const current_story = user_stories.stories.find((story) => story._id === story_id);
+    if (!current_story) return;
 
-    if (current_story?.agents) {
-      set_agents(current_story.agents);
+    set_agents(current_story.agents || []);
 
-      // Set up the initial agent responses from their most recent chapters
-      const initial_responses = {};
-      const initial_thoughts = {};
-      current_story.agents.forEach(agent => {
-        const last_chapter = agent.chapters?.[agent.chapters.length - 1];
-        if (last_chapter?.content) {
-          initial_responses[agent._id] = last_chapter.content;
-        }
-        if (last_chapter?.content_thoughts) {
-          initial_thoughts[agent._id] = last_chapter.content_thoughts;
-        }
-      });
+    const initial_responses = {};
+    const initial_thoughts = {};
 
-      set_agent_responses(initial_responses);
-      set_agent_thoughts(initial_thoughts);
-    }
+    current_story.agents.forEach((agent) => {
+      const last_chapter = agent.chapters?.[agent.chapters.length - 1];
+      if (last_chapter?.content) {
+        initial_responses[agent._id] = last_chapter.content;
+      }
+      if (last_chapter?.content_thoughts) {
+        initial_thoughts[agent._id] = last_chapter.content_thoughts;
+      }
+    });
 
-    console.log("Agents: ", current_story.agents);
+    set_agent_responses(initial_responses);
+    set_agent_thoughts(initial_thoughts);
+
+    // Determine correct step and chapter number
+    const chapter_count = current_story.story_content?.length || 0;
+    const step = chapter_count === 0 ? "generate_first_chapter" : "generate_next_chapter";
+    const chapter_number = chapter_count === 0 ? 1 : chapter_count + 1;
+    set_stream_params({ step, chapter_number });
   }, [story_id, user_stories]);
 
+  // Automatically start streaming once the should_stream flag flips
   useEffect(() => {
     if (!should_stream) return;
-  
-    const { step, chapterNumber } = stream_params;
-    start_event_stream(user, story_id, step, chapterNumber);
+    const { step, chapter_number } = stream_params;
+    start_event_stream(user, story_id, step, chapter_number);
   }, [should_stream]);
 
   return (
@@ -66,21 +74,23 @@ function STORY_AGENTS_VIEW() {
       <Stack spacing="md">
         {agents.map((agent) => (
           <Group key={agent._id} align="flex-start" style={{ width: '100%' }}>
-          <div style={{ flex: 0.7 }}>
-          <AGENT_BOX
-            key={agent._id}
-            name={agent.agent_name}
-            chapter_content={agent_responses[agent._id] || "Waiting for the agent to generate a response..."}
-            agent={agent.agent}
-            start_event_stream={start_event_stream}
-          />
-          </div>
-          <div style={{ flex: 0.3 }}>
-          <AGENT_THOUGHTS
-          key={agent._id}
-          chapter_thoughts={agent_thoughts[agent._id] || "Waiting for the agent to gather their thoughts..."}
-          />
-          </div>
+            <div style={{ flex: 0.7 }}>
+              <AGENT_BOX
+                key={agent._id}
+                name={agent.agent_name}
+                chapter_content={agent_responses[agent._id] || "Waiting for the agent to generate a response..."}
+                agent={agent.agent}
+                start_event_stream={start_event_stream}
+                step={stream_params.step}
+                chapter_number={stream_params.chapter_number}
+              />
+            </div>
+            <div style={{ flex: 0.3 }}>
+              <AGENT_THOUGHTS
+                key={agent._id}
+                chapter_thoughts={agent_thoughts[agent._id] || "Waiting for the agent to gather their thoughts..."}
+              />
+            </div>
           </Group>
         ))}
       </Stack>
