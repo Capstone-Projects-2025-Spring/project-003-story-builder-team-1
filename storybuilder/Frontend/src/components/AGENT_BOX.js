@@ -4,21 +4,20 @@ import { USE_STORY } from '../context/STORY_CONTEXT';
 import ReactMarkdown from 'react-markdown';
 
 function AGENT_BOX({ name, chapter_content, start_event_stream, step, chapter_number }) {
-  const { should_stream, set_should_stream } = USE_STORY();
+  const { should_stream, set_should_stream, streamingAction, setStreamingAction } = USE_STORY();
 
   const [opened, set_opened] = useState(false);
   const [show_cont_button, set_show_cont_button] = useState(true);
   const [edit_modal_open, set_edit_modal_open] = useState(false);
   const [edited_content, set_edited_content] = useState('');
-  const [regenerating, set_regenerating] = useState(false);
 
   const handle_continue = () => {
-    set_regenerating(false);
+    setStreamingAction('continue');
     set_should_stream(true);
   };
-
+  
   const handle_regenerate = () => {
-    set_regenerating(true);
+    setStreamingAction('regenerate');
     set_should_stream(true);
   };
 
@@ -138,35 +137,35 @@ function AGENT_BOX({ name, chapter_content, start_event_stream, step, chapter_nu
             variant="light"
             disabled={should_stream}
             onClick={handle_regenerate}
-            leftSection={regenerating && should_stream && <Loader size="xs" color="violet" />}
+            leftSection={streamingAction === 'regenerate' && should_stream && <Loader size="xs" color="violet" />}
             style={{
-              backgroundColor: regenerating && should_stream
-                ? 'rgba(128, 90, 213, 0.1)' // Lighter purple during regenerate
+              backgroundColor: streamingAction === 'regenerate' && should_stream
+                ? 'rgba(128, 90, 213, 0.1)'
                 : 'rgba(128, 90, 213, 0.15)',
-              color: regenerating && should_stream ? '#b794f4' : '#9f7aea',
+              color: streamingAction === 'regenerate' && should_stream ? '#b794f4' : '#9f7aea',
               cursor: should_stream ? 'not-allowed' : 'pointer',
               transition: 'background-color 0.2s ease',
             }}
           >
-            {regenerating && should_stream ? 'Regenerating' : 'Regenerate'}
+            {streamingAction === 'regenerate' && should_stream ? 'Regenerating' : 'Regenerate'}
           </Button>
 
           {show_cont_button && (
             <Button
-              size="sm"
-              variant="light"
-              color={!should_stream ? 'teal' : undefined}
-              disabled={should_stream}
-              onClick={handle_continue}
-              leftSection={!regenerating && should_stream && <Loader size="xs" color="green" />}
-              style={{
-                backgroundColor: !regenerating && should_stream ? 'rgba(0, 255, 128, 0.1)' : '',
-                color: !regenerating && should_stream ? '#66ffb2' : '',
-                cursor: should_stream ? 'not-allowed' : 'pointer',
-              }}
-            >
-              {!regenerating && should_stream ? 'Drafting Chapter' : 'Continue'}
-            </Button>
+            size="sm"
+            variant="light"
+            color={!should_stream ? 'teal' : undefined}
+            disabled={should_stream}
+            onClick={handle_continue}
+            leftSection={streamingAction === 'continue' && should_stream && <Loader size="xs" color="green" />}
+            style={{
+              backgroundColor: streamingAction === 'continue' && should_stream ? 'rgba(0, 255, 128, 0.1)' : '',
+              color: streamingAction === 'continue' && should_stream ? '#66ffb2' : '',
+              cursor: should_stream ? 'not-allowed' : 'pointer',
+            }}
+          >
+            {streamingAction === 'continue' && should_stream ? 'Drafting Chapter' : 'Continue'}
+          </Button>
           )}
         </Group>
       </Card>
