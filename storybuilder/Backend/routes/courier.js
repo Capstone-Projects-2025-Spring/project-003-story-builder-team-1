@@ -222,7 +222,7 @@ router.post('/aggregate', async (req, res) => {
         //     all_results: agentResults,
         // }); // Send the best response to the client
         res.write(JSON.stringify({
-            best_response: best_result,
+            best_response: db_data.best_response,
             all_results: agent_results,
         })); // Send the best response to the client
     } catch (error) {
