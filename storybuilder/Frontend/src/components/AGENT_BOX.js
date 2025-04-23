@@ -10,9 +10,16 @@ function AGENT_BOX({ name, chapter_content, start_event_stream, step, chapter_nu
   const [show_cont_button, set_show_cont_button] = useState(true);
   const [edit_modal_open, set_edit_modal_open] = useState(false);
   const [edited_content, set_edited_content] = useState('');
+  const [regenerating, set_regenerating] = useState(false);
 
   const handle_continue = () => {
-    set_should_stream(true); // Triggers the stream in the parent via useEffect
+    set_regenerating(false);
+    set_should_stream(true);
+  };
+
+  const handle_regenerate = () => {
+    set_regenerating(true);
+    set_should_stream(true);
   };
 
   return (
@@ -66,10 +73,7 @@ function AGENT_BOX({ name, chapter_content, start_event_stream, step, chapter_nu
           <Button
             variant="light"
             color="teal"
-            onClick={() => {
-              set_edit_modal_open(false);
-              // You can add save logic here
-            }}
+            onClick={() => set_edit_modal_open(false)}
           >
             Save
           </Button>
@@ -129,6 +133,24 @@ function AGENT_BOX({ name, chapter_content, start_event_stream, step, chapter_nu
             Edit
           </Button>
 
+          <Button
+            size="sm"
+            variant="light"
+            disabled={should_stream}
+            onClick={handle_regenerate}
+            leftSection={regenerating && should_stream && <Loader size="xs" color="violet" />}
+            style={{
+              backgroundColor: regenerating && should_stream
+                ? 'rgba(128, 90, 213, 0.1)' // Lighter purple during regenerate
+                : 'rgba(128, 90, 213, 0.15)',
+              color: regenerating && should_stream ? '#b794f4' : '#9f7aea',
+              cursor: should_stream ? 'not-allowed' : 'pointer',
+              transition: 'background-color 0.2s ease',
+            }}
+          >
+            {regenerating && should_stream ? 'Regenerating' : 'Regenerate'}
+          </Button>
+
           {show_cont_button && (
             <Button
               size="sm"
@@ -136,14 +158,14 @@ function AGENT_BOX({ name, chapter_content, start_event_stream, step, chapter_nu
               color={!should_stream ? 'teal' : undefined}
               disabled={should_stream}
               onClick={handle_continue}
-              leftSection={should_stream && <Loader size="xs" color="green" />}
+              leftSection={!regenerating && should_stream && <Loader size="xs" color="green" />}
               style={{
-                backgroundColor: should_stream ? 'rgba(0, 255, 128, 0.1)' : '',
-                color: should_stream ? '#66ffb2' : '',
+                backgroundColor: !regenerating && should_stream ? 'rgba(0, 255, 128, 0.1)' : '',
+                color: !regenerating && should_stream ? '#66ffb2' : '',
                 cursor: should_stream ? 'not-allowed' : 'pointer',
               }}
             >
-              {should_stream ? 'Drafting Chapter' : 'Continue'}
+              {!regenerating && should_stream ? 'Drafting Chapter' : 'Continue'}
             </Button>
           )}
         </Group>
