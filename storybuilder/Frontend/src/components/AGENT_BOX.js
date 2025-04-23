@@ -139,10 +139,18 @@ function AGENT_BOX({ name, chapter_content, start_event_stream, step, chapter_nu
             onClick={handle_regenerate}
             leftSection={streamingAction === 'regenerate' && should_stream && <Loader size="xs" color="violet" />}
             style={{
-              backgroundColor: streamingAction === 'regenerate' && should_stream
-                ? 'rgba(128, 90, 213, 0.1)'
-                : 'rgba(128, 90, 213, 0.15)',
-              color: streamingAction === 'regenerate' && should_stream ? '#b794f4' : '#9f7aea',
+              backgroundColor:
+                streamingAction === 'regenerate' && should_stream
+                  ? 'rgba(128, 90, 213, 0.1)'
+                  : streamingAction === 'continue' && should_stream
+                  ? 'rgba(255, 255, 255, 0.05)' // greyed out appearance
+                  : 'rgba(128, 90, 213, 0.15)',
+              color:
+                streamingAction === 'regenerate' && should_stream
+                  ? '#b794f4'
+                  : streamingAction === 'continue' && should_stream
+                  ? '#777'
+                  : '#9f7aea',
               cursor: should_stream ? 'not-allowed' : 'pointer',
               transition: 'background-color 0.2s ease',
             }}
