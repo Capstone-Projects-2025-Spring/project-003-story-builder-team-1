@@ -128,7 +128,7 @@ exports.story_chapter_details = asyncHandler(async (req, res, next) => {
     res.status(200).json(chapter);
 });
 
-// Handle Story update on POST
+// Update Story name
 exports.story_name_update = asyncHandler(async (req, res, next) => {
     const { story_name } = req.body;
     const { user_id, story_id } = req.params;

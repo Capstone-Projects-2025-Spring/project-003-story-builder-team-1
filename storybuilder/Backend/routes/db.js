@@ -95,8 +95,14 @@ Parameter Requirments:
 router.get("/story/:user_id/:story_id/:chapter_number/get_chapter", story_controller.story_chapter_details)
 
 
-// POST request to update Story
-router.post("/story/:user_id/:story_id/update", story_controller.story_update_post);
+/* Changes the Story Name
+Parameter Requirments:
+- user_id: the id of the user within the db
+- story_id: the id of the story within the db
+Body Requirments:
+- story_name: The new desired story name
+*/
+router.post("/story/:user_id/:story_id/name_update", story_controller.story_name_update);
 
 // POST request to get the number of chapters
 router.get("/story/:user_id/:story_id/get_number_of_chapters", story_controller.story_get_number_of_chapters);
