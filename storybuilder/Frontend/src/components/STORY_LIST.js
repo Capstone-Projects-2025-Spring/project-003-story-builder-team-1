@@ -49,9 +49,9 @@ function STORY_LIST() {
           fullWidth
           onClick={() => navigate(`/agent_selection`)}
           style={{
-            backgroundColor: 'rgba(255, 165, 0, 0.15)',
-            color: '#FFA500',
-            border: '1px solid #FFA500',
+            backgroundColor: 'rgba(107, 186, 104, 0.8)',
+            color: 'white',
+            border: '1px solid #06402B',
           }}
         >
           Generate New Story
@@ -93,7 +93,7 @@ function STORY_LIST() {
                       Agents
                     </Button>
                                       
-                    <Button variant="filled" color="red" fullWidth onClick={() => handle_delete_click(story._id)}>
+                    <Button variant="filled" color="gray" fullWidth onClick={() => handle_delete_click(story._id)}>
                       Delete Story
                     </Button> 
                    
@@ -116,7 +116,7 @@ function STORY_LIST() {
         <Text size="md" align="center" mb="md">
           Are you sure you want to delete this story?
         </Text>
-        <Button fullWidth mt="md" onClick={handle_delete_confirm}>
+        <Button color="red" fullWidth mt="md" onClick={handle_delete_confirm}>
           Confirm
         </Button>
       </Modal>
