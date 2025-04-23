@@ -62,6 +62,11 @@ exports.user_stories_list = asyncHandler(async (req, res, next) => {
 // Get a Specific Story
 exports.story_details = asyncHandler(async (req, res, next) => {
     const { user_id, story_id } = req.params;
+
+    if (!user_id || !story_id) {
+        return res.status(400).json({ error: "All fields are required" });
+    }
+
     // Find the story by story_id and check if the user_id matches
     const story = await Story.findOne({ _id: story_id, user: user_id }).select('story_name story_content').exec();
 
@@ -75,6 +80,10 @@ exports.story_details = asyncHandler(async (req, res, next) => {
 // Delete a story
 exports.story_delete = asyncHandler(async (req, res, next) => {
     const { user_id, story_id } = req.params;
+
+    if (!user_id || !story_id) {
+        return res.status(400).json({ error: "All fields are required" });
+    }
 
     // Find the story by story_id and check if the user_id matches
     const story = await Story.findOne({ _id: story_id, user: user_id });
@@ -96,6 +105,10 @@ exports.story_delete = asyncHandler(async (req, res, next) => {
 exports.story_chapter_details = asyncHandler(async (req, res, next) => {
     const { user_id, story_id, chapter_number } = req.params;
 
+    if (!user_id || !story_id || !chapter_number) {
+        return res.status(400).json({ error: "All fields are required" });
+    }
+
     // Find the story and check if the user_id matches the story's user
     const story = await Story.findOne({ _id: story_id, user: user_id }).exec();
 
@@ -116,26 +129,28 @@ exports.story_chapter_details = asyncHandler(async (req, res, next) => {
 });
 
 // Handle Story update on POST
-exports.story_update_post = asyncHandler(async (req, res, next) => {
-    const { story_name, prompt } = req.body;
+exports.story_name_update = asyncHandler(async (req, res, next) => {
+    const { story_name } = req.body;
     const { user_id, story_id } = req.params;
+
+
+    if (!user_id || !story_id || !story_name) {
+        return res.status(400).json({ error: "All fields are required" });
+    }
 
     const user = await User.findById(user_id);
     if (!user) {
         return res.status(404).json({ error: "User not found" });
     }
 
-    const story = await Story.findById(story_id);
-    if (!story) {
-        return res.status(404).json({ error: "Story not found" });
-    }
+    // Find the story and check if the user_id matches the story's user
+    const story = await Story.findOne({ _id: story_id, user: user_id }).exec();
 
-    if (story.user.toString() !== user_id) {
-        return res.status(403).json({ error: "You do not have permission to update this story" });
+    if (!story) {
+        return res.status(404).json({ error: "Story not found or invalid permissions" });
     }
 
     if (story_name) story.story_name = story_name;
-    if (prompt) story.prompt = prompt;
 
     await story.save();
 
