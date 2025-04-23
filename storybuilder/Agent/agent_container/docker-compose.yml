@@ -9,4 +9,4 @@ services:
       - API_KEY=${DEEPSEEK_API_KEY}
       - AGENT_NAME=${AGENT_NAME}
     ports:
-      - "5000:5000"  # Custom external port
+      - "5000:5000"  # Custom external portn

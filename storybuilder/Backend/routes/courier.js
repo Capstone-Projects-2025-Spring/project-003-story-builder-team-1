@@ -115,7 +115,6 @@ router.post('/aggregate', async (req, res) => {
                 return new Promise((resolve, reject) => {
                     let data = [];
                     let thoughts = [];
-                    let thoughts = [];
 
                     response.data.on('data', chunk => {
                         let str = chunk.toString();
@@ -208,11 +207,11 @@ router.post('/aggregate', async (req, res) => {
 
         //This data structure stores the winning result between all agents in best_response, every response generated in agent_results, and every agent's vote (and vote weight) in votes. This is for the DB.
         const db_data = {
-                best_response: agent_results[best_result].data,
+                best_response: agent_results[best_result],
                 all_results: agent_results,
                 votes: agent_votes
         };
-
+        console.log("");
         const db_response = await db_store(req.body.data.step, req.body.data.user_id, req.body.data.story_id, req.body.data.chapter_number, db_data, res);
 
         if (!db_response) {
@@ -231,7 +230,7 @@ router.post('/aggregate', async (req, res) => {
         res.status(500).send('Error occurred while aggregating responses.');
     }
     async function db_store(step, user_id, story_id, chapter_number, db_data, res) {
-      console.log("all_results", db.data.all_results);
+      console.log("db_data:", db_data);
       try {
           switch(step) {
               case "generate_outline":
