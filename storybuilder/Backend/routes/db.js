@@ -94,7 +94,6 @@ Parameter Requirments:
 */
 router.get("/story/:user_id/:story_id/:chapter_number/get_chapter", story_controller.story_chapter_details)
 
-
 /* Changes the Story Name
 Parameter Requirments:
 - user_id: the id of the user within the db
@@ -104,7 +103,11 @@ Body Requirments:
 */
 router.post("/story/:user_id/:story_id/name_update", story_controller.story_name_update);
 
-// POST request to get the number of chapters
+/* Get number of chapters in a story minus the outline chapter (chapter 0)
+Parameter Requirments:
+- user_id: the id of the user within the db
+- story_id: the id of the story within the db
+*/
 router.get("/story/:user_id/:story_id/get_number_of_chapters", story_controller.story_get_number_of_chapters);
 
 // POST request to add a chapter to the main story
