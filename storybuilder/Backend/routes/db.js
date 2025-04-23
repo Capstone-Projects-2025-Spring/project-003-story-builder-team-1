@@ -78,11 +78,16 @@ Parameter Requirments:
 */
 router.get("/story/:user_id/:story_id/get_story", story_controller.story_details);
 
+/* Deletes a Story
+Parameter Requirments:
+- user_id: the id of the user within the db
+- story_id: the id of the story within the db
+*/
+router.post("/story/:user_id/:story_id/delete", story_controller.story_delete);
+
 // GET request for a chapter specific to a story 
 router.get("/story/:user_id/:story_id/:chapter_number/get_chapter", story_controller.story_chapter_detail)
 
-// POST request to delete Story
-router.post("/story/:user_id/:story_id/delete", story_controller.story_delete_post);
 
 // POST request to update Story
 router.post("/story/:user_id/:story_id/update", story_controller.story_update_post);

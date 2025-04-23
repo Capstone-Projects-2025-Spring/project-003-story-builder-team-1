@@ -73,7 +73,7 @@ exports.story_details = asyncHandler(async (req, res, next) => {
 });
 
 // Delete a story
-exports.story_delete_post = asyncHandler(async (req, res, next) => {
+exports.story_delete = asyncHandler(async (req, res, next) => {
     const { user_id, story_id } = req.params;
 
     // Find the story by story_id and check if the user_id matches
@@ -86,16 +86,10 @@ exports.story_delete_post = asyncHandler(async (req, res, next) => {
     // Remove the story_id from the user's stories array
     await User.findByIdAndUpdate(user_id, { $pull: { stories: story_id } });
 
-    // Remove the agent responses for this story
-    await Agent.updateMany(
-        { 'agent_responses.story': story_id },  // Find agents with responses for this story
-        { $pull: { agent_responses: { story: story_id } } }  // Remove the specific response from the agent's responses
-    );
-
     // Proceed with deletion if the story exists and the user_id matches
     await Story.findByIdAndDelete(story_id);
 
-    res.json({ message: "Story and associated agent responses deleted" });
+    res.status(200).json({ message: "Story and associated agent responses deleted" });
 });
 
 // Get final version of a specific chapter from story_content
