@@ -192,7 +192,7 @@ async function db_store(step, user_id, story_id, chapter_number, responses, res)
                 await axios.post(`${APP_URL}/db/story/${user_id}/${story_id}/add_agent_outlines`, { outlines: responses.allResults, votes: responses.votes });
                 break;
             case "critique_outline":
-                await axios.post(`${APP_URL}/db/story/${user_id}/${story_id}/story_add_voted_critique_post`, { chapter_number: chapter_number, critique: responses.bestResponse.data });
+                await axios.post(`${APP_URL}/db/story/${user_id}/${story_id}/add_critique`, { chapter_number: chapter_number, critique: responses.bestResponse.data });
                 await axios.post(`${APP_URL}/db/story/${user_id}/${story_id}/add_agent_critiques`, { chapter_number: chapter_number, critiques: responses.allResults, votes: responses.votes });
                 break;
             case "rewrite_outline":
@@ -208,7 +208,7 @@ async function db_store(step, user_id, story_id, chapter_number, responses, res)
                 await axios.post(`${APP_URL}/db/story/${user_id}/${story_id}/add_agent_chapter`, {chapter_number: chapter_number, content: responses.allResults, votes: responses.votes});
                 break;
             case "critique_chapter":
-                await axios.post(`${APP_URL}/db/story/${user_id}/${story_id}/story_add_voted_critique_post`, { chapter_number: chapter_number, critique: responses.bestResponse.data });
+                await axios.post(`${APP_URL}/db/story/${user_id}/${story_id}/add_critique`, { chapter_number: chapter_number, critique: responses.bestResponse.data });
                 await axios.post(`${APP_URL}/db/story/${user_id}/${story_id}/add_agent_critiques`, { chapter_number: chapter_number, critiques: responses.allResults, votes: responses.votes });
                 break;
             case "rewrite_chapter":
