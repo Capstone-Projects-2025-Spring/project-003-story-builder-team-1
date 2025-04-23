@@ -192,13 +192,13 @@ exports.story_get_number_of_chapters = asyncHandler(async (req, res, next) => {
     res.status(200).json({ number_of_chapters });
 });
 
-// Edit a final chapter specific to a story (update story_content chapter content)
-exports.story_chapter_edit_post = asyncHandler(async (req, res, next) => {
-    const { user_id, story_id, story_chapter_number } = req.params; // Story ID and UserID
-    const { text } = req.body;
+// Add outline to a story
+exports.story_add_outline = asyncHandler(async (req, res, next) => {
+    const { user_id, story_id } = req.params; // Story ID and User ID
+    const { outline } = req.body;
 
-    if (!text) {
-        return res.status(400).json({ error: "Content is required." });
+    if (!outline) {
+        return res.status(400).json({ error: "Outline is required." });
     }
 
     // Find the user and ensure they exist
@@ -207,25 +207,91 @@ exports.story_chapter_edit_post = asyncHandler(async (req, res, next) => {
         return res.status(404).json({ error: "User not found" });
     }
     
-    // Find the story
-    const story = await Story.findById(story_id);
-    if (!story) return res.status(404).json({ error: "Story not found" });
-
-    // Find the chapter in the story_content array
-    const chapter = story.story_content.find(ch => ch.story_chapter_number === Number(story_chapter_number));
-    
-    if (!chapter) {
-        return res.status(404).json({ error: "Chapter not found" });
+    // Find the story and check if the user_id matches the story's user
+    const story = await Story.findOne({ _id: story_id, user: user_id }).exec();
+    if (!story) {
+        return res.status(404).json({ error: "Story not found" });
     }
+    
+    // Add outline to the story
+    story.outline = outline;
 
-    // Update the chapter content
-    chapter.text = text;
+    const existing_chapter = story.story_content.find(ch => ch.story_chapter_number === 0);
+    
+    if (existing_chapter) {
+        existing_chapter.text = outline;
+    } else {
+        story.story_content.push({
+            story_chapter_number: 0,
+            text: outline
+        });
+    }
 
     // Save the updated story
     await story.save();
 
-    res.status(200).json({ message: "Chapter updated successfully", story });
+    res.status(200).json({ outline: story.outline });
 });
+
+// Add the specific agent outline responses
+exports.story_add_agent_outlines = asyncHandler(async (req, res, next) => {
+    const { user_id, story_id } = req.params;
+    const { outlines, votes} = req.body;
+
+    // Find the user
+    const user = await User.findById(user_id);
+    if (!user) {
+        return res.status(404).json({ error: "User not found" });
+    }
+
+    // Find the story
+    const story = await Story.findOne({ _id: story_id, user: user_id }).exec();
+    if (!story) {
+        return res.status(404).json({ error: "Story not found or user does not have access to this story" });
+    }
+
+    if (!outlines || outlines.length === 0) {
+        return res.status(404).json({ error: "Outlines are required." });
+    }
+
+    if (!votes || votes.length === 0) {
+        return res.status(404).json({ error: "Votes are required." });
+    }
+
+    for (const r of outlines) {
+        const agent = story.agents.find(agent => agent._id.toString() === r.agent_id);
+
+        const existing_outline = agent.chapters.find(ch => ch.chapter_number === 0);
+
+        const vote_entry = votes.find(v => v.agent_id === r.agent_id);
+
+        if (!vote_entry) {
+            return res.status(400).json({ error: `No vote entry found for an agent ID` });
+        }
+
+        const vote_value = vote_entry.votes;
+
+        if (existing_outline) {
+            existing_outline.content = r.data;
+            existing_outline.chapter_votes = vote_value;
+            existing_outline.content_thoughts = r.thoughts
+        } else {
+            agent.chapters.push({
+                chapter_number: 0,
+                content: r.data,
+                chapter_votes: vote_value,
+                content_thoughts: r.thoughts
+            });
+        }
+    }
+
+    await story.save();
+
+    res.status(200).json({ message: "Agent outlines updated successfully." });
+});
+
+
+
 
 // Edit agent-specific chapter content
 exports.story_agent_chapter_edit_post = asyncHandler(async (req, res, next) => {
@@ -505,47 +571,6 @@ exports.story_agent_chapter_votes = asyncHandler(async (req, res, next) => {
     res.status(200).json({ votes: chapter.votes });
 });
 
-// Add outline to a story
-exports.story_add_outline_post = asyncHandler(async (req, res, next) => {
-    const { user_id, story_id } = req.params; // Story ID and User ID
-    const { outline } = req.body;
-
-    if (!outline) {
-        return res.status(400).json({ error: "Outline is required." });
-    }
-
-    // Find the user and ensure they exist
-    const user = await User.findById(user_id);
-    if (!user) {
-        return res.status(404).json({ error: "User not found" });
-    }
-    
-    // Find the story
-    const story = await Story.findById(story_id);
-    if (!story) {
-        return res.status(404).json({ error: "Story not found" });
-    }
-    
-    // Add outline to the story
-    story.outline = outline;
-
-    const existing_chapter = story.story_content.find(ch => ch.story_chapter_number === 0);
-    
-    if (existing_chapter) {
-        existing_chapter.text = outline;
-    } else {
-        story.story_content.push({
-            story_chapter_number: 0,
-            text: outline
-        });
-    }
-
-    // Save the updated story
-    await story.save();
-
-    res.status(200).json({ outline: story.outline });
-});
-
 // Get outline for a story
 exports.story_get_outline = asyncHandler(async (req, res, next) => {
     const { user_id, story_id } = req.params; // Story ID and User ID
@@ -673,62 +698,6 @@ exports.story_veto_critique = asyncHandler(async (req, res, next) => {
     await story.save();
 
     res.status(200).json({ message: "Critique updated", critique });
-});
-
-exports.story_add_agent_outlines_post = asyncHandler(async (req, res, next) => {
-    const { user_id, story_id } = req.params;
-    const { outlines, votes} = req.body;
-
-    // Find the user
-    const user = await User.findById(user_id);
-    if (!user) {
-        return res.status(404).json({ error: "User not found" });
-    }
-
-    // Find the story
-    const story = await Story.findOne({ _id: story_id, user: user_id }).exec();
-    if (!story) {
-        return res.status(404).json({ error: "Story not found or user does not have access to this story" });
-    }
-
-    if (!outlines || outlines.length === 0) {
-        return res.status(404).json({ error: "Outlines are required." });
-    }
-
-    if (!votes || votes.length === 0) {
-        return res.status(404).json({ error: "Votes are required." });
-    }
-
-    for (const r of outlines) {
-        const agent = story.agents.find(agent => agent._id.toString() === r.agent_id);
-
-        const existing_outline = agent.chapters.find(ch => ch.chapter_number === 0);
-
-        const vote_entry = votes.find(v => v.agent_id === r.agent_id);
-
-        if (!vote_entry) {
-            return res.status(400).json({ error: `No vote entry found for an agent ID` });
-        }
-
-        const vote_value = vote_entry.votes;
-
-        if (existing_outline) {
-            existing_outline.content = r.data;
-            existing_outline.chapter_votes = vote_value;
-            existing_outline.content_thoughts = r.thoughts
-        } else {
-            agent.chapters.push({
-                chapter_number: 0,
-                content: r.data,
-                chapter_votes: vote_value,
-                content_thoughts: r.thoughts
-            });
-        }
-    }
-
-    await story.save();
-
-    res.status(200).json({ message: "Agent outlines updated successfully." });
 });
 
 exports.story_add_agent_critiques_post = asyncHandler(async (req, res, next) => {

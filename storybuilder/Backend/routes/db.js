@@ -110,11 +110,28 @@ Parameter Requirments:
 */
 router.get("/story/:user_id/:story_id/get_number_of_chapters", story_controller.story_get_number_of_chapters);
 
+/* Add/Edit outline from story contents
+Parameter Requirments:
+- user_id: the id of the user within the db
+- story_id: the id of the story within the db
+Body Requirments: 
+- outline: The new outline or new version of the outline
+*/
+router.post("/story/:user_id/:story_id/add_outline", story_controller.story_add_outline);
+
+/*
+Parameter Requirments:
+- user_id: the id of the user within the db
+- story_id: the id of the story within the db
+
+Body Requirments: 
+- outline: The new outline or new version of the outline
+- votes: The numerical value used to determine the best response
+*/
+router.post("/story/:user_id/:story_id/add_agent_outlines", story_controller.story_add_agent_outlines);
+
 // POST request to add a chapter to the main story
 router.post("/story/:user_id/:story_id/add_chapter", story_controller.story_add_chapter_post);
-
-// POST request to edit a final chapter specific to a story (update story_content chapter content)
-router.post("/story/:user_id/:story_id/:story_chapter_number/edit_chapter", story_controller.story_chapter_edit_post);
 
 // POST request to edit agent-specific chapter content
 router.post("/story/:user_id/:story_id/:agent_id/:chapter_number/edit_agent_chapter", story_controller.story_agent_chapter_edit_post);
@@ -133,9 +150,6 @@ router.post("/story/:user_id/:story_id/:chapter_number/veto", story_controller.s
 // GET request for getting the number of votes for an agent's chapter version
 router.get("/story/:user_id/:story_id/:agent_id/:chapter_number/get_votes", story_controller.story_agent_chapter_votes);
 
-// POST request for adding an outline
-router.post("/story/:user_id/:story_id/add_outline", story_controller.story_add_outline_post);
-
 // GET request for getting the outline related to a chapter
 router.get("/story/:user_id/:story_id/get_outline", story_controller.story_get_outline);
 
@@ -144,8 +158,6 @@ router.post("/story/:user_id/:story_id/story_add_voted_critique_post", story_con
 router.get("/story/:user_id/:story_id/story_agent_list", story_controller.story_agents_list);
 
 router.post("/story/:user_id/:story_id/:chapter_number/veto_critique", story_controller.story_veto_critique);
-
-router.post("/story/:user_id/:story_id/add_agent_outlines", story_controller.story_add_agent_outlines_post);
 
 router.post("/story/:user_id/:story_id/add_agent_critiques", story_controller.story_add_agent_critiques_post)
 
