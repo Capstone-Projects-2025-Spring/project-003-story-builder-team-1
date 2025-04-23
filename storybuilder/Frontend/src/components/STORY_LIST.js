@@ -83,19 +83,19 @@ function STORY_LIST() {
                 {/* Expandable Section */}
                 <Collapse in={expanded_story === story._id}>
                   <Stack spacing="xs" mt="xs">
-                    <Button variant="filled" color="gray" fullWidth onClick={() => navigate(`/story/${story._id}/view`)}>
-                      View Story
-                    </Button>
-                    <Button variant="filled" color="gray" fullWidth onClick={() => navigate(`/story/${story._id}/best_response`)}>
-                      Best Response
-                    </Button>
-                    <Button variant="filled" color="gray" fullWidth onClick={() => navigate(`/story/${story._id}/agents`)}>
-                      Agents
-                    </Button>
-                                      
-                    <Button variant="filled" color="gray" fullWidth onClick={() => handle_delete_click(story._id)}>
-                      Delete Story
-                    </Button> 
+                  <Button variant="filled" color="gray" style={{ width: 'calc(100% - 10px)', margin: '0 5px' }} onClick={() => navigate(`/story/${story._id}/view`)}>
+                    View Story
+                  </Button>
+                  <Button variant="filled" color="gray" style={{ width: 'calc(100% - 10px)', margin: '0 5px' }} onClick={() => navigate(`/story/${story._id}/best_response`)}>
+                    Best Response
+                  </Button>
+                  <Button variant="filled" color="gray" style={{ width: 'calc(100% - 10px)', margin: '0 5px' }} onClick={() => navigate(`/story/${story._id}/agents`)}>
+                    Agents
+                  </Button>
+                  <Button variant="filled" color="gray" style={{ width: 'calc(100% - 10px)', margin: '0 5px' }} onClick={() => handle_delete_click(story._id)}>
+                    Delete Story
+                  </Button>
+
                    
                   </Stack>
                 </Collapse>
