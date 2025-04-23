@@ -115,6 +115,7 @@ router.post('/aggregate', async (req, res) => {
                 return new Promise((resolve, reject) => {
                     let data = [];
                     let thoughts = [];
+                    let thoughts = [];
 
                     response.data.on('data', chunk => {
                         let str = chunk.toString();

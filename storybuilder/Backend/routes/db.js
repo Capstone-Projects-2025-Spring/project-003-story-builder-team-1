@@ -4,23 +4,47 @@ const router = express.Router();
 // Require controller modules
 const user_controller = require("../controllers/user_controller");
 const story_controller = require("../controllers/story_controller");
+const persona_controller = require("../controllers/persona_controller");
 const agent_controller = require("../controllers/agent_controller");
 
 /// USER ROUTES ///
 
-// POST request for creating new User
-router.post('/account_creation', user_controller.user_create_post);
+/* Creates a user
+Body Requirments:
+- username: the username of the user
+- password: the password of the user
+    * password must be alphanumeric
+*/
+router.post('/account_creation', user_controller.create_user);
 
-// POST request for logging a User in
-router.post('/account_login', user_controller.user_login_post);
+/* Checks login credentials to see if the user can log in
+Body Requirments:
+- username: the username of the user
+- password: the password of the user
+    * password must be alphanumeric
+*/
+router.post('/account_login', user_controller.user_login);
 
-// POST request to delete User
-router.post("/user/:user_id/delete", user_controller.user_delete_post);
+/* Deletes an account
+Parameter Requirments:
+- user_id: the id of the user within the db
+*/
+router.post("/user/:user_id/delete", user_controller.user_delete);
 
-// POST request to update User
-router.post("/user/:user_id/update", user_controller.user_update_post);
+/* Update user information
+Parameter Requirments:
+- user_id: the id of the user within the db
+Body Requirments:
+- username: the username of the user
+- password: the password of the user
+    * password must be alphanumeric
+*/
+router.post("/user/:user_id/update", user_controller.user_update);
 
-// GET request for one User
+/* Gets a user's information
+Parameter Requirments:
+- user_id: the id of the user within the db
+*/
 router.get("/user/:user_id", user_controller.user_details);
 
 /// STORY ROUTES ///
@@ -46,9 +70,6 @@ router.post("/story/:user_id/:story_id/update", story_controller.story_update_po
 // POST request to get the number of chapters
 router.get("/story/:user_id/:story_id/get_number_of_chapters", story_controller.story_get_number_of_chapters);
 
-// POST request to add chapter to agent-specfic version
-router.post("/story/:user_id/:story_id/add_agent_chapter", story_controller.story_add_agent_chapter_post);
-
 // POST request to add a chapter to the main story
 router.post("/story/:user_id/:story_id/add_chapter", story_controller.story_add_chapter_post);
 
@@ -57,6 +78,8 @@ router.post("/story/:user_id/:story_id/:story_chapter_number/edit_chapter", stor
 
 // POST request to edit agent-specific chapter content
 router.post("/story/:user_id/:story_id/:agent_id/:chapter_number/edit_agent_chapter", story_controller.story_agent_chapter_edit_post);
+
+router.post("/story/:user_id/:story_id/:agent_id/:chapter_number/edit_agent_critque", story_controller.story_agent_critique_edit_post);
 
 // POST request to add a critique to an existing chapter
 router.post("/story/:user_id/:story_id/:agent_id/:chapter_number/add_critique", story_controller.story_add_critique_post);
@@ -82,6 +105,12 @@ router.get("/story/:user_id/:story_id/story_agent_list", story_controller.story_
 
 router.post("/story/:user_id/:story_id/:chapter_number/veto_critique", story_controller.story_veto_critique);
 
+router.post("/story/:user_id/:story_id/add_agent_outlines", story_controller.story_add_agent_outlines_post);
+
+router.post("/story/:user_id/:story_id/add_agent_critiques", story_controller.story_add_agent_critiques_post)
+
+router.post("/story/:user_id/:story_id/add_agent_chapter", story_controller.story_add_agent_chapter_post);
+
 // Translator routes
 router.get("/story/:user_id/:story_id/get_generated_outline_details", story_controller.story_get_generate_outline_details);
 
@@ -91,11 +120,31 @@ router.get("/story/:user_id/:story_id/get_rewrite_outline_details", story_contro
 
 router.get("/story/:user_id/:story_id/get_first_chapter_details", story_controller.story_get_first_chapter_details);
 
-router.get("/story/:user_id/:story_id/get_next_chapter_details", story_controller.story_get_next_chapter_details);
+router.get("/story/:user_id/:story_id/:chapter_number/get_next_chapter_details", story_controller.story_get_next_chapter_details);
 
-router.get("/story/:user_id/:story_id/get_critique_chapter_details", story_controller.story_get_critique_chapter_details);
+router.get("/story/:user_id/:story_id/:chapter_number/get_critique_chapter_details", story_controller.story_get_critique_chapter_details);
 
-router.get("/story/:user_id/:story_id/get_rewrite_chapter_details", story_controller.story_get_rewrite_chapter_details);
+router.get("/story/:user_id/:story_id/:chapter_number/get_rewrite_chapter_details", story_controller.story_get_rewrite_chapter_details);
+
+
+/// PERSONA ROUTES ///
+
+// Returns a list of all personas
+router.get("/personas", persona_controller.persona_list);
+
+/* Creates a persona
+Body Requirements: 
+- name: the name of the persona
+- persona_info: The info about the person such as (You are shakespeare and you write stories)
+*/
+router.post("/create_persona", persona_controller.create_persona);
+
+/* Deletes a persona
+Body Requirements:
+- name: the name of the person
+*/
+router.post("/delete_persona", persona_controller.delete_persona);
+
 
 /// AGENT ROUTES ///
 

@@ -1,26 +1,29 @@
 import React from 'react';
 import { useState, useContext, useEffect } from 'react';
 import { useParams } from 'react-router';
-import { Container, Title, Text } from '@mantine/core';
-import STORY_CONTEXT from "../context/STORY_CONTEXT";
-
+import { Container } from '@mantine/core';
+import ReactMarkdown from 'react-markdown';
+import { USE_USER } from '../context/USER_CONTEXT';
 
 function CHAPTER_VIEW() {
-    const { state } = useContext(STORY_CONTEXT);
-    const { chapter_id } = useParams();
-    const [chapters, set_chapters] = useState([]);
+    const { story_id, chapter_id } = useParams();
     const curr_chapter = parseInt(chapter_id, 10);
+    const {user_stories} = USE_USER();
+    const [chapter_display, set_chapter_display] = useState(null);
 
     useEffect(() => {
-        if (state.current_story) {
-            set_chapters(state.current_story.chapters);
+        if (story_id && user_stories?.stories?.length && !isNaN(curr_chapter)) {
+            const found_story = user_stories.stories.find(
+                (story) => story._id === story_id
+            );
+            if (found_story && found_story.story_content[curr_chapter]) {
+                set_chapter_display(found_story.story_content[curr_chapter].text);
+            } else {
+                set_chapter_display("Chapter not found.");
+            }
         }
-    }, [state.current_story]);
+    }, [story_id, user_stories, curr_chapter]);
 
-    // In case the chapter is not found
-    if (!chapters[curr_chapter]) {
-        return <p>Chapter not found!</p>;
-    }
 
     return (
         <Container fluid style={{ display: 'flex', flexDirection: 'column', gap: '16px', maxWidth: '100%', margin: 'auto' }}>
@@ -29,14 +32,21 @@ function CHAPTER_VIEW() {
                 {chapter.title}
             </Title> */}
 
-            {/* Chapter Text */}
+            {/* Chapter Text
             <Text size="lg" style={{ textAlign: 'justify', lineHeight: 1.6 }}>
+                <ReactMarkdown component="div" children={chapter_display} />
+            </Text> */}
+
             <div
-                dangerouslySetInnerHTML={{
-                    __html: chapters[curr_chapter].replace(/\n/g, '<br />')
+                style={{
+                padding: '16px',
+                color: '#white',
+                fontSize: '18px',
+                lineHeight: 1.6,
                 }}
-            />
-            </Text>
+            >
+                <ReactMarkdown children={chapter_display} />
+            </div>
         </Container>
     );
 }

@@ -5,12 +5,19 @@ const router = express.Router();
 const PRIVATE_URL = process.env.PRIVATE_URL || "http://localhost:8080";
 const APP_URL = PRIVATE_URL;
 
-router.post('/translate', async (req, res) => {
-    const { user_id, story_id, step, chapter_number } = req.body;
+router.get('/translate', async (req, res) => {
+    const { user_id, story_id, step, chapter_number } = req.query;
+    console.log("req.query in translate", req.query);
     
     if (!user_id || !story_id || !step || chapter_number == null) {
-        return res.status(404).json({ message: "Missing required fields", data: req.body });
+        return res.status(400).json({ message: "Missing required fields", data: req.query });
     }
+
+    // // Set the necessary SSE headers
+    res.setHeader("Content-Type", "text/event-stream");
+    res.setHeader("Cache-Control", "no-cache");
+    res.setHeader("Connection", "keep-alive");
+    res.flushHeaders?.();
 
     const valid_steps = new Set([
         "generate_outline",
@@ -22,9 +29,13 @@ router.post('/translate', async (req, res) => {
         "rewrite_chapter",
       ]);
 
+    console.log("Step: ", step);                   
+
     if (!valid_steps.has(step)) {
         return res.status(400).json({ message: "Invalid step provided.", data: step });
       }
+
+    
 
     let data = {
         user_id,
@@ -35,13 +46,15 @@ router.post('/translate', async (req, res) => {
         generate_outline: { story_name: "", story_details: "", extra_details: "" },
         critique_outline: { story_name: "", story_details: "", extra_details: "", story_outline: "" },
         rewrite_outline: { story_name: "", story_details: "", extra_details: "", story_outline: "", outline_critique: "" },
-        generate_first_chatper: { story_name: "", story_details: "", extra_details: "", story_outline: "" },
+        generate_first_chapter: { story_name: "", story_details: "", extra_details: "", story_outline: "" },
         generate_next_chapter: { story_name: "", story_details: "", extra_details: "", story_outline: "", previous_chapters: [] },
         critique_chapter: { story_name: "", story_details: "", extra_details: "", story_outline: "", chapter: "" },
         rewrite_chapter: { story_name: "", story_details: "", extra_details: "", story_outline: "", chapter: "", chapter_critique: "" }
     };
 
     try {
+        console.log("user_id: ", user_id);
+        console.log("story_id: ", story_id);
         response = await axios.get(`${APP_URL}/db/story/${user_id}/${story_id}/story_agent_list`);
         if (!response.data || !response.data.story_agents) {
             return res.status(404).json({ message: "Agent list unobtainable" });
@@ -88,7 +101,7 @@ router.post('/translate', async (req, res) => {
 
             case "generate_first_chapter":
                 response = await axios.get(`${APP_URL}/db/story/${user_id}/${story_id}/get_first_chapter_details`);
-                data.generate_first_chatper = {
+                data.generate_first_chapter = {
                     story_name: response.data.story_name,
                     story_details: response.data.story_details,
                     extra_details: response.data.extra_details || "",
@@ -143,6 +156,17 @@ router.post('/translate', async (req, res) => {
         return new Promise((resolve, reject) => {
             let buffer = [];
             courier_response.data.on('data', chunk => {
+                //console.log("translator chunk: ", chunk.toString());
+                let str = chunk.toString();
+                let safe_str = str.replace(/\n/g, "[[NL]]"); // Replace newlines with a safe placeholder
+                res.write(`data: ${safe_str}\n\n`); // Send the raw chunk to the client
+
+                // str = str.replace(/^data: /, ''); // Remove "data: " prefix
+                // str = str.slice(0, -2); // Remove "\n\n" suffix
+                // res.write(`${agent_names[idx]}|${agent_ids[idx]}|${str}`); 
+                // str = `data: ${str}\n\n`; // Format for SSE
+                // // Optionally: parse each SSE chunk here.
+                // data.push(str);
                 if (chunk.toString().startsWith("{\"best")) {
                     buffer = buffer.slice(0, -1); // Remove the last empty chunk or DONE chunk
                     buffer = buffer.map(
@@ -151,7 +175,7 @@ router.post('/translate', async (req, res) => {
                         .slice(0, -2)) // Remove "\n\n" suffix
                         .join(''); // Join the array into a single string
                     //console.log("Buffer on end:", buffer);
-                    resolve(res.status(200).json({ message: "Data Received Successfully", data}));
+                    resolve(res.write(`event: done\ndata: ${JSON.stringify({ message: "Data received successfully" }, {data: buffer})}\n\n`), res.end());
                 } else if (chunk.toString().startsWith("{\"error")) {
                     const errorMessage = JSON.parse(chunk.toString());
                     return res.status(404).json({ error: errorMessage.error });
@@ -160,19 +184,67 @@ router.post('/translate', async (req, res) => {
                     buffer.push(chunk.toString());
             });
             courier_response.data.on('end', () => {
-                console.log("Buffer on end:", buffer);
+                // Optionally: parse out just the relevant story from data
+                // For now, just return all received SSE data
                 buffer = buffer.slice(0, -1); // Remove the last empty chunk or DONE chunk
                 buffer = buffer.map(
                     event => event
                     .replace(/^data: /, '') // Remove "data: " prefix
                     .slice(0, -2)) // Remove "\n\n" suffix
                     .join(''); // Join the array into a single string
-                resolve({ buffer });
+
+                const agent_name = `${agent_names[idx]}`;
+                const agent_id = `${agent_ids[idx]}`;
+                resolve({ agent_name, agent_id, buffer,});
+                res.end(); // Close the SSE stream
             });
             courier_response.data.on('error', err => {
                 console.error("Error in courier response stream:", err);
                 reject(err);
             });
+
+            // let buffer = [];
+            // courier_response.data.on('data', chunk => {
+            //     if (chunk.toString().startsWith("{\"best")) {
+            //         buffer = buffer.slice(0, -1); // Remove the last empty chunk or DONE chunk
+            //         buffer = buffer.map(
+            //             event => event
+            //             .replace(/^data: /, '') // Remove "data: " prefix
+            //             .slice(0, -2)) // Remove "\n\n" suffix
+            //             .join(''); // Join the array into a single string
+            //         //console.log("Buffer on end:", buffer);
+            //         //resolve(res.status(200).json({ message: "Data Received Successfully", data: { ...data, response: buffer } }));
+            //         res.write(`data: ${chunk.toString()}\n\n`);
+            //         resolve();
+            //     }
+            //     else
+            //         res.write(`data: ${chunk.toString()}\n\n`); // SSE stream already open
+            //         //buffer.push(chunk.toString());
+            // });
+            // courier_response.data.on('end', () => {
+            //     console.log("Buffer on end:", buffer);
+            //     buffer = buffer.slice(0, -1); // Remove the last empty chunk or DONE chunk
+            //     buffer = buffer.map(
+            //         event => event
+            //         .replace(/^data: /, '') // Remove "data: " prefix
+            //         .slice(0, -2)) // Remove "\n\n" suffix
+            //         .join(''); // Join the array into a single string
+            //     resolve({ buffer });
+            // });
+            // courier_response.data.on('error', err => {
+            //     console.error("Error in courier response stream:", err);
+            //     reject(err);
+            // });
+
+            // courier_response.data.on('data', chunk => {
+            //     console.log("Raw chunk:", chunk.toString());
+            //     res.write(`data: ${chunk.toString()}\n\n`); // SSE stream already open
+            // });
+            
+            // courier_response.data.on('end', () => {
+            //     res.write("event: done\ndata: [DONE]\n\n");
+            //     res.end(); // Close SSE stream
+            // });
         });
     } catch (error) {
         console.error("Error fetching step data:", error.message);

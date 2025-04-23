@@ -7,8 +7,9 @@ export default function outline_tools(llm) {
     const outline_schema = z.object({
         chapters: z.array(z.object({
             title: z.string(),
-            summary: z.string(),
-        })),
+            summary: z.string().describe("A brief description of the chapter. 2-3 bullet points"),
+        })
+        ),
         totalChapters: z.number(),
     });
     const vote_revise_outline_output_schema = z.object({

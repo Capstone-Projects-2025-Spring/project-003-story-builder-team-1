@@ -5,13 +5,12 @@ const storySchema = new mongoose.Schema({
     user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
     prompt: {
       story_details: { type: String, required: true },
-      extra_details: { type: String, default: null },
-      chapter_count: { type: Number, required: true },
+      extra_details: { type: String, default: "" }
     },
     outline: { type: String },
     critiques: [{
-        chapter_number: { type: Number, required: true },
-        critique: { type: String, required: true },
+        chapter_number: { type: Number},
+        critique: { type: String }
     }],
     story_content: [{
         story_chapter_number: { type: Number, required: true },
@@ -23,8 +22,11 @@ const storySchema = new mongoose.Schema({
         chapters: [{
             chapter_number: { type: Number },
             content: { type: String },
-            votes: { type: Number, default: 0 },
-            critique: { type: String }
+            chapter_votes: { type: Number, default: 0 },
+            critique: { type: String },
+            critique_votes: { type: Number, default: 0 },
+            content_thoughts: { type: String },
+            critique_thoughts: { type: String}
         }]
     }],
 }, { timestamps: true });

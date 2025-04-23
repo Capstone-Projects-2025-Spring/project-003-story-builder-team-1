@@ -3,6 +3,7 @@ import { stream_handler } from "../stream_handler.js";
 import { BaseCallbackHandler } from "@langchain/core/callbacks/base";
 import { ChatDeepSeek } from "@langchain/deepseek";
 import { outline_agent } from "../scratchwork/agents.js"
+import { ChatPromptTemplate } from "@langchain/core/prompts";
 
 export default function courier_routes(llm) {
   const router = express.Router();
@@ -78,9 +79,31 @@ router.post("/stream", async (req, res) => {
   // }
 });
 
+const storybuilder_prompt = ChatPromptTemplate.fromTemplate(`
+  You are an imaginative author planning and developing a story. You have access to the following creative tools - After using a tool you will reflect on the output and decide what to do next.
+
+  {tools}
+
+  Goal: {input}  
+    
+  Use this structure to guide your thinking:
+  
+  Goal: the current task you're trying to accomplish
+
+  Thought: reflect on what the story needs next  
+  
+  Final Reflection: Act as if you are an author reflecting on their work. Dont ever return the exact response of a tool, if anything give a short summary of your thoughts on the output of said tool. After this you are done with the current task and can complete
+  
+  IT IS IMPERATIVE YOU NEVER RETURN THE EXACT CONTENT OF A TOOL CALL AS THEY ARE ALREADY STREAMED TO THE USER. YOU ARE NEVER TO PROCEED WITH A NEXT STEP, ONLY EVER DO ONE STEP AND THEN STOP.
+
+  -------  Begin!  --------
+  
+`);
+
 router.post("/stream_graph", async (req, res) => {
-  if (!req.body.messages) {
-    return res.status(400).json({ error: "Messages are required" });
+  console.log("steam_graph", req.body);
+  if (!req.body.data) {
+    return res.status(400).json({ error: "Data is required" });
   }
   res.setHeader("Content-Type", "text/event-stream");
   res.setHeader("Cache-Control", "no-cache");
@@ -88,9 +111,19 @@ router.post("/stream_graph", async (req, res) => {
   res.flushHeaders?.();
 
   const outline_agent_graph = outline_agent;
+  
+  const outline = JSON.stringify(req.body.data.generate_outline);
+  const tools = "story_outline: Generates a story outline based on the provided prompt information. The outline will include chapter titles and a brief description of each chapter. Decide length of the story yourself. You will use the JSON results from this tool in order to format your mardown response to the user."
+  const input = {
+    input: outline,
+    tools: tools,
+  };
+
+  const formatted_input = await storybuilder_prompt.formatMessages(input);
+  console.log("Formatted input: ", formatted_input);
 
   try {
-    const agent_response = await outline_agent_graph.stream({messages: req.body.messages}, {callbacks: [stream_handler(res)]});
+    const agent_response = await outline_agent_graph.stream({messages: formatted_input}, {callbacks: [stream_handler(res, false)]});
     while (!agent_response.done) {
       // Wait for the next chunk of data
       await new Promise(resolve => setTimeout(resolve, 100)); // Adjust delay as needed
