@@ -18,142 +18,132 @@ export default function chapter_tools(llm: ChatOpenAI | ChatDeepSeek) {
         totalChapters: z.number(),
     });
 
-    const vote_chapter_output_schema = z.object({
-        winningChapterIndex: z.number().describe("The index of the winning chapter in the chapter bank."),
-        voteValue: z.number().describe("The value of the vote, from 0 to 100, where 100 is the best possible chapter."),
-    })
-
-    const vote_critique_output_schema = z.object({
-        winningChapterIndex: z.number().describe("The index of the winning critique in the critique bank."),
-        voteValue: z.number().describe("The value of the vote, from 0 to 100, where 100 is the best possible critique."),
-    })
-
+    const vote_output_schema = z.object({
+            winning_index: z.number().describe("The index of the winning entry in the vote bank."),
+            vote_value: z.number().describe("The value of the vote, from 0 to 100, where 100 is the best possible entry."),
+        });
     // Prompt
-    const first_chapter_prompt = ChatPromptTemplate.fromTemplate(`
-        You are a helpful assistant. The story will be written in chapters, and 
-        you will write the first chapter. It's very important that you don't 
-        return anything except for the chapter itself. Do not return any supplementary commentary or reflections or any acknowledgement of the prompt itself, you will only return your chapter and absolutely nothing else. You will ensure the results
-        conform to the style of this persona: "{persona}".
-
-        This is the prompt information: "{prompt_info}"
-
-        This is the story outline: "{outline}"
-
-        You will write the first chapter based on the chapter 1 summary above.
-    `);
-
-    const vote_first_chapter_prompt = ChatPromptTemplate.fromTemplate(`
-        Your job now is to judge all of these chapters as objectively 
-        as you can based on the initial prompt information. You will 
-        choose the best chapter. Do not return an explanation for your 
-        decision and don't return the chapters themselves, just return 
-        the chapter's index number. It's extremely important that you ONLY 
-        return the index number of the chapter you prefer and absolutely nothing else. Do not return any other reflections, commentary, or any acknowledgement of the prompt itself, just the number that corresponds to the winning chapter.
-         You will ensure the results conform to the style of this persona: "{persona}".
-
-        Prompt information: "{prompt_info}"
-
-        Chapters to vote on: "{chapter_bank}"
-    `);
-
-    const next_chapter_prompt = ChatPromptTemplate.fromTemplate(`
-        You are a helpful assistant. You are now being fed a chapter written by another agent. 
-        You will continue the story in another chapter of roughly equal 
-        length while still following the guidelines established in the original prompt. It's 
-        very important that you DON'T include any additional text besides the chapter itself. Do not return any reflections, commentary, or acknowledgement of the prompt itself, just the chapter.
-        You will ensure the results conform to the style of this persona: "{persona}".
-
-        Prompt information: "{prompt_info}"
-
-        Previous chapter(s) whose story you're continuing: "{chapter}"
-
-        Outline: "{outline}"
-    `);
-
-    const vote_next_chapter_prompt = ChatPromptTemplate.fromTemplate(`
-        Your job now is to judge all of these chapters as objectively 
-        as you can based on the initial prompt information. You will 
-        choose the best chapter. Do not return an explanation for your 
-        decision and don't return the chapters themselves, just return 
-        the chapter's index number. It's extremely important that you ONLY 
-        return the index number of the chapter you prefer and absolutely nothing else. Do not return any other reflections, commentary, or any acknowledgement of the prompt itself, just the number that corresponds to the winning chapter.
-         You will ensure the results conform to the style of this persona: "{persona}".
-
-        Prompt information: "{prompt_info}"
-
-        Chapters to vote on: "{chapter_bank}"
-    `);
-
-    const critique_chapter_prompt = ChatPromptTemplate.fromTemplate(`
-        You are a helpful assistant. You are now being fed a chapter written by another agent. You will 
-        critique the drafting of this chapter based on grammatical correctness 
-        as well as its faithfulness to the style parameters that were specified, 
-        and the previous chapters. Do not rewrite the chapter. It's very important 
-        that you ONLY return the critique and nothing else. Do not return any other reflections, commentary, or any acknowledgement of the prompt itself, just the critique of the chapter.
-        You will ensure the results conform to the style of this persona: "{persona}".
-
-        Prompt information: "{prompt_info}"
-
-        Chapter: "{chapter}"
-
-        Outline: "{outline}"
-    `);
-
-    const rewrite_chapter_prompt = ChatPromptTemplate.fromTemplate(`
-        You are a helpful assistant. You are now being fed a chapter written by another agent, along 
-        with a critique of that chapter and the original prompt information. 
-        Rewrite the chapter, improving it based upon the critique's observations. 
-        Make sure it's a similar chapter length, and do not change anything if it 
-        doesn't violate the critique parameters. It's very important that you just 
-        return the rewritten chapter and nothing else. Do not return any other reflections, commentary, or any acknowledgement of the prompt itself, just the rewritten chapter.
-        You will ensure the results conform to the style of this persona: "{persona}".
-
-        Prompt information: "{prompt_info}"
-
-        This is the critique: "{critique}"
-        
-        This is the outline of the entire story: "{outline}"
-
-        And this is the chapter you will rewrite: "{chapter}"
-    `);
-
-    const vote_rewrite_chapter_prompt = ChatPromptTemplate.fromTemplate(`
-        You are a helpful assistant. You are now being fed a chapter written by another agent, along 
-        with a critique of that chapter and the original prompt information. 
-        Rewrite the chapter, improving it based upon the critique's observations. 
-        Make sure it's a similar chapter length, and do not change anything if it 
-        doesn't violate the critique parameters. It's very important that you just 
-        return the rewritten chapter and nothing else. Do not return any other reflections, commentary, or any acknowledgement of the prompt itself, just the rewritten chapter.
-        You will ensure the results conform to the style of this persona: "{persona}".
-
-        Prompt information: "{prompt_info}"
-
-        Critiques to vote on: "{chapter_bank}"
-    `);
-
-    const regenerate_chapter_prompt = ChatPromptTemplate.fromTemplate(`
-        You are a helpful assistant. You are now being fed a chapter written by another agent. 
-        You will regenerate this chapter, keeping the length roughly equal, and still 
-        following the guidelines established in the original prompt. It's very important 
-        that you ONLY return the regenerated chapter and nothing else. Do not return any other reflections, commentary, or any acknowledgement of the prompt itself. just the regenerated chapter.
-        You will ensure the results conform to the style of this persona: "{persona}".
-
-        Prompt information: "{prompt_info}"
-
-        Outline: "{outline}"
-    `);
-
-    const vote_chapter_critique_prompt = ChatPromptTemplate.fromTemplate(`
-        Your job now is to judge all of these critiques to see which one is the most
-        thorough. You will return the index number that corresponds to the critique you find
-        the most appropriate. Return only this number, and absolutely nothing else. Do not return any other reflections, commentary, or any acknowledgement of the prompt itself,  just the number that corresponds to the winning chapter.
-         You will ensure the results will conform to the style of this persona: "{persona}".
-
-        Prompt information: "{prompt_info}"
-
-        Critiques to vote on: "{critique_bank}"
-    `);
-
+    // Prompt
+        const first_chapter_prompt = ChatPromptTemplate.fromTemplate(`
+            You are a helpful assistant. The story will be written in chapters, and 
+            you will write the first chapter. It's very important that you don't 
+            return anything except for the chapter itself. Do not return any supplementary commentary or reflections or any acknowledgement of the prompt itself, you will only return your chapter and absolutely nothing else. You will ensure the results
+            conform to the style of this persona: "{persona}".
+    
+            This is the prompt information: "{prompt_info}"
+    
+            This is the story outline: "{outline}"
+    
+            You will write the first chapter based on the chapter 1 summary above.
+        `);
+        const vote_first_chapter_prompt = ChatPromptTemplate.fromTemplate(`
+            Your job now is to judge all of these chapters as objectively 
+            as you can based on the initial prompt information. You will 
+            choose the best chapter. Do not return an explanation for your 
+            decision and don't return the chapters themselves, just return 
+            the chapter's index number. It's extremely important that you ONLY 
+            return the index number of the chapter you prefer and absolutely nothing else. Do not return any other reflections, commentary, or any acknowledgement of the prompt itself, just the number that corresponds to the winning chapter.
+             You will ensure the results conform to the style of this persona: "{persona}".
+    
+            Prompt information: "{prompt_info}"
+    
+            Chapters to vote on: "{chapter_bank}"
+        `);
+        const next_chapter_prompt = ChatPromptTemplate.fromTemplate(`
+            You are a helpful assistant. You are now being fed a chapter written by another agent. 
+            You will continue the story in another chapter of roughly equal 
+            length while still following the guidelines established in the original prompt. It's 
+            very important that you DON'T include any additional text besides the chapter itself. Do not return any reflections, commentary, or acknowledgement of the prompt itself, just the chapter.
+            It's also very important that when you continue the chapter, you do NOT go off the outline. You continue the story based on the chapter number specified in the chapter itself. The outline is an
+            overview of the ENTIRE story, but if the specified chapter hasn't reached the max amount of chapters yet, you don't number the chapter based off of the number of chapters in the outline.
+            You will ensure the results conform to the style of this persona: "{persona}".
+    
+            Prompt information: "{prompt_info}"
+    
+            Previous chapter(s) whose story you're continuing: "{chapter}"
+    
+            Outline: "{outline}"
+        `);
+        const vote_next_chapter_prompt = ChatPromptTemplate.fromTemplate(`
+            Your job now is to judge all of these chapters as objectively 
+            as you can based on the initial prompt information. You will 
+            choose the best chapter. Do not return an explanation for your 
+            decision and don't return the chapters themselves, just return 
+            the chapter's index number. It's extremely important that you ONLY 
+            return the index number of the chapter you prefer and absolutely nothing else. Do not return any other reflections, commentary, or any acknowledgement of the prompt itself, just the number that corresponds to the winning chapter.
+             You will ensure the results conform to the style of this persona: "{persona}".
+    
+            Prompt information: "{prompt_info}"
+    
+            Chapters to vote on: "{chapter_bank}"
+        `);
+        const critique_chapter_prompt = ChatPromptTemplate.fromTemplate(`
+            You are a helpful assistant. You are now being fed a chapter written by another agent. You will 
+            critique the drafting of this chapter based on grammatical correctness 
+            as well as its faithfulness to the style parameters that were specified, 
+            and the previous chapters. Do not rewrite the chapter. It's very important 
+            that you ONLY return the critique and nothing else. Do not return any other reflections, commentary, or any acknowledgement of the prompt itself, just the critique of the chapter.
+            You will ensure the results conform to the style of this persona: "{persona}".
+    
+            Prompt information: "{prompt_info}"
+    
+            Chapter: "{chapter}"
+    
+            Outline: "{outline}"
+        `);
+        const rewrite_chapter_prompt = ChatPromptTemplate.fromTemplate(`
+            You are a helpful assistant. You are now being fed a chapter written by another agent, along 
+            with a critique of that chapter and the original prompt information. 
+            Rewrite the chapter, improving it based upon the critique's observations. 
+            Make sure it's a similar chapter length, and do not change anything if it 
+            doesn't violate the critique parameters. It's very important that you just 
+            return the rewritten chapter and nothing else. Do not return any other reflections, commentary, or any acknowledgement of the prompt itself, just the rewritten chapter.
+            It's also very important that you ensure the chapter number stays the same. Example: If the chapter has any information inside of it that indicates it's "Chapter X", with X
+            being whatever index that chapter is assigned, you will ensure that index X stays the same. You're not continuing the story, so keep the index the same.
+            You will ensure the results conform to the style of this persona: "{persona}".
+    
+            Prompt information: "{prompt_info}"
+    
+            This is the critique: "{critique}"
+            
+            This is the outline of the entire story: "{outline}"
+    
+            And this is the chapter you will rewrite: "{chapter}"
+        `);
+        const vote_rewrite_chapter_prompt = ChatPromptTemplate.fromTemplate(`
+            You are a helpful assistant. You are now being fed a chapter written by another agent, along 
+            with a critique of that chapter and the original prompt information. 
+            Rewrite the chapter, improving it based upon the critique's observations. 
+            Make sure it's a similar chapter length, and do not change anything if it 
+            doesn't violate the critique parameters. It's very important that you just 
+            return the rewritten chapter and nothing else. Do not return any other reflections, commentary, or any acknowledgement of the prompt itself, just the rewritten chapter.
+            You will ensure the results conform to the style of this persona: "{persona}".
+    
+            Prompt information: "{prompt_info}"
+    
+            Critiques to vote on: "{chapter_bank}"
+        `);
+        const regenerate_chapter_prompt = ChatPromptTemplate.fromTemplate(`
+            You are a helpful assistant. You are now being fed a chapter written by another agent. 
+            You will regenerate this chapter, keeping the length roughly equal, and still 
+            following the guidelines established in the original prompt. It's very important 
+            that you ONLY return the regenerated chapter and nothing else. Do not return any other reflections, commentary, or any acknowledgement of the prompt itself. just the regenerated chapter.
+            You will ensure the results conform to the style of this persona: "{persona}".
+    
+            Prompt information: "{prompt_info}"
+    
+            Outline: "{outline}"
+        `);
+        const vote_chapter_critique_prompt = ChatPromptTemplate.fromTemplate(`
+            Your job now is to judge all of these critiques to see which one is the most
+            thorough. You will return the index number that corresponds to the critique you find
+            the most appropriate. Return only this number, and absolutely nothing else. Do not return any other reflections, commentary, or any acknowledgement of the prompt itself,  just the number that corresponds to the winning chapter.
+             You will ensure the results will conform to the style of this persona: "{persona}".
+    
+            Prompt information: "{prompt_info}"
+    
+            Critiques to vote on: "{critique_bank}"
+        `);
     const first_chapter = tool(
         async ({persona, prompt_info, outline }: {persona: string, prompt_info: string, outline: string}) => {
             const messages = await first_chapter_prompt.formatMessages({persona, prompt_info, outline });
@@ -176,7 +166,7 @@ export default function chapter_tools(llm: ChatOpenAI | ChatDeepSeek) {
         async ({persona, prompt_info, chapter_bank }: {persona: string, prompt_info: string, chapter_bank: string}) => {
             const messages = await vote_first_chapter_prompt.formatMessages({persona, prompt_info, chapter_bank });
 
-            const res = await llm.withStructuredOutput(vote_chapter_output_schema).invoke(messages);
+            const res = await llm.withStructuredOutput(vote_output_schema).invoke(messages);
             return res;
 
         },
@@ -214,7 +204,7 @@ export default function chapter_tools(llm: ChatOpenAI | ChatDeepSeek) {
         async ({persona, prompt_info, chapter_bank }: {persona: string, prompt_info: string, chapter_bank: string}) => {
             const messages = await vote_next_chapter_prompt.formatMessages({persona, prompt_info, chapter_bank });
 
-            const res = await llm.withStructuredOutput(vote_chapter_output_schema).invoke(messages);
+            const res = await llm.withStructuredOutput(vote_output_schema).invoke(messages);
             return res;
 
         },
@@ -253,7 +243,7 @@ export default function chapter_tools(llm: ChatOpenAI | ChatDeepSeek) {
         async ({persona, prompt_info, chapter_bank }: {persona: string, prompt_info: string, chapter_bank: string}) => {
             const messages = await vote_rewrite_chapter_prompt.formatMessages({persona, prompt_info, chapter_bank });
 
-            const res = await llm.withStructuredOutput(vote_chapter_output_schema).invoke(messages);
+            const res = await llm.withStructuredOutput(vote_output_schema).invoke(messages);
             return res;
 
         },
@@ -309,7 +299,7 @@ export default function chapter_tools(llm: ChatOpenAI | ChatDeepSeek) {
         async ({persona, prompt_info, critique_bank }: {persona: string, prompt_info: string, critique_bank: string}) => {
             const messages = await vote_chapter_critique_prompt.formatMessages({persona, prompt_info, critique_bank });
 
-            const res = await llm.withStructuredOutput(vote_critique_output_schema).invoke(messages);
+            const res = await llm.withStructuredOutput(vote_output_schema).invoke(messages);
             return res;
 
         },

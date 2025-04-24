@@ -129,8 +129,7 @@ const chap_tools_name_description_list = chapter_tools_list
     .map((t) => `- ${t.name}: ${t.description ?? ""}`);
 const chap_tool_names = chapter_tools_list.map((t) => t.name);
 const outline_tools_name_description_list = outline_tools_list
-    .map((t) => `- ${t.name}: ${t.description ?? ""}`)
-    .join("\n");
+    .map((t) => `- ${t.name}: ${t.description ?? ""}`);
 const outline_tool_names = outline_tools_list.map((t) => t.name).join(", ");
 const boundPrompt = await storybuilder_prompt.partial({
     tools: tools_list,

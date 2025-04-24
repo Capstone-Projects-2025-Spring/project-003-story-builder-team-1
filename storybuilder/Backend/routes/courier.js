@@ -91,8 +91,9 @@ router.post('/aggregate', async (req, res) => {
                       agent_send.outline = `${data.generate_first_chapter.story_outline}`.trim();
                       break;
                     case "generate_next_chapter":
+                      const chapters = data.generate_next_chapter.previous_chapters.map(chapter => chapter);
                       agent_send.prompt_info = `${data.generate_next_chapter.story_details} ${data.generate_next_chapter.extra_details}`.trim();
-                      agent_send.chapter = `${data.generate_next_chapter.previous_chapters}`.trim();
+                      agent_send.chapter = `${JSON.stringify(chapters)}`.trim();
                       agent_send.outline = `${data.generate_next_chapter.story_outline}`.trim();
                       break;
                     case "critique_chapter":

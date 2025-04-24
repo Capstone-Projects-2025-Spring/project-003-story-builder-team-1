@@ -44,6 +44,8 @@ export default function chapter_tools(llm) {
         You will continue the story in another chapter of roughly equal 
         length while still following the guidelines established in the original prompt. It's 
         very important that you DON'T include any additional text besides the chapter itself. Do not return any reflections, commentary, or acknowledgement of the prompt itself, just the chapter.
+        It's also very important that when you continue the chapter, you do NOT go off the outline. You continue the story based on the chapter number specified in the chapter itself. The outline is an
+        overview of the ENTIRE story, but if the specified chapter hasn't reached the max amount of chapters yet, you don't number the chapter based off of the number of chapters in the outline.
         You will ensure the results conform to the style of this persona: "{persona}".
 
         Prompt information: "{prompt_info}"
@@ -59,6 +61,7 @@ export default function chapter_tools(llm) {
         decision and don't return the chapters themselves, just return 
         the chapter's index number. It's extremely important that you ONLY 
         return the index number of the chapter you prefer and absolutely nothing else. Do not return any other reflections, commentary, or any acknowledgement of the prompt itself, just the number that corresponds to the winning chapter.
+        Return the proper index as you would the indices of an array starting at 0 rather than making it more human-readable (first index is 0, second is 1, etc). 
          You will ensure the results conform to the style of this persona: "{persona}".
 
         Prompt information: "{prompt_info}"
@@ -86,6 +89,8 @@ export default function chapter_tools(llm) {
         Make sure it's a similar chapter length, and do not change anything if it 
         doesn't violate the critique parameters. It's very important that you just 
         return the rewritten chapter and nothing else. Do not return any other reflections, commentary, or any acknowledgement of the prompt itself, just the rewritten chapter.
+        It's also very important that you ensure the chapter number stays the same. Example: If the chapter has any information inside of it that indicates it's "Chapter X", with X
+        being whatever index that chapter is assigned, you will ensure that index X stays the same. You're not continuing the story, so keep the index the same.
         You will ensure the results conform to the style of this persona: "{persona}".
 
         Prompt information: "{prompt_info}"
