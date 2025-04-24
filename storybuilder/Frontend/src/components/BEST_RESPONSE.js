@@ -38,6 +38,13 @@ function BEST_RESPONSE() {
         start_event_stream(user, story_id, "generate_next_chapter", chapter_number);
     };
 
+    const handle_regenerate = async () => {
+        setStreamingAction('regenerate');
+        set_should_stream(true);
+        set_best_res('');
+        start_event_stream(user, story_id, "rewrite_chapter", chapter_number);
+    };
+
     return (
         <Card
             shadow="none"
@@ -68,38 +75,80 @@ function BEST_RESPONSE() {
             </div>
 
             <Group justify="flex-end" style={{ marginTop: '10px' }}>
-            {show_cont_button && (
-              <Button
-              size="sm"
-              variant="light"
-              color={
-                should_stream
-                  ? streamingAction === 'continue'
-                    ? 'teal'
-                    : 'gray'
-                  : 'teal'
-              }
-              disabled={should_stream}
-              onClick={handle_continue}
-              leftSection={
-                should_stream && streamingAction === 'continue' ? <Loader size="xs" color="green" /> : null
-              }
-              style={{
-                backgroundColor:
-                  should_stream && streamingAction === 'continue'
-                    ? 'rgba(0, 255, 128, 0.1)'
-                    : '',
-                color:
-                  should_stream && streamingAction === 'continue'
-                    ? '#66ffb2'
-                    : '',
-                cursor: should_stream ? 'not-allowed' : 'pointer',
-              }}
-            >
-              {should_stream && streamingAction === 'continue' ? 'Drafting Chapter' : 'Continue'}
-            </Button>
-            )}
-        </Group>
+                {show_cont_button && (
+                    <>
+                    {/* Regenerate Button */}
+                    <Button
+                            size="sm"
+                            variant="light"
+                            color={
+                                should_stream
+                                    ? streamingAction === 'regenerate'
+                                        ? 'grape'
+                                        : 'gray'
+                                    : 'grape'
+                            }
+                            disabled={should_stream}
+                            onClick={handle_regenerate}
+                            leftSection={
+                                should_stream && streamingAction === 'regenerate' ? (
+                                    <Loader size="xs" color="grape" />
+                                ) : null
+                            }
+                            style={{
+                                backgroundColor:
+                                    should_stream && streamingAction === 'regenerate'
+                                        ? 'rgba(128, 0, 255, 0.1)'  // Same purple shade
+                                        : '',
+                                color:
+                                    should_stream && streamingAction === 'regenerate'
+                                        ? '#cc99ff'  // Matching purple color
+                                        : '',
+                                cursor: should_stream ? 'not-allowed' : 'pointer',
+                            }}
+                        >
+                            {should_stream && streamingAction === 'regenerate'
+                                ? 'Regenerating...'
+                                : 'Regenerate'}
+                    </Button>
+
+                    {/* Continue Button */}
+                    <Button
+                        size="sm"
+                        variant="light"
+                        color={
+                        should_stream
+                            ? streamingAction === 'continue'
+                            ? 'teal'
+                            : 'gray'
+                            : 'teal'
+                        }
+                        disabled={should_stream}
+                        onClick={handle_continue}
+                        leftSection={
+                        should_stream && streamingAction === 'continue' ? (
+                            <Loader size="xs" color="green" />
+                        ) : null
+                        }
+                        style={{
+                        backgroundColor:
+                            should_stream && streamingAction === 'continue'
+                            ? 'rgba(0, 255, 128, 0.1)'
+                            : '',
+                        color:
+                            should_stream && streamingAction === 'continue'
+                            ? '#66ffb2'
+                            : '',
+                        cursor: should_stream ? 'not-allowed' : 'pointer',
+                        }}
+                    >
+                        {should_stream && streamingAction === 'continue'
+                        ? 'Drafting Chapter'
+                        : 'Continue'}
+                    </Button>
+                    </>
+                )}
+                </Group>
         </Card>
     );
 }

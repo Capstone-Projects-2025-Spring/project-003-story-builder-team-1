@@ -28,6 +28,8 @@ function STORY_AGENTS_VIEW() {
     set_agent_responses,
     agent_thoughts,
     set_agent_thoughts,
+    streamingAction,
+    setStreamingAction,
   } = USE_STORY();
 
   // Setup agents and preload their latest chapter content/thoughts
@@ -54,13 +56,29 @@ function STORY_AGENTS_VIEW() {
 
     set_agent_responses(initial_responses);
     set_agent_thoughts(initial_thoughts);
-
-    // Determine correct step and chapter number
-    const chapter_count = current_story.story_content?.length || 0;
-    const step = chapter_count === 0 ? "generate_first_chapter" : "generate_next_chapter";
-    const chapter_number = chapter_count === 0 ? 1 : chapter_count + 1;
-    set_stream_params({ step, chapter_number });
   }, [story_id, user_stories]);
+
+  // Handle button action (regenerate / continue)
+  const handleActionButtonClick = (actionType) => {
+    setStreamingAction(actionType);
+
+    const current_story = user_stories?.stories?.find((story) => story._id === story_id);
+    if (!current_story) return;
+
+    const chapter_count = current_story.story_content?.length || 0;
+    let step = stream_params.step;
+    let chapter_number = chapter_count;
+
+    if (actionType === 'regenerate') {
+      step = chapter_count === 0 ? 'rewrite_outline' : 'rewrite_chapter';
+    } else if (actionType === 'continue') {
+      step = chapter_count === 0 ? 'generate_first_chapter' : 'generate_next_chapter';
+      chapter_number = chapter_count === 0 ? 1 : chapter_count + 1;
+    }
+
+    set_stream_params({ step, chapter_number });
+    set_should_stream(true);
+  };
 
   // Automatically start streaming once the should_stream flag flips
   useEffect(() => {
@@ -83,6 +101,7 @@ function STORY_AGENTS_VIEW() {
                 start_event_stream={start_event_stream}
                 step={stream_params.step}
                 chapter_number={stream_params.chapter_number}
+                onActionButtonClick={handleActionButtonClick}
               />
             </div>
             <div style={{ flex: 0.3 }}>
