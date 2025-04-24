@@ -67,21 +67,30 @@ function STORY_AGENTS_VIEW() {
   
     const story_content = current_story.story_content || [];
     const chapter_count = story_content.length;
-    const has_outline = chapter_count >= 1;
-    let step = '';
-    let chapter_number = 0;
+  
+    let step = "";
+    let chapter_number = chapter_count;
   
     if (actionType === 'regenerate') {
-      step = has_outline && chapter_count === 1 ? 'rewrite_outline' : 'rewrite_chapter';
-      chapter_number = has_outline && chapter_count === 1 ? 0 : chapter_count;
+      if (chapter_count === 1) {
+        step = 'rewrite_outline';
+        chapter_number = 0;
+      } else {
+        step = 'rewrite_chapter';
+      }
+
     } else if (actionType === 'continue') {
-      step = has_outline && chapter_count === 1 ? 'generate_first_chapter' : 'generate_next_chapter';
-      chapter_number = has_outline && chapter_count === 1 ? 1 : chapter_count + 1;
+      if (chapter_count === 1) {
+        step = 'generate_first_chapter';
+      } else {
+        step = 'generate_next_chapter';
+      }
     }
   
     set_stream_params({ step, chapter_number });
     set_should_stream(true);
   };
+  
   
 
   // Automatically start streaming once the should_stream flag flips

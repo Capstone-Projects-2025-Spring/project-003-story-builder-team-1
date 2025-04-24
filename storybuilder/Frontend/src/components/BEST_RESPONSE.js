@@ -32,18 +32,46 @@ function BEST_RESPONSE() {
     }, [story_id, user_stories]);
 
     const handle_continue = async () => {
-        setStreamingAction('continue');
-        set_should_stream(true); // Show loading spinner
-        set_best_res('');
-        start_event_stream(user, story_id, "generate_next_chapter", chapter_number);
-    };
-
-    const handle_regenerate = async () => {
-        setStreamingAction('regenerate');
+        const found_story = user_stories?.stories?.find((story) => story._id === story_id);
+        const story_content = found_story?.story_content || [];
+        const chapter_count = story_content.length;
+    
+        let step = "generate_next_chapter";
+        let chapter_number = chapter_count;
+    
+        if (chapter_count === 1) {
+            // Only the outline exists, so generate the first chapter
+            step = "generate_first_chapter";
+        }
+    
+        setStreamingAction("continue");
         set_should_stream(true);
         set_best_res('');
-        start_event_stream(user, story_id, "rewrite_chapter", chapter_number);
+        start_event_stream(user, story_id, step, chapter_number);
     };
+        
+    const handle_regenerate = async () => {
+        const found_story = user_stories?.stories?.find((story) => story._id === story_id);
+        const story_content = found_story?.story_content || [];
+        const chapter_count = story_content.length;
+    
+        let step = "rewrite_chapter";
+        let chapter_number = chapter_count;
+    
+        if (chapter_count === 1) {
+            // Only the outline exists
+            step = "rewrite_outline";
+            chapter_number = 0;
+        }
+    
+        setStreamingAction("regenerate");
+        set_should_stream(true);
+        set_best_res('');
+        start_event_stream(user, story_id, step, chapter_number);
+    };
+    
+    
+    
 
     return (
         <Card
