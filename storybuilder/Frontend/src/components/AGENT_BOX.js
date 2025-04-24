@@ -140,11 +140,11 @@ function AGENT_BOX({ name, chapter_content, step, chapter_number, onActionButton
               backgroundColor:
                 (streamingAction === 'regenerate' && should_stream) || isOutlineGenerating
                   ? 'rgba(128, 90, 213, 0.1)'  // Purple background when in use or outline is being generated
-                  : 'rgba(128, 90, 213, 0.1)',  // Default purple shade when disabled
+                  : '#rgba(179, 0, 255, 0.1)',  
               color:
                 (streamingAction === 'regenerate' && should_stream) || isOutlineGenerating
                   ? '#b794f4'  // Purple color when in use or generating
-                  : '#b794f4',  // Purple color when disabled
+                  : '#rgba(179, 0, 255, 0.1)',
               cursor: should_stream || isOutlineGenerating ? 'not-allowed' : 'pointer',  // Grey out the cursor when disabled
               opacity: should_stream || isOutlineGenerating ? 0.5 : 1,  // Adjust opacity for disabled state
               transition: 'background-color 0.2s ease, color 0.2s ease',  // Smooth transition for color changes
@@ -152,7 +152,6 @@ function AGENT_BOX({ name, chapter_content, step, chapter_number, onActionButton
           >
             {streamingAction === 'regenerate' && should_stream ? 'Regenerating' : 'Regenerate'}
           </Button>
-
 
 
           {/* Continue Button */}
