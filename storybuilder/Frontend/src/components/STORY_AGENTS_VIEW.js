@@ -61,24 +61,28 @@ function STORY_AGENTS_VIEW() {
   // Handle button action (regenerate / continue)
   const handleActionButtonClick = (actionType) => {
     setStreamingAction(actionType);
-
+  
     const current_story = user_stories?.stories?.find((story) => story._id === story_id);
     if (!current_story) return;
-
-    const chapter_count = current_story.story_content?.length || 0;
-    let step = stream_params.step;
-    let chapter_number = chapter_count;
-
+  
+    const story_content = current_story.story_content || [];
+    const chapter_count = story_content.length;
+    const has_outline = chapter_count >= 1;
+    let step = '';
+    let chapter_number = 0;
+  
     if (actionType === 'regenerate') {
-      step = chapter_count === 0 ? 'rewrite_outline' : 'rewrite_chapter';
+      step = has_outline && chapter_count === 1 ? 'rewrite_outline' : 'rewrite_chapter';
+      chapter_number = has_outline && chapter_count === 1 ? 0 : chapter_count;
     } else if (actionType === 'continue') {
-      step = chapter_count === 0 ? 'generate_first_chapter' : 'generate_next_chapter';
-      chapter_number = chapter_count === 0 ? 1 : chapter_count + 1;
+      step = has_outline && chapter_count === 1 ? 'generate_first_chapter' : 'generate_next_chapter';
+      chapter_number = has_outline && chapter_count === 1 ? 1 : chapter_count + 1;
     }
-
+  
     set_stream_params({ step, chapter_number });
     set_should_stream(true);
   };
+  
 
   // Automatically start streaming once the should_stream flag flips
   useEffect(() => {
