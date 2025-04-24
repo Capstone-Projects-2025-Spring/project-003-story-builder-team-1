@@ -168,7 +168,7 @@ async function structured_send_off(agent_graph, message) {
     }
   });
 
-  router.post("/generate_critique_outline", async (req, res) => {
+  router.post("/critique_outline", async (req, res) => {
     if (!req.body.messages) {
       return res.status(400).json({ error: "Messages are required" });
     }
@@ -200,7 +200,7 @@ async function structured_send_off(agent_graph, message) {
     }
   });
 
-  router.post("/vote_generate_critique_outline", async (req, res) => {
+  router.post("/vote_critique_outline", async (req, res) => {
     if (!req.body.messages) {
       return res.status(400).json({ error: "Messages are required" });
     }
