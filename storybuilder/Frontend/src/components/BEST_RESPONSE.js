@@ -7,7 +7,7 @@ import { USE_AUTH } from '../context/AUTH_CONTEXT';
 import ReactMarkdown from 'react-markdown';
 
 function BEST_RESPONSE() {
-    const { should_stream, set_should_stream, start_event_stream } = USE_STORY();
+    const { should_stream, set_should_stream, start_event_stream, setStreamingAction, streamingAction } = USE_STORY();
     const [best_res, set_best_res] = useState('');
     const [show_cont_button, set_show_cont_button] = useState(true);
     const { story_id } = useParams();
@@ -32,6 +32,7 @@ function BEST_RESPONSE() {
     }, [story_id, user_stories]);
 
     const handle_continue = async () => {
+        setStreamingAction('continue');
         set_should_stream(true); // Show loading spinner
         set_best_res('');
         start_event_stream(user, story_id, "generate_next_chapter", chapter_number);
@@ -69,20 +70,34 @@ function BEST_RESPONSE() {
             <Group justify="flex-end" style={{ marginTop: '10px' }}>
             {show_cont_button && (
               <Button
-                size="sm"
-                variant="light"
-                color={!should_stream ? 'teal' : undefined}
-                disabled={should_stream}
-                onClick={handle_continue}
-                leftSection={should_stream && <Loader size="xs" color="green" />}
-                style={{
-                  backgroundColor: should_stream ? 'rgba(0, 255, 128, 0.1)' : '',
-                  color: should_stream ? '#66ffb2' : '',
-                  cursor: should_stream ? 'not-allowed' : 'pointer',
-                }}
-              >
-                {should_stream ? 'Drafting Chapter' : 'Continue'}
-              </Button>
+              size="sm"
+              variant="light"
+              color={
+                should_stream
+                  ? streamingAction === 'continue'
+                    ? 'teal'
+                    : 'gray'
+                  : 'teal'
+              }
+              disabled={should_stream}
+              onClick={handle_continue}
+              leftSection={
+                should_stream && streamingAction === 'continue' ? <Loader size="xs" color="green" /> : null
+              }
+              style={{
+                backgroundColor:
+                  should_stream && streamingAction === 'continue'
+                    ? 'rgba(0, 255, 128, 0.1)'
+                    : '',
+                color:
+                  should_stream && streamingAction === 'continue'
+                    ? '#66ffb2'
+                    : '',
+                cursor: should_stream ? 'not-allowed' : 'pointer',
+              }}
+            >
+              {should_stream && streamingAction === 'continue' ? 'Drafting Chapter' : 'Continue'}
+            </Button>
             )}
         </Group>
         </Card>
