@@ -82,7 +82,7 @@ router.post('/aggregate', async (req, res) => {
                       agent_send.outline = `${data.critique_outline.story_outline}`.trim();
                       break;
                     case "rewrite_outline":
-                      agent_send.critique = `${data.rewrite_outline.outline_critique_entry}`.trim();
+                      agent_send.critique = `${data.rewrite_outline.outline_critique}`.trim();
                       agent_send.prompt_info = `${data.rewrite_outline.story_details} ${data.rewrite_outline.extra_details}`.trim();
                       agent_send.outline = `${data.rewrite_outline.story_outline}`.trim();
                       break;
