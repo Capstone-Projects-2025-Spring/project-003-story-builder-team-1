@@ -148,7 +148,8 @@ async function structured_send_off(agent_graph, message) {
 
     const outline_agent_graph = vote_generate_outline_agent;
 
-    const input = {persona: req.body.messages.persona, input: `prompt_info: ${req.body.messages.prompt_info} \n\noutline_bank: ${req.body.messages.vote_bank}`, tools: outline_tools_list[1]};
+    const vote_bank = req.body.messages.vote_bank.map(m => m.data);
+    const input = {persona: req.body.messages.persona, input: `prompt_info: ${req.body.messages.prompt_info} \n\noutline_bank: ${vote_bank}`, tools: outline_tools_list[1]};
     
     const prompted_input = await storybuilder_prompt.formatMessages(input);
     const formatted_input = Array.isArray(prompted_input) ? prompted_input : [prompted_input];
@@ -172,6 +173,7 @@ async function structured_send_off(agent_graph, message) {
     if (!req.body.messages) {
       return res.status(400).json({ error: "Messages are required" });
     }
+    console.log("IN CRIT OUTLINE");
     res.setHeader("Content-Type", "text/event-stream");
     res.setHeader("Cache-Control", "no-cache");
     res.setHeader("Connection", "keep-alive");
@@ -182,6 +184,8 @@ async function structured_send_off(agent_graph, message) {
     const input = {persona: req.body.messages.persona, input: `prompt_info: ${req.body.messages.prompt_info} \n\noutline: ${req.body.messages.outline}`, tools: outline_tools_list[2]};
 
     const formatted_input = await storybuilder_prompt.formatMessages(input);
+    console.log("Formatted Input:", JSON.stringify(formatted_input, null, 2));
+
 
     try {
       const agent_response = await outline_agent_graph.stream({messages: formatted_input}, {callbacks: [stream_handler(res)]});
@@ -211,13 +215,15 @@ async function structured_send_off(agent_graph, message) {
 
     const outline_agent_graph = vote_critique_outline_agent;
 
-    const input = {persona: req.body.messages.persona, input: `prompt_info: ${req.body.messages.prompt_info} \n\ncritique_bank: ${req.body.messages.vote_bank}`, tools: outline_tools_list[3]};
+    const vote_bank = req.body.messages.vote_bank.map(m => m.data);
+
+    const input = {persona: req.body.messages.persona, input: `prompt_info: ${req.body.messages.prompt_info} \n\ncritique_bank: ${vote_bank}`, tools: outline_tools_list[3]};
 
     const formatted_input = await storybuilder_prompt.formatMessages(input);
 
     try {
       let parsed = await structured_send_off(outline_agent_graph, formatted_input);
-      console.log("Structured output function output: \n\n " + JSON.stringify(parsed));
+      console.log("Structured vote critique output function output: \n\n " + JSON.stringify(parsed));
       res.write(JSON.stringify({
         winning_index: parsed.winning_index,
         vote_value: parsed.vote_value,
@@ -241,7 +247,8 @@ async function structured_send_off(agent_graph, message) {
 
     const outline_agent_graph = revise_outline_agent;
 
-    const input = {persona: req.body.messages.persona, input: `critique: ${req.body.messages.prompt_info} \n\nprompt_info: ${req.body.messages.prompt_info} \n\noutline: ${req.body.messages.outline}`, tools: outline_tools_list[4]};
+    console.log("CRITIQUE\n\n" + JSON.stringify(req.body.messages.critique))
+    const input = {persona: req.body.messages.persona, input: `critique: ${req.body.messages.critique} \n\nprompt_info: ${req.body.messages.prompt_info} \n\noutline: ${req.body.messages.outline}`, tools: outline_tools_list[4]};
 
     const formatted_input = await storybuilder_prompt.formatMessages(input);
 
@@ -273,7 +280,9 @@ async function structured_send_off(agent_graph, message) {
 
     const outline_agent_graph = vote_revise_outline_agent;
 
-    const input = {persona: req.body.messages.persona, input: `prompt_info: ${req.body.messages.prompt_info} \n\noutline_bank: ${req.body.messages.vote_bank}`, tools: outline_tools_list[5]};
+    const vote_bank = req.body.messages.vote_bank.map(m => m.data);
+    
+    const input = {persona: req.body.messages.persona, input: `prompt_info: ${req.body.messages.prompt_info} \n\noutline_bank: ${vote_bank}`, tools: outline_tools_list[5]};
 
     const formatted_input = await storybuilder_prompt.formatMessages(input);
 
@@ -309,7 +318,7 @@ async function structured_send_off(agent_graph, message) {
 
     const chapter_agent_graph = first_chapter_agent;
 
-    const input = {persona: req.body.messages.persona, input: `prompt_info: ${req.body.messages.prompt_info} \n\noutline: ${req.body.outline}`, tools: chapter_tools_list[0]};
+    const input = {persona: req.body.messages.persona, input: `prompt_info: ${req.body.messages.prompt_info} \n\noutline: ${req.body.messages.outline}`, tools: chapter_tools_list[0]};
   
     const formatted_input = await storybuilder_prompt.formatMessages(input);
 
@@ -340,10 +349,11 @@ async function structured_send_off(agent_graph, message) {
     res.flushHeaders?.();
 
     const chapter_agent_graph = vote_first_chapter_agent;
+    //console.log("Vote generate tool: " + JSON.stringify(chapter_tools_list[1]));
+    const vote_bank = req.body.messages.vote_bank.map(m => m.data);
+    const input = {persona: req.body.messages.persona, input: `prompt_info: ${req.body.messages.prompt_info} \n\nchapter_bank: ${vote_bank}`, tools: chapter_tools_list[1]};
 
-    const input = {persona: req.body.messages.persona, input: `prompt_info: ${req.body.messages.prompt_info} \n\nchapter_bank: ${req.body.vote_bank}`, tools: chapter_tools_list[1]};
-
-    const formatted_input = await storybuilder_prompt.formatMessages(vote_first_chapter_agent.tools, input);
+    const formatted_input = await storybuilder_prompt.formatMessages(input);
     try {
       let parsed = await structured_send_off(chapter_agent_graph, formatted_input);
       console.log("Structured output function output: \n\n " + JSON.stringify(parsed));
@@ -373,7 +383,7 @@ async function structured_send_off(agent_graph, message) {
     
     const input = {persona: req.body.messages.persona, input: `prompt_info: ${req.body.messages.prompt_info} \n\nchapter: ${req.body.messages.chapter} \n\noutline: ${req.body.messages.outline}`, tools: chapter_tools_list[4]};
  
-    const formatted_input = await storybuilder_prompt.formatMessages(next_chapter_agent.tools, input);
+    const formatted_input = await storybuilder_prompt.formatMessages(input);
     try {
       const agent_response = await chapter_agent_graph.stream({messages: formatted_input}, {callbacks: [stream_handler(res)]});
       while (!agent_response.done) {
@@ -402,9 +412,10 @@ async function structured_send_off(agent_graph, message) {
 
     const chapter_agent_graph = vote_next_chapter_agent;
 
-    const input = {persona: req.body.messages.persona, input: `prompt_info: ${req.body.messages.prompt_info} \n\nchapter_bank: ${req.body.vote_bank}`, tools: chapter_tools_list[3]};
+    const vote_bank = req.body.messages.vote_bank.map(m => m.data);
+    const input = {persona: req.body.messages.persona, input: `prompt_info: ${req.body.messages.prompt_info} \n\nchapter_bank: ${vote_bank}`, tools: chapter_tools_list[3]};
 
-    const formatted_input = await storybuilder_prompt.formatMessages(vote_next_chapter_agent.tools, input);
+    const formatted_input = await storybuilder_prompt.formatMessages(input);
     try {
       let parsed = await structured_send_off(chapter_agent_graph, formatted_input);
       console.log("Structured output function output: \n\n " + JSON.stringify(parsed));
@@ -433,10 +444,9 @@ async function structured_send_off(agent_graph, message) {
 
     
    
-
     const input = {persona: req.body.messages.persona, input: `prompt_info: ${req.body.messages.prompt_info} \n\nchapter: ${req.body.messages.chapter} \n\noutline: ${req.body.messages.outline}`, tools: chapter_tools_list[4]};
 
-    const formatted_input = await storybuilder_prompt.formatMessages(critique_chapter_agent.tools, input);
+    const formatted_input = await storybuilder_prompt.formatMessages(input);
     try {
       const agent_response = await chapter_agent_graph.stream({messages: formatted_input}, {callbacks: [stream_handler(res)]});
       while (!agent_response.done) {
@@ -464,10 +474,10 @@ async function structured_send_off(agent_graph, message) {
     res.flushHeaders?.();
 
     const chapter_agent_graph = vote_critique_chapter_agent;
+    const vote_bank = req.body.messages.vote_bank.map(m => m.data);
+    const input = {persona: req.body.messages.persona, input: `prompt_info: ${req.body.messages.prompt_info} \n\ncritique_bank: ${vote_bank}`, tools: chapter_tools_list[5]};
 
-    const input = {persona: req.body.messages.persona, input: `prompt_info: ${req.body.messages.prompt_info} \n\ncritique_bank: ${req.body.messages.vote_bank}`, tools: chapter_tools_list[5]};
-
-    const formatted_input = await storybuilder_prompt.formatMessages(vote_critique_chapter_agent.tools, input);
+    const formatted_input = await storybuilder_prompt.formatMessages(input);
     try {
       let parsed = await structured_send_off(chapter_agent_graph, formatted_input);
       console.log("Structured output function output: \n\n " + JSON.stringify(parsed));
@@ -495,9 +505,9 @@ async function structured_send_off(agent_graph, message) {
     const chapter_agent_graph = rewrite_chapter_agent;
 
 
-    const input = {persona: req.body.messages.persona, input: `prompt_info: ${req.body.messages.prompt_info} \n\ncritique: ${req.body.messages.critique} \n\noutline: ${req.body.messages.outline} \n\nchapter: ${req.body.messages.chapter}`, tools: chapter_tools_list[6]};
+    const input = {persona: req.body.messages.persona, input: `prompt_info: ${req.body.messages.prompt_info} \n\ncritique: ${req.body.messages.critique} \n\noutline: ${req.body.messages.outline} \n\nchapter: ${req.body.messages.chapter.text}`, tools: chapter_tools_list[6]};
 
-    const formatted_input = await storybuilder_prompt.formatMessages(rewrite_chapter_agent.tools, input);
+    const formatted_input = await storybuilder_prompt.formatMessages(input);
 
     try {
       const agent_response = await chapter_agent_graph.stream({messages: formatted_input}, {callbacks: [stream_handler(res)]});
@@ -526,10 +536,10 @@ async function structured_send_off(agent_graph, message) {
     res.flushHeaders?.();
 
     const chapter_agent_graph = vote_rewrite_chapter_agent;
+    const vote_bank = req.body.messages.vote_bank.map(m => m.data);
+    const input = {persona: req.body.messages.persona, input: `prompt_info: ${req.body.messages.prompt_info} \n\nchapter_bank: ${vote_bank}`, tools: chapter_tools_list[7]};
 
-    const input = {persona: req.body.messages.persona, input: `prompt_info: ${req.body.messages.prompt_info} \n\nchapter_bank: ${req.body.messages.vote_bank}`, tools: chapter_tools_list[7]};
-
-    const formatted_input = await storybuilder_prompt.formatMessages(vote_rewrite_chapter_agent.tools, input);
+    const formatted_input = await storybuilder_prompt.formatMessages(input);
     try {
       let parsed = await structured_send_off(chapter_agent_graph, formatted_input);
       console.log("Structured output function output: \n\n " + JSON.stringify(parsed));
@@ -562,13 +572,13 @@ async function structured_send_off(agent_graph, message) {
 }
 
 async function structured_send_off(agent_graph, message) {
-
+  JSON.stringify(message, null, 2);
   try {
     const agent_response = await agent_graph.invoke({
       messages: message
     }, {callbacks: []});
 
-    
+    console.log("AGENT_MESSAGE: " + JSON.stringify(agent_response, null, 2));
     const tool_message = agent_response.messages.find(
       msg => msg.constructor?.name === "ToolMessage"
     );
@@ -585,7 +595,6 @@ async function structured_send_off(agent_graph, message) {
   
     try {
       parsed = JSON.parse(raw_content);
-      console.log("PARSED\n\n" + parsed);
       return parsed;
     } catch (err) {
       console.error("Failed to parse tool_message content:", raw_content);

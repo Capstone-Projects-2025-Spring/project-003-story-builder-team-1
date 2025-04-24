@@ -67,7 +67,7 @@ router.post('/aggregate', async (req, res) => {
             agent_endpoints.map(async (agent, idx) => {
                 //grab persona associated with agent
                 const persona = agent_data[idx].persona;
-                console.log("Agent persona:" + persona);
+                //console.log("Agent persona:" + persona);
                 //begin adding persona (always will be the first input variable in all tools)
                 agent_send = {
                     persona
@@ -79,31 +79,32 @@ router.post('/aggregate', async (req, res) => {
                       break;
                     case "critique_outline":
                       agent_send.prompt_info = `${data.critique_outline.story_details} ${data.critique_outline.extra_details}`.trim();
-                      agent_send.outline = data.critique_outline_story_outline;
+                      agent_send.outline = `${data.critique_outline.story_outline}`.trim();
                       break;
                     case "rewrite_outline":
+                      agent_send.critique = `${data.rewrite_outline.outline_critique_entry}`.trim();
                       agent_send.prompt_info = `${data.rewrite_outline.story_details} ${data.rewrite_outline.extra_details}`.trim();
-                      agent_send.outline = data.rewrite_outline.story_outline;
+                      agent_send.outline = `${data.rewrite_outline.story_outline}`.trim();
                       break;
                     case "generate_first_chapter":
                       agent_send.prompt_info = `${data.generate_first_chapter.story_details} ${data.generate_first_chapter.extra_details}`.trim();
-                      agent_send.outline = data.generate_first_chapter.story_outline;
+                      agent_send.outline = `${data.generate_first_chapter.story_outline}`.trim();
                       break;
                     case "generate_next_chapter":
                       agent_send.prompt_info = `${data.generate_next_chapter.story_details} ${data.generate_next_chapter.extra_details}`.trim();
-                      agent_send.chapter = data.generate_next_chapter.previous_chapters;
-                      agent_send.outline = data.generate_next_chapter.story_outline;
+                      agent_send.chapter = `${data.generate_next_chapter.previous_chapters}`.trim();
+                      agent_send.outline = `${data.generate_next_chapter.story_outline}`.trim();
                       break;
                     case "critique_chapter":
                       agent_send.prompt_info = `${data.critique_chapter.story_details} ${data.critique_chapter.extra_details}`.trim();
-                      agent_send.chapter = data.critique_chapter.chapter;
-                      agent_send.outline = data.critique_chapter.story_outline;
+                      agent_send.chapter = `${data.critique_chapter.chapter.text}`.trim();
+                      agent_send.outline = `${data.critique_chapter.story_outline}`.trim();
                       break;
                     case "rewrite_chapter":
                       agent_send.prompt_info = `${data.rewrite_chapter.story_details} ${data.rewrite_chapter.extra_details}`.trim();
-                      agent_send.chapter = data.rewrite_chapter.chapter;
-                      agent_send.outline = data.rewrite_chapter.story_outline;
-                      agent_send.critique = data.rewrite_chapter.chapter;
+                      agent_send.chapter = `${data.rewrite_chapter.chapter.text}`.trim();
+                      agent_send.outline = `${data.rewrite_chapter.story_outline}`.trim();
+                      agent_send.critique = `${data.rewrite_chapter.chapter_critique.critique}`.trim();
                       break;
                   }
                 prompt_info = agent_send.prompt_info;
