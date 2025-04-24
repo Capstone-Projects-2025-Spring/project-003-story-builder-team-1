@@ -802,7 +802,7 @@ exports.story_get_rewrite_outline_details = asyncHandler(async (req, res, next) 
         story_details: story.prompt.story_details,
         extra_details: story.prompt.extra_details,
         story_outline: story.outline,
-        outline_critique: outline_critique_entry.critiques
+        outline_critique: outline_critique_entry.critique
     }
     res.json(response)
 });
