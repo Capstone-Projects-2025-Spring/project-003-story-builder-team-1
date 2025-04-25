@@ -42,14 +42,23 @@ function BEST_RESPONSE() {
         }
     }, [story_id, user_stories]);
 
-    // Refetch story after stream ends
+    // Reset flags after streaming action is finished
     useEffect(() => {
         if (!isStreaming && justStreamed) {
-            refetch_user_stories().then(() => {
-                setJustStreamed(false);
-            });
+            // Once streaming ends, reset states to allow button interactions
+            setStreamingAction(null);  // Reset streaming action
+            set_should_stream(false);  // Reset stream flag
+            setJustStreamed(false);  // Reset just streamed state
         }
-    }, [isStreaming, justStreamed]);
+    }, [isStreaming, justStreamed, setStreamingAction, set_should_stream]);
+
+    useEffect(() => {
+        if (best_res && justStreamed) {
+            set_should_stream(false);
+            setStreamingAction(null);
+            setJustStreamed(false);
+        }
+    }, [best_res]);
 
     const handle_continue = () => {
         if (should_stream || justStreamed) return;
@@ -75,7 +84,7 @@ function BEST_RESPONSE() {
         const chapter_count = story_content.length;
 
         let step = "rewrite_chapter";
-        let number = chapter_count-1;
+        let number = chapter_count - 1;
 
         if (chapter_count === 0) {
             step = "rewrite_outline";
@@ -127,69 +136,33 @@ function BEST_RESPONSE() {
                         <Button
                             size="sm"
                             variant="light"
-                            color={
-                                should_stream
-                                    ? streamingAction === 'regenerate'
-                                        ? 'grape'
-                                        : 'gray'
-                                    : 'grape'
-                            }
+                            color={should_stream ? (streamingAction === 'regenerate' ? 'grape' : 'gray') : 'grape'}
                             disabled={buttonsDisabled}
                             onClick={handle_regenerate}
-                            leftSection={
-                                should_stream && streamingAction === 'regenerate' ? (
-                                    <Loader size="xs" color="grape" />
-                                ) : null
-                            }
+                            leftSection={should_stream && streamingAction === 'regenerate' ? <Loader size="xs" color="grape" /> : null}
                             style={{
-                                backgroundColor:
-                                    should_stream && streamingAction === 'regenerate'
-                                        ? 'rgba(128, 0, 255, 0.1)'
-                                        : '',
-                                color:
-                                    should_stream && streamingAction === 'regenerate'
-                                        ? '#cc99ff'
-                                        : '',
+                                backgroundColor: should_stream && streamingAction === 'regenerate' ? 'rgba(128, 0, 255, 0.1)' : '',
+                                color: should_stream && streamingAction === 'regenerate' ? '#cc99ff' : '',
                                 cursor: buttonsDisabled ? 'not-allowed' : 'pointer',
                             }}
                         >
-                            {should_stream && streamingAction === 'regenerate'
-                                ? 'Regenerating...'
-                                : 'Regenerate'}
+                            {should_stream && streamingAction === 'regenerate' ? 'Regenerating...' : 'Regenerate'}
                         </Button>
 
                         <Button
                             size="sm"
                             variant="light"
-                            color={
-                                should_stream
-                                    ? streamingAction === 'continue'
-                                        ? 'teal'
-                                        : 'gray'
-                                    : 'teal'
-                            }
+                            color={should_stream ? (streamingAction === 'continue' ? 'teal' : 'gray') : 'teal'}
                             disabled={buttonsDisabled}
                             onClick={handle_continue}
-                            leftSection={
-                                should_stream && streamingAction === 'continue' ? (
-                                    <Loader size="xs" color="green" />
-                                ) : null
-                            }
+                            leftSection={should_stream && streamingAction === 'continue' ? <Loader size="xs" color="green" /> : null}
                             style={{
-                                backgroundColor:
-                                    should_stream && streamingAction === 'continue'
-                                        ? 'rgba(0, 255, 128, 0.1)'
-                                        : '',
-                                color:
-                                    should_stream && streamingAction === 'continue'
-                                        ? '#66ffb2'
-                                        : '',
+                                backgroundColor: should_stream && streamingAction === 'continue' ? 'rgba(0, 255, 128, 0.1)' : '',
+                                color: should_stream && streamingAction === 'continue' ? '#66ffb2' : '',
                                 cursor: buttonsDisabled ? 'not-allowed' : 'pointer',
                             }}
                         >
-                            {should_stream && streamingAction === 'continue'
-                                ? 'Drafting Chapter'
-                                : 'Continue'}
+                            {should_stream && streamingAction === 'continue' ? 'Drafting Chapter' : 'Continue'}
                         </Button>
                     </>
                 )}
