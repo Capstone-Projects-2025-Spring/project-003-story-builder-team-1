@@ -22,6 +22,7 @@ export const STORY_PROVIDER = ({ children }) => {
     const [agent_responses, set_agent_responses] = useState({});  // State to store responses for each agent
     const [agent_thoughts, set_agent_thoughts] = useState({});  // State to store thoughts for each agent
     const [streamingAction, setStreamingAction] = useState(null);
+    const [isStreaming, setIsStreaming] = useState(false);
 
     const submit_story_prompt = async (story_name, story_details, extra_details, selected_agents) => {
         // reset errors
@@ -102,6 +103,7 @@ export const STORY_PROVIDER = ({ children }) => {
     }
 
     const start_event_stream = (user, story_id, step, chapter_number) => {
+        setIsStreaming(true);
         set_agent_responses({});  // Reset agent responses
         set_agent_thoughts({});  // Reset agent thoughts
 
@@ -148,6 +150,18 @@ export const STORY_PROVIDER = ({ children }) => {
             console.error("SSE error");
             eventSource.close();
         };
+        eventSource.addEventListener("story_update", (event) => {
+            try {
+              const parsed = JSON.parse(event.data);
+              if (parsed.type === "content_chunk") {
+                // Handle chunk
+              } else if (parsed.type === "stream_complete") {
+                setIsStreaming(false);
+              }
+            } catch (err) {
+              console.error("Failed to parse SSE data:", err);
+            }
+          });
     };
 
     return (
@@ -169,6 +183,7 @@ export const STORY_PROVIDER = ({ children }) => {
             story_details_error,
             api_error,
             loading,
+            isStreaming,
         }}>
             {children}
         </STORY_CONTEXT.Provider>

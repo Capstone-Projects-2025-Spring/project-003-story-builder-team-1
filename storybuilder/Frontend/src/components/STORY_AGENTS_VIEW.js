@@ -11,7 +11,7 @@ const SERVER_URL = process.env.REACT_APP_SERVER_URL || "http://localhost:8080";
 
 function STORY_AGENTS_VIEW() {
   const { story_id } = useParams();
-  const { user_stories } = USE_USER();
+  const { user_stories, refetch_user_stories } = USE_USER();
   const { user } = USE_AUTH();
 
   const [agents, set_agents] = useState([]);
@@ -19,6 +19,7 @@ function STORY_AGENTS_VIEW() {
     step: "generate_outline",
     chapter_number: 0,
   });
+  const [justStreamed, setJustStreamed] = useState(false);
 
   const {
     should_stream,
@@ -30,9 +31,9 @@ function STORY_AGENTS_VIEW() {
     set_agent_thoughts,
     streamingAction,
     setStreamingAction,
+    isStreaming,
   } = USE_STORY();
 
-  // Setup agents and preload their latest chapter content/thoughts
   useEffect(() => {
     if (!story_id || !user_stories?.stories) return;
 
@@ -58,42 +59,41 @@ function STORY_AGENTS_VIEW() {
     set_agent_thoughts(initial_thoughts);
   }, [story_id, user_stories]);
 
-  // Handle button action (regenerate / continue)
+  // Refetch after stream ends
+  useEffect(() => {
+    if (!isStreaming && justStreamed) {
+      refetch_user_stories().then(() => {
+        setJustStreamed(false);
+      });
+    }
+  }, [isStreaming, justStreamed]);
+
   const handleActionButtonClick = (actionType) => {
+    if (should_stream || justStreamed) return;
+
     setStreamingAction(actionType);
-  
+
     const current_story = user_stories?.stories?.find((story) => story._id === story_id);
     if (!current_story) return;
-  
+
     const story_content = current_story.story_content || [];
     const chapter_count = story_content.length;
-  
+
     let step = "";
     let chapter_number = chapter_count;
-  
-    if (actionType === 'regenerate') {
-      if (chapter_count === 1) {
-        step = 'rewrite_outline';
-        chapter_number = 0;
-      } else {
-        step = 'rewrite_chapter';
-      }
 
+    if (actionType === 'regenerate') {
+      chapter_number -= 1;
+      step = chapter_number === 0 ? 'rewrite_outline' : 'rewrite_chapter';
     } else if (actionType === 'continue') {
-      if (chapter_count === 1) {
-        step = 'generate_first_chapter';
-      } else {
-        step = 'generate_next_chapter';
-      }
+      step = chapter_count === 1 ? 'generate_first_chapter' : 'generate_next_chapter';
     }
-  
+
     set_stream_params({ step, chapter_number });
     set_should_stream(true);
+    setJustStreamed(true);
   };
-  
-  
 
-  // Automatically start streaming once the should_stream flag flips
   useEffect(() => {
     if (!should_stream) return;
     const { step, chapter_number } = stream_params;
@@ -107,7 +107,6 @@ function STORY_AGENTS_VIEW() {
           <Group key={agent._id} align="flex-start" style={{ width: '100%' }}>
             <div style={{ flex: 0.7 }}>
               <AGENT_BOX
-                key={agent._id}
                 name={agent.agent_name}
                 chapter_content={agent_responses[agent._id] || "Waiting for the agent to generate a response..."}
                 agent={agent.agent}
@@ -119,7 +118,6 @@ function STORY_AGENTS_VIEW() {
             </div>
             <div style={{ flex: 0.3 }}>
               <AGENT_THOUGHTS
-                key={agent._id}
                 chapter_thoughts={agent_thoughts[agent._id] || "Waiting for the agent to gather their thoughts..."}
               />
             </div>

@@ -7,14 +7,25 @@ import { USE_AUTH } from '../context/AUTH_CONTEXT';
 import ReactMarkdown from 'react-markdown';
 
 function BEST_RESPONSE() {
-    const { should_stream, set_should_stream, start_event_stream, setStreamingAction, streamingAction } = USE_STORY();
+    const {
+        should_stream,
+        set_should_stream,
+        start_event_stream,
+        setStreamingAction,
+        streamingAction,
+        isStreaming,
+    } = USE_STORY();
+    
     const [best_res, set_best_res] = useState('');
     const [show_cont_button, set_show_cont_button] = useState(true);
-    const { story_id } = useParams();
-    const { user_stories } = USE_USER();
-    const { user } = USE_AUTH();
     const [chapter_number, set_chapter_number] = useState(0);
+    const [justStreamed, setJustStreamed] = useState(false);
 
+    const { story_id } = useParams();
+    const { user_stories, refetch_user_stories } = USE_USER();
+    const { user } = USE_AUTH();
+
+    // Populate best response from latest chapter
     useEffect(() => {
         if (story_id && user_stories?.stories?.length) {
             const found_story = user_stories.stories.find(
@@ -31,47 +42,53 @@ function BEST_RESPONSE() {
         }
     }, [story_id, user_stories]);
 
-    const handle_continue = async () => {
+    // Refetch story after stream ends
+    useEffect(() => {
+        if (!isStreaming && justStreamed) {
+            refetch_user_stories().then(() => {
+                setJustStreamed(false);
+            });
+        }
+    }, [isStreaming, justStreamed]);
+
+    const handle_continue = () => {
+        if (should_stream || justStreamed) return;
+
         const found_story = user_stories?.stories?.find((story) => story._id === story_id);
         const story_content = found_story?.story_content || [];
         const chapter_count = story_content.length;
-    
-        let step = "generate_next_chapter";
-        let chapter_number = chapter_count;
-    
-        if (chapter_count === 1) {
-            // Only the outline exists, so generate the first chapter
-            step = "generate_first_chapter";
-        }
-    
+
+        const step = chapter_count === 1 ? "generate_first_chapter" : "generate_next_chapter";
+
+        setJustStreamed(true);
         setStreamingAction("continue");
         set_should_stream(true);
         set_best_res('');
-        start_event_stream(user, story_id, step, chapter_number);
+        start_event_stream(user, story_id, step, chapter_count);
     };
-        
-    const handle_regenerate = async () => {
+
+    const handle_regenerate = () => {
+        if (should_stream || justStreamed) return;
+
         const found_story = user_stories?.stories?.find((story) => story._id === story_id);
         const story_content = found_story?.story_content || [];
         const chapter_count = story_content.length;
-    
+
         let step = "rewrite_chapter";
-        let chapter_number = chapter_count;
-    
-        if (chapter_count === 1) {
-            // Only the outline exists
+        let number = chapter_count-1;
+
+        if (chapter_count === 0) {
             step = "rewrite_outline";
-            chapter_number = 0;
         }
-    
+
+        setJustStreamed(true);
         setStreamingAction("regenerate");
         set_should_stream(true);
         set_best_res('');
-        start_event_stream(user, story_id, step, chapter_number);
+        start_event_stream(user, story_id, step, number);
     };
-    
-    
-    
+
+    const buttonsDisabled = should_stream || justStreamed;
 
     return (
         <Card
@@ -80,7 +97,7 @@ function BEST_RESPONSE() {
             radius="md"
             style={{
                 backgroundColor: '#242424',
-                border: '1px solid #3a3a3a', // thin outline around the entire box
+                border: '1px solid #3a3a3a',
                 margin: '0 auto',
                 height: '100%',
                 maxHeight: '90vh',
@@ -91,7 +108,7 @@ function BEST_RESPONSE() {
                     backgroundColor: '#2d2d2d',
                     borderRadius: '8px',
                     padding: '16px',
-                    border: '1px solid #3a3a3a', // inner thin border for content
+                    border: '1px solid #3a3a3a',
                     color: 'white',
                     fontSize: '16px',
                     lineHeight: '1.6',
@@ -99,14 +116,15 @@ function BEST_RESPONSE() {
                     height: '100%',
                 }}
             >
-                <ReactMarkdown>{best_res?.trim() ? best_res : "Waiting for agents to generate and vote on responses..."}</ReactMarkdown>
+                <ReactMarkdown>
+                    {best_res?.trim() ? best_res : "Waiting for agents to generate and vote on responses..."}
+                </ReactMarkdown>
             </div>
 
             <Group justify="flex-end" style={{ marginTop: '10px' }}>
                 {show_cont_button && (
                     <>
-                    {/* Regenerate Button */}
-                    <Button
+                        <Button
                             size="sm"
                             variant="light"
                             color={
@@ -116,7 +134,7 @@ function BEST_RESPONSE() {
                                         : 'gray'
                                     : 'grape'
                             }
-                            disabled={should_stream}
+                            disabled={buttonsDisabled}
                             onClick={handle_regenerate}
                             leftSection={
                                 should_stream && streamingAction === 'regenerate' ? (
@@ -126,57 +144,56 @@ function BEST_RESPONSE() {
                             style={{
                                 backgroundColor:
                                     should_stream && streamingAction === 'regenerate'
-                                        ? 'rgba(128, 0, 255, 0.1)'  // Same purple shade
+                                        ? 'rgba(128, 0, 255, 0.1)'
                                         : '',
                                 color:
                                     should_stream && streamingAction === 'regenerate'
-                                        ? '#cc99ff'  // Matching purple color
+                                        ? '#cc99ff'
                                         : '',
-                                cursor: should_stream ? 'not-allowed' : 'pointer',
+                                cursor: buttonsDisabled ? 'not-allowed' : 'pointer',
                             }}
                         >
                             {should_stream && streamingAction === 'regenerate'
                                 ? 'Regenerating...'
                                 : 'Regenerate'}
-                    </Button>
+                        </Button>
 
-                    {/* Continue Button */}
-                    <Button
-                        size="sm"
-                        variant="light"
-                        color={
-                        should_stream
-                            ? streamingAction === 'continue'
-                            ? 'teal'
-                            : 'gray'
-                            : 'teal'
-                        }
-                        disabled={should_stream}
-                        onClick={handle_continue}
-                        leftSection={
-                        should_stream && streamingAction === 'continue' ? (
-                            <Loader size="xs" color="green" />
-                        ) : null
-                        }
-                        style={{
-                        backgroundColor:
-                            should_stream && streamingAction === 'continue'
-                            ? 'rgba(0, 255, 128, 0.1)'
-                            : '',
-                        color:
-                            should_stream && streamingAction === 'continue'
-                            ? '#66ffb2'
-                            : '',
-                        cursor: should_stream ? 'not-allowed' : 'pointer',
-                        }}
-                    >
-                        {should_stream && streamingAction === 'continue'
-                        ? 'Drafting Chapter'
-                        : 'Continue'}
-                    </Button>
+                        <Button
+                            size="sm"
+                            variant="light"
+                            color={
+                                should_stream
+                                    ? streamingAction === 'continue'
+                                        ? 'teal'
+                                        : 'gray'
+                                    : 'teal'
+                            }
+                            disabled={buttonsDisabled}
+                            onClick={handle_continue}
+                            leftSection={
+                                should_stream && streamingAction === 'continue' ? (
+                                    <Loader size="xs" color="green" />
+                                ) : null
+                            }
+                            style={{
+                                backgroundColor:
+                                    should_stream && streamingAction === 'continue'
+                                        ? 'rgba(0, 255, 128, 0.1)'
+                                        : '',
+                                color:
+                                    should_stream && streamingAction === 'continue'
+                                        ? '#66ffb2'
+                                        : '',
+                                cursor: buttonsDisabled ? 'not-allowed' : 'pointer',
+                            }}
+                        >
+                            {should_stream && streamingAction === 'continue'
+                                ? 'Drafting Chapter'
+                                : 'Continue'}
+                        </Button>
                     </>
                 )}
-                </Group>
+            </Group>
         </Card>
     );
 }
