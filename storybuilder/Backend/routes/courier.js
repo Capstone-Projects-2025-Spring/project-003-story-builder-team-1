@@ -9,6 +9,8 @@ const API_URL = process.env.AGENT_URL || PRIVATE_URL;
 const APP_URL = PRIVATE_URL.includes("localhost") ? PRIVATE_URL + ":8080" : PRIVATE_URL;
 console.log( "DEBUG: API_URL:", API_URL); // Debugging line
 
+
+//external vote logic function decides who wins based on vote by majority (and speculated vote value given by agent to break ties)
 function determine_best_result(votes) {
   if (!votes || votes.length === 0) return null;
 
@@ -28,7 +30,7 @@ function determine_best_result(votes) {
     .filter(([_, value]) => value === max_vote_value)
     .map(([index, _]) => index);
 
-  // tie breaker if vote value and winning index are the same for all agents
+  // tie breaker if vote value and winning index are the same for all agents (vote_value fails, all agents choose the exact same index and vote_value)
   const final_winner = top_indices.length === 1
     ? top_indices[0]
     : top_indices[Math.floor(Math.random() * top_indices.length)];
@@ -38,27 +40,26 @@ function determine_best_result(votes) {
 
 router.post('/aggregate', async (req, res) => {
     // Pre changes
-    console.log("Aggregate request received:", req.body);
     const { data, messages } = req.body;
     const story_step = data.step;
-    console.log("Aggregate request received with data:", data);
+    //console.log("Aggregate request received with data:", data);
     const agent_data = data.story_agents;
     const agent_names = agent_data.map(agent => agent.agent_name);
     const agent_ids = agent_data.map(agent => agent.agent_id);
-    console.log("Agent data:", agent_data, "Agent names:", agent_names, "Agent IDs:", agent_ids);
     
     let agentroute = 'http://localhost:{port}/agent/{step}';
     let agent_endpoints = [];
+    //fills array of endpoints based on current story step and number of active agents
     for(let i = 0; i < data.story_agents.length; i++) {
         let new_route = agentroute.replace(/{port}/, 5000+i);
         agent_endpoints.push(new_route);
         agent_endpoints[i] = agent_endpoints[i].replace(/{step}/, story_step);
     }
-    console.log(agent_endpoints);
+    //console.log(agent_endpoints);
     
     // Store responses and votes
     let agent_send = {};
-    //prompt info variable for voting later
+    //prompt info variable re-used for voting later
     let prompt_info = {};
     try {
         // For each agent, open the stream and read ALL data
@@ -155,14 +156,12 @@ router.post('/aggregate', async (req, res) => {
             data: result.data
           }));
           
-        console.log(vote_bank);
-
         //reroutes old agent endpoints list to the corresponding vote endpoint for each story step
         for(let j = 0; j < agent_endpoints.length; j++) {
             agent_endpoints[j] = agent_endpoints[j].replace(`/agent/`, '/agent/vote_');
         }
-        console.log(agent_endpoints);
 
+        //new voting promise array to be filled and analyzed later
         const vote_results = await Promise.all(
             agent_endpoints.map(async (agent, idx) => {
               const persona = data.story_agents[idx].persona;
@@ -177,7 +176,6 @@ router.post('/aggregate', async (req, res) => {
               try {
                 const response = await axios.post(agent, { messages: vote_send });
                 const { winning_index, vote_value } = response.data;
-                //console.log("REESSSULLLTSSS: " + response.data);
                 return {
                   winning_index,
                   vote_value,
@@ -194,20 +192,18 @@ router.post('/aggregate', async (req, res) => {
           );
         //The final list of votes and their corresponding "weights". Weights (vote_value) can serve as a tie-breaker if the entry in 1st place is disputed.
         const votes = vote_results.filter(v => v.winning_index !== undefined && v.vote_value !== undefined);
-        
+        //send off to vote logic function above
         const best_result = determine_best_result(votes);
-
-        console.log("THE FINAL VOTED OPTION: " + best_result);
         
-        //Currently, this returns the index number of the agent in agent_results that produced the "winning" story step. If it needs to return the output, this can be changed.
+        //Currently, this associates each agent's final vote with its name and ID to be used later by the DB and frontend
         const agent_votes = agent_data.map((agent, i) => ({
             agent_name: agent.agent_name,
             agent_id: agent.agent_id,
             votes: vote_results[i].winning_index,
         }));
-        console.log("BEST RESULT: " + JSON.stringify(agent_results[best_result].data));
+        //console.log("BEST RESULT: " + JSON.stringify(agent_results[best_result].data));
 
-        //This data structure stores the winning result between all agents in best_response, every response generated in agent_results, and every agent's vote (and vote weight) in votes. This is for the DB.
+        //This data structure stores the winning result between all agents in best_response, every response generated in agent_results, and every agent's vote (and vote weight) in votes.
         const db_data = {
                 best_response: agent_results[best_result],
                 all_results: agent_results,
@@ -240,7 +236,7 @@ router.post('/aggregate', async (req, res) => {
                   await axios.post(`${APP_URL}/db/story/${user_id}/${story_id}/add_agent_outlines`, { outlines: db_data.all_results, votes: db_data.votes });
                   break;
               case "critique_outline":
-                  await axios.post(`${APP_URL}/db/story/${user_id}/${story_id}/story_add_voted_critique_post`, { chapter_number: chapter_number, critique: db_data.best_response.data });
+                  await axios.post(`${APP_URL}/db/story/${user_id}/${story_id}/add_critique`, { chapter_number: chapter_number, critique: db_data.best_response.data });
                   await axios.post(`${APP_URL}/db/story/${user_id}/${story_id}/add_agent_critiques`, { chapter_number: chapter_number, critiques: db_data.all_results, votes: db_data.votes });
                   break;
               case "rewrite_outline":
@@ -256,7 +252,7 @@ router.post('/aggregate', async (req, res) => {
                   await axios.post(`${APP_URL}/db/story/${user_id}/${story_id}/add_agent_chapter`, {chapter_number: chapter_number, content: db_data.all_results, votes: db_data.votes});
                   break;
               case "critique_chapter":
-                  await axios.post(`${APP_URL}/db/story/${user_id}/${story_id}/story_add_voted_critique_post`, { chapter_number: chapter_number, critique: db_data.best_response.data });
+                  await axios.post(`${APP_URL}/db/story/${user_id}/${story_id}/add_critique`, { chapter_number: chapter_number, critique: db_data.best_response.data });
                   await axios.post(`${APP_URL}/db/story/${user_id}/${story_id}/add_agent_critiques`, { chapter_number: chapter_number, critiques: db_data.all_results, votes: db_data.votes });
                   break;
               case "rewrite_chapter":

@@ -71,6 +71,7 @@ export default function chapter_tools(llm: ChatOpenAI | ChatDeepSeek) {
             decision and don't return the chapters themselves, just return 
             the chapter's index number. It's extremely important that you ONLY 
             return the index number of the chapter you prefer and absolutely nothing else. Do not return any other reflections, commentary, or any acknowledgement of the prompt itself, just the number that corresponds to the winning chapter.
+            Return the proper index as you would the indices of an array starting at 0 rather than making it more human-readable (first index is 0, second is 1, etc). 
              You will ensure the results conform to the style of this persona: "{persona}".
     
             Prompt information: "{prompt_info}"
@@ -135,15 +136,16 @@ export default function chapter_tools(llm: ChatOpenAI | ChatDeepSeek) {
             Outline: "{outline}"
         `);
         const vote_chapter_critique_prompt = ChatPromptTemplate.fromTemplate(`
-            Your job now is to judge all of these critiques to see which one is the most
-            thorough. You will return the index number that corresponds to the critique you find
-            the most appropriate. Return only this number, and absolutely nothing else. Do not return any other reflections, commentary, or any acknowledgement of the prompt itself,  just the number that corresponds to the winning chapter.
-             You will ensure the results will conform to the style of this persona: "{persona}".
-    
-            Prompt information: "{prompt_info}"
-    
-            Critiques to vote on: "{critique_bank}"
-        `);
+                Your job now is to judge all of these critiques to see which one is the most
+                thorough. You will return the index number that corresponds to the critique you find
+                the most appropriate. Return only this number, and absolutely nothing else. Do not return any other reflections, commentary, or any acknowledgement of the prompt itself,  just the number that corresponds to the winning chapter.
+                It is also extremely important that you return the proper index of the winning chapter as you would the indices of an array starting at 0 rather than making it more human-readable (first index is 0, second is 1, etc). 
+                You will ensure the results will conform to the style of this persona: "{persona}".
+        
+                Prompt information: "{prompt_info}"
+        
+                Critiques to vote on: "{critique_bank}"
+            `);
     const first_chapter = tool(
         async ({persona, prompt_info, outline }: {persona: string, prompt_info: string, outline: string}) => {
             const messages = await first_chapter_prompt.formatMessages({persona, prompt_info, outline });
