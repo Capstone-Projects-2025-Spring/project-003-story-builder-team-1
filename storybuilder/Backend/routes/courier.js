@@ -236,7 +236,7 @@ router.post('/aggregate', async (req, res) => {
                   await axios.post(`${APP_URL}/db/story/${user_id}/${story_id}/add_agent_outlines`, { outlines: db_data.all_results, votes: db_data.votes });
                   break;
               case "critique_outline":
-                  await axios.post(`${APP_URL}/db/story/${user_id}/${story_id}/story_add_voted_critique_post`, { chapter_number: chapter_number, critique: db_data.best_response.data });
+                  await axios.post(`${APP_URL}/db/story/${user_id}/${story_id}/add_critique`, { chapter_number: chapter_number, critique: db_data.best_response.data });
                   await axios.post(`${APP_URL}/db/story/${user_id}/${story_id}/add_agent_critiques`, { chapter_number: chapter_number, critiques: db_data.all_results, votes: db_data.votes });
                   break;
               case "rewrite_outline":
@@ -252,7 +252,7 @@ router.post('/aggregate', async (req, res) => {
                   await axios.post(`${APP_URL}/db/story/${user_id}/${story_id}/add_agent_chapter`, {chapter_number: chapter_number, content: db_data.all_results, votes: db_data.votes});
                   break;
               case "critique_chapter":
-                  await axios.post(`${APP_URL}/db/story/${user_id}/${story_id}/story_add_voted_critique_post`, { chapter_number: chapter_number, critique: db_data.best_response.data });
+                  await axios.post(`${APP_URL}/db/story/${user_id}/${story_id}/add_critique`, { chapter_number: chapter_number, critique: db_data.best_response.data });
                   await axios.post(`${APP_URL}/db/story/${user_id}/${story_id}/add_agent_critiques`, { chapter_number: chapter_number, critiques: db_data.all_results, votes: db_data.votes });
                   break;
               case "rewrite_chapter":
