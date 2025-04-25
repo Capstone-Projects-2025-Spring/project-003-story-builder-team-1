@@ -157,6 +157,7 @@ export const STORY_PROVIDER = ({ children }) => {
                 // Handle chunk
               } else if (parsed.type === "stream_complete") {
                 setIsStreaming(false);
+                set_should_stream(false);
               }
             } catch (err) {
               console.error("Failed to parse SSE data:", err);
