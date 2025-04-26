@@ -20,6 +20,7 @@ export default function outline_tools(llm) {
     const generate_outline_prompt = ChatPromptTemplate.fromTemplate(`
         You are a helpful assistant that creates story outlines. You will only ever make one tool call. Don't return anything except for the outline and absolutely nothing else.
         You will ensure the results are compatible with the style of this persona: "{persona}".
+        Do not label any of the sections of your story as "Prologue" or "Epilogue", only label them as chapter numbers.
         Create a detailed outline where you decide the number of chapters. Don't return anything before or after the outline, and don't return any supplementary commentary or reflections or any acknowledgement of the prompt itself. Just return the outline based on the following idea:
 
         "{prompt_info}"
@@ -40,6 +41,7 @@ export default function outline_tools(llm) {
        as well as its faithfulness to the style parameters that were specified. 
        Do not rewrite the outline. It is very important that you ONLY return 
        the critique of the outline and nothing else. You will ensure the results
+       Ensure none of the sections of your story are labelled "Prologue" or "Epilogue", only label them as chapter numbers.
         are compatible with the style of this persona: "{persona}".
 
         Prompt information: "{prompt_info}"        
@@ -60,6 +62,7 @@ export default function outline_tools(llm) {
         You are a helpful assistant that revises story outlines.
         Rewrite the following outline based on the provided critique. Don't return anything except for the rewritten outline and absolutely nothing else.
         Make sure to check for grammatical correctness, plot continuity, and adherence to the prompt information. Don't return anything before or after the rewritten outline, and don't return any supplementary commentary or reflections or any acknowledgement of the prompt itself.
+        Ensure none of the sections of your story are labelled "Prologue" or "Epilogue", only label them as chapter numbers.
         You will ensure the results
         are compatible with the style of this persona: "{persona}".
 
@@ -110,7 +113,7 @@ export default function outline_tools(llm) {
         description: "Votes on the different collected outlines. Outlines are stored as a 2-dimensional array, with rows corresponding to stories and columns corresponding to chapter summaries. The result will rank whichever row has the best sequence according to the parameters established in the agent information and initial prompt info. It does not return anything except for the index number of the winning outline.",
         schema: z.object({
             persona: z.string().describe("Information about the style the story has to implement."),
-            prompt_info: z.string().describe("The outline that is to be followed."),
+            prompt_info: z.string().describe("Information about the story prompt to guide the drafting process."),
             outline_bank: z.string().describe("The collection of outlines to be judged.")
         })
     });
@@ -125,7 +128,7 @@ export default function outline_tools(llm) {
         description: "Provides a critique of a given outline, analyzing grammatical correctness and adherence to the promptinfo. This critique will help in revising the outline to improve its quality.",
         schema: z.object({
             persona: z.string().describe("Information about the style the story has to implement."),
-            prompt_info: z.string().describe("The outline that is to be followed."),
+            prompt_info: z.string().describe("Information about the story prompt to guide the drafting process."),
             outline: z.string().describe("The outline to be critiqued.")
         })
     });
@@ -138,7 +141,7 @@ export default function outline_tools(llm) {
         description: "Votes on the different collected critiques. Outlines are stored as entries corresponding to chapter summaries. The result will rank whichever entry has the best sequence according to the parameters established in the agent information and initial prompt info. It does not return anything except for the index number of the winning outline.",
         schema: z.object({
             persona: z.string().describe("Information about the style the story has to implement."),
-            prompt_info: z.string().describe("The outline that is to be followed."),
+            prompt_info: z.string().describe("Information about the story prompt to guide the drafting process."),
             critique_bank: z.string().describe("The critiques to be judged.")
         })
     });
@@ -154,7 +157,7 @@ export default function outline_tools(llm) {
         schema: z.object({
             persona: z.string().describe("Information about the style the story has to implement."),
             critique: z.string().describe("The critique to be applied to the outline."),
-            prompt_info: z.string().describe("The outline that is to be followed."),
+            prompt_info: z.string().describe("Information about the story prompt to guide the drafting process."),
             outline: z.string().describe("The outline to be revised.")
         })
     });
@@ -167,7 +170,7 @@ export default function outline_tools(llm) {
         description: "Votes on the different collected outlines. Outlines are stored as a 2-dimensional array, with rows corresponding to stories and columns corresponding to chapter summaries. The result will rank whichever row has the best sequence according to the parameters established in the agent information and initial prompt info. It does not return anything except for the index number of the winning outline.",
         schema: z.object({
             persona: z.string().describe("Information about the style the story has to implement."),
-            prompt_info: z.string().describe("The outline that is to be followed."),
+            prompt_info: z.string().describe("Information about the story prompt to guide the drafting process."),
             outline_bank: z.string().describe("The collection of outlines to be judged.")
         })
     });
