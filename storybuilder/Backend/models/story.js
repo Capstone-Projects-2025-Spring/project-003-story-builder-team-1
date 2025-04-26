@@ -12,6 +12,7 @@ const storySchema = new mongoose.Schema({
         chapter_number: { type: Number},
         critique: { type: String }
     }],
+    story_step: {type: String },
     story_content: [{
         story_chapter_number: { type: Number, required: true },
         text: { type: String, required: true }
