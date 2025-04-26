@@ -161,7 +161,7 @@ function AGENT_BOX({ name, chapter_content, story_id, agent_id, chapter_number, 
             color="orange"
             disabled={should_stream}
             onClick={() => {
-              set_edited_content(chapter_content);
+              set_edited_content(current_content || '');
               set_edit_modal_open(true);
             }}
             style={{
