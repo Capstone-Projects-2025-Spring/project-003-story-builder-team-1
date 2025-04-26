@@ -97,7 +97,7 @@ router.get('/translate', async (req, res) => {
                     story_details: response.data.story_details,
                     extra_details: response.data.extra_details || "",
                     story_outline: response.data.story_outline,
-                    outline_critique: response.data.outline_critique
+                    outline_critique: response.data.outline_critique || ""
                 };
                 break;
 
@@ -142,7 +142,7 @@ router.get('/translate', async (req, res) => {
                     extra_details: response.data.extra_details || "",
                     story_outline: response.data.story_outline,
                     chapter: response.data.chapter,
-                    chapter_critique: response.data.critique
+                    chapter_critique: response.data.critique || ""
                 };
                 break;
 

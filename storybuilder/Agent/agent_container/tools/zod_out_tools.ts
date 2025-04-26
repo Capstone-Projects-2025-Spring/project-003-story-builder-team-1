@@ -20,6 +20,7 @@ export default function outline_tools(llm) {
     const generate_outline_prompt = ChatPromptTemplate.fromTemplate(`
         You are a helpful assistant that creates story outlines. You will only ever make one tool call. Don't return anything except for the outline and absolutely nothing else.
         You will ensure the results are compatible with the style of this persona: "{persona}".
+        Ensure none of the sections of your story are labelled "Prologue" or "Epilogue", only label them as chapter numbers.
         Create a detailed outline where you decide the number of chapters. Don't return anything before or after the outline, and don't return any supplementary commentary or reflections or any acknowledgement of the prompt itself. Just return the outline based on the following idea:
 
         "{prompt_info}"
@@ -64,6 +65,7 @@ export default function outline_tools(llm) {
         You are a helpful assistant that revises story outlines.
         Rewrite the following outline based on the provided critique. Don't return anything except for the rewritten outline and absolutely nothing else.
         Make sure to check for grammatical correctness, plot continuity, and adherence to the prompt information. Don't return anything before or after the rewritten outline, and don't return any supplementary commentary or reflections or any acknowledgement of the prompt itself.
+        Ensure none of the sections of your story are labelled "Prologue" or "Epilogue", only label them as chapter numbers.
         You will ensure the results
         are compatible with the style of this persona: "{persona}".
 
@@ -107,7 +109,7 @@ export default function outline_tools(llm) {
     });
 
     const vote_generate_outline = tool(async ({ persona, prompt_info, outline_bank }) => {
-        const messages = await vote_revise_outline_prompt.formatMessages({ persona, prompt_info, outline_bank });
+        const messages = await vote_generate_outline_prompt.formatMessages({ persona, prompt_info, outline_bank });
         const res = await llm.withStructuredOutput(vote_output_schema).invoke(messages);
         return res;
     }, {

@@ -274,6 +274,21 @@ Parameter Requirments:
 */
 router.get("/story/:user_id/:story_id/:chapter_number/get_rewrite_chapter_details", story_controller.story_get_rewrite_chapter_details);
 
+/* Get story step
+Parameter Requirments:
+- user_id: the id of the user within the db
+- story_id: the id of the story within the db
+*/
+router.get("/story/:user_id/:story_id/story_step", story_controller.story_get_step);
+
+/* Update story step
+Parameter Requirments:
+- user_id: the id of the user within the db
+- story_id: the id of the story within the db
+Body Requirements:
+- step: The next step in the process
+*/
+router.post("/story/:user_id/:story_id/update_story_step", story_controller.story_update_step);
 /// PERSONA ROUTES ///
 
 // Returns a list of all personas

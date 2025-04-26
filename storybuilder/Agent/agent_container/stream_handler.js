@@ -6,23 +6,23 @@ const stream_handler = (res = null, tool_call) => BaseCallbackHandler.fromMethod
       t = "tool_call: " + t; // Prefix with tool call if in progress
     if (res) res.write(`data: ${t}\n\n`);
   },
-  // handleChainStart: async (c, runId, parentRunId, ...rest) => {
-  //   if (res) res.write(`data: [chain start: ${JSON.stringify(c)}]\n\n`);
-  //   process.stdout.write(`Chain started: ${JSON.stringify(parentRunId)}\n`);
-  // },
-  // handleAgentAction: async (a, runId, parentRunId, ...rest) => {
-  //   if (res) res.write(`data: [action: ${a.tool} -> ${JSON.stringify(a.toolInput)}]\n\n`);
-  //   process.stdout.write(`Agent action: ${a.tool} -> ${JSON.stringify(a.toolInput)}\n`);
-  // },
+  handleChainStart: async (c, runId, parentRunId, ...rest) => {
+    //if (res) res.write(`data: [chain start: ${JSON.stringify(c)}]\n\n`);
+    process.stdout.write(`Chain started: ${JSON.stringify(parentRunId)}\n`);
+  },
+  handleAgentAction: async (a, runId, parentRunId, ...rest) => {
+    //if (res) res.write(`data: [action: ${a.tool} -> ${JSON.stringify(a.toolInput)}]\n\n`);
+    process.stdout.write(`Agent action: ${a.tool} -> ${JSON.stringify(a.toolInput)}\n`);
+  },
   handleToolStart: async (t, runId, parentRunId, ...rest) => {
-    // if (res) res.write(`data: [tool start: ${t.name}]\n\n`);
-    // process.stdout.write(`Tool started: ${t.name}\n`);
+    //if (res) res.write(`data: [tool start: ${t.name}]\n\n`);
+    process.stdout.write(`Tool started: ${t.name}\n`);
     tool_call = true; // Set the flag to indicate a tool call is in progress
     process.stdout.write("\n");
   },
   handleToolEnd: async (o, runId, parentRunId, ...rest) => {
-    // if (res) res.write(`data: [tool output: ${JSON.stringify(o)}]\n\n`);
-    // process.stdout.write(`Tool output: ${JSON.stringify(o)}\n`);
+    //if (res) res.write(`data: [tool output: ${JSON.stringify(o)}]\n\n`);
+    process.stdout.write(`Tool output: ${JSON.stringify(o)}\n`);
     tool_call = false; // Reset the flag after tool call ends
     process.stdout.write("\n");
   },

@@ -968,7 +968,7 @@ exports.story_get_rewrite_chapter_details = asyncHandler(async (req, res, next) 
         return res.status(404).json({ error: "Chapter number is required." });
     }
 
-    const story = await Story.findOne({ _id: story_id, user: user_id }).exec();;
+    const story = await Story.findOne({ _id: story_id, user: user_id }).exec();
 
     if (!story) {
         return res.status(404).json({ error: "Story not found or user does not have access to this story" });
@@ -1022,4 +1022,52 @@ exports.story_get_rewrite_chapter_details = asyncHandler(async (req, res, next) 
         critique: critique_details
     }
     res.json(response);
+});
+
+// Get the current story step
+exports.story_get_step = asyncHandler(async (req, res, next) => {
+    const { user_id, story_id } = req.params;
+
+    // Find the user and ensure they exist
+    const user = await User.findById(user_id);
+    if (!user) {
+        return res.status(404).json({ error: "User not found" });
+    }
+
+    const story = await Story.findOne({ _id: story_id, user: user_id }).exec();
+
+    if (!story) {
+        return res.status(404).json({ error: "Story not found or user does not have access to this story" });
+    }
+
+    return res.json(story.story_step);
+});
+
+// Update the story step
+exports.story_update_step = asyncHandler(async (req, res, next) => {
+    const { user_id, story_id } = req.params;
+    const { step } = req.body;
+
+    // Find the user and ensure they exist
+    const user = await User.findById(user_id);
+    if (!user) {
+        return res.status(404).json({ error: "User not found" });
+    }
+
+    const story = await Story.findOne({ _id: story_id, user: user_id }).exec();
+
+    if (!story) {
+        return res.status(404).json({ error: "Story not found or user does not have access to this story" });
+    }
+
+    if (!step) {
+        return res.status(404).json({error: "Story step not found" });
+    }
+
+    story.story_step = step;
+
+    // Save the updated story
+    await story.save();
+
+    return res.json(story.story_step);
 });

@@ -17,8 +17,8 @@ export default function chapter_tools(llm) {
     const first_chapter_prompt = ChatPromptTemplate.fromTemplate(`
         You are a helpful assistant. The story will be written in chapters, and 
         you will write the first chapter. It's very important that you don't 
-        return anything except for the chapter itself. Do not return any supplementary commentary or reflections or any acknowledgement of the prompt itself, you will only return your chapter and absolutely nothing else. You will ensure the results
-        conform to the style of this persona: "{persona}".
+        return anything except for the chapter itself. Do not return any supplementary commentary or reflections or any acknowledgement of the prompt itself, you will only return your chapter and absolutely nothing else. 
+        Ensure the chapter isn't labelled as "Prologue" or "Epilogue", only label it as a chapter number. You will also ensure the results conform to the style of this persona: "{persona}".
 
         This is the prompt information: "{prompt_info}"
 
@@ -46,6 +46,7 @@ export default function chapter_tools(llm) {
         very important that you DON'T include any additional text besides the chapter itself. Do not return any reflections, commentary, or acknowledgement of the prompt itself, just the chapter.
         It's also very important that when you continue the chapter, you do NOT go off the outline. You continue the story based on the chapter number specified in the chapter itself. The outline is an
         overview of the ENTIRE story, but if the specified chapter hasn't reached the max amount of chapters yet, you don't number the chapter based off of the number of chapters in the outline.
+        Ensure none of the sections of your story are labelled "Prologue" or "Epilogue", only label it as a chapter number.
         You will ensure the results conform to the style of this persona: "{persona}".
 
         Prompt information: "{prompt_info}"
@@ -91,6 +92,7 @@ export default function chapter_tools(llm) {
         return the rewritten chapter and nothing else. Do not return any other reflections, commentary, or any acknowledgement of the prompt itself, just the rewritten chapter.
         It's also very important that you ensure the chapter number stays the same. Example: If the chapter has any information inside of it that indicates it's "Chapter X", with X
         being whatever index that chapter is assigned, you will ensure that index X stays the same. You're not continuing the story, so keep the index the same.
+        Ensure none of the sections of your story are labelled "Prologue" or "Epilogue", only label it as a chapter number.
         You will ensure the results conform to the style of this persona: "{persona}".
 
         Prompt information: "{prompt_info}"
