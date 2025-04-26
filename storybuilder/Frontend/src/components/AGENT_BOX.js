@@ -3,18 +3,26 @@ import { Card, Button, Modal, Title, Divider, Group, Loader } from '@mantine/cor
 import { USE_STORY } from '../context/STORY_CONTEXT';
 import ReactMarkdown from 'react-markdown';
 
-function AGENT_BOX({ name, chapter_content, step, chapter_number, onActionButtonClick, isOutlineGenerating }) {
-  const { should_stream, streamingAction } = USE_STORY();
+function AGENT_BOX({ name, chapter_content, step, chapter_number, onActionButtonClick }) {
+  const { should_stream, streaming_action, set_streaming_action, disable_regenerate, set_disable_regenerate, disable_continue, set_disable_continue, } = USE_STORY();
 
   const [opened, set_opened] = useState(false);
   const [edit_modal_open, set_edit_modal_open] = useState(false);
   const [edited_content, set_edited_content] = useState('');
 
   const handle_continue = () => {
+    set_streaming_action('continue');
+    set_disable_regenerate(true);
+    set_disable_continue(true);
+
     onActionButtonClick('continue');
   };
 
   const handle_regenerate = () => {
+    set_streaming_action('regenerate');
+    set_disable_regenerate(true);
+    set_disable_continue(true);
+
     onActionButtonClick('regenerate');
   };
 
@@ -27,7 +35,7 @@ function AGENT_BOX({ name, chapter_content, step, chapter_number, onActionButton
         size="50%"
         radius="md"
         padding="md"
-        title={<Title order={3}>{name}</Title>}
+        title={<Title component="div" order={3}>{name}</Title>}
       >
         <div style={{ padding: '12px', backgroundColor: '#2d2d2d', color: '#fff', borderRadius: '8px' }}>
           <ReactMarkdown
@@ -45,7 +53,7 @@ function AGENT_BOX({ name, chapter_content, step, chapter_number, onActionButton
       <Modal
         opened={edit_modal_open}
         onClose={() => set_edit_modal_open(false)}
-        title={<Title order={3}>Edit Chapter</Title>}
+        title={<Title component="div" order={3}>Edit Chapter</Title>}
         size="50%"
         radius="md"
         padding="md"
@@ -115,7 +123,7 @@ function AGENT_BOX({ name, chapter_content, step, chapter_number, onActionButton
             size="sm"
             variant="light"
             color="orange"
-            disabled={should_stream || isOutlineGenerating}
+            disabled={should_stream}
             onClick={() => {
               set_edited_content(chapter_content);
               set_edit_modal_open(true);
@@ -123,7 +131,7 @@ function AGENT_BOX({ name, chapter_content, step, chapter_number, onActionButton
             style={{
               backgroundColor: 'rgba(255, 165, 0, 0.1)',
               color: '#ffa500',
-              cursor: should_stream || isOutlineGenerating ? 'not-allowed' : 'pointer',
+              cursor: should_stream ? 'not-allowed' : 'pointer',
             }}
           >
             Edit
@@ -133,19 +141,19 @@ function AGENT_BOX({ name, chapter_content, step, chapter_number, onActionButton
           <Button
             size="sm"
             variant="light"
-            color={!(should_stream || isOutlineGenerating) ? 'grape' : undefined} // grape = purple
-            disabled={should_stream || isOutlineGenerating}
+            color={!(should_stream) ? 'grape' : undefined} // grape = purple
+            disabled={disable_regenerate}
             onClick={handle_regenerate}
-            leftSection={streamingAction === 'regenerate' && should_stream && <Loader size="xs" color="violet" />}
+            leftSection={streaming_action === 'regenerate' && should_stream && <Loader size="xs" color="violet" />}
             style={{
               backgroundColor:
-                streamingAction === 'regenerate' && should_stream ? 'rgba(128, 90, 213, 0.1)' : '',
+                streaming_action === 'regenerate' && should_stream ? 'rgba(128, 90, 213, 0.1)' : '',
               color:
-                streamingAction === 'regenerate' && should_stream ? '#b794f4' : '',
-              cursor: should_stream || isOutlineGenerating ? 'not-allowed' : 'pointer',
+                streaming_action === 'regenerate' && should_stream ? '#b794f4' : '',
+              cursor: should_stream ? 'not-allowed' : 'pointer',
             }}
           >
-            {streamingAction === 'regenerate' && should_stream ? 'Regenerating' : 'Regenerate'}
+            {streaming_action === 'regenerate' && should_stream ? 'Regenerating' : 'Regenerate'}
           </Button>
 
           {/* Continue Button */}
@@ -153,16 +161,16 @@ function AGENT_BOX({ name, chapter_content, step, chapter_number, onActionButton
             size="sm"
             variant="light"
             color={!should_stream ? 'teal' : undefined}
-            disabled={should_stream || isOutlineGenerating}
+            disabled={disable_continue}
             onClick={handle_continue}
-            leftSection={streamingAction === 'continue' && should_stream && <Loader size="xs" color="green" />}
+            leftSection={streaming_action === 'continue' && should_stream && <Loader size="xs" color="green" />}
             style={{
-              backgroundColor: streamingAction === 'continue' && should_stream ? 'rgba(0, 255, 128, 0.1)' : '',
-              color: streamingAction === 'continue' && should_stream ? '#66ffb2' : '',
-              cursor: should_stream || isOutlineGenerating ? 'not-allowed' : 'pointer',
+              backgroundColor: streaming_action === 'continue' && should_stream ? 'rgba(0, 255, 128, 0.1)' : '',
+              color: streaming_action === 'continue' && should_stream ? '#66ffb2' : '',
+              cursor: should_stream ? 'not-allowed' : 'pointer',
             }}
           >
-            {streamingAction === 'continue' && should_stream ? 'Drafting Chapter' : 'Continue'}
+            {streaming_action === 'continue' && should_stream ? 'Drafting' : 'Continue'}
           </Button>
         </Group>
       </Card>

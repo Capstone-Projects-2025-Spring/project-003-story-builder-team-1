@@ -11,7 +11,7 @@ const SERVER_URL = process.env.REACT_APP_SERVER_URL || "http://localhost:8080";
 
 function STORY_AGENTS_VIEW() {
   const { story_id } = useParams();
-  const { user_stories, refetch_user_stories } = USE_USER();
+  const { user_stories } = USE_USER();
   const { user } = USE_AUTH();
 
   const [agents, set_agents] = useState([]);
@@ -19,7 +19,6 @@ function STORY_AGENTS_VIEW() {
     step: "generate_outline",
     chapter_number: 0,
   });
-  const [justStreamed, setJustStreamed] = useState(false);
 
   const {
     should_stream,
@@ -29,9 +28,8 @@ function STORY_AGENTS_VIEW() {
     set_agent_responses,
     agent_thoughts,
     set_agent_thoughts,
-    streamingAction,
-    setStreamingAction,
-    isStreaming,
+    streaming_action,
+    set_streaming_action,
   } = USE_STORY();
 
   useEffect(() => {
@@ -59,19 +57,10 @@ function STORY_AGENTS_VIEW() {
     set_agent_thoughts(initial_thoughts);
   }, [story_id, user_stories]);
 
-  // Refetch after stream ends
-  useEffect(() => {
-    if (!isStreaming && justStreamed) {
-      refetch_user_stories().then(() => {
-        setJustStreamed(false);
-      });
-    }
-  }, [isStreaming, justStreamed]);
-
   const handleActionButtonClick = (actionType) => {
-    if (should_stream || justStreamed) return;
+    if (should_stream) return;
 
-    setStreamingAction(actionType);
+    set_streaming_action(actionType);
 
     const current_story = user_stories?.stories?.find((story) => story._id === story_id);
     if (!current_story) return;
@@ -84,14 +73,13 @@ function STORY_AGENTS_VIEW() {
 
     if (actionType === 'regenerate') {
       chapter_number -= 1;
-      step = chapter_number === 0 ? 'rewrite_outline' : 'rewrite_chapter';
+      step = chapter_number === 0 ? 'generate_outline' : 'rewrite_chapter';
     } else if (actionType === 'continue') {
       step = chapter_count === 1 ? 'generate_first_chapter' : 'generate_next_chapter';
     }
 
     set_stream_params({ step, chapter_number });
     set_should_stream(true);
-    setJustStreamed(true);
   };
 
   useEffect(() => {

@@ -89,7 +89,9 @@ router.get('/translate', async (req, res) => {
                 break;
             
             case "rewrite_outline":
+                console.log("Rewrite outline step");
                 response = await axios.get(`${APP_URL}/db/story/${user_id}/${story_id}/get_rewrite_outline_details`);
+                console.log("Rewrite outline response:", response.data);
                 data.rewrite_outline = {
                     story_name: response.data.story_name,
                     story_details: response.data.story_details,

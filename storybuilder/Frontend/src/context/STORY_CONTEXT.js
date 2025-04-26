@@ -21,8 +21,9 @@ export const STORY_PROVIDER = ({ children }) => {
     const [should_stream, set_should_stream] = useState(false);
     const [agent_responses, set_agent_responses] = useState({});  // State to store responses for each agent
     const [agent_thoughts, set_agent_thoughts] = useState({});  // State to store thoughts for each agent
-    const [streamingAction, setStreamingAction] = useState(null);
-    const [isStreaming, setIsStreaming] = useState(false);
+    const [streaming_action, set_streaming_action] = useState('');
+    const [disable_regenerate, set_disable_regenerate] = useState(false);
+    const [disable_continue, set_disable_continue] = useState(false);
 
     const submit_story_prompt = async (story_name, story_details, extra_details, selected_agents) => {
         // reset errors
@@ -81,6 +82,8 @@ export const STORY_PROVIDER = ({ children }) => {
         set_api_error('');
         set_loading(true);
         set_should_stream(true); // allow streaming now
+        set_disable_regenerate(true); // disable regenerate button
+        set_streaming_action('continue'); // set action to continue for loading
     
         // const { data: gen_outline_data, error: gen_outline_error } = await use_axios(
         //     `${SERVER_URL}/translator/translate?user_id=${user}&story_id=${curr_story_id}&step=generate_outline&chapter_number=0`,
@@ -103,7 +106,9 @@ export const STORY_PROVIDER = ({ children }) => {
     }
 
     const start_event_stream = (user, story_id, step, chapter_number) => {
-        setIsStreaming(true);
+        console.log("Starting event stream");
+        console.log("Step:", step);
+        console.log("Chapter number:", chapter_number);
         set_agent_responses({});  // Reset agent responses
         set_agent_thoughts({});  // Reset agent thoughts
 
@@ -116,8 +121,13 @@ export const STORY_PROVIDER = ({ children }) => {
     
             if (restored.startsWith("{\"best")) {
                 eventSource.close();
+                console.log("Event stream closed");
                 set_should_stream(false);
                 fetch_user_data(user);
+                // reset everything
+                set_disable_continue(false);
+                set_disable_regenerate(false);
+                set_streaming_action('');
                 return;
             }
     
@@ -150,19 +160,7 @@ export const STORY_PROVIDER = ({ children }) => {
             console.error("SSE error");
             eventSource.close();
         };
-        eventSource.addEventListener("story_update", (event) => {
-            try {
-              const parsed = JSON.parse(event.data);
-              if (parsed.type === "content_chunk") {
-                // Handle chunk
-              } else if (parsed.type === "stream_complete") {
-                setIsStreaming(false);
-                set_should_stream(false);
-              }
-            } catch (err) {
-              console.error("Failed to parse SSE data:", err);
-            }
-          });
+
     };
 
     return (
@@ -171,8 +169,8 @@ export const STORY_PROVIDER = ({ children }) => {
             agent_ids,
             should_stream,
             set_should_stream,
-            streamingAction,
-            setStreamingAction,
+            streaming_action,
+            set_streaming_action,
             start_event_stream,
             agent_responses,
             set_agent_responses,
@@ -184,7 +182,10 @@ export const STORY_PROVIDER = ({ children }) => {
             story_details_error,
             api_error,
             loading,
-            isStreaming,
+            disable_regenerate,
+            set_disable_regenerate,
+            disable_continue,
+            set_disable_continue,
         }}>
             {children}
         </STORY_CONTEXT.Provider>
