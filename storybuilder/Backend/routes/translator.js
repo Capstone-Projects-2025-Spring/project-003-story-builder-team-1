@@ -180,6 +180,7 @@ router.get('/translate', async (req, res) => {
                     resolve(res.write(`event: done\ndata: ${JSON.stringify({ message: "Data received successfully" }, {data: buffer})}\n\n`), res.end());
                 } else if (chunk.toString().startsWith("{\"error")) {
                     const errorMessage = JSON.parse(chunk.toString());
+                    console.log("translator error: ", errorMessage.error);
                     return res.status(404).json({ error: errorMessage.error });
                 }
                 else

@@ -6,6 +6,7 @@ import { useParams } from 'react-router';
 import { USE_USER } from '../context/USER_CONTEXT';
 import { USE_AUTH } from '../context/AUTH_CONTEXT';
 import { USE_STORY } from '../context/STORY_CONTEXT';
+import { set } from 'mongoose';
 
 const SERVER_URL = process.env.REACT_APP_SERVER_URL || "http://localhost:8080";
 
@@ -13,13 +14,11 @@ function STORY_AGENTS_VIEW() {
   const { story_id } = useParams();
   const { user_stories } = USE_USER();
   const { user } = USE_AUTH();
-
   const [agents, set_agents] = useState([]);
   const [stream_params, set_stream_params] = useState({
     step: "generate_outline",
     chapter_number: 0,
   });
-
   const {
     should_stream,
     set_should_stream,
@@ -28,9 +27,20 @@ function STORY_AGENTS_VIEW() {
     set_agent_responses,
     agent_thoughts,
     set_agent_thoughts,
+    agent_critiques,
+    set_agent_critiques,
+    agent_critique_thoughts,
+    set_agent_critique_thoughts,
+    agent_rewrites,
+    set_agent_rewrites,
+    agent_rewrite_thoughts,
+    set_agent_rewrite_thoughts,
     streaming_action,
     set_streaming_action,
+    curr_step,
+    set_curr_step
   } = USE_STORY();
+
 
   useEffect(() => {
     if (!story_id || !user_stories?.stories) return;
@@ -38,10 +48,13 @@ function STORY_AGENTS_VIEW() {
     const current_story = user_stories.stories.find((story) => story._id === story_id);
     if (!current_story) return;
 
+    set_curr_step(current_story.story_step);
     set_agents(current_story.agents || []);
 
     const initial_responses = {};
     const initial_thoughts = {};
+    const initial_critiques = {};
+    const initial_critique_thoughts = {};
 
     current_story.agents.forEach((agent) => {
       const last_chapter = agent.chapters?.[agent.chapters.length - 1];
@@ -51,10 +64,18 @@ function STORY_AGENTS_VIEW() {
       if (last_chapter?.content_thoughts) {
         initial_thoughts[agent._id] = last_chapter.content_thoughts;
       }
+      if (last_chapter?.critique) {
+        initial_responses[agent._id] = last_chapter.critique;
+      }
+      if (last_chapter?.critique_thoughts) {
+        initial_thoughts[agent._id] = last_chapter.critique_thoughts;
+      }
     });
 
     set_agent_responses(initial_responses);
     set_agent_thoughts(initial_thoughts);
+    set_agent_critiques(initial_critiques);
+    set_agent_critique_thoughts(initial_critique_thoughts);
   }, [story_id, user_stories]);
 
   const handleActionButtonClick = (actionType) => {
@@ -71,11 +92,54 @@ function STORY_AGENTS_VIEW() {
     let step = "";
     let chapter_number = chapter_count;
 
+    // if regenerate button is clicked, check phase and chapter to set steps accordingly
     if (actionType === 'regenerate') {
+      console.log("regenerate button curr_step: ", curr_step)
       chapter_number -= 1;
-      step = chapter_number === 0 ? 'generate_outline' : 'rewrite_chapter';
-    } else if (actionType === 'continue') {
-      step = chapter_count === 1 ? 'generate_first_chapter' : 'generate_next_chapter';
+      // if current step is generate, step stays generate
+      if (curr_step === 'generate') {
+        // regenerate chapter 0 is generating the outline
+        if (chapter_number === 0) {
+          step = 'generate_outline';
+          // regeneate chapter 1 is generating the first chapter
+        } else if (chapter_number === 1) {
+          step = 'generate_first_chapter';
+          // regenerate anything else is generating the next chapter
+        } else {
+          step = 'generate_next_chapter';
+        }
+      }
+      // if current step is critique, then set steps critique
+      else if (curr_step === 'critique') {
+        step = chapter_number === 0 ? "critique_outline" : "critique_chapter";
+      }
+      else if (curr_step === 'rewrite') {
+        if (chapter_number === 0) {
+          step = 'rewrite_outline';
+        } else {
+          step = 'rewrite_chapter';
+        }
+      }
+    }
+    // if continue button is clicked, check phase and chapter to set steps accordingly
+    else if (actionType === 'continue') {
+      // if the current step is generate, then set the step to be critique
+      if (curr_step === 'generate') {
+        chapter_number -= 1;
+        step = chapter_number === 0 ? "critique_outline" : "critique_chapter";
+        set_curr_step('critique');
+      }
+      // if current step is critique, then next step is rewrite
+      else if (curr_step === 'critique') {
+        chapter_number -= 1;
+        step = 'rewrite_chapter';
+        set_curr_step('rewrite');
+      }
+      // if current step is rewite, then next step is to generate
+      else if (curr_step === 'rewrite') {
+        set_curr_step('generate');
+        step = chapter_count === 1 ? 'generate_first_chapter' : 'generate_next_chapter';
+      }
     }
 
     set_stream_params({ step, chapter_number });
@@ -96,7 +160,11 @@ function STORY_AGENTS_VIEW() {
             <div style={{ flex: 0.7 }}>
               <AGENT_BOX
                 name={agent.agent_name}
-                chapter_content={agent_responses[agent._id] || "Waiting for the agent to generate a response..."}
+                chapter_content={
+                  curr_step === "critique"
+                    ? agent_critiques[agent._id] || "Waiting for the agent to critique..."
+                    : agent_responses[agent._id] || "Waiting for the agent to generate a response..."
+                }
                 agent={agent.agent}
                 start_event_stream={start_event_stream}
                 step={stream_params.step}
@@ -106,7 +174,11 @@ function STORY_AGENTS_VIEW() {
             </div>
             <div style={{ flex: 0.3 }}>
               <AGENT_THOUGHTS
-                chapter_thoughts={agent_thoughts[agent._id] || "Waiting for the agent to gather their thoughts..."}
+                chapter_thoughts={
+                  curr_step === "critique"
+                    ? agent_critique_thoughts[agent._id] || "Waiting for the agent's critique thoughts..."
+                    : agent_thoughts[agent._id] || "Waiting for the agent to gather their thoughts..."
+                }
               />
             </div>
           </Group>

@@ -4,7 +4,7 @@ import { USE_STORY } from '../context/STORY_CONTEXT';
 import ReactMarkdown from 'react-markdown';
 
 function AGENT_BOX({ name, chapter_content, step, chapter_number, onActionButtonClick }) {
-  const { should_stream, streaming_action, set_streaming_action, disable_regenerate, set_disable_regenerate, disable_continue, set_disable_continue, } = USE_STORY();
+  const { should_stream, streaming_action, set_streaming_action, disable_regenerate, set_disable_regenerate, disable_continue, set_disable_continue, curr_step, set_curr_step } = USE_STORY();
 
   const [opened, set_opened] = useState(false);
   const [edit_modal_open, set_edit_modal_open] = useState(false);
