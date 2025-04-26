@@ -54,7 +54,7 @@ exports.user_stories_list = asyncHandler(async (req, res, next) => {
         return res.status(404).json({ error: "User not found" });
     }
 
-    const stories = await Story.find({ user: user_id }).select('story_name story_content agents outline').exec();
+    const stories = await Story.find({ user: user_id }).select('story_name story_content agents outline story_step').exec();
 
     res.status(200).json({ stories });
 });
@@ -770,36 +770,30 @@ exports.story_get_rewrite_outline_details = asyncHandler(async (req, res, next) 
     // Find the user and ensure they exist
     const user = await User.findById(user_id);
     if (!user) {
-        console.log("1");
         return res.status(404).json({ error: "User not found" });
     }
 
     const story = await Story.findOne({ _id: story_id, user: user_id }).exec();;
 
     if (!story) {
-        console.log("2");
         return res.status(404).json({ error: "Story not found or user does not have access to this story" });
     }
 
     if (!story.prompt.story_details) {
-        console.log("3");
         return res.status(404).json({ error: "Story details are required." });
     }
 
     if (!story.outline) {
-        console.log("4");
         return res.status(404).json({ error: "Outline is required." });
     }
 
     if (!story.critiques || story.critiques.length === 0) {
-        console.log("5");
         return res.status(404).json({ error: "Critiques are required." });
     }
 
     const outline_critique_entry = story.critiques.find(c => c.chapter_number === 0);
 
     if (!outline_critique_entry) {
-        console.log("6");
         return res.status(404).json({ error: "Outline critique (chapter 0) not found." });
     }
 
@@ -810,7 +804,6 @@ exports.story_get_rewrite_outline_details = asyncHandler(async (req, res, next) 
         story_outline: story.outline,
         outline_critique: outline_critique_entry.critique
     }
-    console.log("story_controller response:", response)
     res.json(response)
 });
 
