@@ -164,10 +164,15 @@ function AGENT_BOX({ name, chapter_content, story_id, agent_id, chapter_number, 
               set_edited_content(current_content || '');
               set_edit_modal_open(true);
             }}
-            style={{
-              backgroundColor: 'rgba(255, 165, 0, 0.1)',
-              color: '#ffa500',
-              cursor: should_stream ? 'not-allowed' : 'pointer',
+            styles={{
+              root: {
+                backgroundColor: should_stream ? 'rgba(128, 128, 128, 0.2)' : 'rgba(255, 165, 0, 0.1)',
+                color: should_stream ? '#888' : '#ffa500',
+                cursor: should_stream ? 'not-allowed' : 'pointer',
+              },
+              label: {
+                color: should_stream ? '#888' : '#ffa500', // 👈 this directly controls the text!
+              },
             }}
           >
             Edit
