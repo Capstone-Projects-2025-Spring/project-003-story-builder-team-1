@@ -75,6 +75,10 @@ function STORY_AGENTS_VIEW() {
   }, [story_id, user_stories]);
 
   const handleActionButtonClick = (actionType) => {
+    if (actionType === 'saved') {
+      // just a save event—no streaming
+      return;
+    }
     if (should_stream) return;
 
     set_streaming_action(actionType);
@@ -127,6 +131,8 @@ function STORY_AGENTS_VIEW() {
                 step={stream_params.step}
                 chapter_number={stream_params.chapter_number}
                 onActionButtonClick={handleActionButtonClick}
+                story_id={story_id}
+                agent_id={agent._id}
               />
             </div>
             <div style={{ flex: 0.3 }}>

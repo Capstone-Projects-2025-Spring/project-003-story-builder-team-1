@@ -2,13 +2,20 @@ import { useState } from 'react';
 import { Card, Button, Modal, Title, Divider, Group, Loader } from '@mantine/core';
 import { USE_STORY } from '../context/STORY_CONTEXT';
 import ReactMarkdown from 'react-markdown';
+import USE_AXIOS from '../hooks/USE_AXIOS';
+import { USE_AUTH } from '../context/AUTH_CONTEXT';
 
-function AGENT_BOX({ name, chapter_content, step, chapter_number, onActionButtonClick }) {
+const SERVER_URL = process.env.REACT_APP_SERVER_URL || "http://localhost:8080";
+
+function AGENT_BOX({ name, chapter_content, story_id, agent_id, chapter_number, onActionButtonClick }) {
   const { should_stream, streaming_action, set_streaming_action, disable_regenerate, set_disable_regenerate, disable_continue, set_disable_continue, } = USE_STORY();
-
+  const { use_axios } = USE_AXIOS();
+  const { user } = USE_AUTH();
   const [opened, set_opened] = useState(false);
   const [edit_modal_open, set_edit_modal_open] = useState(false);
   const [edited_content, set_edited_content] = useState('');
+  const [current_content, set_current_content] = useState(chapter_content);
+  const [is_saving, set_is_saving] = useState(false);
 
   const handle_continue = () => {
     set_streaming_action('continue');
@@ -24,6 +31,27 @@ function AGENT_BOX({ name, chapter_content, step, chapter_number, onActionButton
     set_disable_continue(true);
 
     onActionButtonClick('regenerate');
+  };
+
+  const handleSaveEditedChapter = async () => {
+    set_is_saving(true);
+    console.log("user: ", user);
+    console.log("story_id: ", story_id);
+    console.log("agent_id: ", agent_id);
+    console.log("chapter_number: ", chapter_number);
+    const url = `${SERVER_URL}/db/story/${user}/${story_id}/${agent_id}/${chapter_number}/edit_agent_chapter`;
+    const { data, error } = await use_axios(url, 'POST', {content: edited_content});
+
+    if (error) {
+      console.error('Error saving chapter:', error);
+      set_is_saving(false);
+      return;
+    }
+
+    set_current_content(edited_content);
+    set_edit_modal_open(false);
+    onActionButtonClick('saved', edited_content);
+    set_is_saving(false);
   };
 
   return (
@@ -53,7 +81,7 @@ function AGENT_BOX({ name, chapter_content, step, chapter_number, onActionButton
       <Modal
         opened={edit_modal_open}
         onClose={() => set_edit_modal_open(false)}
-        title={<Title component="div" order={3}>Edit Chapter</Title>}
+        title={<Title order={3}>Edit Chapter</Title>}
         size="50%"
         radius="md"
         padding="md"
@@ -63,13 +91,13 @@ function AGENT_BOX({ name, chapter_content, step, chapter_number, onActionButton
           onChange={(e) => set_edited_content(e.target.value)}
           style={{
             width: '100%',
-            height: '500px',
+            height: 400,
             backgroundColor: '#2d2d2d',
             color: 'white',
             border: '1px solid #444',
-            padding: '10px',
-            borderRadius: '8px',
-            fontSize: '16px',
+            padding: 10,
+            borderRadius: 8,
+            fontSize: 16,
             resize: 'none',
           }}
         />
@@ -77,9 +105,11 @@ function AGENT_BOX({ name, chapter_content, step, chapter_number, onActionButton
           <Button
             variant="light"
             color="teal"
-            onClick={() => set_edit_modal_open(false)}
+            onClick={handleSaveEditedChapter}
+            disabled={is_saving}
+            leftSection={is_saving && <Loader size="xs" />}
           >
-            Save
+            {is_saving ? 'Saving…' : 'Save'}
           </Button>
         </Group>
       </Modal>
