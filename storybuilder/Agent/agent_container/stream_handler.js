@@ -28,11 +28,10 @@ const stream_handler = (res = null, tool_call) => BaseCallbackHandler.fromMethod
   },
   handleChainEnd: async (o, runId, parentRunId, ...rest) => {
     //if (res) res.write(`data: [chain end: ${JSON.stringify(parentRunId)}]\n\n`);
-    //process.stdout.write(`Chain ended: ${JSON.stringify(parentRunId)}\n`);
     if (!parentRunId) {
       if(res)
         res.end(); // End the stream for the outermost run
-      console.log('\n');
+      console.log('\nAgent invocation completed.\n');
     }
     process.stdout.write("\n");
   },

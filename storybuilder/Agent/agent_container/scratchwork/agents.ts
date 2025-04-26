@@ -8,7 +8,7 @@ import axios from "axios";
 import { stream_handler } from "../stream_handler.js";
 import { ChatPromptTemplate } from "@langchain/core/prompts";
 import outline_tools from "../tools/zod_out_tools.js";
-import chapter_tools from "../tools/zod_chap_tools.js";
+import chapter_tools from "../tools/zod_chapter_tools.js";
 import { BaseMessage, HumanMessage, SystemMessage } from "@langchain/core/messages";
 import { model } from "mongoose";
 import { ChatOpenAI } from "@langchain/openai";
@@ -153,29 +153,15 @@ const vote_critique_chapter_node = new ToolNode([chapter_tools_list[7]]);
 const toolsList = tools.map((t) => `- ${t.name}: ${t.description ?? ""}`).join("\n");
 const toolNames = tools.map((t) => t.name).join(", ");
 
-<<<<<<< Updated upstream
-const chaptoolList = chapter_tools_list
-=======
-<<<<<<< HEAD
 const chaptoolsList = chapter_tools_list
->>>>>>> Stashed changes
   .map((t) => `- ${t.name}: ${t.description ?? ""}`);
 const chaptoolNames = chapter_tools_list.map((t) => t.name);
 
-const outlineToolList = outline_tools_list
-  .map((t) => `- ${t.name}: ${t.description ?? ""}`);
-const outlineToolNames = outline_tools_list.map((t) => t.name);
+const outlineToolsList = outline_tools_list
+  .map((t) => `- ${t.name}: ${t.description ?? ""}`)
+  .join("\n");
+const chapToolNames = outline_tools_list.map((t) => t.name).join(", ");
 
-=======
-const chaptoolList = chapter_tools_list
-  .map((t) => `- ${t.name}: ${t.description ?? ""}`);
-const chaptoolNames = chapter_tools_list.map((t) => t.name);
-
-const outlineToolList = outline_tools_list
-  .map((t) => `- ${t.name}: ${t.description ?? ""}`);
-const outlineToolNames = outline_tools_list.map((t) => t.name);
-
->>>>>>> courier_logic_into_frontend
 
 
 const boundPrompt = await storybuilder_prompt.partial({
@@ -372,15 +358,7 @@ here Whiskers shall find his wings.`;
 
 const input = {
     input: whiskersoutline,
-<<<<<<< Updated upstream
-    tools: chaptoolList[0],
-=======
-<<<<<<< HEAD
     tools: chaptoolsList[0],
-=======
-    tools: chaptoolList[0],
->>>>>>> courier_logic_into_frontend
->>>>>>> Stashed changes
 };
 
 const config = {
@@ -392,8 +370,8 @@ const config = {
 
 
 // Define the human message
-//const formatted_input = await storybuilder_prompt.formatMessages(input);
-//console.log(formatted_input);
+const formatted_input = await storybuilder_prompt.formatMessages(input);
+console.log(formatted_input);
 //const response = await supervisor_graph.invoke({messages: formatted_input}, {configurable: config, callbacks: callbacks});
 //const response = await outline_agent.invoke({messages: formatted_input}, {configurable: config, callbacks: callbacks})
 //const response = await first_chapter_agent.invoke({messages: formatted_input}, {configurable: config, callbacks: callbacks});

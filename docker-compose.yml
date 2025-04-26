@@ -1,11 +1,11 @@
 services:
 
-  agent:
-    image: "${AGENT_NAME}-agent"  # Unique image name per agent
+  agent-1:
+    image: "${AGENT_NAME}-agent-1"  # Unique image name per agent
     build: 
       context: ./storybuilder/Agent/agent_container/  # Path to the agent's build context
       dockerfile: ./Dockerfile  # Path to the agent's Dockerfile
-    container_name: "${AGENT_NAME}-agent"  # Unique container name
+    container_name: "agent-1"  # Unique container name
     environment:
       - OPENAI_API_KEY=${OPENAI_API_KEY}  # OpenAI API key for the agent
       - DEEPSEEK_API_KEY=${DEEPSEEK_API_KEY}  # DeepSeek API key for the agent
@@ -24,7 +24,7 @@ services:
     build:
       context: ./storybuilder/Agent/agent_container/  # Same build context as the first agent
       dockerfile: ./Dockerfile  # Same Dockerfile
-    container_name: "${AGENT_NAME}-agent-2"  # Unique container name for the second agent
+    container_name: "agent-2"  # Unique container name for the second agent
     environment:
       - OPENAI_API_KEY=${OPENAI_API_KEY}  # OpenAI API key for the agent
       - DEEPSEEK_API_KEY=${DEEPSEEK_API_KEY}  # DeepSeek API key for the agent
@@ -35,6 +35,63 @@ services:
       - ./logs/:/app/logs  # Host ./logs/backend → /app/logs in container
     ports:
       - "5001:5000"  # Custom external port
+    networks:
+      - storybuilder-network  # Connect to the shared network
+
+  agent-3:
+    image: "agent-3"  # Unique image name for the second agent
+    build:
+      context: ./storybuilder/Agent/agent_container/  # Same build context as the first agent
+      dockerfile: ./Dockerfile  # Same Dockerfile
+    container_name: "agent-3"  # Unique container name for the second agent
+    environment:
+      - OPENAI_API_KEY=${OPENAI_API_KEY}  # OpenAI API key for the agent
+      - DEEPSEEK_API_KEY=${DEEPSEEK_API_KEY}  # DeepSeek API key for the agent
+      - API_KEY=${DEEPSEEK_API_KEY}
+      - AGENT_NAME=${AGENT_NAME}-3  # Different name for the second agent
+      - DOCKER=true
+    volumes:
+      - ./logs/:/app/logs  # Host ./logs/backend → /app/logs in container
+    ports:
+      - "5002:5000"  # Custom external port
+    networks:
+      - storybuilder-network  # Connect to the shared network
+
+  agent-4:
+    image: "agent-4"  # Unique image name for the second agent
+    build:
+      context: ./storybuilder/Agent/agent_container/  # Same build context as the first agent
+      dockerfile: ./Dockerfile  # Same Dockerfile
+    container_name: "agent-4"  # Unique container name for the second agent
+    environment:
+      - OPENAI_API_KEY=${OPENAI_API_KEY}  # OpenAI API key for the agent
+      - DEEPSEEK_API_KEY=${DEEPSEEK_API_KEY}  # DeepSeek API key for the agent
+      - API_KEY=${DEEPSEEK_API_KEY}
+      - AGENT_NAME=${AGENT_NAME}-4  # Different name for the second agent
+      - DOCKER=true
+    volumes:
+      - ./logs/:/app/logs  # Host ./logs/backend → /app/logs in container
+    ports:
+      - "5003:5000"  # Custom external port
+    networks:
+      - storybuilder-network  # Connect to the shared network
+
+  agent-5:
+    image: "agent-5"  # Unique image name for the second agent
+    build:
+      context: ./storybuilder/Agent/agent_container/  # Same build context as the first agent
+      dockerfile: ./Dockerfile  # Same Dockerfile
+    container_name: "agent-5"  # Unique container name for the second agent
+    environment:
+      - OPENAI_API_KEY=${OPENAI_API_KEY}  # OpenAI API key for the agent
+      - DEEPSEEK_API_KEY=${DEEPSEEK_API_KEY}  # DeepSeek API key for the agent
+      - API_KEY=${DEEPSEEK_API_KEY}
+      - AGENT_NAME=${AGENT_NAME}-5  # Different name for the second agent
+      - DOCKER=true
+    volumes:
+      - ./logs/:/app/logs  # Host ./logs/backend → /app/logs in container
+    ports:
+      - "5004:5000"  # Custom external port
     networks:
       - storybuilder-network  # Connect to the shared network
 

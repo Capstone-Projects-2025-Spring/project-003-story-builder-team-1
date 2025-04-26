@@ -28,6 +28,9 @@ router.post('/account_login', user_controller.user_login);
 /* Deletes an account
 Parameter Requirments:
 - user_id: the id of the user within the db
+Body Requirments:
+- password: the password of the user
+    * password must be alphanumeric
 */
 router.post("/user/:user_id/delete", user_controller.user_delete);
 
@@ -38,6 +41,9 @@ Body Requirments:
 - username: the username of the user
 - password: the password of the user
     * password must be alphanumeric
+- new_username: The new username they want to have
+- new_password: The new password they want to have
+    * At least one of the two above need to be provided
 */
 router.post("/user/:user_id/update", user_controller.user_update);
 
@@ -49,83 +55,224 @@ router.get("/user/:user_id", user_controller.user_details);
 
 /// STORY ROUTES ///
 
-// POST request for creating Story
-router.post("/story/:user_id/create", story_controller.story_create_post);
+/* Create a Story
+Parameter Requirments:
+- user_id: the id of the user within the db
+Body Requirments:
+- story_name: The name of the story
+- prompt: The prompt containing information about the desired story the LLM will use for generation
+- agents: a list of authors the LLM will mimic while generating
+*/
+router.post("/story/:user_id/create", story_controller.story_create);
 
-// GET request for q list of all Stories based on the user_id
+/* Gets a list of all the user's stories
+Parameter Requirments:
+- user_id: the id of the user within the db
+*/
 router.get("/story/:user_id/get_stories", story_controller.user_stories_list);
 
-// GET request for one Story
-router.get("/story/:user_id/:story_id/get_story", story_controller.story_detail);
+/* Gets a single story from the user's list
+Parameter Requirments:
+- user_id: the id of the user within the db
+- story_id: the id of the story within the db
+*/
+router.get("/story/:user_id/:story_id/get_story", story_controller.story_details);
 
-// GET request for a chapter specific to a story 
-router.get("/story/:user_id/:story_id/:chapter_number/get_chapter", story_controller.story_chapter_detail)
+/* Deletes a Story
+Parameter Requirments:
+- user_id: the id of the user within the db
+- story_id: the id of the story within the db
+*/
+router.post("/story/:user_id/:story_id/delete", story_controller.story_delete);
 
-// POST request to delete Story
-router.post("/story/:user_id/:story_id/delete", story_controller.story_delete_post);
+/* Gets a specific chapter from a specific story
+Parameter Requirments:
+- user_id: the id of the user within the db
+- story_id: the id of the story within the db
+- chapter_number: the desired chapter number
+    * Has to be an integer
+*/
+router.get("/story/:user_id/:story_id/:chapter_number/get_chapter", story_controller.story_chapter_details)
 
-// POST request to update Story
-router.post("/story/:user_id/:story_id/update", story_controller.story_update_post);
+/* Changes the Story Name
+Parameter Requirments:
+- user_id: the id of the user within the db
+- story_id: the id of the story within the db
+Body Requirments:
+- story_name: The new desired story name
+*/
+router.post("/story/:user_id/:story_id/name_update", story_controller.story_name_update);
 
-// POST request to get the number of chapters
+/* Get number of chapters in a story minus the outline chapter (chapter 0)
+Parameter Requirments:
+- user_id: the id of the user within the db
+- story_id: the id of the story within the db
+*/
 router.get("/story/:user_id/:story_id/get_number_of_chapters", story_controller.story_get_number_of_chapters);
 
-// POST request to add a chapter to the main story
-router.post("/story/:user_id/:story_id/add_chapter", story_controller.story_add_chapter_post);
+/* Add/Edit outline from story contents
+Parameter Requirments:
+- user_id: the id of the user within the db
+- story_id: the id of the story within the db
+Body Requirments: 
+- outline: The new outline or new version of the outline
+*/
+router.post("/story/:user_id/:story_id/add_outline", story_controller.story_add_outline);
 
-// POST request to edit a final chapter specific to a story (update story_content chapter content)
-router.post("/story/:user_id/:story_id/:story_chapter_number/edit_chapter", story_controller.story_chapter_edit_post);
+/* Add agent specific outlines
+Parameter Requirments:
+- user_id: the id of the user within the db
+- story_id: the id of the story within the db
+Body Requirments: 
+- outline: The new outline or new version of the outline
+- votes: The numerical value used to determine the best response
+*/
+router.post("/story/:user_id/:story_id/add_agent_outlines", story_controller.story_add_agent_outlines);
 
-// POST request to edit agent-specific chapter content
-router.post("/story/:user_id/:story_id/:agent_id/:chapter_number/edit_agent_chapter", story_controller.story_agent_chapter_edit_post);
+/* Add/edit most voted critique
+Parameter Requirments:
+- user_id: the id of the user within the db
+- story_id: the id of the story within the db
+Body Requirments:
+- chapter_number: The chapter the critique belongs to
+- critique: The critique being added to the db
+*/
+router.post("/story/:user_id/:story_id/add_critique", story_controller.story_add_critique);
 
-router.post("/story/:user_id/:story_id/:agent_id/:chapter_number/edit_agent_critque", story_controller.story_agent_critique_edit_post);
+/* Add agent specific critiques
+Parameter Requirments:
+- user_id: the id of the user within the db
+- story_id: the id of the story within the db
+Body Requirments:
+- chapter_number: The chapter the critique belongs to
+- critique: The critique being added to the db
+- votes: The numerical value used to determine the best response
+*/
+router.post("/story/:user_id/:story_id/add_agent_critiques", story_controller.story_add_agent_critiques);
 
-// POST request to add a critique to an existing chapter
-router.post("/story/:user_id/:story_id/:agent_id/:chapter_number/add_critique", story_controller.story_add_critique_post);
+/* Add/edit most voted chapter
+Parameter Requirments:
+- user_id: the id of the user within the db
+- story_id: the id of the story within the db
+Body Requirments:
+- story_chapter_number: the number of the chapter generated by the LLM
+- text: The generated chapter text
+*/
+router.post("/story/:user_id/:story_id/add_chapter", story_controller.story_add_chapter);
 
-// GET request for getting the critique related to a chapter
+/* Add agent specific chapters
+Parameter Requirments:
+- user_id: the id of the user within the db
+- story_id: the id of the story within the db
+Body Requirments:
+- chapter_number: the number of the chapter generated by the LLM
+- content: The generated chapter text
+- votes: The numerical value used to determine the best response
+*/
+router.post("/story/:user_id/:story_id/add_agent_chapter", story_controller.story_add_agent_chapter);
+
+/* Edit an agent specific chapter response
+Parameter Requirments:
+- user_id: the id of the user within the db
+- story_id: the id of the story within the db
+- agent_id: the id of the agent within the story element within the db
+- chapter_number: the chapter to be edited
+Body Requirments:
+- content: the updated chapter content 
+*/
+router.post("/story/:user_id/:story_id/:agent_id/:chapter_number/edit_agent_chapter", story_controller.story_agent_chapter_edit);
+
+/* Edit an agent specific critique response
+Parameter Requirments:
+- user_id: the id of the user within the db
+- story_id: the id of the story within the db
+- agent_id: the id of the agent within the story element within the db
+- chapter_number: the chapter to be edited
+Body Requirments:
+- critique: the updated chapter content 
+*/
+router.post("/story/:user_id/:story_id/:agent_id/:chapter_number/edit_agent_critque", story_controller.story_agent_critique_edit);
+
+/* Get a critique of a specific agent chapter
+Parameter Requirments:
+- user_id: the id of the user within the db
+- story_id: the id of the story within the db
+- agent_id: the id of the agent within the story element within the db
+- chapter_number: the chapter to be edited
+*/
 router.get("/story/:user_id/:story_id/:agent_id/:chapter_number/get_critique", story_controller.story_get_critique);
 
-// POST request for vetoing
-router.post("/story/:user_id/:story_id/:chapter_number/veto", story_controller.story_agent_chapter_veto_post);
-
-// GET request for getting the number of votes for an agent's chapter version
+/* Get the number of votes an agent specific response received
+Parameter Requirments:
+- user_id: the id of the user within the db
+- story_id: the id of the story within the db
+- agent_id: the id of the agent within the story element within the db
+- chapter_number: the chapter to be edited
+*/
 router.get("/story/:user_id/:story_id/:agent_id/:chapter_number/get_votes", story_controller.story_agent_chapter_votes);
 
-// POST request for adding an outline
-router.post("/story/:user_id/:story_id/add_outline", story_controller.story_add_outline_post);
-
-// GET request for getting the outline related to a chapter
+/* Get the story outline
+Parameter Requirments:
+- user_id: the id of the user within the db
+- story_id: the id of the story within the db
+*/
 router.get("/story/:user_id/:story_id/get_outline", story_controller.story_get_outline);
 
-router.post("/story/:user_id/:story_id/story_add_voted_critique_post", story_controller.story_add_voted_critique_post);
-
+/* Get the list of agents working on a story
+Parameter Requirments:
+- user_id: the id of the user within the db
+- story_id: the id of the story within the db
+*/
 router.get("/story/:user_id/:story_id/story_agent_list", story_controller.story_agents_list);
 
-router.post("/story/:user_id/:story_id/:chapter_number/veto_critique", story_controller.story_veto_critique);
-
-router.post("/story/:user_id/:story_id/add_agent_outlines", story_controller.story_add_agent_outlines_post);
-
-router.post("/story/:user_id/:story_id/add_agent_critiques", story_controller.story_add_agent_critiques_post)
-
-router.post("/story/:user_id/:story_id/add_agent_chapter", story_controller.story_add_agent_chapter_post);
-
-// Translator routes
+/* Get all required details for generate_outline step
+Parameter Requirments:
+- user_id: the id of the user within the db
+- story_id: the id of the story within the db
+*/
 router.get("/story/:user_id/:story_id/get_generated_outline_details", story_controller.story_get_generate_outline_details);
 
+/* Get all required details for critique_outline step
+Parameter Requirments:
+- user_id: the id of the user within the db
+- story_id: the id of the story within the db
+*/
 router.get("/story/:user_id/:story_id/get_critique_outline_details", story_controller.story_get_critique_outline_details);
 
+/* Get all required details for rewrite_outline step
+Parameter Requirments:
+- user_id: the id of the user within the db
+- story_id: the id of the story within the db
+*/
 router.get("/story/:user_id/:story_id/get_rewrite_outline_details", story_controller.story_get_rewrite_outline_details);
 
+/* Get all required details for generate_first_chapter step
+Parameter Requirments:
+- user_id: the id of the user within the db
+- story_id: the id of the story within the db
+*/
 router.get("/story/:user_id/:story_id/get_first_chapter_details", story_controller.story_get_first_chapter_details);
 
+/* Get all required details for generate_next_chapter step
+Parameter Requirments:
+- user_id: the id of the user within the db
+- story_id: the id of the story within the db
+*/
 router.get("/story/:user_id/:story_id/:chapter_number/get_next_chapter_details", story_controller.story_get_next_chapter_details);
 
+/* Get all required details for critique_chapter step
+Parameter Requirments:
+- user_id: the id of the user within the db
+- story_id: the id of the story within the db
+*/
 router.get("/story/:user_id/:story_id/:chapter_number/get_critique_chapter_details", story_controller.story_get_critique_chapter_details);
 
+/* Get all required details for rewrite_chapter step
+Parameter Requirments:
+- user_id: the id of the user within the db
+- story_id: the id of the story within the db
+*/
 router.get("/story/:user_id/:story_id/:chapter_number/get_rewrite_chapter_details", story_controller.story_get_rewrite_chapter_details);
-
 
 /// PERSONA ROUTES ///
 

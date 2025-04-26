@@ -5,7 +5,7 @@
     "ghcr.io/devcontainers/features/node:1": {}
   },
   "remoteEnv": {
-    "API_KEY": "${localEnv:LLAMA_KEY}"
+    "OPENAI_API_KEY": "${localEnv:OPENAI_API_KEY}"
   },
   "onCreateCommand": "cd documentation && yarn install"
 }
