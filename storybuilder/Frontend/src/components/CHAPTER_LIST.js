@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react';
 import { Button, Stack, Box } from '@mantine/core';
-import { useNavigate, useParams } from 'react-router';
+import { useNavigate, useParams, useLocation } from 'react-router';
 import { USE_USER } from '../context/USER_CONTEXT';
 
 function CHAPTER_LIST() {
   const navigate = useNavigate();
+  const location = useLocation();
   const { story_id } = useParams();
   const [chapters, set_chapters] = useState([]);
   const { user_stories } = USE_USER();
@@ -23,7 +24,11 @@ function CHAPTER_LIST() {
   }, [story_id, user_stories]);
 
   const handle_chapter_click = (index) => {
-    navigate(`/story/${story_id}/view/${index}`);
+    if (location.pathname.includes('/agent_history')) {
+      navigate(`/story/${story_id}/agent_history/${index}`); // or any other route you'd prefer
+    } else {
+      navigate(`/story/${story_id}/view/${index}`);
+    }
   };
 
   const handle_view_entire_story = () => {

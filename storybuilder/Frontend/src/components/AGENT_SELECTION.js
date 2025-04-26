@@ -16,7 +16,7 @@ function AGENT_SELECTION() {
         useCombobox()
     ];
 
-    const [selected_agents, set_selected_agents] = useState([null]); // Start with 1
+    const [selected_agents, set_selected_agents] = useState([null, null]); // Start with 1
 
     const handle_confirm = () => {
         console.log("Agents Confirmed:", selected_agents);
@@ -36,7 +36,7 @@ function AGENT_SELECTION() {
     };
 
     const handle_remove_agent = () => {
-        if (selected_agents.length > 1) {
+        if (selected_agents.length > 2) {
             set_selected_agents(selected_agents.slice(0, -1));
         }
     };

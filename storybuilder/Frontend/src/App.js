@@ -31,6 +31,7 @@ function App() {
         <Route path="/prompt" element={<PROTECTED_ROUTE><MAIN_LAYOUT><STORY_PROMPT_BOX /></MAIN_LAYOUT></PROTECTED_ROUTE>} />
         <Route path="/story/:story_id/best_response" element={<PROTECTED_ROUTE><MAIN_LAYOUT><BEST_RESPONSE /></MAIN_LAYOUT></PROTECTED_ROUTE>} />
         <Route path="/story/:story_id/agent_history" element={<PROTECTED_ROUTE><MAIN_LAYOUT><STORY_AGENT_HISTORY/></MAIN_LAYOUT></PROTECTED_ROUTE>} />
+        <Route path="/story/:story_id/agent_history/:chapter_id" element={<PROTECTED_ROUTE><MAIN_LAYOUT><STORY_AGENT_HISTORY/></MAIN_LAYOUT></PROTECTED_ROUTE>} />
         <Route path="/story/:story_id/view" element={<PROTECTED_ROUTE><MAIN_LAYOUT><STORY_VIEW /></MAIN_LAYOUT></PROTECTED_ROUTE>} />
         <Route path="/story/:story_id/view/:chapter_id" element={<PROTECTED_ROUTE><MAIN_LAYOUT><CHAPTER_VIEW /></MAIN_LAYOUT></PROTECTED_ROUTE>} />
         <Route path="/story/:story_id/agents" element={<PROTECTED_ROUTE><MAIN_LAYOUT><STORY_AGENTS_VIEW /></MAIN_LAYOUT></PROTECTED_ROUTE>} />

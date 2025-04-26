@@ -71,7 +71,6 @@ export const STORY_PROVIDER = ({ children }) => {
         // if data is not null, set story_id and agent_ids
         set_story_id(create_data.story);
         set_agent_ids(create_data.agent_ids);
-        set_should_stream(true); // allow streaming now
 
         // everything works, return true
         set_loading(false);
@@ -81,23 +80,24 @@ export const STORY_PROVIDER = ({ children }) => {
     const generate_outline = async (curr_story_id) => {
         set_api_error('');
         set_loading(true);
+        set_should_stream(true); // allow streaming now
     
-        const { data: gen_outline_data, error: gen_outline_error } = await use_axios(
-            `${SERVER_URL}/translator/translate?user_id=${user}&story_id=${curr_story_id}&step=generate_outline&chapter_number=0`,
-            "GET",
-            // {
-            //     user_id: user,
-            //     story_id: curr_story_id,
-            //     step: "generate_outline",
-            //     chapter_number: 0,
-            // }
-        );
+        // const { data: gen_outline_data, error: gen_outline_error } = await use_axios(
+        //     `${SERVER_URL}/translator/translate?user_id=${user}&story_id=${curr_story_id}&step=generate_outline&chapter_number=0`,
+        //     "GET",
+        //     // {
+        //     //     user_id: user,
+        //     //     story_id: curr_story_id,
+        //     //     step: "generate_outline",
+        //     //     chapter_number: 0,
+        //     // }
+        // );
 
-        if (gen_outline_data === null) {
-            set_api_error(gen_outline_error);
-            set_loading(false);
-            return false;
-        }
+        // if (gen_outline_data === null) {
+        //     set_api_error(gen_outline_error);
+        //     set_loading(false);
+        //     return false;
+        // }
 
         return true;
     }
