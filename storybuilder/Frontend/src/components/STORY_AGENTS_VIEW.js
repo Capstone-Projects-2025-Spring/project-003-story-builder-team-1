@@ -1,4 +1,4 @@
-import { Container, Stack, Group } from '@mantine/core';
+import { Container, Stack, Group, Paper, Text } from '@mantine/core';
 import { useState, useEffect } from 'react';
 import AGENT_BOX from '../components/AGENT_BOX';
 import AGENT_THOUGHTS from './AGENT_THOUGHTS';
@@ -31,6 +31,23 @@ function STORY_AGENTS_VIEW() {
     streaming_action,
     set_streaming_action,
   } = USE_STORY();
+
+    // Map your internal step keys to pretty titles
+    const stepTitles = {
+      generate_outline:       'Generating Outline',
+      generate_first_chapter: 'Generating First Chapter',
+      generate_next_chapter:  'Generating Next Chapter',
+      rewrite_chapter:        'Rewriting Chapter',
+    };
+  
+    // Figure out which status line to show
+    const prettyStep = stepTitles[stream_params.step] || stream_params.step.replace(/_/g, ' ');
+    let statusText = 'Select an action to begin drafting.';
+    if (streaming_action && !should_stream) {
+      statusText = `Ready to ${streaming_action} (Next Step: ${prettyStep})`;
+    } else if (should_stream) {
+      statusText = `Drafting Step: ${prettyStep}`;
+    }
 
   useEffect(() => {
     if (!story_id || !user_stories?.stories) return;
@@ -91,7 +108,15 @@ function STORY_AGENTS_VIEW() {
   return (
     <Container fluid style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
       <Stack spacing="md">
-        {agents.map((agent) => (
+        
+        {/* Visible status box */}
+        <Paper withBorder p="md" radius="md">
+          <Text size="lg" weight={500}>
+            {statusText}
+          </Text>
+        </Paper>
+
+        {agents.map(agent => (
           <Group key={agent._id} align="flex-start" style={{ width: '100%' }}>
             <div style={{ flex: 0.7 }}>
               <AGENT_BOX
