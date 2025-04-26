@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, Button, Modal, Title, Divider, Group, Loader } from '@mantine/core';
 import { USE_STORY } from '../context/STORY_CONTEXT';
 import ReactMarkdown from 'react-markdown';
@@ -18,6 +18,7 @@ function AGENT_BOX({ name, chapter_content, story_id, agent_id, chapter_number, 
   const [is_saving, set_is_saving] = useState(false);
 
   const handle_continue = () => {
+    set_current_content(undefined);
     set_streaming_action('continue');
     set_disable_regenerate(true);
     set_disable_continue(true);
@@ -26,6 +27,7 @@ function AGENT_BOX({ name, chapter_content, story_id, agent_id, chapter_number, 
   };
 
   const handle_regenerate = () => {
+    set_current_content(undefined);
     set_streaming_action('regenerate');
     set_disable_regenerate(true);
     set_disable_continue(true);
@@ -54,6 +56,10 @@ function AGENT_BOX({ name, chapter_content, story_id, agent_id, chapter_number, 
     set_is_saving(false);
   };
 
+  useEffect(() => {
+    set_current_content(chapter_content);
+  }, [chapter_content]);
+
   return (
     <>
       {/* View Modal */}
@@ -67,7 +73,7 @@ function AGENT_BOX({ name, chapter_content, story_id, agent_id, chapter_number, 
       >
         <div style={{ padding: '12px', backgroundColor: '#2d2d2d', color: '#fff', borderRadius: '8px' }}>
           <ReactMarkdown
-            children={chapter_content?.trim() || "Waiting for the agent to generate a response..."}
+            children={current_content?.trim() || "Waiting for the agent to generate a response..."}
             components={{
               p: ({ node, ...props }) => (
                 <p style={{ fontSize: '18px', marginBottom: '1em' }} {...props} />
@@ -135,7 +141,7 @@ function AGENT_BOX({ name, chapter_content, story_id, agent_id, chapter_number, 
           }}
         >
           <ReactMarkdown
-            children={chapter_content?.trim() || "Waiting for the agent to generate a response..."}
+            children={current_content?.trim() || "Waiting for the agent to generate a response..."}
             components={{
               p: ({ node, ...props }) => (
                 <p style={{ fontSize: '16px', marginBottom: '0.75em' }} {...props} />
