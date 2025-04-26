@@ -86,6 +86,9 @@ function STORY_LIST() {
                   <Button variant="filled" color="gray" style={{ width: 'calc(100% - 10px)', margin: '0 5px' }} onClick={() => navigate(`/story/${story._id}/view`)}>
                     View Story
                   </Button>
+                  <Button variant="filled" color="gray" style={{ width: 'calc(100% - 10px)', margin: '0 5px' }} onClick={() => navigate(`/story/${story._id}/agent_history`)}>
+                    View Agent History
+                  </Button>
                   <Button variant="filled" color="gray" style={{ width: 'calc(100% - 10px)', margin: '0 5px' }} onClick={() => navigate(`/story/${story._id}/best_response`)}>
                     Best Response
                   </Button>
