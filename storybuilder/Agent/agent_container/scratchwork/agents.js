@@ -111,9 +111,21 @@ const AnnotationWithReducer = Annotation.Root({
 const generate_outline_node = new ToolNode([outline_tools_list[0]]);
 const vote_generate_outline_node = new ToolNode([outline_tools_list[1]]);
 const critique_outline_node = new ToolNode([outline_tools_list[2]]);
+<<<<<<< Updated upstream
 const vote_critique_outline_node = new ToolNode([outline_tools_list[2]]);
 const revise_outline_node = new ToolNode([outline_tools_list[3]]);
 const vote_revise_outline_node = new ToolNode([outline_tools_list[4]]);
+=======
+<<<<<<< HEAD
+const vote_critique_outline_node = new ToolNode([outline_tools_list[3]]);
+const revise_outline_node = new ToolNode([outline_tools_list[4]]);
+const vote_revise_outline_node = new ToolNode([outline_tools_list[5]]);
+=======
+const vote_critique_outline_node = new ToolNode([outline_tools_list[2]]);
+const revise_outline_node = new ToolNode([outline_tools_list[3]]);
+const vote_revise_outline_node = new ToolNode([outline_tools_list[4]]);
+>>>>>>> courier_logic_into_frontend
+>>>>>>> Stashed changes
 const first_chapter_node = new ToolNode([chapter_tools_list[0]]);
 const vote_first_chapter_node = new ToolNode([chapter_tools_list[1]]);
 const next_chapter_node = new ToolNode([chapter_tools_list[2]]);
@@ -123,6 +135,29 @@ const vote_rewrite_chapter_node = new ToolNode([chapter_tools_list[5]]);
 const critique_chapter_node = new ToolNode([chapter_tools_list[6]]);
 const vote_critique_chapter_node = new ToolNode([chapter_tools_list[7]]);
 //Creates list of tools to search through 
+<<<<<<< Updated upstream
+const toolsList = tools.map((t) => `- ${t.name}: ${t.description ?? ""}`).join("\n");
+const toolNames = tools.map((t) => t.name).join(", ");
+const chaptoolList = chapter_tools_list
+=======
+<<<<<<< HEAD
+const tools_list = tools.map((t) => `- ${t.name}: ${t.description ?? ""}`).join("\n");
+const tool_names = tools.map((t) => t.name).join(", ");
+const chap_tools_name_description_list = chapter_tools_list
+>>>>>>> Stashed changes
+    .map((t) => `- ${t.name}: ${t.description ?? ""}`);
+const chaptoolNames = chapter_tools_list.map((t) => t.name);
+const outlineToolList = outline_tools_list
+    .map((t) => `- ${t.name}: ${t.description ?? ""}`);
+const outlineToolNames = outline_tools_list.map((t) => t.name);
+const boundPrompt = await storybuilder_prompt.partial({
+<<<<<<< Updated upstream
+    tools: toolsList,
+    //tool_names: toolNames,
+=======
+    tools: tools_list,
+    //tool_names: tool_names,
+=======
 const toolsList = tools.map((t) => `- ${t.name}: ${t.description ?? ""}`).join("\n");
 const toolNames = tools.map((t) => t.name).join(", ");
 const chaptoolList = chapter_tools_list
@@ -134,6 +169,8 @@ const outlineToolNames = outline_tools_list.map((t) => t.name);
 const boundPrompt = await storybuilder_prompt.partial({
     tools: toolsList,
     //tool_names: toolNames,
+>>>>>>> courier_logic_into_frontend
+>>>>>>> Stashed changes
 });
 //Create agents & supervisors with previously-made tool-bound LLMs and nodes
 const generate_outline_agent = createReactAgent({
@@ -221,7 +258,15 @@ const chapter_supervisor = createSupervisor({
 //Creates final graph
 const outline_supervisor_graph = outline_supervisor.compile();
 const chapter_supervisor_graph = chapter_supervisor.compile();
+<<<<<<< Updated upstream
 const whiskersoutline = `
+=======
+<<<<<<< HEAD
+const whiskers_outline = `
+=======
+const whiskersoutline = `
+>>>>>>> courier_logic_into_frontend
+>>>>>>> Stashed changes
 **Outline for "Whiskers' Whimsical Flight"**
 
 **Prologue: The Dream of Flight**
@@ -298,8 +343,18 @@ const whiskersoutline = `
 Thus, dear reader, this whimsical tale unfolds, a tapestry woven with threads of dreams, courage, and the sweet embrace of friendship. Each chapter a step upon the path, leading to the skies w
 here Whiskers shall find his wings.`;
 const input = {
+<<<<<<< Updated upstream
     input: whiskersoutline,
     tools: chaptoolList[0],
+=======
+<<<<<<< HEAD
+    input: whiskers_outline,
+    tools: chaptoolsList[0],
+=======
+    input: whiskersoutline,
+    tools: chaptoolList[0],
+>>>>>>> courier_logic_into_frontend
+>>>>>>> Stashed changes
 };
 const config = {
     configurable: {
@@ -313,5 +368,13 @@ const config = {
 //const response = await supervisor_graph.invoke({messages: formatted_input}, {configurable: config, callbacks: callbacks});
 //const response = await outline_agent.invoke({messages: formatted_input}, {configurable: config, callbacks: callbacks})
 //const response = await first_chapter_agent.invoke({messages: formatted_input}, {configurable: config, callbacks: callbacks});
+<<<<<<< Updated upstream
 export { generate_outline_agent, vote_generate_outline_agent, critique_outline_agent, vote_critique_outline_agent, revise_outline_agent, vote_revise_outline_agent, first_chapter_agent, vote_first_chapter_agent, next_chapter_agent, vote_next_chapter_agent, critique_chapter_agent, vote_critique_chapter_agent, rewrite_chapter_agent, vote_rewrite_chapter_agent, outline_supervisor_graph, chapter_supervisor_graph };
+=======
+<<<<<<< HEAD
+export { generate_outline_agent, vote_generate_outline_agent, critique_outline_agent, vote_critique_outline_agent, revise_outline_agent, vote_revise_outline_agent, first_chapter_agent, vote_first_chapter_agent, next_chapter_agent, vote_next_chapter_agent, critique_chapter_agent, vote_critique_chapter_agent, rewrite_chapter_agent, vote_rewrite_chapter_agent, outline_supervisor_graph, chapter_supervisor_graph};
+=======
+export { generate_outline_agent, vote_generate_outline_agent, critique_outline_agent, vote_critique_outline_agent, revise_outline_agent, vote_revise_outline_agent, first_chapter_agent, vote_first_chapter_agent, next_chapter_agent, vote_next_chapter_agent, critique_chapter_agent, vote_critique_chapter_agent, rewrite_chapter_agent, vote_rewrite_chapter_agent, outline_supervisor_graph, chapter_supervisor_graph };
+>>>>>>> courier_logic_into_frontend
+>>>>>>> Stashed changes
 //console.log(response.messages.slice(-1).map(m => m.content).join("\n\n"));

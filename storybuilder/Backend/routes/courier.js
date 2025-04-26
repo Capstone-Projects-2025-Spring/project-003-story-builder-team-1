@@ -44,6 +44,25 @@ router.post('/story_call', async (req, res) => {
 
 router.post('/aggregate', async (req, res) => {
     // Pre changes
+<<<<<<< Updated upstream
+    console.log("Aggregate request received:", req.body);
+=======
+<<<<<<< HEAD
+>>>>>>> Stashed changes
+    const { data, messages } = req.body;
+    const story_step = data.step;
+    console.log("Aggregate request received with data:", data);
+    const agent_data = data.story_agents;
+    const agent_names = agent_data.map(agent => agent.agent_name);
+    const agent_ids = agent_data.map(agent => agent.agent_id);
+    console.log("Agent data:", agent_data, "Agent names:", agent_names, "Agent IDs:", agent_ids);
+    
+    let agentroute = 'http://localhost:{port}/agent/{step}';
+    let agent_endpoints = [];
+<<<<<<< Updated upstream
+=======
+    //fills array of endpoints based on current story step and number of active agents
+=======
     console.log("Aggregate request received:", req.body);
     const { data, messages } = req.body;
     const story_step = data.step;
@@ -55,11 +74,14 @@ router.post('/aggregate', async (req, res) => {
     
     let agentroute = 'http://localhost:{port}/agent/{step}';
     let agent_endpoints = [];
+>>>>>>> courier_logic_into_frontend
+>>>>>>> Stashed changes
     for(let i = 0; i < data.story_agents.length; i++) {
         let new_route = agentroute.replace(/{port}/, 5000+i);
         agent_endpoints.push(new_route);
         agent_endpoints[i] = agent_endpoints[i].replace(/{step}/, story_step);
     }
+<<<<<<< Updated upstream
     console.log(agent_endpoints);
 
     const agentEndpoints = [
@@ -70,13 +92,47 @@ router.post('/aggregate', async (req, res) => {
     ];      
     // Store responses and votes
     let agent_send = {};
+=======
+<<<<<<< HEAD
+    //console.log(agent_endpoints);
+    
+    // Store responses and votes
+    let agent_send = {};
+    //prompt info variable re-used for voting later
+    let prompt_info = {};
+=======
+    console.log(agent_endpoints);
+
+    const agentEndpoints = [
+        'http://localhost:5000/agent/generate_outline',
+        'http://localhost:5001/agent/generate_outline', // Example endpoint for Jane Austen agent
+        //'http://localhost:5002/agent/stream_graph', // Example endpoint for Tolkien agent
+        //'http://localhost:5003/agent/stream_graph', // Example endpoint for another agent
+    ];      
+    // Store responses and votes
+    let agent_send = {};
+>>>>>>> courier_logic_into_frontend
+>>>>>>> Stashed changes
     try {
         // For each agent, open the stream and read ALL data
         const agent_results = await Promise.all(
             //chosen endpoint above send out as a promise
+<<<<<<< Updated upstream
             agentEndpoints.map(async (agent, idx) => {
                 //grab persona associated with agent
                 const persona = data.story_agents[idx].persona;
+=======
+<<<<<<< HEAD
+            agent_endpoints.map(async (agent, idx) => {
+                //grab persona associated with agent
+                const persona = agent_data[idx].persona;
+                //console.log("Agent persona:" + persona);
+=======
+            agentEndpoints.map(async (agent, idx) => {
+                //grab persona associated with agent
+                const persona = data.story_agents[idx].persona;
+>>>>>>> courier_logic_into_frontend
+>>>>>>> Stashed changes
                 //begin adding persona (always will be the first input variable in all tools)
                 agent_send = {
                     persona
@@ -88,6 +144,42 @@ router.post('/aggregate', async (req, res) => {
                       break;
                     case "critique_outline":
                       agent_send.prompt_info = `${data.critique_outline.story_details} ${data.critique_outline.extra_details}`.trim();
+<<<<<<< Updated upstream
+                      agent_send.outline = data.critique_outline_story_outline;
+=======
+<<<<<<< HEAD
+                      agent_send.outline = `${data.critique_outline.story_outline}`.trim();
+>>>>>>> Stashed changes
+                      break;
+                    case "rewrite_outline":
+                      agent_send.prompt_info = `${data.rewrite_outline.story_details} ${data.rewrite_outline.extra_details}`.trim();
+                      agent_send.outline = data.rewrite_outline.story_outline;
+                      break;
+                    case "generate_first_chapter":
+                      agent_send.prompt_info = `${data.generate_first_chapter.story_details} ${data.generate_first_chapter.extra_details}`.trim();
+                      agent_send.outline = data.generate_first_chapter.story_outline;
+                      break;
+                    case "generate_next_chapter":
+                      agent_send.prompt_info = `${data.generate_next_chapter.story_details} ${data.generate_next_chapter.extra_details}`.trim();
+                      agent_send.chapter = data.generate_next_chapter.previous_chapters;
+                      agent_send.outline = data.generate_next_chapter.story_outline;
+                      break;
+                    case "critique_chapter":
+                      agent_send.prompt_info = `${data.critique_chapter.story_details} ${data.critique_chapter.extra_details}`.trim();
+                      agent_send.chapter = data.critique_chapter.chapter;
+                      agent_send.outline = data.critique_chapter.story_outline;
+                      break;
+                    case "rewrite_chapter":
+                      agent_send.prompt_info = `${data.rewrite_chapter.story_details} ${data.rewrite_chapter.extra_details}`.trim();
+                      agent_send.chapter = data.rewrite_chapter.chapter;
+                      agent_send.outline = data.rewrite_chapter.story_outline;
+                      agent_send.critique = data.rewrite_chapter.chapter;
+                      break;
+                  }
+<<<<<<< Updated upstream
+=======
+                prompt_info = agent_send.prompt_info;
+=======
                       agent_send.outline = data.critique_outline_story_outline;
                       break;
                     case "rewrite_outline":
@@ -115,6 +207,8 @@ router.post('/aggregate', async (req, res) => {
                       agent_send.critique = data.rewrite_chapter.chapter;
                       break;
                   }
+>>>>>>> courier_logic_into_frontend
+>>>>>>> Stashed changes
                 const response = await axios.post(
                     agent,
                     { messages: agent_send },
@@ -153,8 +247,18 @@ router.post('/aggregate', async (req, res) => {
         );
         // At this point, all agent SSE streams are OVER and you have all data
         // We need to develop the logic to determine the best response from our results
+<<<<<<< Updated upstream
         const best_result = agent_results.find(r => r.data && r.data.length > 0);
         console.log("Best result from agents:", best_result);
+=======
+<<<<<<< HEAD
+        //const best_result = agent_results.find(response => response.data && response.data.length > 0);
+        //const agent_thoughts = agent_results.map(result => result.thoughts && result.agent_id.thoughts > 0);
+=======
+        const best_result = agent_results.find(r => r.data && r.data.length > 0);
+        console.log("Best result from agents:", best_result);
+>>>>>>> courier_logic_into_frontend
+>>>>>>> Stashed changes
 
         const agent_votes = agent_data.map((agent) => ({
             agent_name: agent.agent_name,
@@ -163,19 +267,49 @@ router.post('/aggregate', async (req, res) => {
         }));
         
         const db_data = {
+<<<<<<< Updated upstream
                 bestResponse: best_result,
                 allResults: agent_results,
                 votes: agent_votes
         };
 
+=======
+<<<<<<< HEAD
+                best_response: agent_results[best_result],
+                all_results: agent_results,
+=======
+                bestResponse: best_result,
+                allResults: agent_results,
+>>>>>>> courier_logic_into_frontend
+                votes: agent_votes
+        };
+        console.log("");
+>>>>>>> Stashed changes
         const db_response = await db_store(req.body.data.step, req.body.data.user_id, req.body.data.story_id, req.body.data.chapter_number, db_data, res);
         if (!db_response) {
             return; // If db_store failed, do not send res.write
         };
+<<<<<<< Updated upstream
 
         res.write(JSON.stringify({
             bestResponse: best_result,
             allResults: agent_results,
+=======
+<<<<<<< HEAD
+        // res.json({
+        //     best_response: bestResult,
+        //     all_results: agentResults,
+        // }); // Send the best response to the client
+        res.write(JSON.stringify({
+            best_response: db_data.best_response,
+            all_results: agent_results,
+=======
+
+        res.write(JSON.stringify({
+            bestResponse: best_result,
+            allResults: agent_results,
+>>>>>>> courier_logic_into_frontend
+>>>>>>> Stashed changes
         })); // Send the best response to the client
     } catch (error) {
         console.error(error);
@@ -183,6 +317,11 @@ router.post('/aggregate', async (req, res) => {
     }
 });
 
+<<<<<<< Updated upstream
+=======
+<<<<<<< HEAD
+=======
+>>>>>>> Stashed changes
 async function db_store(step, user_id, story_id, chapter_number, responses, res) {
     console.log("allResults", responses.allResults);
     try {
@@ -272,5 +411,9 @@ function getAgentPort(authorName) {
 return agentPorts[authorName];  // Convert author name to lowercase to avoid case sensitivity
 }
 
+<<<<<<< Updated upstream
+=======
+>>>>>>> courier_logic_into_frontend
+>>>>>>> Stashed changes
 // Export the routers for use in app.js
 module.exports = router;

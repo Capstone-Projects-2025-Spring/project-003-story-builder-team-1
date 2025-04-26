@@ -1,6 +1,14 @@
 import express from "express";
 import agent_routes from "./routes/agent_routes.js"; // Import agent route
+<<<<<<< Updated upstream
 import deepseek from "./deepseek_service.js";
+=======
+<<<<<<< HEAD
+import openai from "./openai_service.js"
+=======
+import deepseek from "./deepseek_service.js";
+>>>>>>> courier_logic_into_frontend
+>>>>>>> Stashed changes
 
 const app = express();
 const PORT = process.env.PORT || 5000;

@@ -153,6 +153,20 @@ const vote_critique_chapter_node = new ToolNode([chapter_tools_list[7]]);
 const toolsList = tools.map((t) => `- ${t.name}: ${t.description ?? ""}`).join("\n");
 const toolNames = tools.map((t) => t.name).join(", ");
 
+<<<<<<< Updated upstream
+const chaptoolList = chapter_tools_list
+=======
+<<<<<<< HEAD
+const chaptoolsList = chapter_tools_list
+>>>>>>> Stashed changes
+  .map((t) => `- ${t.name}: ${t.description ?? ""}`);
+const chaptoolNames = chapter_tools_list.map((t) => t.name);
+
+const outlineToolList = outline_tools_list
+  .map((t) => `- ${t.name}: ${t.description ?? ""}`);
+const outlineToolNames = outline_tools_list.map((t) => t.name);
+
+=======
 const chaptoolList = chapter_tools_list
   .map((t) => `- ${t.name}: ${t.description ?? ""}`);
 const chaptoolNames = chapter_tools_list.map((t) => t.name);
@@ -161,6 +175,7 @@ const outlineToolList = outline_tools_list
   .map((t) => `- ${t.name}: ${t.description ?? ""}`);
 const outlineToolNames = outline_tools_list.map((t) => t.name);
 
+>>>>>>> courier_logic_into_frontend
 
 
 const boundPrompt = await storybuilder_prompt.partial({
@@ -357,7 +372,15 @@ here Whiskers shall find his wings.`;
 
 const input = {
     input: whiskersoutline,
+<<<<<<< Updated upstream
     tools: chaptoolList[0],
+=======
+<<<<<<< HEAD
+    tools: chaptoolsList[0],
+=======
+    tools: chaptoolList[0],
+>>>>>>> courier_logic_into_frontend
+>>>>>>> Stashed changes
 };
 
 const config = {
