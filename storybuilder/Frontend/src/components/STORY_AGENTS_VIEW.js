@@ -111,9 +111,9 @@ function STORY_AGENTS_VIEW() {
         
         {/* Visible status box */}
         <Paper withBorder p="md" radius="md">
-          <Text size="lg" weight={500}>
-            {statusText}
-          </Text>
+        <Text size="lg" style={{ fontWeight: 'bold' }}>
+           <strong>{statusText}</strong>
+         </Text>
         </Paper>
 
         {agents.map(agent => (
