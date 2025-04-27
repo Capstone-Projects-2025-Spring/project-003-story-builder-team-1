@@ -23,11 +23,10 @@ export const STORY_PROVIDER = ({ children }) => {
     const [agent_thoughts, set_agent_thoughts] = useState({});  // State to store thoughts for each agent
     const [agent_critiques, set_agent_critiques] = useState({});  // State to store critiques for each agent
     const [agent_critique_thoughts, set_agent_critique_thoughts] = useState({});  // State to store critique thoughts for each agent
-    const [agent_rewrites, set_agent_rewrites] = useState({});  // State to store rewrites for each agent  
-    const [agent_rewrite_thoughts, set_agent_rewrite_thoughts] = useState({});  // State to store rewrite thoughts for each agent
     const [streaming_action, set_streaming_action] = useState('');
     const [disable_regenerate, set_disable_regenerate] = useState(false);
     const [disable_continue, set_disable_continue] = useState(false);
+    const [disable_edit, set_disable_edit] = useState(false);
     const [curr_step, set_curr_step] = useState(''); // Default step
 
     const submit_story_prompt = async (story_name, story_details, extra_details, selected_agents) => {
@@ -89,6 +88,7 @@ export const STORY_PROVIDER = ({ children }) => {
         set_loading(true);
         set_should_stream(true); // allow streaming now
         set_disable_regenerate(true); // disable regenerate button
+        set_disable_edit(true)
         set_streaming_action('continue'); // set action to continue for loading
 
         return true;
@@ -119,6 +119,7 @@ export const STORY_PROVIDER = ({ children }) => {
                 // reset everything
                 set_disable_continue(false);
                 set_disable_regenerate(false);
+                set_disable_edit(false);
                 set_streaming_action('');
                 return;
             }
@@ -188,10 +189,6 @@ export const STORY_PROVIDER = ({ children }) => {
             set_agent_critiques,
             agent_critique_thoughts,
             set_agent_critique_thoughts,
-            agent_rewrites,
-            set_agent_rewrites,
-            agent_rewrite_thoughts,
-            set_agent_rewrite_thoughts,
             submit_story_prompt,
             generate_outline,
             story_name_error,
@@ -202,6 +199,8 @@ export const STORY_PROVIDER = ({ children }) => {
             set_disable_regenerate,
             disable_continue,
             set_disable_continue,
+            disable_edit,
+            set_disable_edit,
             curr_step,
             set_curr_step,
         }}>

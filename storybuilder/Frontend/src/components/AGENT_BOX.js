@@ -10,7 +10,7 @@ import ReactMarkdown from 'react-markdown';
 const SERVER_URL = process.env.REACT_APP_SERVER_URL || "http://localhost:8080";
 
 function AGENT_BOX({ name, chapter_content, step, agent_id, chapter_number, onActionButtonClick }) {
-  const { should_stream, streaming_action, set_streaming_action, disable_regenerate, set_disable_regenerate, disable_continue, set_disable_continue, curr_step, set_curr_step } = USE_STORY();
+  const { should_stream, streaming_action, set_streaming_action, disable_regenerate, set_disable_regenerate, disable_continue, set_disable_continue, disable_edit, set_disable_edit, curr_step, set_curr_step } = USE_STORY();
   const { story_id } = useParams();
   const { fetch_user_data } = USE_USER();
   const { user } = USE_AUTH();
@@ -24,6 +24,7 @@ function AGENT_BOX({ name, chapter_content, step, agent_id, chapter_number, onAc
     set_streaming_action('continue');
     set_disable_regenerate(true);
     set_disable_continue(true);
+    set_disable_edit(true);
 
     onActionButtonClick('continue');
   };
@@ -32,6 +33,7 @@ function AGENT_BOX({ name, chapter_content, step, agent_id, chapter_number, onAc
     set_streaming_action('regenerate');
     set_disable_regenerate(true);
     set_disable_continue(true);
+    set_disable_edit(true);
 
     onActionButtonClick('regenerate');
   };
@@ -55,8 +57,11 @@ function AGENT_BOX({ name, chapter_content, step, agent_id, chapter_number, onAc
       }
     }
     else {
+      // idk anymore i incrememnted it in story_agents_view for it to work, then i decrememnted back idk
+      let curr_chapter_num = chapter_number - 1;
+      console.log("curr_chapter_num: ", curr_chapter_num);
       // db call to update db with edited chapter
-      const { data: edit_chapter_data, error: edit_chapter_error } = await use_axios(SERVER_URL + `/db/story/${user}/${story_id}/${agent_id}/${chapter_number}/edit_agent_chapter`, 'POST', {content: edited_content});
+      const { data: edit_chapter_data, error: edit_chapter_error } = await use_axios(SERVER_URL + `/db/story/${user}/${story_id}/${agent_id}/${curr_chapter_num}/edit_agent_chapter`, 'POST', {content: edited_content});
 
       if (edit_chapter_data) {
         await fetch_user_data(user);
@@ -82,7 +87,7 @@ function AGENT_BOX({ name, chapter_content, step, agent_id, chapter_number, onAc
       >
         <div style={{ padding: '12px', backgroundColor: '#2d2d2d', color: '#fff', borderRadius: '8px' }}>
           <ReactMarkdown
-            children={current_content?.trim() || "Waiting for the agent to generate a response..."}
+            children={chapter_content?.trim() || "Waiting for the agent to generate a response..."}
             components={{
               p: ({ node, ...props }) => (
                 <p style={{ fontSize: '18px', marginBottom: '1em' }} {...props} />
@@ -148,7 +153,7 @@ function AGENT_BOX({ name, chapter_content, step, agent_id, chapter_number, onAc
           }}
         >
           <ReactMarkdown
-            children={current_content?.trim() || "Waiting for the agent to generate a response..."}
+            children={chapter_content?.trim() || "Waiting for the agent to generate a response..."}
             components={{
               p: ({ node, ...props }) => (
                 <p style={{ fontSize: '16px', marginBottom: '0.75em' }} {...props} />
@@ -165,16 +170,16 @@ function AGENT_BOX({ name, chapter_content, step, agent_id, chapter_number, onAc
           <Button
             size="sm"
             variant="light"
-            color="orange"
-            disabled={should_stream}
+            color={!should_stream ? 'orange' : undefined}
+            disabled={disable_edit}
             onClick={() => {
-              set_edited_content(current_content);
+              set_edited_content(chapter_content);
               set_edit_modal_open(true);
             }}
             style={{
-              backgroundColor: 'rgba(255, 165, 0, 0.1)',
-              color: '#ffa500',
-              cursor: should_stream ? 'not-allowed' : 'pointer',
+              backgroundColor: should_stream ? 'rgba(128, 128, 128, 0.2)' : '',
+                color: should_stream ? '#888' : '',
+                cursor: should_stream ? 'not-allowed' : 'pointer',
             }}
           >
             Edit
