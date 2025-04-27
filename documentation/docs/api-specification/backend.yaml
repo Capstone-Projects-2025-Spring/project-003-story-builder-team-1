@@ -1,123 +1,277 @@
 openapi: 3.0.0
 info:
   title: Story Builder API
-  version: 0.2.0
+  version: 1.2.0
   description: API for communication between frontend user interface, LLM Agents, and MongoDB Database.
 
 tags:
   - name: courier
-    description: Courier directly interacts with the LLM and Agents using prompts assembled by PromptAdmin from information sent by Translator in order to get input to further refine.
-  - name: prompt_admin
-    description: Prompt Admin generates prompts used for various purposes
-  - name: db
-    description: Database retrieves and stores data from the MongoDB database
+    description: Courier directly interacts with the LLM and Agents using carefully engineered prompts from information sent by Translator in order to get input to further refine.
   - name: translator
-    description: Translator sends data from Courier to the frontend
-
+    description: Translator sends data from Courier to the Frontend
+  - name: db
+    description: Database retrieves and stores data from the MongoDB database so that data can be created, retrieved, modified, or deleted.
+    
+components:
+  parameters:
+    userId:
+      name: user_id
+      in: path
+      required: true
+      schema:
+        type: string
+      description: MongoDB User ID
+    storyId:
+      name: story_id
+      in: path
+      required: true
+      schema:
+        type: string
+      description: MongoDB Story ID
+    agentId:
+      name: agent_id
+      in: path
+      required: true
+      schema:
+        type: string
+      description: MongoDB Agent ID
+    chapterNumber:
+      name: chapter_number
+      in: path
+      required: true
+      schema:
+        type: integer
+        minimum: 0
+      description: Chapter index
+  responses:
+    BadRequest:
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+    NotFound:
+      description: Resource Not Found
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+    Conflict:
+      description: Conflict (e.g. already exists)
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+                
 paths:
-  /courier/story_call:
+  /aggregate:
     post:
       tags:
         - courier
-      summary: Calls the LLM with a given prompt and returns text.
-      description: Invokes the LLM with a specified prompt to generate a story snippet and returns the resulting text.
-      operationId: story_call
+      summary: Aggregate agent responses and determine best result
       requestBody:
         required: true
         content:
           application/json:
             schema:
               type: object
-              required:
-                - data
-                - messages
               properties:
                 data:
                   type: object
-                  description: Data formatted for the agent, passed directly to `/agent/generate`
+                  description: Information about the current story step and active agents.
+                  properties:
+                    step:
+                      type: string
+                      description: Current story step (e.g., generate_outline, critique_outline, etc.)
+                    story_agents:
+                      type: array
+                      description: List of agents participating.
+                      items:
+                        type: object
+                        properties:
+                          agent_name:
+                            type: string
+                          agent_id:
+                            type: string
+                          persona:
+                            type: string
+                    generate_outline:
+                      type: object
+                      properties:
+                        story_details:
+                          type: string
+                        extra_details:
+                          type: string
+                    critique_outline:
+                      type: object
+                      properties:
+                        story_details:
+                          type: string
+                        extra_details:
+                          type: string
+                        story_outline:
+                          type: string
+                    rewrite_outline:
+                      type: object
+                      properties:
+                        story_details:
+                          type: string
+                        extra_details:
+                          type: string
+                        story_outline:
+                          type: string
+                        outline_critique:
+                          type: string
+                    generate_first_chapter:
+                      type: object
+                      properties:
+                        story_details:
+                          type: string
+                        extra_details:
+                          type: string
+                        story_outline:
+                          type: string
+                    generate_next_chapter:
+                      type: object
+                      properties:
+                        story_details:
+                          type: string
+                        extra_details:
+                          type: string
+                        story_outline:
+                          type: string
+                        previous_chapters:
+                          type: array
+                          items:
+                            type: object
+                    critique_chapter:
+                      type: object
+                      properties:
+                        story_details:
+                          type: string
+                        extra_details:
+                          type: string
+                        story_outline:
+                          type: string
+                        chapter:
+                          type: object
+                          properties:
+                            text:
+                              type: string
+                    rewrite_chapter:
+                      type: object
+                      properties:
+                        story_details:
+                          type: string
+                        extra_details:
+                          type: string
+                        story_outline:
+                          type: string
+                        chapter:
+                          type: object
+                          properties:
+                            text:
+                              type: string
+                        chapter_critique:
+                          type: object
+                          properties:
+                            critique:
+                              type: string
+                    user_id:
+                      type: string
+                      description: User ID submitting the request.
+                    story_id:
+                      type: string
+                      description: Story ID this aggregation belongs to.
+                    chapter_number:
+                      type: integer
+                      description: Current chapter number (if applicable).
                 messages:
-                  type: string
-                  description: The user message content to be pushed into the interaction log
+                  type: object
+                  description: Legacy support field, not used in aggregation logic.
       responses:
         '200':
-          description: A story snippet
+          description: Successful aggregation
           content:
             application/json:
               schema:
-                type: string
-        '400':
-          description: invalid input
-        '401':
-          description: Unauthorized access
-        '403':
-          description: Forbidden request
+                type: object
+                properties:
+                  best_response:
+                    type: object
+                    description: The best agent response after voting.
+                  all_results:
+                    type: array
+                    description: All agent responses generated.
+                    items:
+                      type: object
         '500':
-          description: Internal server error
+          description: Internal server error occurred while aggregating
 
-  /courier/story_push:
-    post:
-      tags:
-        - courier
-      summary: Pushes local story content to the system.
-      description: Uploads local story content to the system for processing or integration with other system components.
-      operationId: story_push
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                local_story:
-                  type: string
-      responses:
-        '200':
-          description: Success
-        '400':
-          description: Bad request
-        '500':
-          description: Internal server error
-
-  /courier/judge:
+  /translate:
     get:
       tags:
-        - courier
-      summary: Invokes the judge() method to get a list of judgments/results
-      description: Executes the `judge()` method to retrieve a list of judgment results based on previous interactions or criteria.
-      operationId: judge
+        - translator
+      summary: Stream translated story data
+      description: |
+        - Requires `user_id`, `story_id`, `step`, and `chapter_number` as query parameters.  
+        - Returns a **text/event-stream** of translation chunks.  
+        - Errors out if any required field is missing or invalid.
+      parameters:
+        - name: user_id
+          in: query
+          required: true
+          schema:
+            type: string
+          description: The ID of the user requesting translation.
+        - name: story_id
+          in: query
+          required: true
+          schema:
+            type: string
+          description: The ID of the story being processed.
+        - name: step
+          in: query
+          required: true
+          schema:
+            type: string
+            enum:
+              - generate_outline
+              - critique_outline
+              - rewrite_outline
+              - generate_first_chapter
+              - generate_next_chapter
+              - critique_chapter
+              - rewrite_chapter
+          description: Which story step to translate.
+        - name: chapter_number
+          in: query
+          required: true
+          schema:
+            type: integer
+            minimum: 0
+          description: Chapter index (0-based or 1-based, per your convention).
       responses:
         '200':
-          description: A list of judgments
+          description: Server-Sent Events stream of translated content chunks
           content:
-            application/json:
+            text/event-stream:
               schema:
-                type: array
-                items:
-                  type: string
-        '500':
-          description: Internal server error
-
-  /prompt_admin/first_chapter:
-    post:
-      tags:
-        - prompt_admin
-      summary: Format and send the first chapter's data to courier
-      description: Receives data for the first chapter from translator, engineers a prompt using the given data, and sends prompt to the courier
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              required:
-                - data
-              properties:
-                data:
-                  type: object
-                  description: JSON object containing story and extra details
-      responses:
-        '200':
-          description: Prompt successfully sent to courier
+                type: string
+                description: |
+                  A live SSE stream. Each `data: …\n\n` chunk contains part of the translation;
+                  an `event: done` signals completion.
+        '400':
+          description: Bad request — missing or invalid query parameters
           content:
             application/json:
               schema:
@@ -127,46 +281,9 @@ paths:
                     type: string
                   data:
                     type: object
-        '400':
-          description: No prompt data received
-        '500':
-          description: Failed to connect to the courier
-
-  /prompt_admin/next_chapter:
-    post:
-      tags:
-        - prompt_admin
-      summary: Format and send data to generate the next chapter
-      description: Receives data for next chapter from translator, engineers a prompt using the given data, and sends prompt to the courier
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              required:
-                - data
-                - details
-                - story_outline
-                - previous_chapters
-              properties:
-                data:
-                  type: object
-                  description: Raw data (duplicated but required by backend check)
-                details:
-                  type: object
-                  description: Story details and extra information
-                story_outline:
-                  type: object
-                  description: Current story outline
-                previous_chapters:
-                  type: array
-                  items:
-                    type: string
-                  description: Previously generated chapters
-      responses:
-        '200':
-          description: Prompt successfully sent to courier
+                    description: Echoes back the invalid/missing input.
+        '404':
+          description: Agent list unobtainable
           content:
             application/json:
               schema:
@@ -174,42 +291,8 @@ paths:
                 properties:
                   message:
                     type: string
-                  data:
-                    type: object
-        '400':
-          description: No prompt data received
         '500':
-          description: Failed to connect to the courier
-
-  /prompt_admin/story_outline:
-    post:
-      tags:
-        - prompt_admin
-      summary: Format and send data to generate a story outline
-      description: Receives data from translator, engineers a prompt using the given data, and sends prompt to the courier
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              required:
-                - data
-                - chaptercount
-                - details
-              properties:
-                data:
-                  type: object
-                  description: Raw data (duplicated but required by backend check)
-                chaptercount:
-                  type: integer
-                  description: Number of chapters desired
-                details:
-                  type: object
-                  description: Story details and extra info
-      responses:
-        '200':
-          description: Prompt successfully sent to courier
+          description: Server error while fetching agents or step data
           content:
             application/json:
               schema:
@@ -217,16 +300,12 @@ paths:
                 properties:
                   message:
                     type: string
-                  data:
-                    type: object
-        '400':
-          description: No prompt data received
-        '500':
-          description: Failed to connect to the courier
+                  error:
+                    type: string
 
-  /db/account_creation:
+  /account_creation:
     post:
-      tags:
+      tags: 
         - db
       summary: Create a new user account
       requestBody:
@@ -235,30 +314,32 @@ paths:
           application/json:
             schema:
               type: object
-              required: [username, password]
+              required: [username,password]
               properties:
                 username:
                   type: string
                 password:
                   type: string
       responses:
-        '200':
-          description: Account created successfully
+        '201':
+          description: Account created
         '400':
-          description: Username exists or password format invalid
+          $ref: '#/components/responses/BadRequest'
+        '409':
+          $ref: '#/components/responses/Conflict'
 
-  /db/account_login:
+  /account_login:
     post:
-      tags:
+      tags: 
         - db
-      summary: Log in a user
+      summary: Authenticate user credentials
       requestBody:
         required: true
         content:
           application/json:
             schema:
               type: object
-              required: [username, password]
+              required: [username,password]
               properties:
                 username:
                   type: string
@@ -267,244 +348,758 @@ paths:
       responses:
         '200':
           description: Login successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  user_id:
+                    type: string
         '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
           description: Invalid credentials
 
-  /db/user/{user_id}:
-    get:
-      tags:
-        - db
-      summary: Get user details
-      parameters:
-        - in: path
-          name: user_id
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          description: User details
-        '404':
-          description: User not found
-
-  /db/user/{user_id}/delete:
+  /user/{user_id}/delete:
     post:
-      tags:
+      tags: 
         - db
-      summary: Delete user and their stories
+      summary: Delete a user and all their stories
       parameters:
-        - in: path
-          name: user_id
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          description: User and stories deleted
-
-  /db/user/{user_id}/update:
-    post:
-      tags:
-        - db
-      summary: Update user information
-      parameters:
-        - in: path
-          name: user_id
-          required: true
-          schema:
-            type: string
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                username:
-                  type: string
-                password:
-                  type: string
-      responses:
-        '200':
-          description: User updated
-        '400':
-          description: Invalid input
-
-  /db/story/{user_id}/create:
-    post:
-      tags:
-        - db
-      summary: Create a new story for a user
-      parameters:
-        - in: path
-          name: user_id
-          required: true
-          schema:
-            type: string
+        - $ref: '#/components/parameters/userId'
       requestBody:
         required: true
         content:
           application/json:
             schema:
               type: object
-              required: [story_name, prompt, agents]
+              required: [password]
               properties:
-                story_name:
+                password:
                   type: string
-                prompt:
-                  type: object
-                  required: [story_details, extra_details, chapter_count]
-                  properties:
-                    story_details:
-                      type: string
-                    extra_details:
-                      type: string
-                    chapter_count:
-                      type: integer
-                agents:
-                  type: array
-                  items:
-                    type: string
       responses:
         '200':
-          description: Story created
-
-  /db/story/{user_id}/get_stories:
-    get:
-      tags:
-        - db
-      summary: List all stories for a user
-      parameters:
-        - in: path
-          name: user_id
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          description: List of stories
-
-  /db/story/{user_id}/{story_id}/get_story:
-    get:
-      tags:
-        - db
-      summary: Get a specific story
-      parameters:
-        - in: path
-          name: user_id
-          required: true
-          schema:
-            type: string
-        - in: path
-          name: story_id
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          description: Story detail
+          description: User deleted
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          description: Invalid credentials
         '404':
-          description: Story not found
+          $ref: '#/components/responses/NotFound'
 
-  /db/story/{user_id}/{story_id}/{chapter_number}/get_chapter:
-    get:
-      tags:
-        - db
-      summary: Get a specific chapter in a story
-      parameters:
-        - in: path
-          name: user_id
-          required: true
-          schema:
-            type: string
-        - in: path
-          name: story_id
-          required: true
-          schema:
-            type: string
-        - in: path
-          name: chapter_number
-          required: true
-          schema:
-            type: integer
-      responses:
-        '200':
-          description: Chapter content
-        '404':
-          description: Chapter not found
-
-  /db/story/{user_id}/{story_id}/delete:
+  /user/{user_id}/update:
     post:
-      tags:
+      tags: 
         - db
-      summary: Delete a story
+      summary: Update username and/or password
       parameters:
-        - in: path
-          name: user_id
-          required: true
-          schema:
-            type: string
-        - in: path
-          name: story_id
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          description: Story deleted
-
-  /db/story/{user_id}/{story_id}/update:
-    post:
-      tags:
-        - db
-      summary: Update a story
-      parameters:
-        - in: path
-          name: user_id
-          required: true
-          schema:
-            type: string
-        - in: path
-          name: story_id
-          required: true
-          schema:
-            type: string
+        - $ref: '#/components/parameters/userId'
       requestBody:
+        required: true
         content:
           application/json:
             schema:
               type: object
+              required: [username,password]
               properties:
-                story_name:
+                username:
                   type: string
+                password:
+                  type: string
+                new_username:
+                  type: string
+                new_password:
+                  type: string
+      responses:
+        '200':
+          description: User updated
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          description: Invalid credentials
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+
+  /user/{user_id}:
+    get:
+      tags: 
+        - db
+      summary: Get user details (including stories)
+      parameters:
+        - $ref: '#/components/parameters/userId'
+      responses:
+        '200':
+          description: User found
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /story/{user_id}/create:
+    post:
+      tags: 
+        - db
+      summary: Create a new story for a user
+      parameters:
+        - $ref: '#/components/parameters/userId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [story_name,prompt,agents]
+              properties:
+                story_name: { type: string }
                 prompt:
                   type: object
+                  required: [story_details]
+                  properties:
+                    story_details: { type: string }
+                    extra_details: { type: string }
+                agents:
+                  type: array
+                  items:
+                    type: object
+                    required: [agent_name]
+                    properties:
+                      agent_name: { type: string }
       responses:
-        '200':
-          description: Story updated
+        '201':
+          description: Story created
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
 
-  /db/story/{user_id}/{story_id}/get_number_of_chapters:
+  /story/{user_id}/get_stories:
     get:
-      tags:
+      tags: 
         - db
-      summary: Get number of chapters in a story
+      summary: List all stories for a user
       parameters:
-        - in: path
-          name: user_id
-          required: true
-          schema:
-            type: string
-        - in: path
-          name: story_id
+        - $ref: '#/components/parameters/userId'
+      responses:
+        '200':
+          description: Array of stories
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /story/{user_id}/{story_id}/get_story:
+    get:
+      tags: 
+        - db
+      summary: Get a single story
+      parameters:
+        - $ref: '#/components/parameters/userId'
+        - $ref: '#/components/parameters/storyId'
+      responses:
+        '200':
+          description: Story details
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /story/{user_id}/{story_id}/delete:
+    post:
+      tags: 
+        - db
+      summary: Delete a story
+      parameters:
+        - $ref: '#/components/parameters/userId'
+        - $ref: '#/components/parameters/storyId'
+      responses:
+        '200':
+          description: Story deleted
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /story/{user_id}/{story_id}/{chapter_number}/get_chapter:
+    get:
+      tags: 
+        - db
+      summary: Get a specific chapter
+      parameters:
+        - $ref: '#/components/parameters/userId'
+        - $ref: '#/components/parameters/storyId'
+        - $ref: '#/components/parameters/chapterNumber'
+      responses:
+        '200':
+          description: Chapter details
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /story/{user_id}/{story_id}/name_update:
+    post:
+      tags: 
+        - db
+      summary: Update story name
+      parameters:
+        - $ref: '#/components/parameters/userId'
+        - $ref: '#/components/parameters/storyId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [story_name]
+              properties:
+                story_name: { type: string }
+      responses:
+        '200':
+          description: Name updated
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /story/{user_id}/{story_id}/get_number_of_chapters:
+    get:
+      tags: 
+        - db
+      summary: Get number of chapters (excl. outline)
+      parameters:
+        - $ref: '#/components/parameters/userId'
+        - $ref: '#/components/parameters/storyId'
+      responses:
+        '200':
+          description: Chapter count
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /story/{user_id}/{story_id}/add_outline:
+    post:
+      tags: 
+        - db
+      summary: Add or update story outline
+      parameters:
+        - $ref: '#/components/parameters/userId'
+        - $ref: '#/components/parameters/storyId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [outline]
+              properties:
+                outline: { type: string }
+      responses:
+        '200':
+          description: Outline set
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /story/{user_id}/{story_id}/add_agent_outlines:
+    post:
+      tags: 
+        - db
+      summary: Add agent‐specific outline responses
+      parameters:
+        - $ref: '#/components/parameters/userId'
+        - $ref: '#/components/parameters/storyId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [outlines,votes]
+              properties:
+                outlines:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      agent_id: { type: string }
+                      data: { type: string }
+                      thoughts: { type: string }
+                votes:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      agent_id: { type: string }
+                      votes: { type: integer }
+      responses:
+        '200':
+          description: Agent outlines saved
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /story/{user_id}/{story_id}/add_critique:
+    post:
+      tags: 
+        - db
+      summary: Add or update best critique
+      parameters:
+        - $ref: '#/components/parameters/userId'
+        - $ref: '#/components/parameters/storyId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [chapter_number,critique]
+              properties:
+                chapter_number: { type: integer }
+                critique: { type: string }
+      responses:
+        '200':
+          description: Critique saved
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /story/{user_id}/{story_id}/add_agent_critiques:
+    post:
+      tags: 
+        - db
+      summary: Add agent‐specific critiques
+      parameters:
+        - $ref: '#/components/parameters/userId'
+        - $ref: '#/components/parameters/storyId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [chapter_number,critiques,votes]
+              properties:
+                chapter_number: { type: integer }
+                critiques:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      agent_id: { type: string }
+                      data: { type: string }
+                      thoughts: { type: string }
+                votes:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      agent_id: { type: string }
+                      votes: { type: integer }
+      responses:
+        '200':
+          description: Agent critiques saved
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /story/{user_id}/{story_id}/add_chapter:
+    post:
+      tags: 
+        - db
+      summary: Add or update best chapter
+      parameters:
+        - $ref: '#/components/parameters/userId'
+        - $ref: '#/components/parameters/storyId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [story_chapter_number,text]
+              properties:
+                story_chapter_number: { type: integer }
+                text: { type: string }
+      responses:
+        '200':
+          description: Chapter saved
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /story/{user_id}/{story_id}/add_agent_chapter:
+    post:
+      tags: 
+        - db
+      summary: Add agent‐specific chapter responses
+      parameters:
+        - $ref: '#/components/parameters/userId'
+        - $ref: '#/components/parameters/storyId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [chapter_number,content,votes]
+              properties:
+                chapter_number: { type: integer }
+                content:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      agent_id: { type: string }
+                      data: { type: string }
+                      thoughts: { type: string }
+                votes:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      agent_id: { type: string }
+                      votes: { type: integer }
+      responses:
+        '200':
+          description: Agent chapters saved
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /story/{user_id}/{story_id}/{agent_id}/{chapter_number}/edit_agent_chapter:
+    post:
+      tags: 
+        - db
+      summary: Edit an agent’s chapter content
+      parameters:
+        - $ref: '#/components/parameters/userId'
+        - $ref: '#/components/parameters/storyId'
+        - $ref: '#/components/parameters/agentId'
+        - $ref: '#/components/parameters/chapterNumber'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [content]
+              properties:
+                content: { type: string }
+      responses:
+        '200':
+          description: Chapter edited
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /story/{user_id}/{story_id}/{agent_id}/{chapter_number}/edit_agent_critique:
+    post:
+      tags: 
+        - db
+      summary: Edit an agent’s critique content
+      parameters:
+        - $ref: '#/components/parameters/userId'
+        - $ref: '#/components/parameters/storyId'
+        - $ref: '#/components/parameters/agentId'
+        - $ref: '#/components/parameters/chapterNumber'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [critique]
+              properties:
+                critique: { type: string }
+      responses:
+        '200':
+          description: Critique edited
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /story/{user_id}/{story_id}/{agent_id}/{chapter_number}/get_critique:
+    get:
+      tags: 
+        - db
+      summary: Get an agent’s critique for a chapter
+      parameters:
+        - $ref: '#/components/parameters/userId'
+        - $ref: '#/components/parameters/storyId'
+        - $ref: '#/components/parameters/agentId'
+        - $ref: '#/components/parameters/chapterNumber'
+      responses:
+        '200':
+          description: Critique returned
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /story/{user_id}/{story_id}/{agent_id}/{chapter_number}/get_votes:
+    get:
+      tags: 
+        - db
+      summary: Get vote count for an agent’s chapter
+      parameters:
+        - $ref: '#/components/parameters/userId'
+        - $ref: '#/components/parameters/storyId'
+        - $ref: '#/components/parameters/agentId'
+        - $ref: '#/components/parameters/chapterNumber'
+      responses:
+        '200':
+          description: Vote count returned
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /story/{user_id}/{story_id}/get_outline:
+    get:
+      tags: 
+        - db
+      summary: Get the story outline
+      parameters:
+        - $ref: '#/components/parameters/userId'
+        - $ref: '#/components/parameters/storyId'
+      responses:
+        '200':
+          description: Outline returned
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /story/{user_id}/{story_id}/story_agent_list:
+    get:
+      tags: 
+        - db
+      summary: List all agents on a story
+      parameters:
+        - $ref: '#/components/parameters/userId'
+        - $ref: '#/components/parameters/storyId'
+      responses:
+        '200':
+          description: Array of { agent_id, agent_name, persona }
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /story/{user_id}/{story_id}/get_generated_outline_details:
+    get:
+      tags: 
+        - db
+      summary: Details needed for generate_outline step
+      parameters:
+        - $ref: '#/components/parameters/userId'
+        - $ref: '#/components/parameters/storyId'
+      responses:
+        '200':
+          description: story_name, story_details, extra_details
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /story/{user_id}/{story_id}/get_critique_outline_details:
+    get:
+      tags: 
+        - db
+      summary: Details for critique_outline step
+      parameters:
+        - $ref: '#/components/parameters/userId'
+        - $ref: '#/components/parameters/storyId'
+      responses:
+        '200':
+          description: story_name, story_details, extra_details, story_outline
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /story/{user_id}/{story_id}/get_rewrite_outline_details:
+    get:
+      tags: 
+        - db
+      summary: Details for rewrite_outline step
+      parameters:
+        - $ref: '#/components/parameters/userId'
+        - $ref: '#/components/parameters/storyId'
+      responses:
+        '200':
+          description: story_name, story_details, extra_details, story_outline, outline_critique
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /story/{user_id}/{story_id}/get_first_chapter_details:
+    get:
+      tags: 
+        - db
+      summary: Details for generate_first_chapter step
+      parameters:
+        - $ref: '#/components/parameters/userId'
+        - $ref: '#/components/parameters/storyId'
+      responses:
+        '200':
+          description: story_name, story_details, extra_details, story_outline
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /story/{user_id}/{story_id}/{chapter_number}/get_next_chapter_details:
+    get:
+      tags: 
+        - db
+      summary: Details for generate_next_chapter step
+      parameters:
+        - $ref: '#/components/parameters/userId'
+        - $ref: '#/components/parameters/storyId'
+        - $ref: '#/components/parameters/chapterNumber'
+      responses:
+        '200':
+          description: story_name, story_details, extra_details, story_outline, previous_chapters
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /story/{user_id}/{story_id}/{chapter_number}/get_critique_chapter_details:
+    get:
+      tags: 
+        - db
+      summary: Details for critique_chapter step
+      parameters:
+        - $ref: '#/components/parameters/userId'
+        - $ref: '#/components/parameters/storyId'
+        - $ref: '#/components/parameters/chapterNumber'
+      responses:
+        '200':
+          description: story_name, story_details, extra_details, story_outline, chapter
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /story/{user_id}/{story_id}/{chapter_number}/get_rewrite_chapter_details:
+    get:
+      tags: 
+        - db
+      summary: Details for rewrite_chapter step
+      parameters:
+        - $ref: '#/components/parameters/userId'
+        - $ref: '#/components/parameters/storyId'
+        - $ref: '#/components/parameters/chapterNumber'
+      responses:
+        '200':
+          description: story_name, story_details, extra_details, story_outline, chapter, critique
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /story/{user_id}/{story_id}/story_step:
+    get:
+      tags: 
+        - db
+      summary: Get the current story step
+      parameters:
+        - $ref: '#/components/parameters/userId'
+        - $ref: '#/components/parameters/storyId'
+      responses:
+        '200':
+          description: Current step (string)
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /story/{user_id}/{story_id}/update_story_step:
+    post:
+      tags: 
+        - db
+      summary: Update the story step
+      parameters:
+        - $ref: '#/components/parameters/userId'
+        - $ref: '#/components/parameters/storyId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [step]
+              properties:
+                step:
+                  type: string
+      responses:
+        '200':
+          description: Updated step returned
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /personas:
+    get:
+      tags: 
+        - db
+      summary: List all personas
+      responses:
+        '200':
+          description: Array of persona objects
+
+  /create_persona:
+    post:
+      tags: 
+        - db
+      summary: Create a new persona
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name,persona_info]
+              properties:
+                name: { type: string }
+                persona_info: { type: string }
+      responses:
+        '201':
+          description: Persona created
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '409':
+          $ref: '#/components/responses/Conflict'
+
+  /delete_persona:
+    post:
+      tags: 
+        - db
+      summary: Delete a persona by name
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name]
+              properties:
+                name: { type: string }
+      responses:
+        '200':
+          description: Persona deleted
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /agent/{name}:
+    get:
+      tags: 
+        - db
+      summary: Get agent details by name
+      parameters:
+        - name: name
+          in: path
           required: true
           schema:
             type: string
       responses:
         '200':
-          description: Number of chapters
+          description: Agent object
+        '404':
+          $ref: '#/components/responses/NotFound'
 
-  /db/agent/create:
+  /agent/create:
     post:
-      tags:
+      tags: 
         - db
       summary: Create a new agent
       requestBody:
@@ -513,242 +1108,107 @@ paths:
           application/json:
             schema:
               type: object
-              required: [name, agent_prompt]
+              required: [name,story_details,chapter_count]
               properties:
-                name:
-                  type: string
-                agent_prompt:
-                  type: string
+                name: { type: string }
+                story_details: { type: string }
+                chapter_count: { type: integer }
+                extra_details: { type: string }
       responses:
         '200':
           description: Agent created
+        '400':
+          $ref: '#/components/responses/BadRequest'
 
-  /db/agent/{id}/delete:
+  /agent/{agent_id}/delete:
     post:
-      tags:
+      tags: 
         - db
-      summary: Delete an agent
+      summary: Delete an agent by ID
       parameters:
-        - in: path
-          name: id
-          required: true
-          schema:
-            type: string
+        - $ref: '#/components/parameters/agentId'
       responses:
         '200':
           description: Agent deleted
         '404':
-          description: Agent not found
+          $ref: '#/components/responses/NotFound'
 
-  /db/agent/{id}/update:
+  /agent/{agent_id}/update:
     post:
-      tags:
+      tags: 
         - db
-      summary: Update an agent
+      summary: Update an agent’s prompt
       parameters:
-        - in: path
-          name: id
-          required: true
-          schema:
-            type: string
+        - $ref: '#/components/parameters/agentId'
       requestBody:
+        required: true
         content:
           application/json:
             schema:
               type: object
+              required: [name,story_details,chapter_count]
               properties:
-                name:
-                  type: string
-                agent_prompt:
-                  type: string
+                name: { type: string }
+                story_details: { type: string }
+                chapter_count: { type: integer }
+                extra_details: { type: string }
       responses:
         '200':
           description: Agent updated
-        '404':
-          description: Agent not found
-
-  /translator/first_chapter:
-    post:
-      tags:
-        - translator
-      summary: Generate the first chapter of a story
-      description: Obtains first chapter data from frontend, and sends it to prompt_admin to eventually receive a chapter draft
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              required:
-                - story_name
-                - story_details
-                - story_outline
-              properties:
-                story_name:
-                  type: string
-                  description: The name of the story
-                story_details:
-                  type: string
-                  description: Overall details about the story, such as the plot points and characters
-                story_outline:
-                  type: string
-                  description: An outline of the story, chapter by chapter
-                extra_details:
-                  type: string
-                  description: More specific details, such as characterization, locations, pacing, etc.
-      responses:
-        '200':
-          description: First chapter generated successfully
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                  data:
-                    type: object
-                    properties:
-                      title:
-                        type: string
-                      courier_response:
-                        type: string
-        '404':
-          description: Missing required fields
-        '500':
-          description: Server error
-
-  /translator/courier_response:
-    post:
-      tags:
-        - translator
-      summary: Store courier response
-      description: Receives and stores responses from the courier when asking for an outline or chapter
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              required:
-                - data
-              properties:
-                data:
-                  type: string
-      responses:
-        '200':
-          description: Courier response stored successfully
-        '404':
-          description: Missing courier data
-
-  /translator/story_outline:
-    post:
-      tags:
-        - translator
-      summary: Generate a story outline
-      description: Obtains story outline data from frontend, and sends it to prompt_admin to eventually receive a story outline draft
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              required:
-                - chapter_count
-                - story_name
-                - story_details
-              properties:
-                chapter_count:
-                  type: integer
-                  description: The requested number of chapters in the story
-                story_name:
-                  type: string
-                  description: The name of the story
-                story_details:
-                  type: string
-                  description: Overall details about the story, such as the plot points and characters
-                extra_details:
-                  type: string
-                  description: More specific details, such as characterization, locations, pacing, etc.
-      responses:
-        '200':
-          description: Story outline generated successfully
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                  data:
-                    type: object
-                    properties:
-                      title:
-                        type: string
-                      courier_response:
-                        type: string
         '400':
-          description: Invalid data type for chapter_count
+          $ref: '#/components/responses/BadRequest'
         '404':
-          description: Missing required fields
-        '500':
-          description: Server error
+          $ref: '#/components/responses/NotFound'
 
-  /translator/next_chapter:
+  /agent/{agent_id}/{story_id}/get_last_response:
     post:
-      tags:
-        - translator
-      summary: Generate the next chapter of the story
-      description: Obtains subsequent chapter data from frontend, and sends it to prompt_admin to eventually receive a chapter draft
+      tags: 
+        - db
+      summary: Append and return last response (internal)
+      parameters:
+        - $ref: '#/components/parameters/agentId'
+        - name: story_id
+          in: path
+          required: true
+          schema: { type: string }
       requestBody:
         required: true
         content:
           application/json:
             schema:
               type: object
-              required:
-                - story_name
-                - story_details
-                - previous_chapters
-                - story_outline
+              required: [response]
               properties:
-                story_name:
-                  type: string
-                  description: The name of the story
-                story_details:
-                  type: string
-                  description: Overall details about the story, such as the plot points and characters
-                previous_chapters:
-                  type: array
-                  items:
-                    type: string
-                  description: A string array of the previous chapters
-                story_outline:
-                  type: string
-                  description: An outline of the story, chapter by chapter
-                extra_details:
-                  type: string
-                  description: More specific details, such as characterization, locations, pacing, etc.
+                response: { type: string }
       responses:
         '200':
-          description: Next chapter generated successfully
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                  data:
-                    type: object
-                    properties:
-                      title:
-                        type: string
-                      courier_response:
-                        type: string
+          description: Last response updated
         '400':
-          description: Invalid or empty previous_chapters
+          $ref: '#/components/responses/BadRequest'
         '404':
-          description: Missing required fields
-        '500':
-          description: Server error
+          $ref: '#/components/responses/NotFound'
+
+    get:
+      tags: 
+        - db
+      summary: Get the last response for an agent in a story
+      parameters:
+        - $ref: '#/components/parameters/agentId'
+        - name: story_id
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        '200':
+          description: Last response returned
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /agents:
+    get:
+      tags: 
+        - db
+      summary: List all agents
+      responses:
+        '200':
+          description: Array of agent objects
