@@ -1,4 +1,4 @@
-import { Card, Button, Group, Loader, Container, Paper, Text } from '@mantine/core';
+import { Card, Button, Group, Loader, Container } from '@mantine/core';
 import { useState, useEffect } from 'react';
 import { useParams } from 'react-router';
 import { USE_USER } from "../context/USER_CONTEXT";
@@ -14,18 +14,20 @@ function BEST_RESPONSE() {
         should_stream,
         set_should_stream,
         start_event_stream,
+        streaming_action,
         set_streaming_action,
-        streamingAction,
         isStreaming,
         curr_step,
-        set_curr_step
+        set_curr_step,
+        disable_continue,
+        set_disable_continue,
     } = USE_STORY();
 
     const { use_axios } = USE_AXIOS();
     const [best_res, set_best_res] = useState('');
     const [show_cont_button, set_show_cont_button] = useState(true);
     const [chapter_number, set_chapter_number] = useState(0);
-    const [justStreamed, setJustStreamed] = useState(false);
+
 
     const { story_id } = useParams();
     const { user_stories, fetch_user_data } = USE_USER();
@@ -49,26 +51,15 @@ function BEST_RESPONSE() {
         }
     }, [story_id, user_stories]);
 
-    // Reset flags after streaming action is finished
     useEffect(() => {
-        if (!isStreaming && justStreamed) {
-            // Once streaming ends, reset states to allow button interactions
-            set_streaming_action(null);  // Reset streaming action
-            set_should_stream(false);  // Reset stream flag
-            setJustStreamed(false);  // Reset just streamed state
-        }
-    }, [isStreaming, justStreamed, set_streaming_action, set_should_stream]);
-
-    useEffect(() => {
-        if (best_res && justStreamed) {
+        if (best_res) {
             set_should_stream(false);
             set_streaming_action(null);
-            setJustStreamed(false);
         }
     }, [best_res]);
 
     const handle_continue = async () => {
-        if (should_stream || justStreamed) return;
+        if (should_stream) return;
 
         const found_story = user_stories?.stories?.find((story) => story._id === story_id);
         const story_content = found_story?.story_content || [];
@@ -85,24 +76,17 @@ function BEST_RESPONSE() {
             console.error("Error updating story step:", update_story_step_error);
         }
 
-        setJustStreamed(true);
         set_streaming_action("continue");
         set_curr_step("continue");
+        set_disable_continue(true);
         set_should_stream(true);
         set_best_res('');
         start_event_stream(user, story_id, step, chapter_count);
     };
 
-    const buttonsDisabled = should_stream || justStreamed;
+    const buttonsDisabled = should_stream;
 
     return (
-        <Container fluid style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-            {/* dont need this becuase i am skipping the other parts and just moving to next chapter */}
-        {/* <Paper withBorder p="md" radius="md" mb="md">
-            <Text size="lg" style={{ fontWeight: 'bold' }}>
-            <strong>Current Phase: {curr_step.toUpperCase()}</strong>
-            </Text>
-        </Paper> */}
 
         <Card
             shadow="none"
@@ -113,7 +97,7 @@ function BEST_RESPONSE() {
                 border: '1px solid #3a3a3a',
                 margin: '0 auto',
                 height: '100%',
-                maxHeight: '80vh',
+                maxHeight: '90vh',
             }}
         >
             <div
@@ -135,26 +119,24 @@ function BEST_RESPONSE() {
             </div>
 
             <Group justify="flex-end" style={{ marginTop: '10px' }}>
-                {show_cont_button && (
-                    <Button
-                        size="sm"
-                        variant="light"
-                        color={should_stream ? (streamingAction === 'continue' ? 'teal' : 'gray') : 'teal'}
-                        disabled={buttonsDisabled}
-                        onClick={handle_continue}
-                        leftSection={should_stream && streamingAction === 'continue' ? <Loader size="xs" color="green" /> : null}
-                        style={{
-                            backgroundColor: should_stream && streamingAction === 'continue' ? 'rgba(0, 255, 128, 0.1)' : '',
-                            color: should_stream && streamingAction === 'continue' ? '#66ffb2' : '',
-                            cursor: buttonsDisabled ? 'not-allowed' : 'pointer',
-                        }}
-                    >
-                        {should_stream && streamingAction === 'continue' ? 'Drafting Chapter' : 'Continue'}
-                    </Button>
-                )}
+                <Button
+                size="sm"
+                variant="light"
+                color={!should_stream ? 'teal' : undefined}
+                disabled={disable_continue}
+                onClick={handle_continue}
+                leftSection={ should_stream && <Loader size="xs" color="green" />}
+                style={{
+                backgroundColor: should_stream ? 'rgba(0, 255, 128, 0.1)' : '',
+                color: should_stream ? '#66ffb2' : '',
+                cursor: should_stream ? 'not-allowed' : 'pointer',
+                }}
+            >
+                { should_stream ? 'Drafting' : 'Continue'}
+            </Button>
             </Group>
         </Card>
-        </Container>
+
     );
 }
 

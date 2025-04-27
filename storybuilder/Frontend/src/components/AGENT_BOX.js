@@ -209,7 +209,7 @@ function AGENT_BOX({ name, chapter_content, step, agent_id, chapter_number, onAc
             size="sm"
             variant="light"
             color={!should_stream ? 'teal' : undefined}
-            disabled={disable_continue}
+            //disabled={disable_continue}
             onClick={handle_continue}
             leftSection={streaming_action === 'continue' && should_stream && <Loader size="xs" color="green" />}
             style={{

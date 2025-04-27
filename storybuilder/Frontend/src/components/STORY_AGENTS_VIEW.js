@@ -32,10 +32,6 @@ function STORY_AGENTS_VIEW() {
     set_agent_critiques,
     agent_critique_thoughts,
     set_agent_critique_thoughts,
-    agent_rewrites,
-    set_agent_rewrites,
-    agent_rewrite_thoughts,
-    set_agent_rewrite_thoughts,
     streaming_action,
     set_streaming_action,
     curr_step,
@@ -94,7 +90,7 @@ function STORY_AGENTS_VIEW() {
 
     let step = "";
     let chapter_number = chapter_count;
-    console.log("chapter count in handleactionbuttonclick: ", chapter_count)
+    console.log("chapter count in handleactionbuttonclick: ", chapter_count);
     console.log("story content in handleactionbuttonclick: ", story_content);
 
     // if regenerate button is clicked, check phase and chapter to set steps accordingly
