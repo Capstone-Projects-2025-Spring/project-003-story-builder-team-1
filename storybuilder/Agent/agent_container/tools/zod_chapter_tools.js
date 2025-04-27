@@ -53,7 +53,9 @@ export default function chapter_tools(llm) {
 
         Previous chapter(s) whose story you're continuing: "{chapter}"
 
-        Outline: "{outline}"
+        Pay attention to the last chapter number in the list above. This is the number you'll be incrementing with your chapter, and it's very important that you keep the numbers consistent.
+
+        Outline of the full story: "{outline}"
     `);
     const vote_next_chapter_prompt = ChatPromptTemplate.fromTemplate(`
         Your job now is to judge all of these chapters as objectively 

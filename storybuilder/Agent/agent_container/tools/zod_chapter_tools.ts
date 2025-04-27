@@ -57,13 +57,16 @@ export default function chapter_tools(llm: ChatOpenAI | ChatDeepSeek) {
             very important that you DON'T include any additional text besides the chapter itself. Do not return any reflections, commentary, or acknowledgement of the prompt itself, just the chapter.
             It's also very important that when you continue the chapter, you do NOT go off the outline. You continue the story based on the chapter number specified in the chapter itself. The outline is an
             overview of the ENTIRE story, but if the specified chapter hasn't reached the max amount of chapters yet, you don't number the chapter based off of the number of chapters in the outline.
-            Ensure none of the sections of your story are labelled "Prologue" or "Epilogue", only label it as a chapter number. You will ensure the results conform to the style of this persona: "{persona}".
-    
+            Ensure none of the sections of your story are labelled "Prologue" or "Epilogue", only label it as a chapter number.
+            You will ensure the results conform to the style of this persona: "{persona}".
+
             Prompt information: "{prompt_info}"
-    
+
             Previous chapter(s) whose story you're continuing: "{chapter}"
-    
-            Outline: "{outline}"
+
+            Pay attention to the last chapter number in the list above. This is the number you'll be incrementing with your chapter, and it's very important that you keep the numbers consistent.
+
+            Outline of the full story: "{outline}"
         `);
         const vote_next_chapter_prompt = ChatPromptTemplate.fromTemplate(`
             Your job now is to judge all of these chapters as objectively 
