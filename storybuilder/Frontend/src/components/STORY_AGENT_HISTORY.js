@@ -2,7 +2,11 @@ import { Button, Container, Stack, Group, Center, Card, Title, Divider, Modal } 
 import { useState, useEffect } from 'react';
 import { useParams } from 'react-router';
 import { USE_USER } from '../context/USER_CONTEXT';
+import { USE_AUTH } from '../context/AUTH_CONTEXT';
+import USE_AXIOS from '../hooks/USE_AXIOS';
 import ReactMarkdown from 'react-markdown';
+
+const SERVER_URL = process.env.REACT_APP_SERVER_URL || "http://localhost:8080";
 
 function STORY_AGENT_HISTORY() {
     const [show_content, set_show_content] = useState(false);
@@ -19,8 +23,13 @@ function STORY_AGENT_HISTORY() {
     const [agent_critique_thoughts, set_agent_critique_thoughts] = useState({});
     const [agents, set_agents] = useState([]);
     const [selected_agent, set_selected_agent] = useState(null);
-    const { user_stories } = USE_USER();
+    const [agent_id, set_agent_id] = useState(null);
+    const [edit_modal_open, set_edit_modal_open] = useState(false);
+    const [edited_content, set_edited_content] = useState('');
+    const { user_stories, fetch_user_data } = USE_USER();
     const { story_id, chapter_id } = useParams();
+    const { user } = USE_AUTH();
+    const { use_axios } = USE_AXIOS();
 
     useEffect(() => {
         console.log("Agent History chapter_id: ", chapter_id)
@@ -83,9 +92,70 @@ function STORY_AGENT_HISTORY() {
         set_show_critique_thoughts_view(true);
     }
 
+    const handle_edit_button_click = (agent) => {
+        // Set the selected agent and chapter details in state
+        set_selected_agent(agent);
+        set_agent_id(agent._id);
+        set_edited_content(agent_content[agent._id]);  // Preload the existing content into the textarea
+        set_edit_modal_open(true);  // Open the edit modal
+    };
+
+    const handle_save_edit = async () => {
+        console.log("user: ", user);
+        console.log("story_id: ", story_id);
+        console.log("agent_id: ", agent_id);
+        console.log("chapter_number: ", chapter_id);
+
+        // db call to update db with edited chapter
+        const { data: edit_chapter_data, error: edit_chapter_error } = await use_axios(SERVER_URL + `/db/story/${user}/${story_id}/${agent_id}/${chapter_id}/edit_agent_chapter`, 'POST', {content: edited_content});
+
+        if (edit_chapter_data) {
+        await fetch_user_data(user);
+        } else {
+        console.error("Error updating chapter edit:", edit_chapter_error);
+        }
+    
+        set_edit_modal_open(false); // Close modal
+      };
+
 
     return (
         <>
+        {/* Edit Modal */}
+        <Modal
+            opened={edit_modal_open}
+            onClose={() => set_edit_modal_open(false)}
+            title={<Title component="div" order={3}>Edit Chapter</Title>}
+            size="50%"
+            radius="md"
+            padding="md"
+        >
+            <textarea
+            value={edited_content}
+            onChange={(e) => set_edited_content(e.target.value)}
+            style={{
+                width: '100%',
+                height: '500px',
+                backgroundColor: '#2d2d2d',
+                color: 'white',
+                border: '1px solid #444',
+                padding: '10px',
+                borderRadius: '8px',
+                fontSize: '16px',
+                resize: 'none',
+            }}
+            />
+            <Group justify="right" mt="md">
+            <Button
+                variant="light"
+                color="teal"
+                onClick={handle_save_edit}
+            >
+                Save
+            </Button>
+            </Group>
+        </Modal>
+        
         {/* View Agent Content Modal */}
         <Modal
             opened={show_content_view}
@@ -268,6 +338,9 @@ function STORY_AGENT_HISTORY() {
                         <Group justify="space-between" style={{ marginTop: "10px" }}>
                             <Button size="sm" variant="light" onClick={() => handle_agent_content_view(agent)}>
                             View
+                            </Button>
+                            <Button size="sm" variant="light" color="orange" onClick={() => handle_edit_button_click(agent)}>
+                            Edit
                             </Button>
                         </Group>
                         </Card>
