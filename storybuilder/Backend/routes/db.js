@@ -289,6 +289,7 @@ Body Requirements:
 - step: The next step in the process
 */
 router.post("/story/:user_id/:story_id/update_story_step", story_controller.story_update_step);
+
 /// PERSONA ROUTES ///
 
 // Returns a list of all personas

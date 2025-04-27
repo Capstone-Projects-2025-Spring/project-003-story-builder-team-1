@@ -196,7 +196,6 @@ exports.story_get_number_of_chapters = asyncHandler(async (req, res, next) => {
 exports.story_add_outline = asyncHandler(async (req, res, next) => {
     const { user_id, story_id } = req.params; // Story ID and User ID
     const { outline } = req.body;
-    console.log("outline: ", outline);
 
     if (!outline) {
         return res.status(400).json({ error: "Outline is required." });

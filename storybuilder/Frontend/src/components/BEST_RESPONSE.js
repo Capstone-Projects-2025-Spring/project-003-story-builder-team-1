@@ -4,7 +4,10 @@ import { useParams } from 'react-router';
 import { USE_USER } from "../context/USER_CONTEXT";
 import { USE_STORY } from '../context/STORY_CONTEXT';
 import { USE_AUTH } from '../context/AUTH_CONTEXT';
+import USE_AXIOS from '../hooks/USE_AXIOS';
 import ReactMarkdown from 'react-markdown';
+
+const SERVER_URL = process.env.REACT_APP_SERVER_URL || "http://localhost:8080";
 
 function BEST_RESPONSE() {
     const {
@@ -17,14 +20,15 @@ function BEST_RESPONSE() {
         curr_step,
         set_curr_step
     } = USE_STORY();
-    
+
+    const { use_axios } = USE_AXIOS();
     const [best_res, set_best_res] = useState('');
     const [show_cont_button, set_show_cont_button] = useState(true);
     const [chapter_number, set_chapter_number] = useState(0);
     const [justStreamed, setJustStreamed] = useState(false);
 
     const { story_id } = useParams();
-    const { user_stories, refetch_user_stories } = USE_USER();
+    const { user_stories, fetch_user_data } = USE_USER();
     const { user } = USE_AUTH();
 
     // Populate best response from latest chapter
@@ -63,7 +67,7 @@ function BEST_RESPONSE() {
         }
     }, [best_res]);
 
-    const handle_continue = () => {
+    const handle_continue = async () => {
         if (should_stream || justStreamed) return;
 
         const found_story = user_stories?.stories?.find((story) => story._id === story_id);
@@ -72,8 +76,18 @@ function BEST_RESPONSE() {
 
         const step = chapter_count === 1 ? "generate_first_chapter" : "generate_next_chapter";
 
+        // db call to update the story step to rewrite
+        const { data: update_story_step_data, error: update_story_step_error } = await use_axios(SERVER_URL + `/db/story/${user}/${story_id}/update_story_step`, "POST", {step: "generate"});
+
+        if (update_story_step_data) {
+          await fetch_user_data(user);
+        } else {
+            console.error("Error updating story step:", update_story_step_error);
+        }
+
         setJustStreamed(true);
         set_streaming_action("continue");
+        set_curr_step("continue");
         set_should_stream(true);
         set_best_res('');
         start_event_stream(user, story_id, step, chapter_count);
