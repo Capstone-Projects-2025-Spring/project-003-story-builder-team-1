@@ -191,7 +191,7 @@ Parameter Requirments:
 Body Requirments:
 - critique: the updated chapter content 
 */
-router.post("/story/:user_id/:story_id/:agent_id/:chapter_number/edit_agent_critque", story_controller.story_agent_critique_edit);
+router.post("/story/:user_id/:story_id/:agent_id/:chapter_number/edit_agent_critique", story_controller.story_agent_critique_edit);
 
 /* Get a critique of a specific agent chapter
 Parameter Requirments:

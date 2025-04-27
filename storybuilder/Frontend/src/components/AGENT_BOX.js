@@ -1,14 +1,24 @@
 import { useState } from 'react';
 import { Card, Button, Modal, Title, Divider, Group, Loader } from '@mantine/core';
+import { useParams } from 'react-router';
 import { USE_STORY } from '../context/STORY_CONTEXT';
+import { USE_USER } from '../context/USER_CONTEXT';
+import { USE_AUTH } from '../context/AUTH_CONTEXT';
+import USE_AXIOS from '../hooks/USE_AXIOS';
 import ReactMarkdown from 'react-markdown';
 
-function AGENT_BOX({ name, chapter_content, step, chapter_number, onActionButtonClick }) {
-  const { should_stream, streaming_action, set_streaming_action, disable_regenerate, set_disable_regenerate, disable_continue, set_disable_continue, curr_step, set_curr_step } = USE_STORY();
+const SERVER_URL = process.env.REACT_APP_SERVER_URL || "http://localhost:8080";
 
+function AGENT_BOX({ name, chapter_content, step, agent_id, chapter_number, onActionButtonClick }) {
+  const { should_stream, streaming_action, set_streaming_action, disable_regenerate, set_disable_regenerate, disable_continue, set_disable_continue, curr_step, set_curr_step } = USE_STORY();
+  const { story_id } = useParams();
+  const { fetch_user_data } = USE_USER();
+  const { user } = USE_AUTH();
+  const { use_axios } = USE_AXIOS();
   const [opened, set_opened] = useState(false);
   const [edit_modal_open, set_edit_modal_open] = useState(false);
   const [edited_content, set_edited_content] = useState('');
+  const [current_content, set_current_content] = useState(chapter_content);
 
   const handle_continue = () => {
     set_streaming_action('continue');
@@ -26,6 +36,39 @@ function AGENT_BOX({ name, chapter_content, step, chapter_number, onActionButton
     onActionButtonClick('regenerate');
   };
 
+  const handle_save_edit = async () => {
+    console.log("user: ", user);
+    console.log("story_id: ", story_id);
+    console.log("agent_id: ", agent_id);
+    console.log("chapter_number: ", chapter_number);
+    if (curr_step === "critique") {
+      // if we are on critique step, the chapter num has increased because it updates from story_content length. After generate it has incremented, but critique is still the same chapter
+      let curr_chapter_num = chapter_number - 1;
+      console.log("curr_chapter_num: ", curr_chapter_num);
+      // db call to update with edited critique
+      const { data: edit_critique_data, error: edit_critique_error } = await use_axios(SERVER_URL + `/db/story/${user}/${story_id}/${agent_id}/${curr_chapter_num}/edit_agent_critique`, 'POST', {critique: edited_content});
+
+      if (edit_critique_data) {
+        await fetch_user_data(user);
+      } else {
+        console.error("Error updating chapter edit:", edit_critique_error);
+      }
+    }
+    else {
+      // db call to update db with edited chapter
+      const { data: edit_chapter_data, error: edit_chapter_error } = await use_axios(SERVER_URL + `/db/story/${user}/${story_id}/${agent_id}/${chapter_number}/edit_agent_chapter`, 'POST', {content: edited_content});
+
+      if (edit_chapter_data) {
+        await fetch_user_data(user);
+      } else {
+        console.error("Error updating chapter edit:", edit_chapter_error);
+      }
+    }
+
+    set_current_content(edited_content); // Update displayed content
+    set_edit_modal_open(false); // Close modal
+  };
+
   return (
     <>
       {/* View Modal */}
@@ -39,7 +82,7 @@ function AGENT_BOX({ name, chapter_content, step, chapter_number, onActionButton
       >
         <div style={{ padding: '12px', backgroundColor: '#2d2d2d', color: '#fff', borderRadius: '8px' }}>
           <ReactMarkdown
-            children={chapter_content?.trim() || "Waiting for the agent to generate a response..."}
+            children={current_content?.trim() || "Waiting for the agent to generate a response..."}
             components={{
               p: ({ node, ...props }) => (
                 <p style={{ fontSize: '18px', marginBottom: '1em' }} {...props} />
@@ -77,7 +120,7 @@ function AGENT_BOX({ name, chapter_content, step, chapter_number, onActionButton
           <Button
             variant="light"
             color="teal"
-            onClick={() => set_edit_modal_open(false)}
+            onClick={handle_save_edit}
           >
             Save
           </Button>
@@ -105,7 +148,7 @@ function AGENT_BOX({ name, chapter_content, step, chapter_number, onActionButton
           }}
         >
           <ReactMarkdown
-            children={chapter_content?.trim() || "Waiting for the agent to generate a response..."}
+            children={current_content?.trim() || "Waiting for the agent to generate a response..."}
             components={{
               p: ({ node, ...props }) => (
                 <p style={{ fontSize: '16px', marginBottom: '0.75em' }} {...props} />
@@ -125,7 +168,7 @@ function AGENT_BOX({ name, chapter_content, step, chapter_number, onActionButton
             color="orange"
             disabled={should_stream}
             onClick={() => {
-              set_edited_content(chapter_content);
+              set_edited_content(current_content);
               set_edit_modal_open(true);
             }}
             style={{

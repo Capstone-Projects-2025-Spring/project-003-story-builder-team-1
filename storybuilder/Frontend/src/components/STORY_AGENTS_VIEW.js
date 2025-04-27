@@ -1,4 +1,4 @@
-import { Container, Stack, Group } from '@mantine/core';
+import { Container, Stack, Group, Paper, Text } from '@mantine/core';
 import { useState, useEffect } from 'react';
 import AGENT_BOX from '../components/AGENT_BOX';
 import AGENT_THOUGHTS from './AGENT_THOUGHTS';
@@ -234,6 +234,13 @@ function STORY_AGENTS_VIEW() {
 
   return (
     <Container fluid style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+      {/* Visible current phase display */}
+      <Paper withBorder p="md" radius="md" mb="md">
+        <Text size="lg" style={{ fontWeight: 'bold' }}>
+          <strong>Current Phase: {curr_step.toUpperCase()}</strong>
+        </Text>
+      </Paper>
+
       <Stack spacing="md">
         {agents.map((agent) => (
           <Group key={agent._id} align="flex-start" style={{ width: '100%' }}>
@@ -248,8 +255,9 @@ function STORY_AGENTS_VIEW() {
                 agent={agent.agent}
                 start_event_stream={start_event_stream}
                 step={stream_params.step}
-                chapter_number={stream_params.chapter_number}
+                chapter_number={stream_params.chapter_number + 1} // i didnt think about this to understand why i need a +1 here but the index is off and it works
                 onActionButtonClick={(actionType) => handleActionButtonClick(actionType, agent._id)}
+                agent_id={agent._id}
               />
             </div>
             <div style={{ flex: 0.3 }}>
