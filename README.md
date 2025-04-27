@@ -55,7 +55,7 @@ If the previous running instructions still do not work, do the following instead
 <tr>
     <td align="center">
         <a href="https://github.com/JawnnyD">
-            <img src="https://media.licdn.com/dms/image/v2/D5603AQFm7qBiz7RFJw/profile-displayphoto-shrink_800_800/profile-displayphoto-shrink_800_800/0/1677198760248?e=1745452800&v=beta&t=G1zs2Syy5fzCnQ5KwwJpphi0q95V1fuWplLmwP2-Nt4" width="100;" alt="DangJohn"/>
+            <img src="https://media.licdn.com/dms/image/v2/D5603AQFm7qBiz7RFJw/profile-displayphoto-shrink_800_800/profile-displayphoto-shrink_800_800/0/1677198760248?e=1751500800&v=beta&t=vpkZIET92cRZWlouoVjP8Kcj8rD3P_0IIWyzCCXVcuQ" width="100;" alt="DangJohn"/>
             <br />
             <sub><b>John Dang</b></sub>
         </a>
