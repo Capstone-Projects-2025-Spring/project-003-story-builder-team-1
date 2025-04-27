@@ -53,7 +53,7 @@ function AGENT_BOX({ name, chapter_content, step, agent_id, chapter_number, onAc
       if (edit_critique_data) {
         await fetch_user_data(user);
       } else {
-        console.error("Error updating chapter edit:", edit_critique_error);
+        console.error("Error updating critique edit:", edit_critique_error);
       }
     }
     else {

@@ -130,6 +130,7 @@ function STORY_AGENTS_VIEW() {
     else if (actionType === 'continue') {
       // if the current step is generate, then set the step to be critique
       if (curr_step === 'generate') {
+        chapter_number -= 1;
         if (chapter_number === 0) {
           // db call to update db with this specific agent outline before continuing
           const { data: add_outline_data, error: add_outline_error } = await use_axios(SERVER_URL + `/db/story/${user}/${story_id}/add_outline`, "POST", {outline: agent_responses[agent_id]});
@@ -141,7 +142,7 @@ function STORY_AGENTS_VIEW() {
           }
         }
 
-        chapter_number -= 1;
+        
         step = chapter_number === 0 ? "critique_outline" : "critique_chapter";
         // db call to update the story step to critique
         const { data: update_story_step_data, error: update_story_step_error } = await use_axios(SERVER_URL + `/db/story/${user}/${story_id}/update_story_step`, "POST", {step: "critique"});
