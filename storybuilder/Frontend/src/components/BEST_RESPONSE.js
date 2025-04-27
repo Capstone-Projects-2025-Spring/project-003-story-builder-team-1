@@ -83,11 +83,12 @@ function BEST_RESPONSE() {
 
     return (
         <Container fluid style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-        <Paper withBorder p="md" radius="md" mb="md">
+            {/* dont need this becuase i am skipping the other parts and just moving to next chapter */}
+        {/* <Paper withBorder p="md" radius="md" mb="md">
             <Text size="lg" style={{ fontWeight: 'bold' }}>
             <strong>Current Phase: {curr_step.toUpperCase()}</strong>
             </Text>
-        </Paper>
+        </Paper> */}
 
         <Card
             shadow="none"
