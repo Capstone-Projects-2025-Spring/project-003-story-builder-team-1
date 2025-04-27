@@ -90,23 +90,6 @@ export const STORY_PROVIDER = ({ children }) => {
         set_should_stream(true); // allow streaming now
         set_disable_regenerate(true); // disable regenerate button
         set_streaming_action('continue'); // set action to continue for loading
-    
-        // const { data: gen_outline_data, error: gen_outline_error } = await use_axios(
-        //     `${SERVER_URL}/translator/translate?user_id=${user}&story_id=${curr_story_id}&step=generate_outline&chapter_number=0`,
-        //     "GET",
-        //     // {
-        //     //     user_id: user,
-        //     //     story_id: curr_story_id,
-        //     //     step: "generate_outline",
-        //     //     chapter_number: 0,
-        //     // }
-        // );
-
-        // if (gen_outline_data === null) {
-        //     set_api_error(gen_outline_error);
-        //     set_loading(false);
-        //     return false;
-        // }
 
         return true;
     }
@@ -118,6 +101,8 @@ export const STORY_PROVIDER = ({ children }) => {
         console.log("Chapter number:", chapter_number);
         set_agent_responses({});  // Reset agent responses
         set_agent_thoughts({});  // Reset agent thoughts
+        set_agent_critiques({});
+        set_agent_critique_thoughts({});
 
         const url = `${SERVER_URL}/translator/translate?user_id=${user}&story_id=${story_id}&step=${step}&chapter_number=${chapter_number}`;
         const eventSource = new EventSource(url);

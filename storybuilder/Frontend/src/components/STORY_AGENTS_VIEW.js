@@ -6,14 +6,15 @@ import { useParams } from 'react-router';
 import { USE_USER } from '../context/USER_CONTEXT';
 import { USE_AUTH } from '../context/AUTH_CONTEXT';
 import { USE_STORY } from '../context/STORY_CONTEXT';
-import { set } from 'mongoose';
+import USE_AXIOS from '../hooks/USE_AXIOS';
 
 const SERVER_URL = process.env.REACT_APP_SERVER_URL || "http://localhost:8080";
 
 function STORY_AGENTS_VIEW() {
   const { story_id } = useParams();
-  const { user_stories } = USE_USER();
+  const { user_stories, fetch_user_data } = USE_USER();
   const { user } = USE_AUTH();
+  const { use_axios } = USE_AXIOS();
   const [agents, set_agents] = useState([]);
   const [stream_params, set_stream_params] = useState({
     step: "generate_outline",
@@ -65,10 +66,10 @@ function STORY_AGENTS_VIEW() {
         initial_thoughts[agent._id] = last_chapter.content_thoughts;
       }
       if (last_chapter?.critique) {
-        initial_responses[agent._id] = last_chapter.critique;
+        initial_critiques[agent._id] = last_chapter.critique;
       }
       if (last_chapter?.critique_thoughts) {
-        initial_thoughts[agent._id] = last_chapter.critique_thoughts;
+        initial_critique_thoughts[agent._id] = last_chapter.critique_thoughts;
       }
     });
 
@@ -78,7 +79,7 @@ function STORY_AGENTS_VIEW() {
     set_agent_critique_thoughts(initial_critique_thoughts);
   }, [story_id, user_stories]);
 
-  const handleActionButtonClick = (actionType) => {
+  const handleActionButtonClick = async (actionType, agent_id) => {
     if (should_stream) return;
 
     set_streaming_action(actionType);
@@ -88,9 +89,13 @@ function STORY_AGENTS_VIEW() {
 
     const story_content = current_story.story_content || [];
     const chapter_count = story_content.length;
+    const current_step = current_story.story_step;
+    set_curr_step(current_step);
 
     let step = "";
     let chapter_number = chapter_count;
+    console.log("chapter count in handleactionbuttonclick: ", chapter_count)
+    console.log("story content in handleactionbuttonclick: ", story_content);
 
     // if regenerate button is clicked, check phase and chapter to set steps accordingly
     if (actionType === 'regenerate') {
@@ -125,20 +130,86 @@ function STORY_AGENTS_VIEW() {
     else if (actionType === 'continue') {
       // if the current step is generate, then set the step to be critique
       if (curr_step === 'generate') {
+        if (chapter_number === 0) {
+          // db call to update db with this specific agent outline before continuing
+          const { data: add_outline_data, error: add_outline_error } = await use_axios(SERVER_URL + `/db/story/${user}/${story_id}/add_outline`, "POST", {outline: agent_responses[agent_id]});
+
+          if (add_outline_data) {
+            await fetch_user_data(user);
+          } else {
+              console.error("Error updating outline:", add_outline_error);
+          }
+        }
+
         chapter_number -= 1;
         step = chapter_number === 0 ? "critique_outline" : "critique_chapter";
+        // db call to update the story step to critique
+        const { data: update_story_step_data, error: update_story_step_error } = await use_axios(SERVER_URL + `/db/story/${user}/${story_id}/update_story_step`, "POST", {step: "critique"});
+
+        if (update_story_step_data) {
+          await fetch_user_data(user);
+        } else {
+            console.error("Error updating story step:", update_story_step_error);
+        }
         set_curr_step('critique');
       }
       // if current step is critique, then next step is rewrite
       else if (curr_step === 'critique') {
+        // db call to update db with this specific agent critique before continuing
+        const { data: add_critique_data, error: add_critique_error } = await use_axios(SERVER_URL + `/db/story/${user}/${story_id}/add_critique`, "POST", {chapter_number: chapter_number, critique: agent_critiques[agent_id]});
+
+        if (add_critique_data) {
+          await fetch_user_data(user);
+        } else {
+            console.error("Error updating critique:", add_critique_error);
+        }
+
         chapter_number -= 1;
-        step = 'rewrite_chapter';
+        step = chapter_number === 0 ? 'rewrite_outline' : 'rewrite_chapter';
+        console.log("chapter count when trying to rewrite: ", chapter_count)
+        // db call to update the story step to rewrite
+        const { data, error } = await use_axios(SERVER_URL + `/db/story/${user}/${story_id}/update_story_step`, "POST", {step: "rewrite"});
+
+        if (data) {
+          await fetch_user_data(user);
+        } else {
+            console.error("Error updating story step:", error);
+        }
         set_curr_step('rewrite');
       }
       // if current step is rewite, then next step is to generate
       else if (curr_step === 'rewrite') {
+        if (chapter_number === 0) {
+          // db call to update db with this specific agent outline before continuing
+          const { data: add_outline_data, error: add_outline_error } = await use_axios(SERVER_URL + `/db/story/${user}/${story_id}/add_outline`, "POST", {outline: agent_responses[agent_id]});
+
+          if (add_outline_data) {
+            await fetch_user_data(user);
+          } else {
+              console.error("Error updating outline:", add_outline_error);
+          }
+        }
+        else {
+          // db call to update db with this specific agent chapter before continuing
+          const { data: add_chapter_data, error: add_chapter_error } = await use_axios(SERVER_URL + `/db/story/${user}/${story_id}/add_chapter`, "POST", {story_chapter_number: chapter_number, text: agent_responses[agent_id]});
+
+          if (add_chapter_data) {
+            await fetch_user_data(user);
+          } else {
+              console.error("Error updating chapter:", add_chapter_error);
+          }
+        }
+        step = chapter_number === 1 ? 'generate_first_chapter' : 'generate_next_chapter';
+
+        // db call to update the story step to rewrite
+        const { data, error } = await use_axios(SERVER_URL + `/db/story/${user}/${story_id}/update_story_step`, "POST", {step: "generate"});
+
+        if (data) {
+          await fetch_user_data(user);
+        } else {
+            console.error("Error updating story step:", error);
+        }
         set_curr_step('generate');
-        step = chapter_count === 1 ? 'generate_first_chapter' : 'generate_next_chapter';
       }
     }
 
@@ -151,6 +222,15 @@ function STORY_AGENTS_VIEW() {
     const { step, chapter_number } = stream_params;
     start_event_stream(user, story_id, step, chapter_number);
   }, [should_stream]);
+
+  useEffect(() => {
+    // Perform regeneration logic after curr_step updates
+    if (curr_step === 'critique') {
+      console.log("Updated curr_step: ", curr_step);
+      // Regeneration logic here (e.g., trigger a regenerate action)
+      // You can now safely use curr_step
+    }
+  }, [curr_step]);
 
   return (
     <Container fluid style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
@@ -169,7 +249,7 @@ function STORY_AGENTS_VIEW() {
                 start_event_stream={start_event_stream}
                 step={stream_params.step}
                 chapter_number={stream_params.chapter_number}
-                onActionButtonClick={handleActionButtonClick}
+                onActionButtonClick={(actionType) => handleActionButtonClick(actionType, agent._id)}
               />
             </div>
             <div style={{ flex: 0.3 }}>

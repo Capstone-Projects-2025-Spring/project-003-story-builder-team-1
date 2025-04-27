@@ -49,8 +49,8 @@ function STORY_AGENT_HISTORY() {
             if (matching_chapter?.content_thoughts) {
                 curr_agent_thoughts[agent._id] = matching_chapter.content_thoughts;
             }
-            if (matching_chapter?.critiques) {
-                curr_agent_critiques[agent._id] = matching_chapter.critiques;
+            if (matching_chapter?.critique) {
+                curr_agent_critiques[agent._id] = matching_chapter.critique;
             }
             if (matching_chapter?.critique_thoughts) {
                 curr_agent_critique_thoughts[agent._id] = matching_chapter.critique_thoughts;
