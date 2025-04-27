@@ -26,7 +26,7 @@ export const USER_PROVIDER = ({ children }) => {
         }
 
         // get list of agents for user
-        const { data: agent_list_data, error: agent_list_error } = await use_axios(SERVER_URL + '/db/agents', "GET");
+        const { data: agent_list_data, error: agent_list_error } = await use_axios(SERVER_URL + '/db/personas', "GET");
 
         if (agent_list_data) {
             set_agent_list(agent_list_data);
