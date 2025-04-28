@@ -432,76 +432,349 @@ Displays a story for viewing.
     AgentController ..> Database
 ```
 
-## Courier Class:
-**Purpose**: The only class which will have several instances of itself running. It’s also the only class which directly accesses the LLM. Its main goal is to send prompts assembled by PromptAdmin from information sent by Translator in order to get input to further refine.
+## `Agent`
+### Purpose
+Encapsulates logic for dispatching messages to and receiving responses from the LLM according to an agent graph.
 
-### Data Fields:
-- `style: String`: PLACEHOLDER
-- `prompt_info: JSON`: Information stored as a JSON var grabbed directly from the database and sent here from Translator. This will be cited constantly by the Courier instance to remind itself which agent it’s representing.
-- `JUDGING: int`: PLACEHOLDER
-- `INSTANCENUM: int`: The order an instance has in relation to the rest of the instances (4 indicates it’s the fourth instance, 3 if it’s third).
-- `API_KEY: String`: Points to the key which accesses the LLM (will NOT be stored here)
-- `local_story: String`: A copy of the original generated story the instance made in its first API call. Can be used for refinement and comparison.
+### Data Fields
+_None_
 
-### Methods:
-#### `story_call(int PLACEHOLDER, String key, String prompt): JSON` - Sends the finished prompt over to the LLM, places the output locally (if it’s the first time) and in the shared data structure. 
+### Methods
+#### `structured_send_off(agent_graph, message): Promise<any>`
+- **Purpose**: Send a discrete, structured request to the LLM based on the given agent graph and input message.  
+- **Pre-conditions**: `agent_graph` is a valid graph object; `message` is non-empty.  
+- **Post-conditions**: Resolves with the LLM’s parsed response.  
+- **Parameters**:  
+  - `agent_graph` (Object): Defines nodes and transitions for this agent.  
+  - `message` (string): User’s or system’s input text.  
+- **Return Value**: `Promise<any>` — the structured LLM response.  
+- **Exceptions Thrown**: May reject on invalid graph or LLM errors.
 
-#### `story_push(String local_story) : void` - PLACEHOLDER
-
-#### `judge(): LinkedList` - Replaces the chapterbank structure in Translator with a new, ranked version no longer corresponding to instance numbers but to quality. The LLM will rank the chapters for us and this function will format the output to be presentable for React.
-
----
-
-## Prompt_Admin Class:
-**Purpose**: The final step in the pipeline between accessing database agent info and communicating with the LLM. It assembles a prompt based on some templates which serve different purposes (i.e., generation, critique, and judgement). Only Courier will access this class, and it will send it information it’s sent by Translator.
-
-### Data Fields:
-- `refineprompt: String`: Template for chapter refinement. Relevant information will be added to this and the rest of these fields in getprompt.
-- `generateprompt: String`: Template for chapter generation.
-- `rankprompt: String`: Template for ranking ALL chapters after refinement is done.
-
-### Methods:
-#### `get_prompt(String promptinfo, String type): String` - Assembles a prompt by placing keywords in the promptinfo JSON object into one of the templates above, with ‘type’ deciding which to use.
+#### `stream_send_off(res, agent_graph, formatted_input): void`
+- **Purpose**: Stream the LLM’s output directly to an HTTP response in chunks, following the specified agent graph.  
+- **Pre-conditions**: `res` is an active Express response; streaming is supported by the LLM.  
+- **Post-conditions**: Chunks of generated text are piped to `res` until completion.  
+- **Parameters**:  
+  - `res` (Response): Express response object for streaming.  
+  - `agent_graph` (Object): Defines the streaming logic.  
+  - `formatted_input` (string): Pre-processed prompt text.  
+- **Return Value**: `void`  
+- **Exceptions Thrown**: May throw on network/stream errors.
 
 ---
 
-## DB_Tracker Class:
-**Purpose**: The class that handles all database access. It is a CRUD API can grab any information from any table in the database for other classes to use, be it for login verification or prompt history.
+## `Courier`
+### Purpose
+Aggregates agent votes, determines consensus, persists intermediary data to the database, and handles batch requests.
 
-### Data Fields:
-- `DB_key: String`: Field which links to the DB (obviously the key itself will not be stored here).
+### Data Fields
+_None_
 
-### Methods:
-#### `DB_grab(): JSON` - PLACEHOLDER
+### Methods
+#### `determine_best_result(votes): any`
+- **Purpose**: Compute the winning response based on an array of agent votes.  
+- **Pre-conditions**: `votes` is a non-empty array of comparable vote objects.  
+- **Post-conditions**: Returns the vote with highest score or tie-break logic applied.  
+- **Parameters**:  
+  - `votes` (Array): List of vote objects from agents.  
+- **Return Value**: `any` — the selected result object.  
+- **Exceptions Thrown**: None
 
-#### `accountgrab(JSON info): JSON` -  Checks to see if account info is in the database. Used for login/signup.
+#### `db_store(step, user_id, story_id, chapter_number, db_data, res): Promise<void>`
+- **Purpose**: Persist a step’s data and the LLM response to the database.  
+- **Pre-conditions**: All identifiers are valid; database connection is live.  
+- **Post-conditions**: Data is stored and an acknowledgment may be sent on `res`.  
+- **Parameters**:  
+  - `step` (string): The stage name (e.g., “outline”, “chapter”).  
+  - `user_id` (string): ID of the requesting user.  
+  - `story_id` (string): ID of the current story.  
+  - `chapter_number` (number): Chapter index.  
+  - `db_data` (Object): Payload to store.  
+  - `res` (Response): Express response to confirm storage.  
+- **Return Value**: `Promise<void>`  
+- **Exceptions Thrown**: May reject on DB errors.
 
-#### `agent_grab(): JSON` - Checks if an agent is in the database and grabs all style and prompt info from its entry. This will be returned to the frontend.
-
-#### `new_account(): JSON` - Creates a new account in the database. Returns necessary login info.
-
-#### `new_agent(): JSON` - Creates a new agent based on information entered in the frontend. This will be formatted and posted to one of the tables as a new entry that can be cited.
-
-#### `agent_dropdown(): JSON` - Returns all agents in the database for user selection. 
+#### `aggregateHandler(req, res): void`
+- **Purpose**: Express route handler that collects votes from multiple agents, invokes aggregation, and returns the final result.  
+- **Pre-conditions**: Request body contains `votes` array and identifiers.  
+- **Post-conditions**: Sends JSON with the aggregated best result.  
+- **Parameters**:  
+  - `req` (Request): Express request object.  
+  - `res` (Response): Express response object.  
+- **Return Value**: `void`  
+- **Exceptions Thrown**: Forwards errors via Express error middleware.
 
 ---
 
-## Translator Class:
-**Purpose**: Superclass which is responsible for handling the output of the Courier instances and communicating with the frontend web pages. It is the only class those pages will communicate with directly in the backend besides DB_Tracker. Inside of it is a shared data structure where the instances store their chapters, as well as functions to rank, format and return a chapter.
+## `Translator`
+### Purpose
+Acts as a façade, translating frontend HTTP calls into Courier or StoryController actions with proper payload formatting.
 
-### Data Fields:
-- `story_bank: Map` - Holds keys indicating which instance the  content belongs to, and values containing JSON objects grabbed from the LLM. This will be used to store final chapters as well as being a hub from which instances can judge each other’s products.
-- `agent_instances: int` - Keeps track of the number of Courier instances accessing the LLM. In case this can be set by the user later (or in case we want to return ALL of the chapters at once) the user can cite this field.
+### Data Fields
+_None_
 
-### Methods:
-#### `text_box(): String` - Stores input from frontend text box
+### Methods
+#### `translateHandler(req, res): void`
+- **Purpose**: Route incoming HTTP requests to the appropriate backend service (Courier or StoryController) after input validation.  
+- **Pre-conditions**: Request URL and method correspond to a known translation.  
+- **Post-conditions**: Invokes the target handler and streams or returns its response.  
+- **Parameters**:  
+  - `req` (Request): Express request object.  
+  - `res` (Response): Express response object.  
+- **Return Value**: `void`  
+- **Exceptions Thrown**: Forwards errors via Express error middleware.
 
-#### `rank_format(): void` - PLACEHOLDER
+---
 
-#### `writing_session(): void` - Creates all couriers, has them write and refine stories, and picks one to be the final judge.
+## `AgentController`
+### Purpose
+CRUD operations for agent configurations stored in the database.
 
-#### `write_chapter(input: JSON): JSON` - Takes input from the frontend and sends it to the Courier instances. The courier instances will return their chapters to chapterbank.
+### Data Fields
+_None_
 
-#### `make_courier(): int` - Creates an instance of the Courier class. Returns the instance’s assigned number and key in the chapterbank.
+### Methods
+#### `agent_list(req, res, next): void`
+- **Purpose**: Retrieve a list of all agents.  
+- **Pre-conditions**: User is authenticated.  
+- **Post-conditions**: Sends JSON array of agents.
 
-#### `get_story_bank(): LinkedList` - Returns the entire chapter bank.
+#### `agent_detail(req, res, next): void`
+- **Purpose**: Fetch details for a single agent by ID.  
+- **Pre-conditions**: `req.params.id` is provided.  
+- **Post-conditions**: Sends JSON with agent data.
+
+#### `agent_create_post(req, res, next): void`
+- **Purpose**: Create a new agent record.  
+- **Pre-conditions**: Request body contains valid agent fields.  
+- **Post-conditions**: Inserts into DB and returns created agent.
+
+#### `agent_delete_post(req, res, next): void`
+- **Purpose**: Delete an agent by ID.  
+- **Pre-conditions**: `req.params.id` matches existing record.  
+- **Post-conditions**: Removes from DB and confirms deletion.
+
+#### `agent_update_post(req, res, next): void`
+- **Purpose**: Update an agent’s properties.  
+- **Pre-conditions**: Valid ID and update payload.  
+- **Post-conditions**: Persists changes and returns updated agent.
+
+#### `agent_update_last_response_post(req, res, next): void`
+- **Purpose**: Store the last response text for an agent.  
+- **Pre-conditions**: Agent exists; `req.body.response` is non-empty.  
+- **Post-conditions**: Updates record and returns acknowledgment.
+
+#### `agent_get_last_response(req, res, next): void`
+- **Purpose**: Retrieve the stored last response for an agent.  
+- **Pre-conditions**: Agent ID provided.  
+- **Post-conditions**: Sends the last response text.
+
+---
+
+## `PersonaController`
+### Purpose
+Manage user-defined personas used to seed agent behavior.
+
+### Data Fields
+_None_
+
+### Methods
+#### `persona_list(req, res, next): void`
+- **Purpose**: List all personas for the authenticated user.  
+- **Pre-conditions**: User session is valid.  
+- **Post-conditions**: Sends JSON array of personas.
+
+#### `create_persona(req, res, next): void`
+- **Purpose**: Create a new persona entry.  
+- **Pre-conditions**: Request body includes persona name and attributes.  
+- **Post-conditions**: Persists persona and returns its record.
+
+#### `delete_persona(req, res, next): void`
+- **Purpose**: Delete an existing persona by ID.  
+- **Pre-conditions**: Persona ID is valid.  
+- **Post-conditions**: Removes persona and confirms deletion.
+
+---
+
+## `StoryController`
+### Purpose
+Handles all story lifecycle actions: creation, retrieval, updating outlines/chapters/critiques, and stepping through the story generation process.
+
+### Data Fields
+_None_
+
+### Methods
+#### `story_create(req, res, next): void`
+- **Purpose**: Initialize a new story for a user.  
+- **Pre-conditions**: User authenticated; title provided.  
+- **Post-conditions**: Creates DB record and returns story metadata.
+
+#### `user_stories_list(req, res, next): void`
+- **Purpose**: Fetch all stories belonging to the current user.  
+- **Pre-conditions**: Valid user session.  
+- **Post-conditions**: Returns array of story summaries.
+
+#### `story_details(req, res, next): void`
+- **Purpose**: Get full details for a specific story.  
+- **Pre-conditions**: `req.params.story_id` is valid.  
+- **Post-conditions**: Returns JSON story object.
+
+#### `story_delete(req, res, next): void`
+- **Purpose**: Remove a story and its associated chapters/outlines.  
+- **Pre-conditions**: Story exists and belongs to user.  
+- **Post-conditions**: Deletes DB records and confirms.
+
+#### `story_chapter_details(req, res, next): void`
+- **Purpose**: Retrieve a particular chapter’s text and metadata.  
+- **Pre-conditions**: Chapter number valid.  
+- **Post-conditions**: Sends chapter JSON.
+
+#### `story_name_update(req, res, next): void`
+- **Purpose**: Rename an existing story.  
+- **Pre-conditions**: New name provided.  
+- **Post-conditions**: Updates DB and returns updated story.
+
+#### `story_get_number_of_chapters(req, res, next): void`
+- **Purpose**: Return count of chapters in a story.  
+- **Pre-conditions**: Story ID valid.  
+- **Post-conditions**: Sends integer count.
+
+#### `story_add_outline(req, res, next): void`
+- **Purpose**: Generate and store a story outline via agents.  
+- **Pre-conditions**: Story exists; outline parameters provided.  
+- **Post-conditions**: Persists outline in DB and returns it.
+
+#### `story_add_agent_outlines(req, res, next): void`
+- **Purpose**: Generate multiple agent-specific outlines for comparison.  
+- **Pre-conditions**: Same as `story_add_outline`.  
+- **Post-conditions**: Stores each agent’s outline.
+
+#### `story_add_critique(req, res, next): void`
+- **Purpose**: Solicit critique on an existing outline/chapter.  
+- **Pre-conditions**: Target content exists.  
+- **Post-conditions**: Persists critique and returns feedback.
+
+#### `story_add_agent_critiques(req, res, next): void`
+- **Purpose**: Gather agent-specific critiques for comparison.  
+- **Pre-conditions**: Same as `story_add_critique`.  
+- **Post-conditions**: Stores each critique.
+
+#### `story_add_chapter(req, res, next): void`
+- **Purpose**: Generate the next chapter from approved outline.  
+- **Pre-conditions**: Outline finalized.  
+- **Post-conditions**: Saves chapter text.
+
+#### `story_add_agent_chapter(req, res, next): void`
+- **Purpose**: Produce multiple candidate chapters via different agents.  
+- **Pre-conditions**: Same as `story_add_chapter`.  
+- **Post-conditions**: Persists each candidate.
+
+#### `story_agent_chapter_edit(req, res, next): void`
+- **Purpose**: Apply user’s edits to a generated chapter.  
+- **Pre-conditions**: Chapter exists.  
+- **Post-conditions**: Updates DB and returns revised text.
+
+#### `story_agent_critique_edit(req, res, next): void`
+- **Purpose**: Refine a stored critique based on user feedback.  
+- **Pre-conditions**: Critique exists.  
+- **Post-conditions**: Persists updated critique.
+
+#### `story_get_critique(req, res, next): void`
+- **Purpose**: Retrieve stored critique for a chapter or outline.  
+- **Pre-conditions**: IDs valid.  
+- **Post-conditions**: Sends critique JSON.
+
+#### `story_agent_chapter_votes(req, res, next): void`
+- **Purpose**: Collect user or agent votes on candidate chapters.  
+- **Pre-conditions**: Candidate chapters present.  
+- **Post-conditions**: Stores votes and returns tally.
+
+#### `story_get_outline(req, res, next): void`
+- **Purpose**: Fetch the main outline for review.  
+- **Pre-conditions**: Outline exists.  
+- **Post-conditions**: Sends outline JSON.
+
+#### `story_agents_list(req, res, next): void`
+- **Purpose**: List agents assigned to a story.  
+- **Pre-conditions**: Story ID provided.  
+- **Post-conditions**: Returns agent IDs and metadata.
+
+#### `story_get_generate_outline_details(req, res, next): void`
+- **Purpose**: Provide status/details of an in-progress outline generation.  
+- **Pre-conditions**: Generation initiated.  
+- **Post-conditions**: Sends progress info.
+
+#### `story_get_critique_outline_details(req, res, next): void`
+- **Purpose**: Provide status/details of critique generation on the outline.  
+- **Pre-conditions**: Critique step started.  
+- **Post-conditions**: Returns progress info.
+
+#### `story_get_rewrite_outline_details(req, res, next): void`
+- **Purpose**: Provide status/details of an outline rewrite step.  
+- **Pre-conditions**: Rewrite step initiated.  
+- **Post-conditions**: Sends progress info.
+
+#### `story_get_first_chapter_details(req, res, next): void`
+- **Purpose**: Return details on the initial chapter generation.  
+- **Pre-conditions**: First chapter generation done.  
+- **Post-conditions**: Sends chapter meta.
+
+#### `story_get_next_chapter_details(req, res, next): void`
+- **Purpose**: Return details on the latest chapter generation.  
+- **Pre-conditions**: Next chapter exists.  
+- **Post-conditions**: Sends chapter meta.
+
+#### `story_get_critique_chapter_details(req, res, next): void`
+- **Purpose**: Provide status/details of chapter critique.  
+- **Pre-conditions**: Critique in progress or done.  
+- **Post-conditions**: Returns critique status.
+
+#### `story_get_rewrite_chapter_details(req, res, next): void`
+- **Purpose**: Provide status/details of chapter rewrite.  
+- **Pre-conditions**: Rewrite step started.  
+- **Post-conditions**: Sends progress info.
+
+#### `story_get_step(req, res, next): void`
+- **Purpose**: Retrieve the current step name in the story pipeline.  
+- **Pre-conditions**: Story exists.  
+- **Post-conditions**: Returns step identifier.
+
+#### `story_update_step(req, res, next): void`
+- **Purpose**: Advance or modify the current story pipeline step.  
+- **Pre-conditions**: Valid new step provided.  
+- **Post-conditions**: Updates step in DB.
+
+---
+
+## `UserController`
+### Purpose
+Handle user account creation, authentication, updates, and deletion.
+
+### Data Fields
+_None_
+
+### Methods
+#### `create_user(req, res, next): void`
+- **Purpose**: Register a new user.  
+- **Pre-conditions**: `req.body` contains username/password.  
+- **Post-conditions**: Persists user record and returns profile.
+
+#### `user_login(req, res, next): void`
+- **Purpose**: Authenticate user credentials and issue session or token.  
+- **Pre-conditions**: Valid credentials in request.  
+- **Post-conditions**: Sets session/cookie and returns success.
+
+#### `user_delete(req, res, next): void`
+- **Purpose**: Remove a user account.  
+- **Pre-conditions**: Authenticated as target user or admin.  
+- **Post-conditions**: Deletes user record and related data.
+
+#### `user_update(req, res, next): void`
+- **Purpose**: Modify user profile fields.  
+- **Pre-conditions**: Valid update payload.  
+- **Post-conditions**: Persists changes and returns updated profile.
+
+#### `user_details(req, res, next): void`
+- **Purpose**: Fetch profile details for the current or specified user.  
+- **Pre-conditions**: Authentication or target user ID.  
+- **Post-conditions**: Sends user JSON.
