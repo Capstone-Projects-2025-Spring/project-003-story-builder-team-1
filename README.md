@@ -66,7 +66,36 @@ If the previous running instructions still do not work, do the following instead
             <br />
             <sub><b>Edgardo Juan González</b></sub>
         </a>
-    </td></tr>
+    </td>
+    <td align="center">
+        <a href="https://github.com/kjeeth04">
+            <img src="https://avatars.githubusercontent.com/u/72448980?v=4" width="100;" alt="VijayKamaljeeth"/>
+            <br />
+            <sub><b>Kamaljeeth Vijay</b></sub>
+        </a>
+    </td>
+    <td align="center">
+        <a href="https://github.com/CBerg333">
+            <img src="https://avatars.githubusercontent.com/u/119720325?v=4" width="100;" alt="McGarrityChristopher"/>
+            <br />
+            <sub><b>Christopher McGarrity</b></sub>
+        </a>
+    </td>
+    <td align="center">
+        <a href="https://github.com/qari7">
+            <img src="https://avatars.githubusercontent.com/u/156926495?v=4" width="100;" alt="QariYousef"/>
+            <br />
+            <sub><b>Yousef Qari</b></sub>
+        </a>
+    </td>
+    <td align="center">
+        <a href="https://github.com/NocKtuRn4L">
+            <img src="https://avatars.githubusercontent.com/u/133310401?v=4" width="100;" alt="CaelDylan"/>
+            <br />
+            <sub><b>Dylan Cael</b></sub>
+        </a>
+    </td>
+</tr>
 </table>
 
 [//]: # ( readme: collaborators -end )
