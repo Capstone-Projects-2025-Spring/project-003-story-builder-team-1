@@ -294,13 +294,13 @@ function STORY_AGENT_HISTORY() {
                 {show_content && (
                 <Stack spacing="md" mt={"md"}>
                     {agents.map((agent) => (
-                    <Group key={agent._id} align="flex-start" style={{ width: "100%" }}>
+                    <Group key={agent._id} align="flex-start" style={{ width: "100%", minWidth: "100%" }}>
                         <Card
                         shadow="sm"
                         padding="md"
                         radius="md"
                         withBorder
-                        style={{ backgroundColor: "#242424" }}
+                        style={{ backgroundColor: "#242424", minWidth: "100%" }}
                         >
                         <div style={{ padding: "10px" }}>
                             <Group gap="xs" align="center">
@@ -353,13 +353,13 @@ function STORY_AGENT_HISTORY() {
                 {show_content_thoughts && (
                 <Stack spacing="md" mt={"md"}>
                     {agents.map((agent) => (
-                    <Group key={agent._id} align="flex-start" style={{ width: "100%" }}>
+                    <Group key={agent._id} align="flex-start" style={{ width: "100%", minWidth: "100%" }}>
                         <Card
                         shadow="sm"
                         padding="md"
                         radius="md"
                         withBorder
-                        style={{ backgroundColor: "#242424" }}
+                        style={{ backgroundColor: "#242424", minWidth: "100%" }}
                         >
                         <div style={{ padding: "10px" }}>
                             <Group gap="xs" align="center">
@@ -409,13 +409,13 @@ function STORY_AGENT_HISTORY() {
                 {show_critiques && (
                 <Stack spacing="md" mt={"md"}>
                     {agents.map((agent) => (
-                    <Group key={agent._id} align="flex-start" style={{ width: "100%" }}>
+                    <Group key={agent._id} align="flex-start" style={{ width: "100%", minWidth: "100%" }}>
                         <Card
                         shadow="sm"
                         padding="md"
                         radius="md"
                         withBorder
-                        style={{ backgroundColor: "#242424" }}
+                        style={{ backgroundColor: "#242424", minWidth: "100%" }}
                         >
                         <div style={{ padding: "10px" }}>
                             <Group gap="xs" align="center">
@@ -465,13 +465,13 @@ function STORY_AGENT_HISTORY() {
                 {show_critique_thoughts && (
                 <Stack spacing="md" mt={"md"}>
                     {agents.map((agent) => (
-                    <Group key={agent._id} align="flex-start" style={{ width: "100%" }}>
+                    <Group key={agent._id} align="flex-start" style={{ width: "100%", minWidth: "100%" }}>
                         <Card
                         shadow="sm"
                         padding="md"
                         radius="md"
                         withBorder
-                        style={{ backgroundColor: "#242424" }}
+                        style={{ backgroundColor: "#242424", minWidth: "100%" }}
                         >
                         <div style={{ padding: "10px" }}>
                             <Group gap="xs" align="center">

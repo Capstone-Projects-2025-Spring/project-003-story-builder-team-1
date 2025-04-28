@@ -89,11 +89,11 @@ function STORY_LIST() {
                   <Button variant="filled" color="gray" style={{ width: 'calc(100% - 10px)', margin: '0 5px' }} onClick={() => navigate(`/story/${story._id}/agent_history`)}>
                     View Agent History
                   </Button>
-                  <Button variant="filled" color="gray" style={{ width: 'calc(100% - 10px)', margin: '0 5px' }} onClick={() => navigate(`/story/${story._id}/best_response`)}>
-                    Best Response
-                  </Button>
                   <Button variant="filled" color="gray" style={{ width: 'calc(100% - 10px)', margin: '0 5px' }} onClick={() => navigate(`/story/${story._id}/agents`)}>
                     Agents
+                  </Button>
+                  <Button variant="filled" color="gray" style={{ width: 'calc(100% - 10px)', margin: '0 5px' }} onClick={() => navigate(`/story/${story._id}/best_response`)}>
+                    Best Response
                   </Button>
                   <Button variant="filled" color="gray" style={{ width: 'calc(100% - 10px)', margin: '0 5px' }} onClick={() => handle_delete_click(story._id)}>
                     Delete Story
