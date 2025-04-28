@@ -52,6 +52,8 @@ If the previous running instructions still do not work, do the following instead
 1. Do ``cd storybuilder/Backend/``, and then ``npm install``.
 2. Return to the root directory of the Repository, and then do ``cd storybuilder/Agent/agent_container``, and then ``npm install``
 
+
+
 ## Collaborators
 
 [//]: # ( readme: collaborators -start )
@@ -103,3 +105,77 @@ If the previous running instructions still do not work, do the following instead
 </table>
 
 [//]: # ( readme: collaborators -end )
+
+# Final Project Release - Story Builder Team 1
+
+### Epic
+
+[SBTA-12](https://temple-cis-projects-in-cs.atlassian.net/browse/SBTA-12) Design Document
+
+[SBTA-15](https://temple-cis-projects-in-cs.atlassian.net/browse/SBTA-15) Requirements Document
+
+[SBTA-31](https://temple-cis-projects-in-cs.atlassian.net/browse/SBTA-31) Testing
+
+[SBTA-32](https://temple-cis-projects-in-cs.atlassian.net/browse/SBTA-32) Draft Development Interface
+
+[SBTA-36](https://temple-cis-projects-in-cs.atlassian.net/browse/SBTA-36) Database Configuration
+
+[SBTA-51](https://temple-cis-projects-in-cs.atlassian.net/browse/SBTA-51) Agent Writing
+
+[SBTA-52](https://temple-cis-projects-in-cs.atlassian.net/browse/SBTA-52) Account Configuration
+
+[SBTA-53](https://temple-cis-projects-in-cs.atlassian.net/browse/SBTA-53) User Draft Involvement Logic
+
+[SBTA-54](https://temple-cis-projects-in-cs.atlassian.net/browse/SBTA-54) Draft Management
+
+[SBTA-61](https://temple-cis-projects-in-cs.atlassian.net/browse/SBTA-61) Agent Voting
+
+[SBTA-62](https://temple-cis-projects-in-cs.atlassian.net/browse/SBTA-62) Agent Critiquing
+
+[SBTA-64](https://temple-cis-projects-in-cs.atlassian.net/browse/SBTA-64) Agent Initialization
+
+[SBTA-70](https://temple-cis-projects-in-cs.atlassian.net/browse/SBTA-70) Account Login
+
+### Bug
+
+[SBTA-143](https://temple-cis-projects-in-cs.atlassian.net/browse/SBTA-143) Response Markdown
+
+### Story
+
+[SBTA-41](https://temple-cis-projects-in-cs.atlassian.net/browse/SBTA-41) Agent Writing Voting Process
+
+[SBTA-42](https://temple-cis-projects-in-cs.atlassian.net/browse/SBTA-42) Agent Critiquing Process
+
+[SBTA-45](https://temple-cis-projects-in-cs.atlassian.net/browse/SBTA-45) Storing Final Draft
+
+[SBTA-47](https://temple-cis-projects-in-cs.atlassian.net/browse/SBTA-47) User Story Veto
+
+[SBTA-49](https://temple-cis-projects-in-cs.atlassian.net/browse/SBTA-49) Viewing Draft History
+
+[SBTA-50](https://temple-cis-projects-in-cs.atlassian.net/browse/SBTA-50) Editing Draft History
+
+[SBTA-56](https://temple-cis-projects-in-cs.atlassian.net/browse/SBTA-56) Agent Writing Process
+
+[SBTA-57](https://temple-cis-projects-in-cs.atlassian.net/browse/SBTA-57) User Draft Writing
+
+[SBTA-58](https://temple-cis-projects-in-cs.atlassian.net/browse/SBTA-58) Agent Critique Voting Process
+
+[SBTA-67](https://temple-cis-projects-in-cs.atlassian.net/browse/SBTA-67) Storing Draft History
+
+[SBTA-113](https://temple-cis-projects-in-cs.atlassian.net/browse/SBTA-113) Add Functionality of Adding, Deleting, and Updating from Database
+
+[SBTA-115](https://temple-cis-projects-in-cs.atlassian.net/browse/SBTA-115) Update Frontend Documentation
+
+[SBTA-135](https://temple-cis-projects-in-cs.atlassian.net/browse/SBTA-135) Regenerate Button
+
+[SBTA-138](https://temple-cis-projects-in-cs.atlassian.net/browse/SBTA-138) Update Backend Documentation
+
+[SBTA-145](https://temple-cis-projects-in-cs.atlassian.net/browse/SBTA-145) Story Dropdown Indicator
+
+[SBTA-152](https://temple-cis-projects-in-cs.atlassian.net/browse/SBTA-152) Fix Continue Button
+
+[SBTA-153](https://temple-cis-projects-in-cs.atlassian.net/browse/SBTA-153) Edit Button functionality
+
+[SBTA-154](https://temple-cis-projects-in-cs.atlassian.net/browse/SBTA-154) Agent history view
+
+[SBTA-155](https://temple-cis-projects-in-cs.atlassian.net/browse/SBTA-155) Update Story Schema
