@@ -6,11 +6,13 @@ info:
 
 tags:
   - name: courier
-    description: Courier directly interacts with the LLM and Agents using carefully engineered prompts from information sent by Translator in order to get input to further refine.
+    description: Courier uses Agent to receive tool responses to be sent back to Translator
   - name: translator
-    description: Translator sends data from Courier to the Frontend
+    description: Translator sends data from Courier to the Frontend, interacting with Database as necessary
   - name: db
     description: Database retrieves and stores data from the MongoDB database so that data can be created, retrieved, modified, or deleted.
+  - name: agent
+    description: Agent is utilized by Courier by carefully engineered prompts from information sent by Translator in order to get input to further refine.
     
 components:
   parameters:
@@ -1212,3 +1214,494 @@ paths:
       responses:
         '200':
           description: Array of agent objects
+          
+  /generate_outline:
+    post:
+      tags: 
+        - agent
+      summary: Generate an initial story outline
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [messages]
+              properties:
+                messages:
+                  type: object
+                  required: [persona, prompt_info]
+                  properties:
+                    persona:
+                      type: string
+                    prompt_info:
+                      type: string
+      responses:
+        '200':
+          description: Stream of outline generation
+          content:
+            text/event-stream:
+              schema:
+                type: string
+
+  /vote_generate_outline:
+    post:
+      tags: 
+        - agent
+      summary: Vote on generated outlines
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [messages]
+              properties:
+                messages:
+                  type: object
+                  required: [persona, prompt_info, vote_bank]
+                  properties:
+                    persona:
+                      type: string
+                    prompt_info:
+                      type: string
+                    vote_bank:
+                      type: array
+                      items:
+                        type: object
+      responses:
+        '200':
+          description: Voting result
+          content:
+            text/event-stream:
+              schema:
+                type: object
+                properties:
+                  winning_index:
+                    type: integer
+                  vote_value:
+                    type: number
+
+  /critique_outline:
+    post:
+      tags: 
+        - agent
+      summary: Critique a generated outline
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [messages]
+              properties:
+                messages:
+                  type: object
+                  required: [persona, prompt_info, outline]
+                  properties:
+                    persona:
+                      type: string
+                    prompt_info:
+                      type: string
+                    outline:
+                      type: string
+      responses:
+        '200':
+          description: Stream of outline critique
+          content:
+            text/event-stream:
+              schema:
+                type: string
+
+  /vote_critique_outline:
+    post:
+      tags: 
+        - agent
+      summary: Vote on critique of an outline
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [messages]
+              properties:
+                messages:
+                  type: object
+                  required: [persona, prompt_info, vote_bank]
+                  properties:
+                    persona:
+                      type: string
+                    prompt_info:
+                      type: string
+                    vote_bank:
+                      type: array
+                      items:
+                        type: object
+      responses:
+        '200':
+          description: Voting result
+          content:
+            text/event-stream:
+              schema:
+                type: object
+                properties:
+                  winning_index:
+                    type: integer
+                  vote_value:
+                    type: number
+
+  /rewrite_outline:
+    post:
+      tags: 
+        - agent
+      summary: Rewrite a story outline based on critique
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [messages]
+              properties:
+                messages:
+                  type: object
+                  required: [persona, prompt_info, outline, critique]
+                  properties:
+                    persona:
+                      type: string
+                    prompt_info:
+                      type: string
+                    outline:
+                      type: string
+                    critique:
+                      type: string
+      responses:
+        '200':
+          description: Stream of outline rewrite
+          content:
+            text/event-stream:
+              schema:
+                type: string
+
+  /vote_rewrite_outline:
+    post:
+      tags: 
+        - agent
+      summary: Vote on rewritten outlines
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [messages]
+              properties:
+                messages:
+                  type: object
+                  required: [persona, prompt_info, vote_bank]
+                  properties:
+                    persona:
+                      type: string
+                    prompt_info:
+                      type: string
+                    vote_bank:
+                      type: array
+                      items:
+                        type: object
+      responses:
+        '200':
+          description: Voting result
+          content:
+            text/event-stream:
+              schema:
+                type: object
+                properties:
+                  winning_index:
+                    type: integer
+                  vote_value:
+                    type: number
+
+  /generate_first_chapter:
+    post:
+      tags: 
+        - agent
+      summary: Generate the first chapter
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [messages]
+              properties:
+                messages:
+                  type: object
+                  required: [persona, prompt_info, outline]
+                  properties:
+                    persona:
+                      type: string
+                    prompt_info:
+                      type: string
+                    outline:
+                      type: string
+      responses:
+        '200':
+          description: Stream of first chapter generation
+          content:
+            text/event-stream:
+              schema:
+                type: string
+
+  /vote_generate_first_chapter:
+    post:
+      tags: 
+        - agent
+      summary: Vote on generated first chapters
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [messages]
+              properties:
+                messages:
+                  type: object
+                  required: [persona, prompt_info, vote_bank]
+                  properties:
+                    persona:
+                      type: string
+                    prompt_info:
+                      type: string
+                    vote_bank:
+                      type: array
+                      items:
+                        type: object
+      responses:
+        '200':
+          description: Voting result
+          content:
+            text/event-stream:
+              schema:
+                type: object
+                properties:
+                  winning_index:
+                    type: integer
+                  vote_value:
+                    type: number
+
+  /generate_next_chapter:
+    post:
+      tags: 
+        - agent
+      summary: Generate the next chapter
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [messages]
+              properties:
+                messages:
+                  type: object
+                  required: [persona, prompt_info, chapter, outline]
+                  properties:
+                    persona:
+                      type: string
+                    prompt_info:
+                      type: string
+                    chapter:
+                      type: string
+                    outline:
+                      type: string
+      responses:
+        '200':
+          description: Stream of next chapter generation
+          content:
+            text/event-stream:
+              schema:
+                type: string
+
+  /vote_generate_next_chapter:
+    post:
+      tags: 
+        - agent
+      summary: Vote on next chapter drafts
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [messages]
+              properties:
+                messages:
+                  type: object
+                  required: [persona, prompt_info, vote_bank]
+                  properties:
+                    persona:
+                      type: string
+                    prompt_info:
+                      type: string
+                    vote_bank:
+                      type: array
+                      items:
+                        type: object
+      responses:
+        '200':
+          description: Voting result
+          content:
+            text/event-stream:
+              schema:
+                type: object
+                properties:
+                  winning_index:
+                    type: integer
+                  vote_value:
+                    type: number
+
+  /critique_chapter:
+    post:
+      tags: 
+        - agent
+      summary: Critique a chapter
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [messages]
+              properties:
+                messages:
+                  type: object
+                  required: [persona, prompt_info, chapter, outline]
+                  properties:
+                    persona:
+                      type: string
+                    prompt_info:
+                      type: string
+                    chapter:
+                      type: string
+                    outline:
+                      type: string
+      responses:
+        '200':
+          description: Stream of chapter critique
+          content:
+            text/event-stream:
+              schema:
+                type: string
+
+  /vote_critique_chapter:
+    post:
+      tags: 
+        - agent
+      summary: Vote on critiques of a chapter
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [messages]
+              properties:
+                messages:
+                  type: object
+                  required: [persona, prompt_info, vote_bank]
+                  properties:
+                    persona:
+                      type: string
+                    prompt_info:
+                      type: string
+                    vote_bank:
+                      type: array
+                      items:
+                        type: object
+      responses:
+        '200':
+          description: Voting result
+          content:
+            text/event-stream:
+              schema:
+                type: object
+                properties:
+                  winning_index:
+                    type: integer
+                  vote_value:
+                    type: number
+
+  /rewrite_chapter:
+    post:
+      tags: 
+        - agent
+      summary: Rewrite a chapter based on critique
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [messages]
+              properties:
+                messages:
+                  type: object
+                  required: [persona, prompt_info, critique, outline, chapter]
+                  properties:
+                    persona:
+                      type: string
+                    prompt_info:
+                      type: string
+                    critique:
+                      type: string
+                    outline:
+                      type: string
+                    chapter:
+                      type: string
+      responses:
+        '200':
+          description: Stream of chapter rewrite
+          content:
+            text/event-stream:
+              schema:
+                type: string
+
+  /vote_rewrite_chapter:
+    post:
+      tags: 
+        - agent
+      summary: Vote on rewritten chapter versions
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [messages]
+              properties:
+                messages:
+                  type: object
+                  required: [persona, prompt_info, vote_bank]
+                  properties:
+                    persona:
+                      type: string
+                    prompt_info:
+                      type: string
+                    vote_bank:
+                      type: array
+                      items:
+                        type: object
+      responses:
+        '200':
+          description: Voting result
+          content:
+            text/event-stream:
+              schema:
+                type: object
+                properties:
+                  winning_index:
+                    type: integer
+                  vote_value:
+                    type: number
