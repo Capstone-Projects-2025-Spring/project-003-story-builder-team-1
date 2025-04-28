@@ -8,7 +8,12 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 const corsOptions = {
-    origin: ['http://localhost:3000' ,'http://localhost:8080', 'http://35.175.87.28', 'http://172.26.5.222'], // Replace with the correct frontend URL
+    origin: [
+        'http://localhost:3000', 
+        'http://localhost:8080', 
+        'http://35.175.87.28', 
+        'http://172.26.5.222', 
+        'https://storybuilder-ai.space'], // Replace with the correct frontend URL
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], // Allowed HTTP methods
     allowedHeaders: ['Content-Type', 'Authorization'], // Allowed headers
     optionsSuccessStatus: 200
