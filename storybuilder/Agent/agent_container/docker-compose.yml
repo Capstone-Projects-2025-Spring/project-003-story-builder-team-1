@@ -8,5 +8,3 @@ services:
       - DEEPSEEK_API_KEY=${DEEPESEEK_API_KEY}  # DeepSeek API key for the agent
       - API_KEY=${DEEPSEEK_API_KEY}
       - AGENT_NAME=${AGENT_NAME}
-    ports:
-      - "5000:5000"  # Custom external portn

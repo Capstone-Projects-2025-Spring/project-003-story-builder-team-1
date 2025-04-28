@@ -1,5 +1,5 @@
 # Use official Node.js image
-FROM node:22-alpine
+FROM node:22-slim
 
 WORKDIR /app
 
@@ -9,9 +9,7 @@ COPY ./Frontend/package.json ./Frontend/package-lock.json /app/Frontend/
 
 COPY ./Backend /app/Backend/
 COPY ./Frontend ./Frontend/.env /app/Frontend/
-
-RUN cd /app/Backend/ && npm install
-RUN cd /app/Frontend/ && npm install
+COPY ./Frontend/build/ /app/Frontend/build/
 
 # Set environment variable for the port
 ARG PORT=8080

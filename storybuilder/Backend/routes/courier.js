@@ -47,12 +47,15 @@ router.post('/aggregate', async (req, res) => {
     const agent_names = agent_data.map(agent => agent.agent_name);
     const agent_ids = agent_data.map(agent => agent.agent_id);
     
-    let agentroute = 'http://localhost:{port}/agent/{step}';
+    // In order to start localhost testing again you must replace http://agent-{num}:{port}/agent/{step} with http://localhost:{port}/agent/step
+    // also change let new_route = agentroute.replace(/{port}/, 5000); to let new_route = agentroute.replace(/{port}/, 5000 + i);
+    let agentroute = 'http://agent-{num}:{port}/agent/{step}';
     let agent_endpoints = [];
     //fills array of endpoints based on current story step and number of active agents
     for(let i = 0; i < data.story_agents.length; i++) {
-        let new_route = agentroute.replace(/{port}/, 5000+i);
+        let new_route = agentroute.replace(/{port}/, 5000);
         agent_endpoints.push(new_route);
+	      agent_endpoints[i] = agent_endpoints[i].replace(/{num}/, i + 1);
         agent_endpoints[i] = agent_endpoints[i].replace(/{step}/, story_step);
     }
     //console.log(agent_endpoints);
