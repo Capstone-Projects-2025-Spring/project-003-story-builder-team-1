@@ -333,61 +333,103 @@ Displays a story for viewing.
 ---
 ## Backend Class Diagram
 ```mermaid
-classDiagram
-direction RL
+  classDiagram
+    class Frontend {
+    }
 
-Translator <.. Frontend
-DB_Tracker <.. Translator
-Database <.. DB_Tracker
-Courier <.. Translator
-Translator <|-- Courier
-Translator <.. Courier
-LLM <.. Courier
-Prompt_Admin <.. Courier
+    class Agent {
+        +structured_send_off(agent_graph, message)
+        +stream_send_off(res, agent_graph, formatted_input)
+    }
 
-class Translator {
-   +story_bank: LinkedList
-   +agent_instances: int
+    class LLM {
+    }
 
-   +text_box() String
-   +rank_format() void
-   +writing_session() void`
-   +write_chapter(input: JSON) JSON
-   +make_courier() int
-   get_story_bank() LinkedList
-}
+    class Courier {
+        +determine_best_result(votes)
+        +db_store(step, user_id, story_id, chapter_number, db_data, res)
+        +aggregateHandler(req, res)
+    }
 
-class DB_Tracker {
-   +DB_key: String
+    class Translator {
+        +translateHandler(req, res)
+    }
 
-   +DB_grab() JSON
-   +accountgrab(JSON info) JSON
-   +agent_grab() JSON
-   +new_account() JSON
-   +new_agent() JSON
-   +agent_dropdown() JSON
-}
+    class AgentController {
+        +agent_list(req, res, next)
+        +agent_detail(req, res, next)
+        +agent_create_post(req, res, next)
+        +agent_delete_post(req, res, next)
+        +agent_update_post(req, res, next)
+        +agent_update_last_response_post(req, res, next)
+        +agent_get_last_response(req, res, next)
+    }
 
-class Courier {
-   +style: String
-   +prompt_info: JSON
-   +JUDGING: int
-   +INSTANCE_NUM: int
-   +API_KEY: String
-   +local_story: String
+    class PersonaController {
+        +persona_list(req, res, next)
+        +create_persona(req, res, next)
+        +delete_persona(req, res, next)
+    }
 
-   +story_call(int PLACEHOLDER, String key, String prompt) String
-   +story_push(String local_story) void
-   +judge() LinkedList
-}
+    class StoryController {
+        +story_create(req, res, next)
+        +user_stories_list(req, res, next)
+        +story_details(req, res, next)
+        +story_delete(req, res, next)
+        +story_chapter_details(req, res, next)
+        +story_name_update(req, res, next)
+        +story_get_number_of_chapters(req, res, next)
+        +story_add_outline(req, res, next)
+        +story_add_agent_outlines(req, res, next)
+        +story_add_critique(req, res, next)
+        +story_add_agent_critiques(req, res, next)
+        +story_add_chapter(req, res, next)
+        +story_add_agent_chapter(req, res, next)
+        +story_agent_chapter_edit(req, res, next)
+        +story_agent_critique_edit(req, res, next)
+        +story_get_critique(req, res, next)
+        +story_agent_chapter_votes(req, res, next)
+        +story_get_outline(req, res, next)
+        +story_agents_list(req, res, next)
+        +story_get_generate_outline_details(req, res, next)
+        +story_get_critique_outline_details(req, res, next)
+        +story_get_rewrite_outline_details(req, res, next)
+        +story_get_first_chapter_details(req, res, next)
+        +story_get_next_chapter_details(req, res, next)
+        +story_get_critique_chapter_details(req, res, next)
+        +story_get_rewrite_chapter_details(req, res, next)
+        +story_get_step(req, res, next)
+        +story_update_step(req, res, next)
+    }
 
-class Prompt_Admin {
-   +refine_prompt: String
-   +generate_prompt: String
-   +rank_prompt: String
+    class UserController {
+        +create_user(req, res, next)
+        +user_login(req, res, next)
+        +user_delete(req, res, next)
+        +user_update(req, res, next)
+        +user_details(req, res, next)
+    }
 
-   +get_prompt(String prompt_info) String
-}
+    class Database {
+    }
+
+    Frontend ..> Translator
+    Frontend ..> UserController
+    Frontend ..> PersonaController
+
+    Translator ..> Courier
+    Translator ..> StoryController
+    Translator ..> PersonaController
+
+    Courier ..> Agent
+    Courier ..> StoryController
+
+    Agent ..> LLM
+
+    StoryController ..> Database
+    UserController ..> Database
+    PersonaController ..> Database
+    AgentController ..> Database
 ```
 
 ## Courier Class:
