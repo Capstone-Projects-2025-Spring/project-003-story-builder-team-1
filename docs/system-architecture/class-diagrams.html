@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="generator" content="Docusaurus v3.3.2">
 <title data-rh="true">Class Diagrams | Project 003 Story Builder Team 1</title><meta data-rh="true" name="viewport" content="width=device-width,initial-scale=1"><meta data-rh="true" name="twitter:card" content="summary_large_image"><meta data-rh="true" property="og:url" content="https://Capstone-Projects-2025-Spring.github.io/project-003-story-builder-team-1/docs/system-architecture/class-diagrams"><meta data-rh="true" property="og:locale" content="en"><meta data-rh="true" name="docusaurus_locale" content="en"><meta data-rh="true" name="docsearch:language" content="en"><meta data-rh="true" name="docusaurus_version" content="current"><meta data-rh="true" name="docusaurus_tag" content="docs-default-current"><meta data-rh="true" name="docsearch:version" content="current"><meta data-rh="true" name="docsearch:docusaurus_tag" content="docs-default-current"><meta data-rh="true" property="og:title" content="Class Diagrams | Project 003 Story Builder Team 1"><meta data-rh="true" name="description" content="Frontend Class Diagram"><meta data-rh="true" property="og:description" content="Frontend Class Diagram"><link data-rh="true" rel="icon" href="/project-003-story-builder-team-1/img/favicon.ico"><link data-rh="true" rel="canonical" href="https://Capstone-Projects-2025-Spring.github.io/project-003-story-builder-team-1/docs/system-architecture/class-diagrams"><link data-rh="true" rel="alternate" href="https://Capstone-Projects-2025-Spring.github.io/project-003-story-builder-team-1/docs/system-architecture/class-diagrams" hreflang="en"><link data-rh="true" rel="alternate" href="https://Capstone-Projects-2025-Spring.github.io/project-003-story-builder-team-1/docs/system-architecture/class-diagrams" hreflang="x-default"><script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script><link rel="stylesheet" href="/project-003-story-builder-team-1/assets/css/styles.e4cc120d.css">
-<script src="/project-003-story-builder-team-1/assets/js/runtime~main.67bde6c9.js" defer="defer"></script>
+<script src="/project-003-story-builder-team-1/assets/js/runtime~main.c522f2cd.js" defer="defer"></script>
 <script src="/project-003-story-builder-team-1/assets/js/main.ab422615.js" defer="defer"></script>
 </head>
 <body class="navigation-with-keyboard">
@@ -230,60 +230,399 @@
 <hr>
 <h2 class="anchor anchorWithStickyNavbar_LWe7" id="backend-class-diagram">Backend Class Diagram<a href="#backend-class-diagram" class="hash-link" aria-label="Direct link to Backend Class Diagram" title="Direct link to Backend Class Diagram">​</a></h2>
 <!-- -->
-<h2 class="anchor anchorWithStickyNavbar_LWe7" id="courier-class">Courier Class:<a href="#courier-class" class="hash-link" aria-label="Direct link to Courier Class:" title="Direct link to Courier Class:">​</a></h2>
-<p><strong>Purpose</strong>: The only class which will have several instances of itself running. It’s also the only class which directly accesses the LLM. Its main goal is to send prompts assembled by PromptAdmin from information sent by Translator in order to get input to further refine.</p>
-<h3 class="anchor anchorWithStickyNavbar_LWe7" id="data-fields-3">Data Fields:<a href="#data-fields-3" class="hash-link" aria-label="Direct link to Data Fields:" title="Direct link to Data Fields:">​</a></h3>
+<h2 class="anchor anchorWithStickyNavbar_LWe7" id="agent"><code>Agent</code><a href="#agent" class="hash-link" aria-label="Direct link to agent" title="Direct link to agent">​</a></h2>
+<h3 class="anchor anchorWithStickyNavbar_LWe7" id="purpose-16">Purpose<a href="#purpose-16" class="hash-link" aria-label="Direct link to Purpose" title="Direct link to Purpose">​</a></h3>
+<p>Encapsulates logic for dispatching messages to and receiving responses from the LLM according to an agent graph.</p>
+<h3 class="anchor anchorWithStickyNavbar_LWe7" id="data-fields-3">Data Fields<a href="#data-fields-3" class="hash-link" aria-label="Direct link to Data Fields" title="Direct link to Data Fields">​</a></h3>
+<p><em>None</em></p>
+<h3 class="anchor anchorWithStickyNavbar_LWe7" id="methods-10">Methods<a href="#methods-10" class="hash-link" aria-label="Direct link to Methods" title="Direct link to Methods">​</a></h3>
+<h4 class="anchor anchorWithStickyNavbar_LWe7" id="structured_send_offagent_graph-message-promiseany"><code>structured_send_off(agent_graph, message): Promise&lt;any&gt;</code><a href="#structured_send_offagent_graph-message-promiseany" class="hash-link" aria-label="Direct link to structured_send_offagent_graph-message-promiseany" title="Direct link to structured_send_offagent_graph-message-promiseany">​</a></h4>
 <ul>
-<li><code>style: String</code>: PLACEHOLDER</li>
-<li><code>prompt_info: JSON</code>: Information stored as a JSON var grabbed directly from the database and sent here from Translator. This will be cited constantly by the Courier instance to remind itself which agent it’s representing.</li>
-<li><code>JUDGING: int</code>: PLACEHOLDER</li>
-<li><code>INSTANCENUM: int</code>: The order an instance has in relation to the rest of the instances (4 indicates it’s the fourth instance, 3 if it’s third).</li>
-<li><code>API_KEY: String</code>: Points to the key which accesses the LLM (will NOT be stored here)</li>
-<li><code>local_story: String</code>: A copy of the original generated story the instance made in its first API call. Can be used for refinement and comparison.</li>
+<li><strong>Purpose</strong>: Send a discrete, structured request to the LLM based on the given agent graph and input message.</li>
+<li><strong>Pre-conditions</strong>: <code>agent_graph</code> is a valid graph object; <code>message</code> is non-empty.</li>
+<li><strong>Post-conditions</strong>: Resolves with the LLM’s parsed response.</li>
+<li><strong>Parameters</strong>:<!-- -->
+<ul>
+<li><code>agent_graph</code> (Object): Defines nodes and transitions for this agent.</li>
+<li><code>message</code> (string): User’s or system’s input text.</li>
 </ul>
-<h3 class="anchor anchorWithStickyNavbar_LWe7" id="methods-10">Methods:<a href="#methods-10" class="hash-link" aria-label="Direct link to Methods:" title="Direct link to Methods:">​</a></h3>
-<h4 class="anchor anchorWithStickyNavbar_LWe7" id="story_callint-placeholder-string-key-string-prompt-json---sends-the-finished-prompt-over-to-the-llm-places-the-output-locally-if-its-the-first-time-and-in-the-shared-data-structure"><code>story_call(int PLACEHOLDER, String key, String prompt): JSON</code> - Sends the finished prompt over to the LLM, places the output locally (if it’s the first time) and in the shared data structure.<a href="#story_callint-placeholder-string-key-string-prompt-json---sends-the-finished-prompt-over-to-the-llm-places-the-output-locally-if-its-the-first-time-and-in-the-shared-data-structure" class="hash-link" aria-label="Direct link to story_callint-placeholder-string-key-string-prompt-json---sends-the-finished-prompt-over-to-the-llm-places-the-output-locally-if-its-the-first-time-and-in-the-shared-data-structure" title="Direct link to story_callint-placeholder-string-key-string-prompt-json---sends-the-finished-prompt-over-to-the-llm-places-the-output-locally-if-its-the-first-time-and-in-the-shared-data-structure">​</a></h4>
-<h4 class="anchor anchorWithStickyNavbar_LWe7" id="story_pushstring-local_story--void---placeholder"><code>story_push(String local_story) : void</code> - PLACEHOLDER<a href="#story_pushstring-local_story--void---placeholder" class="hash-link" aria-label="Direct link to story_pushstring-local_story--void---placeholder" title="Direct link to story_pushstring-local_story--void---placeholder">​</a></h4>
-<h4 class="anchor anchorWithStickyNavbar_LWe7" id="judge-linkedlist---replaces-the-chapterbank-structure-in-translator-with-a-new-ranked-version-no-longer-corresponding-to-instance-numbers-but-to-quality-the-llm-will-rank-the-chapters-for-us-and-this-function-will-format-the-output-to-be-presentable-for-react"><code>judge(): LinkedList</code> - Replaces the chapterbank structure in Translator with a new, ranked version no longer corresponding to instance numbers but to quality. The LLM will rank the chapters for us and this function will format the output to be presentable for React.<a href="#judge-linkedlist---replaces-the-chapterbank-structure-in-translator-with-a-new-ranked-version-no-longer-corresponding-to-instance-numbers-but-to-quality-the-llm-will-rank-the-chapters-for-us-and-this-function-will-format-the-output-to-be-presentable-for-react" class="hash-link" aria-label="Direct link to judge-linkedlist---replaces-the-chapterbank-structure-in-translator-with-a-new-ranked-version-no-longer-corresponding-to-instance-numbers-but-to-quality-the-llm-will-rank-the-chapters-for-us-and-this-function-will-format-the-output-to-be-presentable-for-react" title="Direct link to judge-linkedlist---replaces-the-chapterbank-structure-in-translator-with-a-new-ranked-version-no-longer-corresponding-to-instance-numbers-but-to-quality-the-llm-will-rank-the-chapters-for-us-and-this-function-will-format-the-output-to-be-presentable-for-react">​</a></h4>
+</li>
+<li><strong>Return Value</strong>: <code>Promise&lt;any&gt;</code> — the structured LLM response.</li>
+<li><strong>Exceptions Thrown</strong>: May reject on invalid graph or LLM errors.</li>
+</ul>
+<h4 class="anchor anchorWithStickyNavbar_LWe7" id="stream_send_offres-agent_graph-formatted_input-void"><code>stream_send_off(res, agent_graph, formatted_input): void</code><a href="#stream_send_offres-agent_graph-formatted_input-void" class="hash-link" aria-label="Direct link to stream_send_offres-agent_graph-formatted_input-void" title="Direct link to stream_send_offres-agent_graph-formatted_input-void">​</a></h4>
+<ul>
+<li><strong>Purpose</strong>: Stream the LLM’s output directly to an HTTP response in chunks, following the specified agent graph.</li>
+<li><strong>Pre-conditions</strong>: <code>res</code> is an active Express response; streaming is supported by the LLM.</li>
+<li><strong>Post-conditions</strong>: Chunks of generated text are piped to <code>res</code> until completion.</li>
+<li><strong>Parameters</strong>:<!-- -->
+<ul>
+<li><code>res</code> (Response): Express response object for streaming.</li>
+<li><code>agent_graph</code> (Object): Defines the streaming logic.</li>
+<li><code>formatted_input</code> (string): Pre-processed prompt text.</li>
+</ul>
+</li>
+<li><strong>Return Value</strong>: <code>void</code></li>
+<li><strong>Exceptions Thrown</strong>: May throw on network/stream errors.</li>
+</ul>
 <hr>
-<h2 class="anchor anchorWithStickyNavbar_LWe7" id="prompt_admin-class">Prompt_Admin Class:<a href="#prompt_admin-class" class="hash-link" aria-label="Direct link to Prompt_Admin Class:" title="Direct link to Prompt_Admin Class:">​</a></h2>
-<p><strong>Purpose</strong>: The final step in the pipeline between accessing database agent info and communicating with the LLM. It assembles a prompt based on some templates which serve different purposes (i.e., generation, critique, and judgement). Only Courier will access this class, and it will send it information it’s sent by Translator.</p>
-<h3 class="anchor anchorWithStickyNavbar_LWe7" id="data-fields-4">Data Fields:<a href="#data-fields-4" class="hash-link" aria-label="Direct link to Data Fields:" title="Direct link to Data Fields:">​</a></h3>
+<h2 class="anchor anchorWithStickyNavbar_LWe7" id="courier"><code>Courier</code><a href="#courier" class="hash-link" aria-label="Direct link to courier" title="Direct link to courier">​</a></h2>
+<h3 class="anchor anchorWithStickyNavbar_LWe7" id="purpose-17">Purpose<a href="#purpose-17" class="hash-link" aria-label="Direct link to Purpose" title="Direct link to Purpose">​</a></h3>
+<p>Aggregates agent votes, determines consensus, persists intermediary data to the database, and handles batch requests.</p>
+<h3 class="anchor anchorWithStickyNavbar_LWe7" id="data-fields-4">Data Fields<a href="#data-fields-4" class="hash-link" aria-label="Direct link to Data Fields" title="Direct link to Data Fields">​</a></h3>
+<p><em>None</em></p>
+<h3 class="anchor anchorWithStickyNavbar_LWe7" id="methods-11">Methods<a href="#methods-11" class="hash-link" aria-label="Direct link to Methods" title="Direct link to Methods">​</a></h3>
+<h4 class="anchor anchorWithStickyNavbar_LWe7" id="determine_best_resultvotes-any"><code>determine_best_result(votes): any</code><a href="#determine_best_resultvotes-any" class="hash-link" aria-label="Direct link to determine_best_resultvotes-any" title="Direct link to determine_best_resultvotes-any">​</a></h4>
 <ul>
-<li><code>refineprompt: String</code>: Template for chapter refinement. Relevant information will be added to this and the rest of these fields in getprompt.</li>
-<li><code>generateprompt: String</code>: Template for chapter generation.</li>
-<li><code>rankprompt: String</code>: Template for ranking ALL chapters after refinement is done.</li>
+<li><strong>Purpose</strong>: Compute the winning response based on an array of agent votes.</li>
+<li><strong>Pre-conditions</strong>: <code>votes</code> is a non-empty array of comparable vote objects.</li>
+<li><strong>Post-conditions</strong>: Returns the vote with highest score or tie-break logic applied.</li>
+<li><strong>Parameters</strong>:<!-- -->
+<ul>
+<li><code>votes</code> (Array): List of vote objects from agents.</li>
 </ul>
-<h3 class="anchor anchorWithStickyNavbar_LWe7" id="methods-11">Methods:<a href="#methods-11" class="hash-link" aria-label="Direct link to Methods:" title="Direct link to Methods:">​</a></h3>
-<h4 class="anchor anchorWithStickyNavbar_LWe7" id="get_promptstring-promptinfo-string-type-string---assembles-a-prompt-by-placing-keywords-in-the-promptinfo-json-object-into-one-of-the-templates-above-with-type-deciding-which-to-use"><code>get_prompt(String promptinfo, String type): String</code> - Assembles a prompt by placing keywords in the promptinfo JSON object into one of the templates above, with ‘type’ deciding which to use.<a href="#get_promptstring-promptinfo-string-type-string---assembles-a-prompt-by-placing-keywords-in-the-promptinfo-json-object-into-one-of-the-templates-above-with-type-deciding-which-to-use" class="hash-link" aria-label="Direct link to get_promptstring-promptinfo-string-type-string---assembles-a-prompt-by-placing-keywords-in-the-promptinfo-json-object-into-one-of-the-templates-above-with-type-deciding-which-to-use" title="Direct link to get_promptstring-promptinfo-string-type-string---assembles-a-prompt-by-placing-keywords-in-the-promptinfo-json-object-into-one-of-the-templates-above-with-type-deciding-which-to-use">​</a></h4>
+</li>
+<li><strong>Return Value</strong>: <code>any</code> — the selected result object.</li>
+<li><strong>Exceptions Thrown</strong>: None</li>
+</ul>
+<h4 class="anchor anchorWithStickyNavbar_LWe7" id="db_storestep-user_id-story_id-chapter_number-db_data-res-promisevoid"><code>db_store(step, user_id, story_id, chapter_number, db_data, res): Promise&lt;void&gt;</code><a href="#db_storestep-user_id-story_id-chapter_number-db_data-res-promisevoid" class="hash-link" aria-label="Direct link to db_storestep-user_id-story_id-chapter_number-db_data-res-promisevoid" title="Direct link to db_storestep-user_id-story_id-chapter_number-db_data-res-promisevoid">​</a></h4>
+<ul>
+<li><strong>Purpose</strong>: Persist a step’s data and the LLM response to the database.</li>
+<li><strong>Pre-conditions</strong>: All identifiers are valid; database connection is live.</li>
+<li><strong>Post-conditions</strong>: Data is stored and an acknowledgment may be sent on <code>res</code>.</li>
+<li><strong>Parameters</strong>:<!-- -->
+<ul>
+<li><code>step</code> (string): The stage name (e.g., “outline”, “chapter”).</li>
+<li><code>user_id</code> (string): ID of the requesting user.</li>
+<li><code>story_id</code> (string): ID of the current story.</li>
+<li><code>chapter_number</code> (number): Chapter index.</li>
+<li><code>db_data</code> (Object): Payload to store.</li>
+<li><code>res</code> (Response): Express response to confirm storage.</li>
+</ul>
+</li>
+<li><strong>Return Value</strong>: <code>Promise&lt;void&gt;</code></li>
+<li><strong>Exceptions Thrown</strong>: May reject on DB errors.</li>
+</ul>
+<h4 class="anchor anchorWithStickyNavbar_LWe7" id="aggregatehandlerreq-res-void"><code>aggregateHandler(req, res): void</code><a href="#aggregatehandlerreq-res-void" class="hash-link" aria-label="Direct link to aggregatehandlerreq-res-void" title="Direct link to aggregatehandlerreq-res-void">​</a></h4>
+<ul>
+<li><strong>Purpose</strong>: Express route handler that collects votes from multiple agents, invokes aggregation, and returns the final result.</li>
+<li><strong>Pre-conditions</strong>: Request body contains <code>votes</code> array and identifiers.</li>
+<li><strong>Post-conditions</strong>: Sends JSON with the aggregated best result.</li>
+<li><strong>Parameters</strong>:<!-- -->
+<ul>
+<li><code>req</code> (Request): Express request object.</li>
+<li><code>res</code> (Response): Express response object.</li>
+</ul>
+</li>
+<li><strong>Return Value</strong>: <code>void</code></li>
+<li><strong>Exceptions Thrown</strong>: Forwards errors via Express error middleware.</li>
+</ul>
 <hr>
-<h2 class="anchor anchorWithStickyNavbar_LWe7" id="db_tracker-class">DB_Tracker Class:<a href="#db_tracker-class" class="hash-link" aria-label="Direct link to DB_Tracker Class:" title="Direct link to DB_Tracker Class:">​</a></h2>
-<p><strong>Purpose</strong>: The class that handles all database access. It is a CRUD API can grab any information from any table in the database for other classes to use, be it for login verification or prompt history.</p>
-<h3 class="anchor anchorWithStickyNavbar_LWe7" id="data-fields-5">Data Fields:<a href="#data-fields-5" class="hash-link" aria-label="Direct link to Data Fields:" title="Direct link to Data Fields:">​</a></h3>
+<h2 class="anchor anchorWithStickyNavbar_LWe7" id="translator"><code>Translator</code><a href="#translator" class="hash-link" aria-label="Direct link to translator" title="Direct link to translator">​</a></h2>
+<h3 class="anchor anchorWithStickyNavbar_LWe7" id="purpose-18">Purpose<a href="#purpose-18" class="hash-link" aria-label="Direct link to Purpose" title="Direct link to Purpose">​</a></h3>
+<p>Acts as a façade, translating frontend HTTP calls into Courier or StoryController actions with proper payload formatting.</p>
+<h3 class="anchor anchorWithStickyNavbar_LWe7" id="data-fields-5">Data Fields<a href="#data-fields-5" class="hash-link" aria-label="Direct link to Data Fields" title="Direct link to Data Fields">​</a></h3>
+<p><em>None</em></p>
+<h3 class="anchor anchorWithStickyNavbar_LWe7" id="methods-12">Methods<a href="#methods-12" class="hash-link" aria-label="Direct link to Methods" title="Direct link to Methods">​</a></h3>
+<h4 class="anchor anchorWithStickyNavbar_LWe7" id="translatehandlerreq-res-void"><code>translateHandler(req, res): void</code><a href="#translatehandlerreq-res-void" class="hash-link" aria-label="Direct link to translatehandlerreq-res-void" title="Direct link to translatehandlerreq-res-void">​</a></h4>
 <ul>
-<li><code>DB_key: String</code>: Field which links to the DB (obviously the key itself will not be stored here).</li>
+<li><strong>Purpose</strong>: Route incoming HTTP requests to the appropriate backend service (Courier or StoryController) after input validation.</li>
+<li><strong>Pre-conditions</strong>: Request URL and method correspond to a known translation.</li>
+<li><strong>Post-conditions</strong>: Invokes the target handler and streams or returns its response.</li>
+<li><strong>Parameters</strong>:<!-- -->
+<ul>
+<li><code>req</code> (Request): Express request object.</li>
+<li><code>res</code> (Response): Express response object.</li>
 </ul>
-<h3 class="anchor anchorWithStickyNavbar_LWe7" id="methods-12">Methods:<a href="#methods-12" class="hash-link" aria-label="Direct link to Methods:" title="Direct link to Methods:">​</a></h3>
-<h4 class="anchor anchorWithStickyNavbar_LWe7" id="db_grab-json---placeholder"><code>DB_grab(): JSON</code> - PLACEHOLDER<a href="#db_grab-json---placeholder" class="hash-link" aria-label="Direct link to db_grab-json---placeholder" title="Direct link to db_grab-json---placeholder">​</a></h4>
-<h4 class="anchor anchorWithStickyNavbar_LWe7" id="accountgrabjson-info-json----checks-to-see-if-account-info-is-in-the-database-used-for-loginsignup"><code>accountgrab(JSON info): JSON</code> -  Checks to see if account info is in the database. Used for login/signup.<a href="#accountgrabjson-info-json----checks-to-see-if-account-info-is-in-the-database-used-for-loginsignup" class="hash-link" aria-label="Direct link to accountgrabjson-info-json----checks-to-see-if-account-info-is-in-the-database-used-for-loginsignup" title="Direct link to accountgrabjson-info-json----checks-to-see-if-account-info-is-in-the-database-used-for-loginsignup">​</a></h4>
-<h4 class="anchor anchorWithStickyNavbar_LWe7" id="agent_grab-json---checks-if-an-agent-is-in-the-database-and-grabs-all-style-and-prompt-info-from-its-entry-this-will-be-returned-to-the-frontend"><code>agent_grab(): JSON</code> - Checks if an agent is in the database and grabs all style and prompt info from its entry. This will be returned to the frontend.<a href="#agent_grab-json---checks-if-an-agent-is-in-the-database-and-grabs-all-style-and-prompt-info-from-its-entry-this-will-be-returned-to-the-frontend" class="hash-link" aria-label="Direct link to agent_grab-json---checks-if-an-agent-is-in-the-database-and-grabs-all-style-and-prompt-info-from-its-entry-this-will-be-returned-to-the-frontend" title="Direct link to agent_grab-json---checks-if-an-agent-is-in-the-database-and-grabs-all-style-and-prompt-info-from-its-entry-this-will-be-returned-to-the-frontend">​</a></h4>
-<h4 class="anchor anchorWithStickyNavbar_LWe7" id="new_account-json---creates-a-new-account-in-the-database-returns-necessary-login-info"><code>new_account(): JSON</code> - Creates a new account in the database. Returns necessary login info.<a href="#new_account-json---creates-a-new-account-in-the-database-returns-necessary-login-info" class="hash-link" aria-label="Direct link to new_account-json---creates-a-new-account-in-the-database-returns-necessary-login-info" title="Direct link to new_account-json---creates-a-new-account-in-the-database-returns-necessary-login-info">​</a></h4>
-<h4 class="anchor anchorWithStickyNavbar_LWe7" id="new_agent-json---creates-a-new-agent-based-on-information-entered-in-the-frontend-this-will-be-formatted-and-posted-to-one-of-the-tables-as-a-new-entry-that-can-be-cited"><code>new_agent(): JSON</code> - Creates a new agent based on information entered in the frontend. This will be formatted and posted to one of the tables as a new entry that can be cited.<a href="#new_agent-json---creates-a-new-agent-based-on-information-entered-in-the-frontend-this-will-be-formatted-and-posted-to-one-of-the-tables-as-a-new-entry-that-can-be-cited" class="hash-link" aria-label="Direct link to new_agent-json---creates-a-new-agent-based-on-information-entered-in-the-frontend-this-will-be-formatted-and-posted-to-one-of-the-tables-as-a-new-entry-that-can-be-cited" title="Direct link to new_agent-json---creates-a-new-agent-based-on-information-entered-in-the-frontend-this-will-be-formatted-and-posted-to-one-of-the-tables-as-a-new-entry-that-can-be-cited">​</a></h4>
-<h4 class="anchor anchorWithStickyNavbar_LWe7" id="agent_dropdown-json---returns-all-agents-in-the-database-for-user-selection"><code>agent_dropdown(): JSON</code> - Returns all agents in the database for user selection.<a href="#agent_dropdown-json---returns-all-agents-in-the-database-for-user-selection" class="hash-link" aria-label="Direct link to agent_dropdown-json---returns-all-agents-in-the-database-for-user-selection" title="Direct link to agent_dropdown-json---returns-all-agents-in-the-database-for-user-selection">​</a></h4>
+</li>
+<li><strong>Return Value</strong>: <code>void</code></li>
+<li><strong>Exceptions Thrown</strong>: Forwards errors via Express error middleware.</li>
+</ul>
 <hr>
-<h2 class="anchor anchorWithStickyNavbar_LWe7" id="translator-class">Translator Class:<a href="#translator-class" class="hash-link" aria-label="Direct link to Translator Class:" title="Direct link to Translator Class:">​</a></h2>
-<p><strong>Purpose</strong>: Superclass which is responsible for handling the output of the Courier instances and communicating with the frontend web pages. It is the only class those pages will communicate with directly in the backend besides DB_Tracker. Inside of it is a shared data structure where the instances store their chapters, as well as functions to rank, format and return a chapter.</p>
-<h3 class="anchor anchorWithStickyNavbar_LWe7" id="data-fields-6">Data Fields:<a href="#data-fields-6" class="hash-link" aria-label="Direct link to Data Fields:" title="Direct link to Data Fields:">​</a></h3>
+<h2 class="anchor anchorWithStickyNavbar_LWe7" id="agentcontroller"><code>AgentController</code><a href="#agentcontroller" class="hash-link" aria-label="Direct link to agentcontroller" title="Direct link to agentcontroller">​</a></h2>
+<h3 class="anchor anchorWithStickyNavbar_LWe7" id="purpose-19">Purpose<a href="#purpose-19" class="hash-link" aria-label="Direct link to Purpose" title="Direct link to Purpose">​</a></h3>
+<p>CRUD operations for agent configurations stored in the database.</p>
+<h3 class="anchor anchorWithStickyNavbar_LWe7" id="data-fields-6">Data Fields<a href="#data-fields-6" class="hash-link" aria-label="Direct link to Data Fields" title="Direct link to Data Fields">​</a></h3>
+<p><em>None</em></p>
+<h3 class="anchor anchorWithStickyNavbar_LWe7" id="methods-13">Methods<a href="#methods-13" class="hash-link" aria-label="Direct link to Methods" title="Direct link to Methods">​</a></h3>
+<h4 class="anchor anchorWithStickyNavbar_LWe7" id="agent_listreq-res-next-void"><code>agent_list(req, res, next): void</code><a href="#agent_listreq-res-next-void" class="hash-link" aria-label="Direct link to agent_listreq-res-next-void" title="Direct link to agent_listreq-res-next-void">​</a></h4>
 <ul>
-<li><code>story_bank: Map</code> - Holds keys indicating which instance the  content belongs to, and values containing JSON objects grabbed from the LLM. This will be used to store final chapters as well as being a hub from which instances can judge each other’s products.</li>
-<li><code>agent_instances: int</code> - Keeps track of the number of Courier instances accessing the LLM. In case this can be set by the user later (or in case we want to return ALL of the chapters at once) the user can cite this field.</li>
+<li><strong>Purpose</strong>: Retrieve a list of all agents.</li>
+<li><strong>Pre-conditions</strong>: User is authenticated.</li>
+<li><strong>Post-conditions</strong>: Sends JSON array of agents.</li>
 </ul>
-<h3 class="anchor anchorWithStickyNavbar_LWe7" id="methods-13">Methods:<a href="#methods-13" class="hash-link" aria-label="Direct link to Methods:" title="Direct link to Methods:">​</a></h3>
-<h4 class="anchor anchorWithStickyNavbar_LWe7" id="text_box-string---stores-input-from-frontend-text-box"><code>text_box(): String</code> - Stores input from frontend text box<a href="#text_box-string---stores-input-from-frontend-text-box" class="hash-link" aria-label="Direct link to text_box-string---stores-input-from-frontend-text-box" title="Direct link to text_box-string---stores-input-from-frontend-text-box">​</a></h4>
-<h4 class="anchor anchorWithStickyNavbar_LWe7" id="rank_format-void---placeholder"><code>rank_format(): void</code> - PLACEHOLDER<a href="#rank_format-void---placeholder" class="hash-link" aria-label="Direct link to rank_format-void---placeholder" title="Direct link to rank_format-void---placeholder">​</a></h4>
-<h4 class="anchor anchorWithStickyNavbar_LWe7" id="writing_session-void---creates-all-couriers-has-them-write-and-refine-stories-and-picks-one-to-be-the-final-judge"><code>writing_session(): void</code> - Creates all couriers, has them write and refine stories, and picks one to be the final judge.<a href="#writing_session-void---creates-all-couriers-has-them-write-and-refine-stories-and-picks-one-to-be-the-final-judge" class="hash-link" aria-label="Direct link to writing_session-void---creates-all-couriers-has-them-write-and-refine-stories-and-picks-one-to-be-the-final-judge" title="Direct link to writing_session-void---creates-all-couriers-has-them-write-and-refine-stories-and-picks-one-to-be-the-final-judge">​</a></h4>
-<h4 class="anchor anchorWithStickyNavbar_LWe7" id="write_chapterinput-json-json---takes-input-from-the-frontend-and-sends-it-to-the-courier-instances-the-courier-instances-will-return-their-chapters-to-chapterbank"><code>write_chapter(input: JSON): JSON</code> - Takes input from the frontend and sends it to the Courier instances. The courier instances will return their chapters to chapterbank.<a href="#write_chapterinput-json-json---takes-input-from-the-frontend-and-sends-it-to-the-courier-instances-the-courier-instances-will-return-their-chapters-to-chapterbank" class="hash-link" aria-label="Direct link to write_chapterinput-json-json---takes-input-from-the-frontend-and-sends-it-to-the-courier-instances-the-courier-instances-will-return-their-chapters-to-chapterbank" title="Direct link to write_chapterinput-json-json---takes-input-from-the-frontend-and-sends-it-to-the-courier-instances-the-courier-instances-will-return-their-chapters-to-chapterbank">​</a></h4>
-<h4 class="anchor anchorWithStickyNavbar_LWe7" id="make_courier-int---creates-an-instance-of-the-courier-class-returns-the-instances-assigned-number-and-key-in-the-chapterbank"><code>make_courier(): int</code> - Creates an instance of the Courier class. Returns the instance’s assigned number and key in the chapterbank.<a href="#make_courier-int---creates-an-instance-of-the-courier-class-returns-the-instances-assigned-number-and-key-in-the-chapterbank" class="hash-link" aria-label="Direct link to make_courier-int---creates-an-instance-of-the-courier-class-returns-the-instances-assigned-number-and-key-in-the-chapterbank" title="Direct link to make_courier-int---creates-an-instance-of-the-courier-class-returns-the-instances-assigned-number-and-key-in-the-chapterbank">​</a></h4>
-<h4 class="anchor anchorWithStickyNavbar_LWe7" id="get_story_bank-linkedlist---returns-the-entire-chapter-bank"><code>get_story_bank(): LinkedList</code> - Returns the entire chapter bank.<a href="#get_story_bank-linkedlist---returns-the-entire-chapter-bank" class="hash-link" aria-label="Direct link to get_story_bank-linkedlist---returns-the-entire-chapter-bank" title="Direct link to get_story_bank-linkedlist---returns-the-entire-chapter-bank">​</a></h4></div><footer class="theme-doc-footer docusaurus-mt-lg"><div class="row margin-top--sm theme-doc-footer-edit-meta-row"><div class="col"><a href="https://github.com/Capstone-Projects-2025-Spring/project-003-story-builder-team-1/edit/main/documentation/docs/system-architecture/class-diagrams.md" target="_blank" rel="noopener noreferrer" class="theme-edit-this-page"><svg fill="currentColor" height="20" width="20" viewBox="0 0 40 40" class="iconEdit_Z9Sw" aria-hidden="true"><g><path d="m34.5 11.7l-3 3.1-6.3-6.3 3.1-3q0.5-0.5 1.2-0.5t1.1 0.5l3.9 3.9q0.5 0.4 0.5 1.1t-0.5 1.2z m-29.5 17.1l18.4-18.5 6.3 6.3-18.4 18.4h-6.3v-6.2z"></path></g></svg>Edit this page</a></div><div class="col lastUpdated_JAkA"><details><summary>Revision History</summary><table><thead><tr><th scope="row">Author</th><th scope="row">Revision</th><th scope="row">Date</th></tr></thead><tbody>nothing</tbody></table></details><span class="theme-last-updated">Last updated<!-- --> by <b>Kamaljeeth Vijay</b></span></div></div></footer></article><nav class="pagination-nav docusaurus-mt-lg" aria-label="Docs pages"><a class="pagination-nav__link pagination-nav__link--prev" href="/project-003-story-builder-team-1/docs/category/system-architecture"><div class="pagination-nav__sublabel">Previous</div><div class="pagination-nav__label">System Architecture</div></a><a class="pagination-nav__link pagination-nav__link--next" href="/project-003-story-builder-team-1/docs/system-architecture/use-case-diagram"><div class="pagination-nav__sublabel">Next</div><div class="pagination-nav__label">Use Case Diagram</div></a></nav></div></div><div class="col col--3"><div class="tableOfContents_bqdL thin-scrollbar theme-doc-toc-desktop"><ul class="table-of-contents table-of-contents__left-border"><li><a href="#frontend-class-diagram" class="table-of-contents__link toc-highlight">Frontend Class Diagram</a></li><li><a href="#app" class="table-of-contents__link toc-highlight"><code>App</code></a><ul><li><a href="#purpose" class="table-of-contents__link toc-highlight">Purpose</a></li><li><a href="#data-fields" class="table-of-contents__link toc-highlight">Data Fields</a></li><li><a href="#methods" class="table-of-contents__link toc-highlight">Methods</a></li></ul></li><li><a href="#agent_box" class="table-of-contents__link toc-highlight"><code>AGENT_BOX</code></a><ul><li><a href="#purpose-1" class="table-of-contents__link toc-highlight">Purpose</a></li><li><a href="#data-fields-1" class="table-of-contents__link toc-highlight">Data Fields</a></li><li><a href="#methods-1" class="table-of-contents__link toc-highlight">Methods</a></li></ul></li><li><a href="#agent_selection" class="table-of-contents__link toc-highlight"><code>AGENT_SELECTION</code></a><ul><li><a href="#purpose-2" class="table-of-contents__link toc-highlight">Purpose</a></li><li><a href="#data-fields-2" class="table-of-contents__link toc-highlight">Data Fields</a></li><li><a href="#methods-2" class="table-of-contents__link toc-highlight">Methods</a></li></ul></li><li><a href="#agent_thoughts" class="table-of-contents__link toc-highlight"><code>AGENT_THOUGHTS</code></a><ul><li><a href="#purpose-3" class="table-of-contents__link toc-highlight">Purpose</a></li><li><a href="#data-fields--methods" class="table-of-contents__link toc-highlight">Data Fields / Methods</a></li></ul></li><li><a href="#best_response" class="table-of-contents__link toc-highlight"><code>BEST_RESPONSE</code></a><ul><li><a href="#purpose-4" class="table-of-contents__link toc-highlight">Purpose</a></li><li><a href="#methods-3" class="table-of-contents__link toc-highlight">Methods</a></li></ul></li><li><a href="#chapter_list" class="table-of-contents__link toc-highlight"><code>CHAPTER_LIST</code></a><ul><li><a href="#purpose-5" class="table-of-contents__link toc-highlight">Purpose</a></li><li><a href="#methods-4" class="table-of-contents__link toc-highlight">Methods</a></li></ul></li><li><a href="#chapter_view" class="table-of-contents__link toc-highlight"><code>CHAPTER_VIEW</code></a><ul><li><a href="#purpose-6" class="table-of-contents__link toc-highlight">Purpose</a></li></ul></li><li><a href="#create_account" class="table-of-contents__link toc-highlight"><code>CREATE_ACCOUNT</code></a><ul><li><a href="#purpose-7" class="table-of-contents__link toc-highlight">Purpose</a></li><li><a href="#methods-5" class="table-of-contents__link toc-highlight">Methods</a></li></ul></li><li><a href="#login" class="table-of-contents__link toc-highlight"><code>LOGIN</code></a><ul><li><a href="#purpose-8" class="table-of-contents__link toc-highlight">Purpose</a></li><li><a href="#methods-6" class="table-of-contents__link toc-highlight">Methods</a></li></ul></li><li><a href="#home" class="table-of-contents__link toc-highlight"><code>HOME</code></a><ul><li><a href="#purpose-9" class="table-of-contents__link toc-highlight">Purpose</a></li></ul></li><li><a href="#main_layout" class="table-of-contents__link toc-highlight"><code>MAIN_LAYOUT</code></a><ul><li><a href="#purpose-10" class="table-of-contents__link toc-highlight">Purpose</a></li><li><a href="#methods-7" class="table-of-contents__link toc-highlight">Methods</a></li></ul></li><li><a href="#protected_route" class="table-of-contents__link toc-highlight"><code>PROTECTED_ROUTE</code></a><ul><li><a href="#purpose-11" class="table-of-contents__link toc-highlight">Purpose</a></li></ul></li><li><a href="#story_agents_view" class="table-of-contents__link toc-highlight"><code>STORY_AGENTS_VIEW</code></a><ul><li><a href="#purpose-12" class="table-of-contents__link toc-highlight">Purpose</a></li></ul></li><li><a href="#story_list" class="table-of-contents__link toc-highlight"><code>STORY_LIST</code></a><ul><li><a href="#purpose-13" class="table-of-contents__link toc-highlight">Purpose</a></li><li><a href="#methods-8" class="table-of-contents__link toc-highlight">Methods</a></li></ul></li><li><a href="#story_prompt_box" class="table-of-contents__link toc-highlight"><code>STORY_PROMPT_BOX</code></a><ul><li><a href="#purpose-14" class="table-of-contents__link toc-highlight">Purpose</a></li><li><a href="#methods-9" class="table-of-contents__link toc-highlight">Methods</a></li></ul></li><li><a href="#story_view" class="table-of-contents__link toc-highlight"><code>STORY_VIEW</code></a><ul><li><a href="#purpose-15" class="table-of-contents__link toc-highlight">Purpose</a></li></ul></li><li><a href="#backend-class-diagram" class="table-of-contents__link toc-highlight">Backend Class Diagram</a></li><li><a href="#courier-class" class="table-of-contents__link toc-highlight">Courier Class:</a><ul><li><a href="#data-fields-3" class="table-of-contents__link toc-highlight">Data Fields:</a></li><li><a href="#methods-10" class="table-of-contents__link toc-highlight">Methods:</a></li></ul></li><li><a href="#prompt_admin-class" class="table-of-contents__link toc-highlight">Prompt_Admin Class:</a><ul><li><a href="#data-fields-4" class="table-of-contents__link toc-highlight">Data Fields:</a></li><li><a href="#methods-11" class="table-of-contents__link toc-highlight">Methods:</a></li></ul></li><li><a href="#db_tracker-class" class="table-of-contents__link toc-highlight">DB_Tracker Class:</a><ul><li><a href="#data-fields-5" class="table-of-contents__link toc-highlight">Data Fields:</a></li><li><a href="#methods-12" class="table-of-contents__link toc-highlight">Methods:</a></li></ul></li><li><a href="#translator-class" class="table-of-contents__link toc-highlight">Translator Class:</a><ul><li><a href="#data-fields-6" class="table-of-contents__link toc-highlight">Data Fields:</a></li><li><a href="#methods-13" class="table-of-contents__link toc-highlight">Methods:</a></li></ul></li></ul></div></div></div></div></main></div></div></div><footer class="footer"><div class="container container-fluid"><div class="row footer__links"><div class="col footer__col"><div class="footer__title">Docs</div><ul class="footer__items clean-list"><li class="footer__item"><a class="footer__link-item" href="/project-003-story-builder-team-1/docs/intro">Documentation</a></li></ul></div><div class="col footer__col"><div class="footer__title">More</div><ul class="footer__items clean-list"><li class="footer__item"><a href="https://github.com/Capstone-Projects-2025-Spring/project-003-story-builder-team-1" target="_blank" rel="noopener noreferrer" class="footer__link-item">GitHub<svg width="13.5" height="13.5" aria-hidden="true" viewBox="0 0 24 24" class="iconExternalLink_nPIU"><path fill="currentColor" d="M21 13v10h-21v-19h12v2h-10v15h17v-8h2zm3-12h-10.988l4.035 4-6.977 7.07 2.828 2.828 6.977-7.07 4.125 4.172v-11z"></path></svg></a></li></ul></div></div><div class="footer__bottom text--center"><div class="margin-bottom--sm"><img src="https://upload.wikimedia.org/wikipedia/commons/1/17/Temple_T_logo.svg" alt="My Site Logo" class="footer__logo themedComponent_mlkZ themedComponent--light_NVdE"><img src="https://upload.wikimedia.org/wikipedia/commons/1/17/Temple_T_logo.svg" alt="My Site Logo" class="footer__logo themedComponent_mlkZ themedComponent--dark_xIcU"></div><div class="footer__copyright">Copyright © 2025 Project 003 Story Builder Team 1, Inc. Built with Docusaurus.</div></div></div></footer></div>
+<h4 class="anchor anchorWithStickyNavbar_LWe7" id="agent_detailreq-res-next-void"><code>agent_detail(req, res, next): void</code><a href="#agent_detailreq-res-next-void" class="hash-link" aria-label="Direct link to agent_detailreq-res-next-void" title="Direct link to agent_detailreq-res-next-void">​</a></h4>
+<ul>
+<li><strong>Purpose</strong>: Fetch details for a single agent by ID.</li>
+<li><strong>Pre-conditions</strong>: <code>req.params.id</code> is provided.</li>
+<li><strong>Post-conditions</strong>: Sends JSON with agent data.</li>
+</ul>
+<h4 class="anchor anchorWithStickyNavbar_LWe7" id="agent_create_postreq-res-next-void"><code>agent_create_post(req, res, next): void</code><a href="#agent_create_postreq-res-next-void" class="hash-link" aria-label="Direct link to agent_create_postreq-res-next-void" title="Direct link to agent_create_postreq-res-next-void">​</a></h4>
+<ul>
+<li><strong>Purpose</strong>: Create a new agent record.</li>
+<li><strong>Pre-conditions</strong>: Request body contains valid agent fields.</li>
+<li><strong>Post-conditions</strong>: Inserts into DB and returns created agent.</li>
+</ul>
+<h4 class="anchor anchorWithStickyNavbar_LWe7" id="agent_delete_postreq-res-next-void"><code>agent_delete_post(req, res, next): void</code><a href="#agent_delete_postreq-res-next-void" class="hash-link" aria-label="Direct link to agent_delete_postreq-res-next-void" title="Direct link to agent_delete_postreq-res-next-void">​</a></h4>
+<ul>
+<li><strong>Purpose</strong>: Delete an agent by ID.</li>
+<li><strong>Pre-conditions</strong>: <code>req.params.id</code> matches existing record.</li>
+<li><strong>Post-conditions</strong>: Removes from DB and confirms deletion.</li>
+</ul>
+<h4 class="anchor anchorWithStickyNavbar_LWe7" id="agent_update_postreq-res-next-void"><code>agent_update_post(req, res, next): void</code><a href="#agent_update_postreq-res-next-void" class="hash-link" aria-label="Direct link to agent_update_postreq-res-next-void" title="Direct link to agent_update_postreq-res-next-void">​</a></h4>
+<ul>
+<li><strong>Purpose</strong>: Update an agent’s properties.</li>
+<li><strong>Pre-conditions</strong>: Valid ID and update payload.</li>
+<li><strong>Post-conditions</strong>: Persists changes and returns updated agent.</li>
+</ul>
+<h4 class="anchor anchorWithStickyNavbar_LWe7" id="agent_update_last_response_postreq-res-next-void"><code>agent_update_last_response_post(req, res, next): void</code><a href="#agent_update_last_response_postreq-res-next-void" class="hash-link" aria-label="Direct link to agent_update_last_response_postreq-res-next-void" title="Direct link to agent_update_last_response_postreq-res-next-void">​</a></h4>
+<ul>
+<li><strong>Purpose</strong>: Store the last response text for an agent.</li>
+<li><strong>Pre-conditions</strong>: Agent exists; <code>req.body.response</code> is non-empty.</li>
+<li><strong>Post-conditions</strong>: Updates record and returns acknowledgment.</li>
+</ul>
+<h4 class="anchor anchorWithStickyNavbar_LWe7" id="agent_get_last_responsereq-res-next-void"><code>agent_get_last_response(req, res, next): void</code><a href="#agent_get_last_responsereq-res-next-void" class="hash-link" aria-label="Direct link to agent_get_last_responsereq-res-next-void" title="Direct link to agent_get_last_responsereq-res-next-void">​</a></h4>
+<ul>
+<li><strong>Purpose</strong>: Retrieve the stored last response for an agent.</li>
+<li><strong>Pre-conditions</strong>: Agent ID provided.</li>
+<li><strong>Post-conditions</strong>: Sends the last response text.</li>
+</ul>
+<hr>
+<h2 class="anchor anchorWithStickyNavbar_LWe7" id="personacontroller"><code>PersonaController</code><a href="#personacontroller" class="hash-link" aria-label="Direct link to personacontroller" title="Direct link to personacontroller">​</a></h2>
+<h3 class="anchor anchorWithStickyNavbar_LWe7" id="purpose-20">Purpose<a href="#purpose-20" class="hash-link" aria-label="Direct link to Purpose" title="Direct link to Purpose">​</a></h3>
+<p>Manage user-defined personas used to seed agent behavior.</p>
+<h3 class="anchor anchorWithStickyNavbar_LWe7" id="data-fields-7">Data Fields<a href="#data-fields-7" class="hash-link" aria-label="Direct link to Data Fields" title="Direct link to Data Fields">​</a></h3>
+<p><em>None</em></p>
+<h3 class="anchor anchorWithStickyNavbar_LWe7" id="methods-14">Methods<a href="#methods-14" class="hash-link" aria-label="Direct link to Methods" title="Direct link to Methods">​</a></h3>
+<h4 class="anchor anchorWithStickyNavbar_LWe7" id="persona_listreq-res-next-void"><code>persona_list(req, res, next): void</code><a href="#persona_listreq-res-next-void" class="hash-link" aria-label="Direct link to persona_listreq-res-next-void" title="Direct link to persona_listreq-res-next-void">​</a></h4>
+<ul>
+<li><strong>Purpose</strong>: List all personas for the authenticated user.</li>
+<li><strong>Pre-conditions</strong>: User session is valid.</li>
+<li><strong>Post-conditions</strong>: Sends JSON array of personas.</li>
+</ul>
+<h4 class="anchor anchorWithStickyNavbar_LWe7" id="create_personareq-res-next-void"><code>create_persona(req, res, next): void</code><a href="#create_personareq-res-next-void" class="hash-link" aria-label="Direct link to create_personareq-res-next-void" title="Direct link to create_personareq-res-next-void">​</a></h4>
+<ul>
+<li><strong>Purpose</strong>: Create a new persona entry.</li>
+<li><strong>Pre-conditions</strong>: Request body includes persona name and attributes.</li>
+<li><strong>Post-conditions</strong>: Persists persona and returns its record.</li>
+</ul>
+<h4 class="anchor anchorWithStickyNavbar_LWe7" id="delete_personareq-res-next-void"><code>delete_persona(req, res, next): void</code><a href="#delete_personareq-res-next-void" class="hash-link" aria-label="Direct link to delete_personareq-res-next-void" title="Direct link to delete_personareq-res-next-void">​</a></h4>
+<ul>
+<li><strong>Purpose</strong>: Delete an existing persona by ID.</li>
+<li><strong>Pre-conditions</strong>: Persona ID is valid.</li>
+<li><strong>Post-conditions</strong>: Removes persona and confirms deletion.</li>
+</ul>
+<hr>
+<h2 class="anchor anchorWithStickyNavbar_LWe7" id="storycontroller"><code>StoryController</code><a href="#storycontroller" class="hash-link" aria-label="Direct link to storycontroller" title="Direct link to storycontroller">​</a></h2>
+<h3 class="anchor anchorWithStickyNavbar_LWe7" id="purpose-21">Purpose<a href="#purpose-21" class="hash-link" aria-label="Direct link to Purpose" title="Direct link to Purpose">​</a></h3>
+<p>Handles all story lifecycle actions: creation, retrieval, updating outlines/chapters/critiques, and stepping through the story generation process.</p>
+<h3 class="anchor anchorWithStickyNavbar_LWe7" id="data-fields-8">Data Fields<a href="#data-fields-8" class="hash-link" aria-label="Direct link to Data Fields" title="Direct link to Data Fields">​</a></h3>
+<p><em>None</em></p>
+<h3 class="anchor anchorWithStickyNavbar_LWe7" id="methods-15">Methods<a href="#methods-15" class="hash-link" aria-label="Direct link to Methods" title="Direct link to Methods">​</a></h3>
+<h4 class="anchor anchorWithStickyNavbar_LWe7" id="story_createreq-res-next-void"><code>story_create(req, res, next): void</code><a href="#story_createreq-res-next-void" class="hash-link" aria-label="Direct link to story_createreq-res-next-void" title="Direct link to story_createreq-res-next-void">​</a></h4>
+<ul>
+<li><strong>Purpose</strong>: Initialize a new story for a user.</li>
+<li><strong>Pre-conditions</strong>: User authenticated; title provided.</li>
+<li><strong>Post-conditions</strong>: Creates DB record and returns story metadata.</li>
+</ul>
+<h4 class="anchor anchorWithStickyNavbar_LWe7" id="user_stories_listreq-res-next-void"><code>user_stories_list(req, res, next): void</code><a href="#user_stories_listreq-res-next-void" class="hash-link" aria-label="Direct link to user_stories_listreq-res-next-void" title="Direct link to user_stories_listreq-res-next-void">​</a></h4>
+<ul>
+<li><strong>Purpose</strong>: Fetch all stories belonging to the current user.</li>
+<li><strong>Pre-conditions</strong>: Valid user session.</li>
+<li><strong>Post-conditions</strong>: Returns array of story summaries.</li>
+</ul>
+<h4 class="anchor anchorWithStickyNavbar_LWe7" id="story_detailsreq-res-next-void"><code>story_details(req, res, next): void</code><a href="#story_detailsreq-res-next-void" class="hash-link" aria-label="Direct link to story_detailsreq-res-next-void" title="Direct link to story_detailsreq-res-next-void">​</a></h4>
+<ul>
+<li><strong>Purpose</strong>: Get full details for a specific story.</li>
+<li><strong>Pre-conditions</strong>: <code>req.params.story_id</code> is valid.</li>
+<li><strong>Post-conditions</strong>: Returns JSON story object.</li>
+</ul>
+<h4 class="anchor anchorWithStickyNavbar_LWe7" id="story_deletereq-res-next-void"><code>story_delete(req, res, next): void</code><a href="#story_deletereq-res-next-void" class="hash-link" aria-label="Direct link to story_deletereq-res-next-void" title="Direct link to story_deletereq-res-next-void">​</a></h4>
+<ul>
+<li><strong>Purpose</strong>: Remove a story and its associated chapters/outlines.</li>
+<li><strong>Pre-conditions</strong>: Story exists and belongs to user.</li>
+<li><strong>Post-conditions</strong>: Deletes DB records and confirms.</li>
+</ul>
+<h4 class="anchor anchorWithStickyNavbar_LWe7" id="story_chapter_detailsreq-res-next-void"><code>story_chapter_details(req, res, next): void</code><a href="#story_chapter_detailsreq-res-next-void" class="hash-link" aria-label="Direct link to story_chapter_detailsreq-res-next-void" title="Direct link to story_chapter_detailsreq-res-next-void">​</a></h4>
+<ul>
+<li><strong>Purpose</strong>: Retrieve a particular chapter’s text and metadata.</li>
+<li><strong>Pre-conditions</strong>: Chapter number valid.</li>
+<li><strong>Post-conditions</strong>: Sends chapter JSON.</li>
+</ul>
+<h4 class="anchor anchorWithStickyNavbar_LWe7" id="story_name_updatereq-res-next-void"><code>story_name_update(req, res, next): void</code><a href="#story_name_updatereq-res-next-void" class="hash-link" aria-label="Direct link to story_name_updatereq-res-next-void" title="Direct link to story_name_updatereq-res-next-void">​</a></h4>
+<ul>
+<li><strong>Purpose</strong>: Rename an existing story.</li>
+<li><strong>Pre-conditions</strong>: New name provided.</li>
+<li><strong>Post-conditions</strong>: Updates DB and returns updated story.</li>
+</ul>
+<h4 class="anchor anchorWithStickyNavbar_LWe7" id="story_get_number_of_chaptersreq-res-next-void"><code>story_get_number_of_chapters(req, res, next): void</code><a href="#story_get_number_of_chaptersreq-res-next-void" class="hash-link" aria-label="Direct link to story_get_number_of_chaptersreq-res-next-void" title="Direct link to story_get_number_of_chaptersreq-res-next-void">​</a></h4>
+<ul>
+<li><strong>Purpose</strong>: Return count of chapters in a story.</li>
+<li><strong>Pre-conditions</strong>: Story ID valid.</li>
+<li><strong>Post-conditions</strong>: Sends integer count.</li>
+</ul>
+<h4 class="anchor anchorWithStickyNavbar_LWe7" id="story_add_outlinereq-res-next-void"><code>story_add_outline(req, res, next): void</code><a href="#story_add_outlinereq-res-next-void" class="hash-link" aria-label="Direct link to story_add_outlinereq-res-next-void" title="Direct link to story_add_outlinereq-res-next-void">​</a></h4>
+<ul>
+<li><strong>Purpose</strong>: Generate and store a story outline via agents.</li>
+<li><strong>Pre-conditions</strong>: Story exists; outline parameters provided.</li>
+<li><strong>Post-conditions</strong>: Persists outline in DB and returns it.</li>
+</ul>
+<h4 class="anchor anchorWithStickyNavbar_LWe7" id="story_add_agent_outlinesreq-res-next-void"><code>story_add_agent_outlines(req, res, next): void</code><a href="#story_add_agent_outlinesreq-res-next-void" class="hash-link" aria-label="Direct link to story_add_agent_outlinesreq-res-next-void" title="Direct link to story_add_agent_outlinesreq-res-next-void">​</a></h4>
+<ul>
+<li><strong>Purpose</strong>: Generate multiple agent-specific outlines for comparison.</li>
+<li><strong>Pre-conditions</strong>: Same as <code>story_add_outline</code>.</li>
+<li><strong>Post-conditions</strong>: Stores each agent’s outline.</li>
+</ul>
+<h4 class="anchor anchorWithStickyNavbar_LWe7" id="story_add_critiquereq-res-next-void"><code>story_add_critique(req, res, next): void</code><a href="#story_add_critiquereq-res-next-void" class="hash-link" aria-label="Direct link to story_add_critiquereq-res-next-void" title="Direct link to story_add_critiquereq-res-next-void">​</a></h4>
+<ul>
+<li><strong>Purpose</strong>: Solicit critique on an existing outline/chapter.</li>
+<li><strong>Pre-conditions</strong>: Target content exists.</li>
+<li><strong>Post-conditions</strong>: Persists critique and returns feedback.</li>
+</ul>
+<h4 class="anchor anchorWithStickyNavbar_LWe7" id="story_add_agent_critiquesreq-res-next-void"><code>story_add_agent_critiques(req, res, next): void</code><a href="#story_add_agent_critiquesreq-res-next-void" class="hash-link" aria-label="Direct link to story_add_agent_critiquesreq-res-next-void" title="Direct link to story_add_agent_critiquesreq-res-next-void">​</a></h4>
+<ul>
+<li><strong>Purpose</strong>: Gather agent-specific critiques for comparison.</li>
+<li><strong>Pre-conditions</strong>: Same as <code>story_add_critique</code>.</li>
+<li><strong>Post-conditions</strong>: Stores each critique.</li>
+</ul>
+<h4 class="anchor anchorWithStickyNavbar_LWe7" id="story_add_chapterreq-res-next-void"><code>story_add_chapter(req, res, next): void</code><a href="#story_add_chapterreq-res-next-void" class="hash-link" aria-label="Direct link to story_add_chapterreq-res-next-void" title="Direct link to story_add_chapterreq-res-next-void">​</a></h4>
+<ul>
+<li><strong>Purpose</strong>: Generate the next chapter from approved outline.</li>
+<li><strong>Pre-conditions</strong>: Outline finalized.</li>
+<li><strong>Post-conditions</strong>: Saves chapter text.</li>
+</ul>
+<h4 class="anchor anchorWithStickyNavbar_LWe7" id="story_add_agent_chapterreq-res-next-void"><code>story_add_agent_chapter(req, res, next): void</code><a href="#story_add_agent_chapterreq-res-next-void" class="hash-link" aria-label="Direct link to story_add_agent_chapterreq-res-next-void" title="Direct link to story_add_agent_chapterreq-res-next-void">​</a></h4>
+<ul>
+<li><strong>Purpose</strong>: Produce multiple candidate chapters via different agents.</li>
+<li><strong>Pre-conditions</strong>: Same as <code>story_add_chapter</code>.</li>
+<li><strong>Post-conditions</strong>: Persists each candidate.</li>
+</ul>
+<h4 class="anchor anchorWithStickyNavbar_LWe7" id="story_agent_chapter_editreq-res-next-void"><code>story_agent_chapter_edit(req, res, next): void</code><a href="#story_agent_chapter_editreq-res-next-void" class="hash-link" aria-label="Direct link to story_agent_chapter_editreq-res-next-void" title="Direct link to story_agent_chapter_editreq-res-next-void">​</a></h4>
+<ul>
+<li><strong>Purpose</strong>: Apply user’s edits to a generated chapter.</li>
+<li><strong>Pre-conditions</strong>: Chapter exists.</li>
+<li><strong>Post-conditions</strong>: Updates DB and returns revised text.</li>
+</ul>
+<h4 class="anchor anchorWithStickyNavbar_LWe7" id="story_agent_critique_editreq-res-next-void"><code>story_agent_critique_edit(req, res, next): void</code><a href="#story_agent_critique_editreq-res-next-void" class="hash-link" aria-label="Direct link to story_agent_critique_editreq-res-next-void" title="Direct link to story_agent_critique_editreq-res-next-void">​</a></h4>
+<ul>
+<li><strong>Purpose</strong>: Refine a stored critique based on user feedback.</li>
+<li><strong>Pre-conditions</strong>: Critique exists.</li>
+<li><strong>Post-conditions</strong>: Persists updated critique.</li>
+</ul>
+<h4 class="anchor anchorWithStickyNavbar_LWe7" id="story_get_critiquereq-res-next-void"><code>story_get_critique(req, res, next): void</code><a href="#story_get_critiquereq-res-next-void" class="hash-link" aria-label="Direct link to story_get_critiquereq-res-next-void" title="Direct link to story_get_critiquereq-res-next-void">​</a></h4>
+<ul>
+<li><strong>Purpose</strong>: Retrieve stored critique for a chapter or outline.</li>
+<li><strong>Pre-conditions</strong>: IDs valid.</li>
+<li><strong>Post-conditions</strong>: Sends critique JSON.</li>
+</ul>
+<h4 class="anchor anchorWithStickyNavbar_LWe7" id="story_agent_chapter_votesreq-res-next-void"><code>story_agent_chapter_votes(req, res, next): void</code><a href="#story_agent_chapter_votesreq-res-next-void" class="hash-link" aria-label="Direct link to story_agent_chapter_votesreq-res-next-void" title="Direct link to story_agent_chapter_votesreq-res-next-void">​</a></h4>
+<ul>
+<li><strong>Purpose</strong>: Collect user or agent votes on candidate chapters.</li>
+<li><strong>Pre-conditions</strong>: Candidate chapters present.</li>
+<li><strong>Post-conditions</strong>: Stores votes and returns tally.</li>
+</ul>
+<h4 class="anchor anchorWithStickyNavbar_LWe7" id="story_get_outlinereq-res-next-void"><code>story_get_outline(req, res, next): void</code><a href="#story_get_outlinereq-res-next-void" class="hash-link" aria-label="Direct link to story_get_outlinereq-res-next-void" title="Direct link to story_get_outlinereq-res-next-void">​</a></h4>
+<ul>
+<li><strong>Purpose</strong>: Fetch the main outline for review.</li>
+<li><strong>Pre-conditions</strong>: Outline exists.</li>
+<li><strong>Post-conditions</strong>: Sends outline JSON.</li>
+</ul>
+<h4 class="anchor anchorWithStickyNavbar_LWe7" id="story_agents_listreq-res-next-void"><code>story_agents_list(req, res, next): void</code><a href="#story_agents_listreq-res-next-void" class="hash-link" aria-label="Direct link to story_agents_listreq-res-next-void" title="Direct link to story_agents_listreq-res-next-void">​</a></h4>
+<ul>
+<li><strong>Purpose</strong>: List agents assigned to a story.</li>
+<li><strong>Pre-conditions</strong>: Story ID provided.</li>
+<li><strong>Post-conditions</strong>: Returns agent IDs and metadata.</li>
+</ul>
+<h4 class="anchor anchorWithStickyNavbar_LWe7" id="story_get_generate_outline_detailsreq-res-next-void"><code>story_get_generate_outline_details(req, res, next): void</code><a href="#story_get_generate_outline_detailsreq-res-next-void" class="hash-link" aria-label="Direct link to story_get_generate_outline_detailsreq-res-next-void" title="Direct link to story_get_generate_outline_detailsreq-res-next-void">​</a></h4>
+<ul>
+<li><strong>Purpose</strong>: Provide status/details of an in-progress outline generation.</li>
+<li><strong>Pre-conditions</strong>: Generation initiated.</li>
+<li><strong>Post-conditions</strong>: Sends progress info.</li>
+</ul>
+<h4 class="anchor anchorWithStickyNavbar_LWe7" id="story_get_critique_outline_detailsreq-res-next-void"><code>story_get_critique_outline_details(req, res, next): void</code><a href="#story_get_critique_outline_detailsreq-res-next-void" class="hash-link" aria-label="Direct link to story_get_critique_outline_detailsreq-res-next-void" title="Direct link to story_get_critique_outline_detailsreq-res-next-void">​</a></h4>
+<ul>
+<li><strong>Purpose</strong>: Provide status/details of critique generation on the outline.</li>
+<li><strong>Pre-conditions</strong>: Critique step started.</li>
+<li><strong>Post-conditions</strong>: Returns progress info.</li>
+</ul>
+<h4 class="anchor anchorWithStickyNavbar_LWe7" id="story_get_rewrite_outline_detailsreq-res-next-void"><code>story_get_rewrite_outline_details(req, res, next): void</code><a href="#story_get_rewrite_outline_detailsreq-res-next-void" class="hash-link" aria-label="Direct link to story_get_rewrite_outline_detailsreq-res-next-void" title="Direct link to story_get_rewrite_outline_detailsreq-res-next-void">​</a></h4>
+<ul>
+<li><strong>Purpose</strong>: Provide status/details of an outline rewrite step.</li>
+<li><strong>Pre-conditions</strong>: Rewrite step initiated.</li>
+<li><strong>Post-conditions</strong>: Sends progress info.</li>
+</ul>
+<h4 class="anchor anchorWithStickyNavbar_LWe7" id="story_get_first_chapter_detailsreq-res-next-void"><code>story_get_first_chapter_details(req, res, next): void</code><a href="#story_get_first_chapter_detailsreq-res-next-void" class="hash-link" aria-label="Direct link to story_get_first_chapter_detailsreq-res-next-void" title="Direct link to story_get_first_chapter_detailsreq-res-next-void">​</a></h4>
+<ul>
+<li><strong>Purpose</strong>: Return details on the initial chapter generation.</li>
+<li><strong>Pre-conditions</strong>: First chapter generation done.</li>
+<li><strong>Post-conditions</strong>: Sends chapter meta.</li>
+</ul>
+<h4 class="anchor anchorWithStickyNavbar_LWe7" id="story_get_next_chapter_detailsreq-res-next-void"><code>story_get_next_chapter_details(req, res, next): void</code><a href="#story_get_next_chapter_detailsreq-res-next-void" class="hash-link" aria-label="Direct link to story_get_next_chapter_detailsreq-res-next-void" title="Direct link to story_get_next_chapter_detailsreq-res-next-void">​</a></h4>
+<ul>
+<li><strong>Purpose</strong>: Return details on the latest chapter generation.</li>
+<li><strong>Pre-conditions</strong>: Next chapter exists.</li>
+<li><strong>Post-conditions</strong>: Sends chapter meta.</li>
+</ul>
+<h4 class="anchor anchorWithStickyNavbar_LWe7" id="story_get_critique_chapter_detailsreq-res-next-void"><code>story_get_critique_chapter_details(req, res, next): void</code><a href="#story_get_critique_chapter_detailsreq-res-next-void" class="hash-link" aria-label="Direct link to story_get_critique_chapter_detailsreq-res-next-void" title="Direct link to story_get_critique_chapter_detailsreq-res-next-void">​</a></h4>
+<ul>
+<li><strong>Purpose</strong>: Provide status/details of chapter critique.</li>
+<li><strong>Pre-conditions</strong>: Critique in progress or done.</li>
+<li><strong>Post-conditions</strong>: Returns critique status.</li>
+</ul>
+<h4 class="anchor anchorWithStickyNavbar_LWe7" id="story_get_rewrite_chapter_detailsreq-res-next-void"><code>story_get_rewrite_chapter_details(req, res, next): void</code><a href="#story_get_rewrite_chapter_detailsreq-res-next-void" class="hash-link" aria-label="Direct link to story_get_rewrite_chapter_detailsreq-res-next-void" title="Direct link to story_get_rewrite_chapter_detailsreq-res-next-void">​</a></h4>
+<ul>
+<li><strong>Purpose</strong>: Provide status/details of chapter rewrite.</li>
+<li><strong>Pre-conditions</strong>: Rewrite step started.</li>
+<li><strong>Post-conditions</strong>: Sends progress info.</li>
+</ul>
+<h4 class="anchor anchorWithStickyNavbar_LWe7" id="story_get_stepreq-res-next-void"><code>story_get_step(req, res, next): void</code><a href="#story_get_stepreq-res-next-void" class="hash-link" aria-label="Direct link to story_get_stepreq-res-next-void" title="Direct link to story_get_stepreq-res-next-void">​</a></h4>
+<ul>
+<li><strong>Purpose</strong>: Retrieve the current step name in the story pipeline.</li>
+<li><strong>Pre-conditions</strong>: Story exists.</li>
+<li><strong>Post-conditions</strong>: Returns step identifier.</li>
+</ul>
+<h4 class="anchor anchorWithStickyNavbar_LWe7" id="story_update_stepreq-res-next-void"><code>story_update_step(req, res, next): void</code><a href="#story_update_stepreq-res-next-void" class="hash-link" aria-label="Direct link to story_update_stepreq-res-next-void" title="Direct link to story_update_stepreq-res-next-void">​</a></h4>
+<ul>
+<li><strong>Purpose</strong>: Advance or modify the current story pipeline step.</li>
+<li><strong>Pre-conditions</strong>: Valid new step provided.</li>
+<li><strong>Post-conditions</strong>: Updates step in DB.</li>
+</ul>
+<hr>
+<h2 class="anchor anchorWithStickyNavbar_LWe7" id="usercontroller"><code>UserController</code><a href="#usercontroller" class="hash-link" aria-label="Direct link to usercontroller" title="Direct link to usercontroller">​</a></h2>
+<h3 class="anchor anchorWithStickyNavbar_LWe7" id="purpose-22">Purpose<a href="#purpose-22" class="hash-link" aria-label="Direct link to Purpose" title="Direct link to Purpose">​</a></h3>
+<p>Handle user account creation, authentication, updates, and deletion.</p>
+<h3 class="anchor anchorWithStickyNavbar_LWe7" id="data-fields-9">Data Fields<a href="#data-fields-9" class="hash-link" aria-label="Direct link to Data Fields" title="Direct link to Data Fields">​</a></h3>
+<p><em>None</em></p>
+<h3 class="anchor anchorWithStickyNavbar_LWe7" id="methods-16">Methods<a href="#methods-16" class="hash-link" aria-label="Direct link to Methods" title="Direct link to Methods">​</a></h3>
+<h4 class="anchor anchorWithStickyNavbar_LWe7" id="create_userreq-res-next-void"><code>create_user(req, res, next): void</code><a href="#create_userreq-res-next-void" class="hash-link" aria-label="Direct link to create_userreq-res-next-void" title="Direct link to create_userreq-res-next-void">​</a></h4>
+<ul>
+<li><strong>Purpose</strong>: Register a new user.</li>
+<li><strong>Pre-conditions</strong>: <code>req.body</code> contains username/password.</li>
+<li><strong>Post-conditions</strong>: Persists user record and returns profile.</li>
+</ul>
+<h4 class="anchor anchorWithStickyNavbar_LWe7" id="user_loginreq-res-next-void"><code>user_login(req, res, next): void</code><a href="#user_loginreq-res-next-void" class="hash-link" aria-label="Direct link to user_loginreq-res-next-void" title="Direct link to user_loginreq-res-next-void">​</a></h4>
+<ul>
+<li><strong>Purpose</strong>: Authenticate user credentials and issue session or token.</li>
+<li><strong>Pre-conditions</strong>: Valid credentials in request.</li>
+<li><strong>Post-conditions</strong>: Sets session/cookie and returns success.</li>
+</ul>
+<h4 class="anchor anchorWithStickyNavbar_LWe7" id="user_deletereq-res-next-void"><code>user_delete(req, res, next): void</code><a href="#user_deletereq-res-next-void" class="hash-link" aria-label="Direct link to user_deletereq-res-next-void" title="Direct link to user_deletereq-res-next-void">​</a></h4>
+<ul>
+<li><strong>Purpose</strong>: Remove a user account.</li>
+<li><strong>Pre-conditions</strong>: Authenticated as target user or admin.</li>
+<li><strong>Post-conditions</strong>: Deletes user record and related data.</li>
+</ul>
+<h4 class="anchor anchorWithStickyNavbar_LWe7" id="user_updatereq-res-next-void"><code>user_update(req, res, next): void</code><a href="#user_updatereq-res-next-void" class="hash-link" aria-label="Direct link to user_updatereq-res-next-void" title="Direct link to user_updatereq-res-next-void">​</a></h4>
+<ul>
+<li><strong>Purpose</strong>: Modify user profile fields.</li>
+<li><strong>Pre-conditions</strong>: Valid update payload.</li>
+<li><strong>Post-conditions</strong>: Persists changes and returns updated profile.</li>
+</ul>
+<h4 class="anchor anchorWithStickyNavbar_LWe7" id="user_detailsreq-res-next-void"><code>user_details(req, res, next): void</code><a href="#user_detailsreq-res-next-void" class="hash-link" aria-label="Direct link to user_detailsreq-res-next-void" title="Direct link to user_detailsreq-res-next-void">​</a></h4>
+<ul>
+<li><strong>Purpose</strong>: Fetch profile details for the current or specified user.</li>
+<li><strong>Pre-conditions</strong>: Authentication or target user ID.</li>
+<li><strong>Post-conditions</strong>: Sends user JSON.</li>
+</ul></div><footer class="theme-doc-footer docusaurus-mt-lg"><div class="row margin-top--sm theme-doc-footer-edit-meta-row"><div class="col"><a href="https://github.com/Capstone-Projects-2025-Spring/project-003-story-builder-team-1/edit/main/documentation/docs/system-architecture/class-diagrams.md" target="_blank" rel="noopener noreferrer" class="theme-edit-this-page"><svg fill="currentColor" height="20" width="20" viewBox="0 0 40 40" class="iconEdit_Z9Sw" aria-hidden="true"><g><path d="m34.5 11.7l-3 3.1-6.3-6.3 3.1-3q0.5-0.5 1.2-0.5t1.1 0.5l3.9 3.9q0.5 0.4 0.5 1.1t-0.5 1.2z m-29.5 17.1l18.4-18.5 6.3 6.3-18.4 18.4h-6.3v-6.2z"></path></g></svg>Edit this page</a></div><div class="col lastUpdated_JAkA"><details><summary>Revision History</summary><table><thead><tr><th scope="row">Author</th><th scope="row">Revision</th><th scope="row">Date</th></tr></thead><tbody>nothing</tbody></table></details><span class="theme-last-updated">Last updated<!-- --> by <b>Kamaljeeth Vijay</b></span></div></div></footer></article><nav class="pagination-nav docusaurus-mt-lg" aria-label="Docs pages"><a class="pagination-nav__link pagination-nav__link--prev" href="/project-003-story-builder-team-1/docs/category/system-architecture"><div class="pagination-nav__sublabel">Previous</div><div class="pagination-nav__label">System Architecture</div></a><a class="pagination-nav__link pagination-nav__link--next" href="/project-003-story-builder-team-1/docs/system-architecture/use-case-diagram"><div class="pagination-nav__sublabel">Next</div><div class="pagination-nav__label">Use Case Diagram</div></a></nav></div></div><div class="col col--3"><div class="tableOfContents_bqdL thin-scrollbar theme-doc-toc-desktop"><ul class="table-of-contents table-of-contents__left-border"><li><a href="#frontend-class-diagram" class="table-of-contents__link toc-highlight">Frontend Class Diagram</a></li><li><a href="#app" class="table-of-contents__link toc-highlight"><code>App</code></a><ul><li><a href="#purpose" class="table-of-contents__link toc-highlight">Purpose</a></li><li><a href="#data-fields" class="table-of-contents__link toc-highlight">Data Fields</a></li><li><a href="#methods" class="table-of-contents__link toc-highlight">Methods</a></li></ul></li><li><a href="#agent_box" class="table-of-contents__link toc-highlight"><code>AGENT_BOX</code></a><ul><li><a href="#purpose-1" class="table-of-contents__link toc-highlight">Purpose</a></li><li><a href="#data-fields-1" class="table-of-contents__link toc-highlight">Data Fields</a></li><li><a href="#methods-1" class="table-of-contents__link toc-highlight">Methods</a></li></ul></li><li><a href="#agent_selection" class="table-of-contents__link toc-highlight"><code>AGENT_SELECTION</code></a><ul><li><a href="#purpose-2" class="table-of-contents__link toc-highlight">Purpose</a></li><li><a href="#data-fields-2" class="table-of-contents__link toc-highlight">Data Fields</a></li><li><a href="#methods-2" class="table-of-contents__link toc-highlight">Methods</a></li></ul></li><li><a href="#agent_thoughts" class="table-of-contents__link toc-highlight"><code>AGENT_THOUGHTS</code></a><ul><li><a href="#purpose-3" class="table-of-contents__link toc-highlight">Purpose</a></li><li><a href="#data-fields--methods" class="table-of-contents__link toc-highlight">Data Fields / Methods</a></li></ul></li><li><a href="#best_response" class="table-of-contents__link toc-highlight"><code>BEST_RESPONSE</code></a><ul><li><a href="#purpose-4" class="table-of-contents__link toc-highlight">Purpose</a></li><li><a href="#methods-3" class="table-of-contents__link toc-highlight">Methods</a></li></ul></li><li><a href="#chapter_list" class="table-of-contents__link toc-highlight"><code>CHAPTER_LIST</code></a><ul><li><a href="#purpose-5" class="table-of-contents__link toc-highlight">Purpose</a></li><li><a href="#methods-4" class="table-of-contents__link toc-highlight">Methods</a></li></ul></li><li><a href="#chapter_view" class="table-of-contents__link toc-highlight"><code>CHAPTER_VIEW</code></a><ul><li><a href="#purpose-6" class="table-of-contents__link toc-highlight">Purpose</a></li></ul></li><li><a href="#create_account" class="table-of-contents__link toc-highlight"><code>CREATE_ACCOUNT</code></a><ul><li><a href="#purpose-7" class="table-of-contents__link toc-highlight">Purpose</a></li><li><a href="#methods-5" class="table-of-contents__link toc-highlight">Methods</a></li></ul></li><li><a href="#login" class="table-of-contents__link toc-highlight"><code>LOGIN</code></a><ul><li><a href="#purpose-8" class="table-of-contents__link toc-highlight">Purpose</a></li><li><a href="#methods-6" class="table-of-contents__link toc-highlight">Methods</a></li></ul></li><li><a href="#home" class="table-of-contents__link toc-highlight"><code>HOME</code></a><ul><li><a href="#purpose-9" class="table-of-contents__link toc-highlight">Purpose</a></li></ul></li><li><a href="#main_layout" class="table-of-contents__link toc-highlight"><code>MAIN_LAYOUT</code></a><ul><li><a href="#purpose-10" class="table-of-contents__link toc-highlight">Purpose</a></li><li><a href="#methods-7" class="table-of-contents__link toc-highlight">Methods</a></li></ul></li><li><a href="#protected_route" class="table-of-contents__link toc-highlight"><code>PROTECTED_ROUTE</code></a><ul><li><a href="#purpose-11" class="table-of-contents__link toc-highlight">Purpose</a></li></ul></li><li><a href="#story_agents_view" class="table-of-contents__link toc-highlight"><code>STORY_AGENTS_VIEW</code></a><ul><li><a href="#purpose-12" class="table-of-contents__link toc-highlight">Purpose</a></li></ul></li><li><a href="#story_list" class="table-of-contents__link toc-highlight"><code>STORY_LIST</code></a><ul><li><a href="#purpose-13" class="table-of-contents__link toc-highlight">Purpose</a></li><li><a href="#methods-8" class="table-of-contents__link toc-highlight">Methods</a></li></ul></li><li><a href="#story_prompt_box" class="table-of-contents__link toc-highlight"><code>STORY_PROMPT_BOX</code></a><ul><li><a href="#purpose-14" class="table-of-contents__link toc-highlight">Purpose</a></li><li><a href="#methods-9" class="table-of-contents__link toc-highlight">Methods</a></li></ul></li><li><a href="#story_view" class="table-of-contents__link toc-highlight"><code>STORY_VIEW</code></a><ul><li><a href="#purpose-15" class="table-of-contents__link toc-highlight">Purpose</a></li></ul></li><li><a href="#backend-class-diagram" class="table-of-contents__link toc-highlight">Backend Class Diagram</a></li><li><a href="#agent" class="table-of-contents__link toc-highlight"><code>Agent</code></a><ul><li><a href="#purpose-16" class="table-of-contents__link toc-highlight">Purpose</a></li><li><a href="#data-fields-3" class="table-of-contents__link toc-highlight">Data Fields</a></li><li><a href="#methods-10" class="table-of-contents__link toc-highlight">Methods</a></li></ul></li><li><a href="#courier" class="table-of-contents__link toc-highlight"><code>Courier</code></a><ul><li><a href="#purpose-17" class="table-of-contents__link toc-highlight">Purpose</a></li><li><a href="#data-fields-4" class="table-of-contents__link toc-highlight">Data Fields</a></li><li><a href="#methods-11" class="table-of-contents__link toc-highlight">Methods</a></li></ul></li><li><a href="#translator" class="table-of-contents__link toc-highlight"><code>Translator</code></a><ul><li><a href="#purpose-18" class="table-of-contents__link toc-highlight">Purpose</a></li><li><a href="#data-fields-5" class="table-of-contents__link toc-highlight">Data Fields</a></li><li><a href="#methods-12" class="table-of-contents__link toc-highlight">Methods</a></li></ul></li><li><a href="#agentcontroller" class="table-of-contents__link toc-highlight"><code>AgentController</code></a><ul><li><a href="#purpose-19" class="table-of-contents__link toc-highlight">Purpose</a></li><li><a href="#data-fields-6" class="table-of-contents__link toc-highlight">Data Fields</a></li><li><a href="#methods-13" class="table-of-contents__link toc-highlight">Methods</a></li></ul></li><li><a href="#personacontroller" class="table-of-contents__link toc-highlight"><code>PersonaController</code></a><ul><li><a href="#purpose-20" class="table-of-contents__link toc-highlight">Purpose</a></li><li><a href="#data-fields-7" class="table-of-contents__link toc-highlight">Data Fields</a></li><li><a href="#methods-14" class="table-of-contents__link toc-highlight">Methods</a></li></ul></li><li><a href="#storycontroller" class="table-of-contents__link toc-highlight"><code>StoryController</code></a><ul><li><a href="#purpose-21" class="table-of-contents__link toc-highlight">Purpose</a></li><li><a href="#data-fields-8" class="table-of-contents__link toc-highlight">Data Fields</a></li><li><a href="#methods-15" class="table-of-contents__link toc-highlight">Methods</a></li></ul></li><li><a href="#usercontroller" class="table-of-contents__link toc-highlight"><code>UserController</code></a><ul><li><a href="#purpose-22" class="table-of-contents__link toc-highlight">Purpose</a></li><li><a href="#data-fields-9" class="table-of-contents__link toc-highlight">Data Fields</a></li><li><a href="#methods-16" class="table-of-contents__link toc-highlight">Methods</a></li></ul></li></ul></div></div></div></div></main></div></div></div><footer class="footer"><div class="container container-fluid"><div class="row footer__links"><div class="col footer__col"><div class="footer__title">Docs</div><ul class="footer__items clean-list"><li class="footer__item"><a class="footer__link-item" href="/project-003-story-builder-team-1/docs/intro">Documentation</a></li></ul></div><div class="col footer__col"><div class="footer__title">More</div><ul class="footer__items clean-list"><li class="footer__item"><a href="https://github.com/Capstone-Projects-2025-Spring/project-003-story-builder-team-1" target="_blank" rel="noopener noreferrer" class="footer__link-item">GitHub<svg width="13.5" height="13.5" aria-hidden="true" viewBox="0 0 24 24" class="iconExternalLink_nPIU"><path fill="currentColor" d="M21 13v10h-21v-19h12v2h-10v15h17v-8h2zm3-12h-10.988l4.035 4-6.977 7.07 2.828 2.828 6.977-7.07 4.125 4.172v-11z"></path></svg></a></li></ul></div></div><div class="footer__bottom text--center"><div class="margin-bottom--sm"><img src="https://upload.wikimedia.org/wikipedia/commons/1/17/Temple_T_logo.svg" alt="My Site Logo" class="footer__logo themedComponent_mlkZ themedComponent--light_NVdE"><img src="https://upload.wikimedia.org/wikipedia/commons/1/17/Temple_T_logo.svg" alt="My Site Logo" class="footer__logo themedComponent_mlkZ themedComponent--dark_xIcU"></div><div class="footer__copyright">Copyright © 2025 Project 003 Story Builder Team 1, Inc. Built with Docusaurus.</div></div></div></footer></div>
 </body>
 </html>
