@@ -33,7 +33,7 @@ Many AI clients and web applications exist in order to make it easier for non-te
 2. Clone the repository.
 3. Ensure that [Docker](https://www.docker.com/products/docker-desktop/) is running on your system and that docker is open.
 4. In the cloned repository, add the environment variables specified within to the .env file in the root.
-5. MongoDB instructions: Please refer to the "Build Database" instructions below to fill in the DB_URL enviroment variable.
+5. MongoDB instructions: Please refer to the "Build Database" instructions below to fill in the DB_URI enviroment variable.
 6. Run the following: ``npm run setup``.
 7. Then run: ``npm run start:a``.
 8. To stop it run: ``npm run stop:a``.
