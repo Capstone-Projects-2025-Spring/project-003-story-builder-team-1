@@ -7,12 +7,9 @@
 [![Deploy Docs](https://github.com/ApplebaumIan/tu-cis-4398-docs-template/actions/workflows/deploy.yml/badge.svg)](https://github.com/Capstone-Projects-2025-Spring/project-003-story-builder-team-1/actions/workflows/deploy.yml)
 [![Documentation Website Link](https://img.shields.io/badge/-Documentation%20Website-brightgreen)](https://capstone-projects-2025-spring.github.io/project-003-story-builder-team-1/)
 
-
 </div>
 
-## Project Overview
-
-AI Story Builder Team 1
+# StoryBuilder AI Team 1 Project Overview
 
 ## Project Abstract
 
@@ -28,7 +25,7 @@ The amount of agents running at a time is scalable, and the user will decide how
 
 Many AI clients and web applications exist in order to make it easier for non-technical people to access this technology, such as ChatGPT and Deepseek’s websites. There are also plenty of programs the user can choose to locally host LLMs, like Ollama and Text Generation WebUI. These options usually either require too much setup for casual users or provide fewer customization options in the refinement process. ChatGPT, for example, will provide, at most, two agents at a time, and these agents only return the output without critiquing it themselves first. By including elements from both approaches to LLM interfaces, this application reaps the benefits of a technician-focused user experience with the ease of use of Llama and OpenAI’s web clients.
 
-## Local Running Instructions:
+# Local Running Instructions:
 1. Ensure that [npm & node](https://nodejs.org/en) and [Docker](https://www.docker.com/products/docker-desktop/) are installed on your system.
 2. Clone the repository.
 3. Ensure that [Docker](https://www.docker.com/products/docker-desktop/) is running on your system and that docker is open.
@@ -43,58 +40,6 @@ Many AI clients and web applications exist in order to make it easier for non-te
 We chose MongoDB, and our database schemas reflect MongoDB's non-relational schema design. 
 1. Add the MongoDB URI for your specific cluster and database to the .env file in the root and the one in storybuilder/Backend. This URI can be found in the MongoDB Atlas webpage instructions for a cluster. Follow the template and fill in the placeholder with your specific setup info: ``DB_URI = mongodb+srv://<username>:<password>@<cluster-address>/<database-name>?retryWrites=true&w=majority&appName=<cluster-name>``
 2. To populate the db with some agent personas like Shakespeare, Stephen King, etc., run the populate_personas.js script in the storybuilder/Backend directory using a command like this with your specific info: ``node populate_personsas "mongodb+srv://<username>:<password>@<cluster-address>/<database-name>?retryWrites=true&w=majority&appName=<cluster-name>"``
-
-## Collaborators
-
-[//]: # ( readme: collaborators -start )
-<table>
-<tr>
-    <td align="center">
-        <a href="https://github.com/JawnnyD">
-            <img src="https://media.licdn.com/dms/image/v2/D5603AQFm7qBiz7RFJw/profile-displayphoto-shrink_800_800/profile-displayphoto-shrink_800_800/0/1677198760248?e=1751500800&v=beta&t=vpkZIET92cRZWlouoVjP8Kcj8rD3P_0IIWyzCCXVcuQ" width="100;" alt="DangJohn"/>
-            <br />
-            <sub><b>John Dang</b></sub>
-        </a>
-    </td>
-    <td align="center">
-        <a href="https://github.com/EdJuanGonzalez">
-            <img src="https://avatars.githubusercontent.com/u/114366772?v=4" width="100;" alt="GonzalezJEdgardo"/>
-            <br />
-            <sub><b>Edgardo Juan González</b></sub>
-        </a>
-    </td>
-    <td align="center">
-        <a href="https://github.com/kjeeth04">
-            <img src="https://avatars.githubusercontent.com/u/72448980?v=4" width="100;" alt="VijayKamaljeeth"/>
-            <br />
-            <sub><b>Kamaljeeth Vijay</b></sub>
-        </a>
-    </td>
-    <td align="center">
-        <a href="https://github.com/CBerg333">
-            <img src="https://avatars.githubusercontent.com/u/119720325?v=4" width="100;" alt="McGarrityChristopher"/>
-            <br />
-            <sub><b>Christopher McGarrity</b></sub>
-        </a>
-    </td>
-    <td align="center">
-        <a href="https://github.com/qari7">
-            <img src="https://avatars.githubusercontent.com/u/156926495?v=4" width="100;" alt="QariYousuf"/>
-            <br />
-            <sub><b>Yousuf Qari</b></sub>
-        </a>
-    </td>
-    <td align="center">
-        <a href="https://github.com/NocKtuRn4L">
-            <img src="https://avatars.githubusercontent.com/u/133310401?v=4" width="100;" alt="CaelDylan"/>
-            <br />
-            <sub><b>Dylan Cael</b></sub>
-        </a>
-    </td>
-</tr>
-</table>
-
-[//]: # ( readme: collaborators -end )
 
 # Final Project Release - Story Builder Team 1
 
@@ -169,3 +114,61 @@ We chose MongoDB, and our database schemas reflect MongoDB's non-relational sche
 [SBTA-154](https://temple-cis-projects-in-cs.atlassian.net/browse/SBTA-154) Agent history view
 
 [SBTA-155](https://temple-cis-projects-in-cs.atlassian.net/browse/SBTA-155) Update Story Schema
+
+# Known Bugs
+1. Switching pages while the streaming is not complete may cause an error (This can include simply not seeing anything in the agent boxes to crashing if one clicks continue after returning to agent page).
+2. Sometimes the agents get stuck in repeated tool calls.
+3. Sometimes the LLM will generate the incorrect chapter (chapters out of order).
+4. If there is an issue saving to the database it may crash the entire backend instead of returning a graceful error.
+
+# Collaborators
+
+[//]: # ( readme: collaborators -start )
+<table>
+<tr>
+    <td align="center">
+        <a href="https://github.com/JawnnyD">
+            <img src="https://media.licdn.com/dms/image/v2/D5603AQFm7qBiz7RFJw/profile-displayphoto-shrink_800_800/profile-displayphoto-shrink_800_800/0/1677198760248?e=1751500800&v=beta&t=vpkZIET92cRZWlouoVjP8Kcj8rD3P_0IIWyzCCXVcuQ" width="100;" alt="DangJohn"/>
+            <br />
+            <sub><b>John Dang</b></sub>
+        </a>
+    </td>
+    <td align="center">
+        <a href="https://github.com/EdJuanGonzalez">
+            <img src="https://avatars.githubusercontent.com/u/114366772?v=4" width="100;" alt="GonzalezJEdgardo"/>
+            <br />
+            <sub><b>Edgardo Juan González</b></sub>
+        </a>
+    </td>
+    <td align="center">
+        <a href="https://github.com/kjeeth04">
+            <img src="https://avatars.githubusercontent.com/u/72448980?v=4" width="100;" alt="VijayKamaljeeth"/>
+            <br />
+            <sub><b>Kamaljeeth Vijay</b></sub>
+        </a>
+    </td>
+    <td align="center">
+        <a href="https://github.com/CBerg333">
+            <img src="https://avatars.githubusercontent.com/u/119720325?v=4" width="100;" alt="McGarrityChristopher"/>
+            <br />
+            <sub><b>Christopher McGarrity</b></sub>
+        </a>
+    </td>
+    <td align="center">
+        <a href="https://github.com/qari7">
+            <img src="https://avatars.githubusercontent.com/u/156926495?v=4" width="100;" alt="QariYousuf"/>
+            <br />
+            <sub><b>Yousuf Qari</b></sub>
+        </a>
+    </td>
+    <td align="center">
+        <a href="https://github.com/NocKtuRn4L">
+            <img src="https://avatars.githubusercontent.com/u/133310401?v=4" width="100;" alt="CaelDylan"/>
+            <br />
+            <sub><b>Dylan Cael</b></sub>
+        </a>
+    </td>
+</tr>
+</table>
+
+[//]: # ( readme: collaborators -end )
