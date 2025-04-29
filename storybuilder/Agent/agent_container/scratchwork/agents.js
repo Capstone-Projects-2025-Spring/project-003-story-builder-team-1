@@ -5,7 +5,7 @@ import { Annotation } from "@langchain/langgraph";
 import { stream_handler } from "../stream_handler.js";
 import { ChatPromptTemplate } from "@langchain/core/prompts";
 import outline_tools from "../tools/zod_out_tools.js";
-import chapter_tools from "../tools/zod_chap_tools.js";
+import chapter_tools from "../tools/zod_chapter_tools.js";
 import { ChatOpenAI } from "@langchain/openai";
 const callbacks = [stream_handler()];
 // 1) Define the exact shape you want:
@@ -111,9 +111,9 @@ const AnnotationWithReducer = Annotation.Root({
 const generate_outline_node = new ToolNode([outline_tools_list[0]]);
 const vote_generate_outline_node = new ToolNode([outline_tools_list[1]]);
 const critique_outline_node = new ToolNode([outline_tools_list[2]]);
-const vote_critique_outline_node = new ToolNode([outline_tools_list[2]]);
-const revise_outline_node = new ToolNode([outline_tools_list[3]]);
-const vote_revise_outline_node = new ToolNode([outline_tools_list[4]]);
+const vote_critique_outline_node = new ToolNode([outline_tools_list[3]]);
+const revise_outline_node = new ToolNode([outline_tools_list[4]]);
+const vote_revise_outline_node = new ToolNode([outline_tools_list[5]]);
 const first_chapter_node = new ToolNode([chapter_tools_list[0]]);
 const vote_first_chapter_node = new ToolNode([chapter_tools_list[1]]);
 const next_chapter_node = new ToolNode([chapter_tools_list[2]]);
@@ -123,17 +123,17 @@ const vote_rewrite_chapter_node = new ToolNode([chapter_tools_list[5]]);
 const critique_chapter_node = new ToolNode([chapter_tools_list[6]]);
 const vote_critique_chapter_node = new ToolNode([chapter_tools_list[7]]);
 //Creates list of tools to search through 
-const toolsList = tools.map((t) => `- ${t.name}: ${t.description ?? ""}`).join("\n");
-const toolNames = tools.map((t) => t.name).join(", ");
-const chaptoolList = chapter_tools_list
+const tools_list = tools.map((t) => `- ${t.name}: ${t.description ?? ""}`).join("\n");
+const tool_names = tools.map((t) => t.name).join(", ");
+const chap_tools_name_description_list = chapter_tools_list
     .map((t) => `- ${t.name}: ${t.description ?? ""}`);
-const chaptoolNames = chapter_tools_list.map((t) => t.name);
-const outlineToolList = outline_tools_list
+const chap_tool_names = chapter_tools_list.map((t) => t.name);
+const outline_tools_name_description_list = outline_tools_list
     .map((t) => `- ${t.name}: ${t.description ?? ""}`);
-const outlineToolNames = outline_tools_list.map((t) => t.name);
+const outline_tool_names = outline_tools_list.map((t) => t.name).join(", ");
 const boundPrompt = await storybuilder_prompt.partial({
-    tools: toolsList,
-    //tool_names: toolNames,
+    tools: tools_list,
+    //tool_names: tool_names,
 });
 //Create agents & supervisors with previously-made tool-bound LLMs and nodes
 const generate_outline_agent = createReactAgent({
@@ -221,7 +221,7 @@ const chapter_supervisor = createSupervisor({
 //Creates final graph
 const outline_supervisor_graph = outline_supervisor.compile();
 const chapter_supervisor_graph = chapter_supervisor.compile();
-const whiskersoutline = `
+const whiskers_outline = `
 **Outline for "Whiskers' Whimsical Flight"**
 
 **Prologue: The Dream of Flight**
@@ -297,10 +297,13 @@ const whiskersoutline = `
 
 Thus, dear reader, this whimsical tale unfolds, a tapestry woven with threads of dreams, courage, and the sweet embrace of friendship. Each chapter a step upon the path, leading to the skies w
 here Whiskers shall find his wings.`;
+/*
+
 const input = {
-    input: whiskersoutline,
-    tools: chaptoolList[0],
+    input: whiskers_outline,
+    tools: chaptoolsList[0],
 };
+*/
 const config = {
     configurable: {
         thread_id: "your-thread-id", // Useful for memory management
@@ -313,5 +316,5 @@ const config = {
 //const response = await supervisor_graph.invoke({messages: formatted_input}, {configurable: config, callbacks: callbacks});
 //const response = await outline_agent.invoke({messages: formatted_input}, {configurable: config, callbacks: callbacks})
 //const response = await first_chapter_agent.invoke({messages: formatted_input}, {configurable: config, callbacks: callbacks});
-export { generate_outline_agent, vote_generate_outline_agent, critique_outline_agent, vote_critique_outline_agent, revise_outline_agent, vote_revise_outline_agent, first_chapter_agent, vote_first_chapter_agent, next_chapter_agent, vote_next_chapter_agent, critique_chapter_agent, vote_critique_chapter_agent, rewrite_chapter_agent, vote_rewrite_chapter_agent, outline_supervisor_graph, chapter_supervisor_graph };
+export { generate_outline_agent, vote_generate_outline_agent, critique_outline_agent, vote_critique_outline_agent, revise_outline_agent, vote_revise_outline_agent, first_chapter_agent, vote_first_chapter_agent, next_chapter_agent, vote_next_chapter_agent, critique_chapter_agent, vote_critique_chapter_agent, rewrite_chapter_agent, vote_rewrite_chapter_agent, outline_supervisor_graph, chapter_supervisor_graph};
 //console.log(response.messages.slice(-1).map(m => m.content).join("\n\n"));

@@ -49,9 +49,9 @@ function STORY_LIST() {
           fullWidth
           onClick={() => navigate(`/agent_selection`)}
           style={{
-            backgroundColor: 'rgba(255, 165, 0, 0.15)',
-            color: '#FFA500',
-            border: '1px solid #FFA500',
+            backgroundColor: 'rgba(107, 186, 104, 0.8)',
+            color: 'white',
+            border: '1px solid #06402B',
           }}
         >
           Generate New Story
@@ -83,19 +83,22 @@ function STORY_LIST() {
                 {/* Expandable Section */}
                 <Collapse in={expanded_story === story._id}>
                   <Stack spacing="xs" mt="xs">
-                    <Button variant="filled" color="gray" fullWidth onClick={() => navigate(`/story/${story._id}/view`)}>
-                      View Story
-                    </Button>
-                    <Button variant="filled" color="gray" fullWidth onClick={() => navigate(`/story/${story._id}/best_response`)}>
-                      Best Response
-                    </Button>
-                    <Button variant="filled" color="gray" fullWidth onClick={() => navigate(`/story/${story._id}/agents`)}>
-                      Agents
-                    </Button>
-                                      
-                    <Button variant="filled" color="red" fullWidth onClick={() => handle_delete_click(story._id)}>
-                      Delete Story
-                    </Button> 
+                  <Button variant="filled" color="gray" style={{ width: 'calc(100% - 10px)', margin: '0 5px' }} onClick={() => navigate(`/story/${story._id}/view`)}>
+                    View Story
+                  </Button>
+                  <Button variant="filled" color="gray" style={{ width: 'calc(100% - 10px)', margin: '0 5px' }} onClick={() => navigate(`/story/${story._id}/agent_history`)}>
+                    View Agent History
+                  </Button>
+                  <Button variant="filled" color="gray" style={{ width: 'calc(100% - 10px)', margin: '0 5px' }} onClick={() => navigate(`/story/${story._id}/agents`)}>
+                    Agents
+                  </Button>
+                  <Button variant="filled" color="gray" style={{ width: 'calc(100% - 10px)', margin: '0 5px' }} onClick={() => navigate(`/story/${story._id}/best_response`)}>
+                    Best Response
+                  </Button>
+                  <Button variant="filled" color="gray" style={{ width: 'calc(100% - 10px)', margin: '0 5px' }} onClick={() => handle_delete_click(story._id)}>
+                    Delete Story
+                  </Button>
+
                    
                   </Stack>
                 </Collapse>
@@ -116,7 +119,7 @@ function STORY_LIST() {
         <Text size="md" align="center" mb="md">
           Are you sure you want to delete this story?
         </Text>
-        <Button fullWidth mt="md" onClick={handle_delete_confirm}>
+        <Button color="red" fullWidth mt="md" onClick={handle_delete_confirm}>
           Confirm
         </Button>
       </Modal>

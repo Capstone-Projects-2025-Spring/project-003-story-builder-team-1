@@ -56,7 +56,7 @@ function STORY_PROMPT_BOX() {
             <Stack spacing="xl">
                 <TextInput
                     label="Story Title"
-                    placeholder="Ex. The Bible" required
+                    placeholder="Ex. Romeo & Juliet" required
                     value={story_name}
                     onChange={(e) => set_story_name(e.target.value)}
                     error={story_name_error || api_error}

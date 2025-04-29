@@ -89,13 +89,15 @@ router.get('/translate', async (req, res) => {
                 break;
             
             case "rewrite_outline":
+                console.log("Rewrite outline step");
                 response = await axios.get(`${APP_URL}/db/story/${user_id}/${story_id}/get_rewrite_outline_details`);
+                console.log("Rewrite outline response:", response.data);
                 data.rewrite_outline = {
                     story_name: response.data.story_name,
                     story_details: response.data.story_details,
                     extra_details: response.data.extra_details || "",
                     story_outline: response.data.story_outline,
-                    outline_critique: response.data.outline_critique
+                    outline_critique: response.data.outline_critique || ""
                 };
                 break;
 
@@ -140,7 +142,7 @@ router.get('/translate', async (req, res) => {
                     extra_details: response.data.extra_details || "",
                     story_outline: response.data.story_outline,
                     chapter: response.data.chapter,
-                    chapter_critique: response.data.critique
+                    chapter_critique: response.data.critique || ""
                 };
                 break;
 
@@ -178,6 +180,7 @@ router.get('/translate', async (req, res) => {
                     resolve(res.write(`event: done\ndata: ${JSON.stringify({ message: "Data received successfully" }, {data: buffer})}\n\n`), res.end());
                 } else if (chunk.toString().startsWith("{\"error")) {
                     const errorMessage = JSON.parse(chunk.toString());
+                    console.log("translator error: ", errorMessage.error);
                     return res.status(404).json({ error: errorMessage.error });
                 }
                 else

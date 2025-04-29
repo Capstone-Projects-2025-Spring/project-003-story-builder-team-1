@@ -1,28 +1,26 @@
 import { tool } from "@langchain/core/tools";
 import { z } from "zod";
 import { ChatPromptTemplate } from "@langchain/core/prompts";
-import { AIMessage, ToolMessage } from "@langchain/core/messages";
+import { AIMessage } from "@langchain/core/messages";
 export default function outline_tools(llm) {
     // 1) Define the exact shape you want:
     const outline_schema = z.object({
         chapters: z.array(z.object({
             title: z.string(),
-            summary: z.string(),
-        })),
+            summary: z.string().describe("A brief description of the chapter. 2-3 bullet points"),
+        })
+        ),
         totalChapters: z.number(),
     });
-    const vote_revise_outline_output_schema = z.object({
-        winningOutlineIndex: z.number().describe("The index of the winning outline in the outline bank."),
-        voteValue: z.number().describe("The value of the vote, from 0 to 100, where 100 is the best possible chapter."),
-    });
-    const vote_critique_outline_output_schema = z.object({
-        winningOutlineIndex: z.number().describe("The index of the winning critique in the critique bank."),
-        voteValue: z.number().describe("The value of the vote, from 0 to 100, where 100 is the best possible critique."),
-    });
+    const vote_output_schema = z.object({
+            winning_index: z.number().describe("The index of the winning entry in the vote bank."),
+            vote_value: z.number().describe("The value of the vote, from 0 to 100, where 100 is the best possible entry."),
+        });
     // Prompt
     const generate_outline_prompt = ChatPromptTemplate.fromTemplate(`
         You are a helpful assistant that creates story outlines. You will only ever make one tool call. Don't return anything except for the outline and absolutely nothing else.
         You will ensure the results are compatible with the style of this persona: "{persona}".
+        Ensure none of the sections of your story are labelled "Prologue" or "Epilogue", only label them as chapter numbers.
         Create a detailed outline where you decide the number of chapters. Don't return anything before or after the outline, and don't return any supplementary commentary or reflections or any acknowledgement of the prompt itself. Just return the outline based on the following idea:
 
         "{prompt_info}"
@@ -67,6 +65,7 @@ export default function outline_tools(llm) {
         You are a helpful assistant that revises story outlines.
         Rewrite the following outline based on the provided critique. Don't return anything except for the rewritten outline and absolutely nothing else.
         Make sure to check for grammatical correctness, plot continuity, and adherence to the prompt information. Don't return anything before or after the rewritten outline, and don't return any supplementary commentary or reflections or any acknowledgement of the prompt itself.
+        Ensure none of the sections of your story are labelled "Prologue" or "Epilogue", only label them as chapter numbers.
         You will ensure the results
         are compatible with the style of this persona: "{persona}".
 
@@ -110,9 +109,9 @@ export default function outline_tools(llm) {
     });
 
     const vote_generate_outline = tool(async ({ persona, prompt_info, outline_bank }) => {
-        const messages = await vote_revise_outline_prompt.formatMessages({ persona, prompt_info, outline_bank });
-        const res = await llm.withStructuredOutput(vote_revise_outline_output_schema).invoke(messages);
-        return new AIMessage({content: res});
+        const messages = await vote_generate_outline_prompt.formatMessages({ persona, prompt_info, outline_bank });
+        const res = await llm.withStructuredOutput(vote_output_schema).invoke(messages);
+        return res;
     }, {
         name: "vote_generate_outline",
         description: "Votes on the different collected outlines. Outlines are stored as a 2-dimensional array, with rows corresponding to stories and columns corresponding to chapter summaries. The result will rank whichever row has the best sequence according to the parameters established in the agent information and initial prompt info. It does not return anything except for the index number of the winning outline.",
@@ -140,8 +139,8 @@ export default function outline_tools(llm) {
     });
     const vote_critique_outline = tool(async ({ persona, prompt_info, critique_bank }) => {
         const messages = await vote_outline_critique_prompt.formatMessages({ persona, prompt_info, critique_bank });
-        const res = await llm.withStructuredOutput(vote_critique_outline_output_schema).invoke(messages);
-        return new AIMessage({content: res});
+        const res = await llm.withStructuredOutput(vote_output_schema).invoke(messages);
+        return res;
     }, {
         name: "vote_critique_outline",
         description: "Votes on the different collected critiques. Outlines are stored as entries corresponding to chapter summaries. The result will rank whichever entry has the best sequence according to the parameters established in the agent information and initial prompt info. It does not return anything except for the index number of the winning outline.",
@@ -171,7 +170,7 @@ export default function outline_tools(llm) {
 
     const vote_revise_outline = tool(async ({ persona, prompt_info, outline_bank }) => {
         const messages = await vote_revise_outline_prompt.formatMessages({ persona, prompt_info, outline_bank });
-        const res = await llm.withStructuredOutput(vote_revise_outline_output_schema).invoke(messages);
+        const res = await llm.withStructuredOutput(vote_output_schema).invoke(messages);
         return res;
     }, {
         name: "vote_revise_outline",

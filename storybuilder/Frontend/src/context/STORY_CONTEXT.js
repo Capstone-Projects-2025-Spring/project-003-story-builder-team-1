@@ -21,6 +21,13 @@ export const STORY_PROVIDER = ({ children }) => {
     const [should_stream, set_should_stream] = useState(false);
     const [agent_responses, set_agent_responses] = useState({});  // State to store responses for each agent
     const [agent_thoughts, set_agent_thoughts] = useState({});  // State to store thoughts for each agent
+    const [agent_critiques, set_agent_critiques] = useState({});  // State to store critiques for each agent
+    const [agent_critique_thoughts, set_agent_critique_thoughts] = useState({});  // State to store critique thoughts for each agent
+    const [streaming_action, set_streaming_action] = useState('');
+    const [disable_regenerate, set_disable_regenerate] = useState(false);
+    const [disable_continue, set_disable_continue] = useState(false);
+    const [disable_edit, set_disable_edit] = useState(false);
+    const [curr_step, set_curr_step] = useState(''); // Default step
 
     const submit_story_prompt = async (story_name, story_details, extra_details, selected_agents) => {
         // reset errors
@@ -69,7 +76,6 @@ export const STORY_PROVIDER = ({ children }) => {
         // if data is not null, set story_id and agent_ids
         set_story_id(create_data.story);
         set_agent_ids(create_data.agent_ids);
-        set_should_stream(true); // allow streaming now
 
         // everything works, return true
         set_loading(false);
@@ -77,32 +83,27 @@ export const STORY_PROVIDER = ({ children }) => {
     };
 
     const generate_outline = async (curr_story_id) => {
+        set_curr_step('generate'); // set current step to generate
         set_api_error('');
         set_loading(true);
-    
-        const { data: gen_outline_data, error: gen_outline_error } = await use_axios(
-            `${SERVER_URL}/translator/translate?user_id=${user}&story_id=${curr_story_id}&step=generate_outline&chapter_number=0`,
-            "GET",
-            // {
-            //     user_id: user,
-            //     story_id: curr_story_id,
-            //     step: "generate_outline",
-            //     chapter_number: 0,
-            // }
-        );
-
-        if (gen_outline_data === null) {
-            set_api_error(gen_outline_error);
-            set_loading(false);
-            return false;
-        }
+        set_should_stream(true); // allow streaming now
+        set_disable_regenerate(true); // disable regenerate button
+        set_disable_edit(true)
+        set_streaming_action('continue'); // set action to continue for loading
 
         return true;
     }
 
-    const start_event_stream = (user, story_id, step = "generate_outline", chapter_number = 0) => {
+    const start_event_stream = (user, story_id, step, chapter_number) => {
+        console.log("Starting event stream");
+        console.log("Current Step:", curr_step);
+        console.log("Step:", step);
+        console.log("Chapter number:", chapter_number);
         set_agent_responses({});  // Reset agent responses
         set_agent_thoughts({});  // Reset agent thoughts
+        set_agent_critiques({});
+        set_agent_critique_thoughts({});
+
         const url = `${SERVER_URL}/translator/translate?user_id=${user}&story_id=${story_id}&step=${step}&chapter_number=${chapter_number}`;
         const eventSource = new EventSource(url);
     
@@ -112,8 +113,14 @@ export const STORY_PROVIDER = ({ children }) => {
     
             if (restored.startsWith("{\"best")) {
                 eventSource.close();
+                console.log("Event stream closed");
                 set_should_stream(false);
                 fetch_user_data(user);
+                // reset everything
+                set_disable_continue(false);
+                set_disable_regenerate(false);
+                set_disable_edit(false);
+                set_streaming_action('');
                 return;
             }
     
@@ -124,17 +131,33 @@ export const STORY_PROVIDER = ({ children }) => {
                 let token = parts.slice(2).join("|");
     
                 if (token.startsWith("tool_call: ")) {
-                  token = token.replace("tool_call: ", "");
-                  set_agent_responses((prev) => ({
+                    token = token.replace("tool_call: ", "");
+                    if (curr_step === "critique") {
+                    set_agent_critiques((prev) => ({
+                        ...prev,
+                        [agent_id]: (prev[agent_id] || "") + token,
+                    }));
+                    }
+                    else {
+                    set_agent_responses((prev) => ({
                     ...prev,
                     [agent_id]: (prev[agent_id] || "") + token,
-                  }));
+                    }));
+                }
                 }
                 else {
-                  set_agent_thoughts((prev) => ({
-                    ...prev,
-                    [agent_id]: (prev[agent_id] || "") + token,
-                  }));
+                    if (curr_step === "critique") {
+                        set_agent_critique_thoughts((prev) => ({
+                            ...prev,
+                            [agent_id]: (prev[agent_id] || "") + token,
+                        }));
+                    }
+                    else {
+                        set_agent_thoughts((prev) => ({
+                            ...prev,
+                            [agent_id]: (prev[agent_id] || "") + token,
+                        }));
+                    }
                 }
     
             } catch (err) {
@@ -146,6 +169,7 @@ export const STORY_PROVIDER = ({ children }) => {
             console.error("SSE error");
             eventSource.close();
         };
+
     };
 
     return (
@@ -154,17 +178,31 @@ export const STORY_PROVIDER = ({ children }) => {
             agent_ids,
             should_stream,
             set_should_stream,
+            streaming_action,
+            set_streaming_action,
             start_event_stream,
             agent_responses,
             set_agent_responses,
             agent_thoughts,
             set_agent_thoughts,
+            agent_critiques,
+            set_agent_critiques,
+            agent_critique_thoughts,
+            set_agent_critique_thoughts,
             submit_story_prompt,
             generate_outline,
             story_name_error,
             story_details_error,
             api_error,
             loading,
+            disable_regenerate,
+            set_disable_regenerate,
+            disable_continue,
+            set_disable_continue,
+            disable_edit,
+            set_disable_edit,
+            curr_step,
+            set_curr_step,
         }}>
             {children}
         </STORY_CONTEXT.Provider>

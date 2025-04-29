@@ -14,6 +14,7 @@ import PROTECTED_ROUTE from './components/PROTECTED_ROUTE';
 import { USER_PROVIDER } from './context/USER_CONTEXT';
 import AGENT_SELECTION from './components/AGENT_SELECTION';
 import { STORY_PROVIDER } from './context/STORY_CONTEXT';
+import STORY_AGENT_HISTORY from './components/STORY_AGENT_HISTORY';
 import '@mantine/core/styles.css';
 
 function App() {
@@ -29,6 +30,8 @@ function App() {
         <Route path="/agent_selection" element={<PROTECTED_ROUTE><MAIN_LAYOUT><AGENT_SELECTION /></MAIN_LAYOUT></PROTECTED_ROUTE>} />
         <Route path="/prompt" element={<PROTECTED_ROUTE><MAIN_LAYOUT><STORY_PROMPT_BOX /></MAIN_LAYOUT></PROTECTED_ROUTE>} />
         <Route path="/story/:story_id/best_response" element={<PROTECTED_ROUTE><MAIN_LAYOUT><BEST_RESPONSE /></MAIN_LAYOUT></PROTECTED_ROUTE>} />
+        <Route path="/story/:story_id/agent_history" element={<PROTECTED_ROUTE><MAIN_LAYOUT><STORY_AGENT_HISTORY/></MAIN_LAYOUT></PROTECTED_ROUTE>} />
+        <Route path="/story/:story_id/agent_history/:chapter_id" element={<PROTECTED_ROUTE><MAIN_LAYOUT><STORY_AGENT_HISTORY/></MAIN_LAYOUT></PROTECTED_ROUTE>} />
         <Route path="/story/:story_id/view" element={<PROTECTED_ROUTE><MAIN_LAYOUT><STORY_VIEW /></MAIN_LAYOUT></PROTECTED_ROUTE>} />
         <Route path="/story/:story_id/view/:chapter_id" element={<PROTECTED_ROUTE><MAIN_LAYOUT><CHAPTER_VIEW /></MAIN_LAYOUT></PROTECTED_ROUTE>} />
         <Route path="/story/:story_id/agents" element={<PROTECTED_ROUTE><MAIN_LAYOUT><STORY_AGENTS_VIEW /></MAIN_LAYOUT></PROTECTED_ROUTE>} />
