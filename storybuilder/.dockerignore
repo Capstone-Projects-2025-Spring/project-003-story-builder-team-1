@@ -3,3 +3,5 @@
 npm-debug.log
 Dockerfile
 docker-compose.yaml
+/Backend/node_modules/
+/Frontend/node_modules/

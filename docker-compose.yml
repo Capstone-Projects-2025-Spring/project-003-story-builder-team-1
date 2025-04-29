@@ -8,9 +8,6 @@ services:
     container_name: "agent-1"  # Unique container name
     environment:
       - OPENAI_API_KEY=${OPENAI_API_KEY}  # OpenAI API key for the agent
-      - DEEPSEEK_API_KEY=${DEEPSEEK_API_KEY}  # DeepSeek API key for the agent
-      - API_KEY=${DEEPSEEK_API_KEY}
-      - AGENT_NAME=${AGENT_NAME}
       - DOCKER=true
     volumes:
       - ./logs/:/app/logs  # Host ./logs/backend → /app/logs in container
@@ -25,9 +22,6 @@ services:
     container_name: "agent-2"  # Unique container name for the second agent
     environment:
       - OPENAI_API_KEY=${OPENAI_API_KEY}  # OpenAI API key for the agent
-      - DEEPSEEK_API_KEY=${DEEPSEEK_API_KEY}  # DeepSeek API key for the agent
-      - API_KEY=${DEEPSEEK_API_KEY}
-      - AGENT_NAME=${AGENT_NAME}-2  # Different name for the second agent
       - DOCKER=true
     volumes:
       - ./logs/:/app/logs  # Host ./logs/backend → /app/logs in container
@@ -42,9 +36,6 @@ services:
     container_name: "agent-3"  # Unique container name for the second agent
     environment:
       - OPENAI_API_KEY=${OPENAI_API_KEY}  # OpenAI API key for the agent
-      - DEEPSEEK_API_KEY=${DEEPSEEK_API_KEY}  # DeepSeek API key for the agent
-      - API_KEY=${DEEPSEEK_API_KEY}
-      - AGENT_NAME=${AGENT_NAME}-3  # Different name for the second agent
       - DOCKER=true
     volumes:
       - ./logs/:/app/logs  # Host ./logs/backend → /app/logs in container
@@ -59,9 +50,6 @@ services:
     container_name: "agent-4"  # Unique container name for the second agent
     environment:
       - OPENAI_API_KEY=${OPENAI_API_KEY}  # OpenAI API key for the agent
-      - DEEPSEEK_API_KEY=${DEEPSEEK_API_KEY}  # DeepSeek API key for the agent
-      - API_KEY=${DEEPSEEK_API_KEY}
-      - AGENT_NAME=${AGENT_NAME}-4  # Different name for the second agent
       - DOCKER=true
     volumes:
       - ./logs/:/app/logs  # Host ./logs/backend → /app/logs in container
@@ -76,9 +64,6 @@ services:
     container_name: "agent-5"  # Unique container name for the second agent
     environment:
       - OPENAI_API_KEY=${OPENAI_API_KEY}  # OpenAI API key for the agent
-      - DEEPSEEK_API_KEY=${DEEPSEEK_API_KEY}  # DeepSeek API key for the agent
-      - API_KEY=${DEEPSEEK_API_KEY}
-      - AGENT_NAME=${AGENT_NAME}-5  # Different name for the second agent
       - DOCKER=true
     volumes:
       - ./logs/:/app/logs  # Host ./logs/backend → /app/logs in container

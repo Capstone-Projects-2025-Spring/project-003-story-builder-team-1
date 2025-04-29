@@ -11,6 +11,9 @@ COPY ./Backend /app/Backend/
 COPY ./Frontend ./Frontend/.env /app/Frontend/
 COPY ./Frontend/build/ /app/Frontend/build/
 
+RUN cd /app/Backend/ && npm install
+RUN cd /app/Frontend/ && npm install
+
 # Set environment variable for the port
 ARG PORT=8080
 ENV PORT=$PORT
